@@ -1,4 +1,4 @@
-/* $Id: StyleDeclarationInterpretation.java,v 1.7 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -9,7 +9,7 @@ package uk.ac.ed.ph.snuggletex.semantics;
  * FIXME: Document this type;
  * 
  * @author  David McKain
- * @version $Revision: 1.7 $
+ * @version $Revision$
  */
 public enum StyleDeclarationInterpretation implements TextInterpretation {
 

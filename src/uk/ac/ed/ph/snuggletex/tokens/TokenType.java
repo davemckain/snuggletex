@@ -1,4 +1,4 @@
-/* $Id: TokenType.java,v 1.4 2008/04/08 15:10:22 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.tokens;
 
 /**
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public enum TokenType {
     

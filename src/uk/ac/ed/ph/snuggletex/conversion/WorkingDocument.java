@@ -1,4 +1,4 @@
-/* $Id: WorkingDocument.java,v 1.5 2008/04/22 09:37:43 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import java.util.List;
  * FIXME: Document this type!
  *
  * @author  David McKain
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public final class WorkingDocument {
     
@@ -116,7 +116,7 @@ public final class WorkingDocument {
      * FIXME: Document this type!
      *
      * @author  David McKain
-     * @version $Revision: 1.5 $
+     * @version $Revision$
      */
     public static class IndexResolution {
         public final int scoreboardIndex;

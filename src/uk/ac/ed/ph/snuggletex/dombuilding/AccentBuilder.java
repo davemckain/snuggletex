@@ -1,4 +1,4 @@
-/* $Id: AccentBuilder.java,v 1.3 2008/04/22 17:22:44 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  * math and text modes - do note that some accents only apply in one of these modes.
  *
  * @author  David McKain
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public final class AccentBuilder implements CommandHandler {
     

@@ -1,4 +1,4 @@
-/* $Id: InterpretableSimpleMathBuilder.java,v 1.2 2008/01/16 16:59:29 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import org.w3c.dom.Element;
  * FIXME: Document this type!
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class InterpretableSimpleMathBuilder implements CommandHandler {
     

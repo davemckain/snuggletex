@@ -1,4 +1,4 @@
-/* $Id: SnuggleTeXEngine.java,v 1.2 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -33,7 +33,7 @@ import java.util.List;
  * </ul>
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class SnuggleTeXEngine {
     

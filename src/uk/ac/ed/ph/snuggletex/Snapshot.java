@@ -1,4 +1,4 @@
-/* $Id: Snapshot.java,v 1.1 2008/04/22 16:07:28 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -23,7 +23,7 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
  * as it allows the results of these configurations to be reused without requiring re-parsing.
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class Snapshot {
 	

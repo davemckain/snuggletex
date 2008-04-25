@@ -1,4 +1,4 @@
-/* $Id: SnuggleLogicException.java,v 1.2 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,7 +17,7 @@ package uk.ac.ed.ph.snuggletex;
  * is down to bad client input.
  * 
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class SnuggleLogicException extends RuntimeException {
 

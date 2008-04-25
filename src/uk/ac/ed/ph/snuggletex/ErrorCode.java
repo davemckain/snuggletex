@@ -1,4 +1,4 @@
-/* $Id: ErrorCode.java,v 1.11 2008/04/22 17:22:44 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -22,7 +22,7 @@ package uk.ac.ed.ph.snuggletex;
  * </ul>
  *
  * @author  David McKain
- * @version $Revision: 1.11 $
+ * @version $Revision$
  */
 public enum ErrorCode {
     

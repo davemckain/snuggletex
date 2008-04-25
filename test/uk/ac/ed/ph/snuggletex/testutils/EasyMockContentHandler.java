@@ -1,4 +1,4 @@
-/* $Id: EasyMockContentHandler.java,v 1.2 2008/03/28 16:41:52 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -26,7 +26,7 @@ import org.xml.sax.Locator;
  * </ul>
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class EasyMockContentHandler implements ContentHandler {
     

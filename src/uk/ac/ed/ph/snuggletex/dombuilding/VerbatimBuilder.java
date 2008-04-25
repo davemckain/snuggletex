@@ -1,4 +1,4 @@
-/* $Id: VerbatimBuilder.java,v 1.4 2008/04/14 10:48:25 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
  * FIXME: Document this type!
  *
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public final class VerbatimBuilder implements EnvironmentHandler {
     

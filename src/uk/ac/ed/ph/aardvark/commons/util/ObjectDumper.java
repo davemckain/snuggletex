@@ -1,4 +1,4 @@
-/* $Id: ObjectDumper.java,v 1.2 2008/04/08 15:10:22 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,7 +17,7 @@ import java.util.Map.Entry;
  * its properties, which can be useful for displaying status messages and debugging.
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class ObjectDumper {
     

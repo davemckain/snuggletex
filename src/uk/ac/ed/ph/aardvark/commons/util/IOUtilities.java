@@ -1,4 +1,4 @@
-/* $Id: IOUtilities.java,v 1.1 2008/01/14 10:54:06 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -26,7 +26,7 @@ import java.nio.channels.FileChannel;
  * (This is a slightly cut-down copy of the version of this class in Aardvark.)
  * 
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class IOUtilities {
     

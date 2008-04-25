@@ -1,4 +1,4 @@
-/* $Id: Token.java,v 1.6 2008/04/14 10:48:25 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -18,7 +18,7 @@ import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
  * Base interface for a parsed SnuggleTeX token.
  * 
  * @author  David McKain
- * @version $Revision: 1.6 $
+ * @version $Revision$
  */
 public abstract class Token {
     

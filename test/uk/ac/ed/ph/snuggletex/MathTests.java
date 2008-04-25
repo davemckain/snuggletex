@@ -1,4 +1,4 @@
-/* $Id: MathTests.java,v 1.4 2008/04/03 09:46:37 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
  * FIXME: Document this type!
  * 
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 @RunWith(Parameterized.class)
 public class MathTests extends AbstractGoodXMLTests {

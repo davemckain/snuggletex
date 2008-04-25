@@ -1,4 +1,4 @@
-/* $Id: TextFlowContext.java,v 1.2 2008/04/03 09:46:37 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -12,7 +12,7 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
  * into the resulting XHTML DOM.
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public enum TextFlowContext {
     

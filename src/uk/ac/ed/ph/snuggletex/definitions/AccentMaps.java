@@ -1,4 +1,4 @@
-/* $Id: AccentMaps.java,v 1.3 2008/04/21 14:43:38 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -11,7 +11,7 @@ package uk.ac.ed.ph.snuggletex.definitions;
  * FIXME: Fill in more examples and stuff!!
  *
  * @author  David McKain
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public interface AccentMaps {
     

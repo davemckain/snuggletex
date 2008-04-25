@@ -1,4 +1,4 @@
-/* $Id: LaTeXTokeniser.java,v 1.40 2008/04/22 17:22:44 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -66,7 +66,7 @@ import java.util.regex.Pattern;
  * TODO: Support empty {}, especially if trying to kill space like \command{}Text in non-math mode
  * 
  * @author  David McKain
- * @version $Revision: 1.40 $
+ * @version $Revision$
  */
 public final class LaTeXTokeniser {
     

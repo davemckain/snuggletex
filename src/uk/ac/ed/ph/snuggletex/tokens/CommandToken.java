@@ -1,4 +1,4 @@
-/* $Id: CommandToken.java,v 1.4 2008/04/14 10:48:25 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
  * FIXME: Document this type!
  * 
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public class CommandToken extends FlowToken {
     

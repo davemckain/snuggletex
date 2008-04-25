@@ -1,4 +1,4 @@
-/* $Id: MathEnvironmentBuilder.java,v 1.9 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
  * FIXME: Document this type!
  * 
  * @author  David McKain
- * @version $Revision: 1.9 $
+ * @version $Revision$
  */
 public final class MathEnvironmentBuilder implements EnvironmentHandler {
 

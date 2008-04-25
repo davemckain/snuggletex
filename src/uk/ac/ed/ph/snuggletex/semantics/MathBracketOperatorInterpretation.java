@@ -1,4 +1,4 @@
-/* $Id: MathBracketOperatorInterpretation.java,v 1.4 2008/03/19 10:18:58 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -12,7 +12,7 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
  * if required.
  * 
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public class MathBracketOperatorInterpretation extends MathOperatorInterpretation {
     

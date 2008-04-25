@@ -1,4 +1,4 @@
-/* $Id: BuiltinCommand.java,v 1.21 2008/04/18 16:09:21 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,7 +17,7 @@ import java.util.EnumSet;
  * FIXME: Document this type!
  * 
  * @author  David McKain
- * @version $Revision: 1.21 $
+ * @version $Revision$
  */
 public final class BuiltinCommand implements Command {
     

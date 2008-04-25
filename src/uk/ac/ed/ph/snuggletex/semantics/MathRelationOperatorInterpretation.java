@@ -1,4 +1,4 @@
-/* $Id: MathRelationOperatorInterpretation.java,v 1.5 2008/03/19 12:25:45 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
  * has over its superclass.
  * 
  * @author  David McKain
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public class MathRelationOperatorInterpretation extends MathOperatorInterpretation {
     

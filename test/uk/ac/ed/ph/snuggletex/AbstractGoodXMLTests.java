@@ -1,4 +1,4 @@
-/* $Id: AbstractGoodXMLTests.java,v 1.5 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -50,7 +50,7 @@ import org.xml.sax.XMLReader;
  * FIXME: Document this type!
  * 
  * @author  David McKain
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 abstract class AbstractGoodXMLTests {
     

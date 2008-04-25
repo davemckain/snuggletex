@@ -1,4 +1,4 @@
-/* $Id: SnuggleTeXConfiguration.java,v 1.4 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -16,7 +16,7 @@ import java.util.Properties;
  * to be reused for different sessions.
  *
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public final class SnuggleTeXConfiguration implements Cloneable {
     

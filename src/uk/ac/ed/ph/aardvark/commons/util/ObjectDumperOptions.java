@@ -1,4 +1,4 @@
-/* $Id: ObjectDumperOptions.java,v 1.1 2008/01/14 10:54:06 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * It can be applied to both types and properties (i.e. <tt>getP()</tt> methods).
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

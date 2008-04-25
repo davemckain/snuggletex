@@ -1,4 +1,4 @@
-/* $Id: TestFileHelper.java,v 1.2 2008/04/03 09:46:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import java.util.Collection;
  * FIXME: Document this type!
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class TestFileHelper {
 

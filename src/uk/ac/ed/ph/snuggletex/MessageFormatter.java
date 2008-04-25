@@ -1,4 +1,4 @@
-/* $Id: MessageFormatter.java,v 1.7 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
  * {@link StringBuilder} so we'll sadly have to make do with {@link StringBuffer}
  *
  * @author  David McKain
- * @version $Revision: 1.7 $
+ * @version $Revision$
  */
 public final class MessageFormatter {
     

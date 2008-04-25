@@ -1,4 +1,4 @@
-/* $Id: LineBreakHandler.java,v 1.1 2008/04/15 10:34:11 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import org.w3c.dom.Element;
  * Handles instances of <tt>\\\\</tt>, which forces a line break at the given point.
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class LineBreakHandler implements CommandHandler {
 

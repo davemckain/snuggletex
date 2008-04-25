@@ -1,4 +1,4 @@
-/* $Id: SnuggleInputReader.java,v 1.3 2008/04/22 17:22:44 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -24,7 +24,7 @@ import java.util.List;
  * and producing a {@link WorkingDocument} for later use.
  * 
  * @author  David McKain
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public final class SnuggleInputReader implements WorkingDocument.SourceContext {
     

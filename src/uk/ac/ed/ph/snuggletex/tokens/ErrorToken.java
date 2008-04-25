@@ -1,4 +1,4 @@
-/* $Id: ErrorToken.java,v 1.5 2008/04/14 10:48:25 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -13,7 +13,7 @@ import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
  * Special token encapsulating an error in parsing.
  *
  * @author  David McKain
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public final class ErrorToken extends FlowToken {
     

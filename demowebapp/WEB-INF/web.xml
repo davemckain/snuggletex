@@ -5,7 +5,7 @@ Web Deployment Descriptor for the SnuggleTeX Demo Application
 
 FIXME: This is currently just a template for the real one!
 
-$Id: web.xml 2712 2008-03-10 17:01:01Z davemckain $
+$Id$
 
 -->
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4"

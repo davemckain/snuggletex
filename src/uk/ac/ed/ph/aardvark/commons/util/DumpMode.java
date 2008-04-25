@@ -1,4 +1,4 @@
-/* $Id: DumpMode.java,v 1.1 2008/01/14 10:54:06 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -12,7 +12,7 @@ package uk.ac.ed.ph.aardvark.commons.util;
  * They are listed in order of verbosity.
  * 
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public enum DumpMode {
     

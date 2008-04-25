@@ -1,4 +1,4 @@
-/* $Id: InterpretationType.java,v 1.2 2008/01/17 13:58:00 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -10,7 +10,7 @@ package uk.ac.ed.ph.snuggletex.semantics;
  * hierarchy.
  * 
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public enum InterpretationType {
     

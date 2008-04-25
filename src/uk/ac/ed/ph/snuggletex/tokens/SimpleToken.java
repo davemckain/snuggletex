@@ -1,4 +1,4 @@
-/* $Id: SimpleToken.java,v 1.5 2008/04/14 10:48:25 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
  * FIXME: Document this!
  * 
  * @author  David McKain
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public final class SimpleToken extends FlowToken {
     

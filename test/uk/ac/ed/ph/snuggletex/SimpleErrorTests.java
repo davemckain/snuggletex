@@ -1,4 +1,4 @@
-/* $Id: SimpleErrorTests.java,v 1.2 2008/04/01 14:13:24 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
  * FIXME: Document this type!
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 @RunWith(Parameterized.class)
 public class SimpleErrorTests {

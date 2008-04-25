@@ -1,4 +1,4 @@
-/* $Id: StyleInterpretationNodeBuilder.java,v 1.3 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
  * </ul>
  *
  * @author  David McKain
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public final class StyleInterpretationNodeBuilder implements CommandHandler, EnvironmentHandler {
     

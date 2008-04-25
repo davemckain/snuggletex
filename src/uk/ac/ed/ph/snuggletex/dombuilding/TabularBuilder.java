@@ -1,5 +1,5 @@
 /*
- * $Id: TabularBuilder.java,v 1.7 2008/04/18 09:44:05 dmckain Exp $
+ * $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * TODO: No support for \hline, \vline and friends!!!
  * 
  * @author  David McKain
- * @version $Revision: 1.7 $
+ * @version $Revision$
  */
 public final class TabularBuilder implements EnvironmentHandler {
 

@@ -1,4 +1,4 @@
-/* $Id: MockableSAXReceiver.java,v 1.2 2008/03/28 16:41:52 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -11,7 +11,7 @@ import org.xml.sax.Attributes;
  * FIXME: Document this type!
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 interface MockableSAXReceiver {
 

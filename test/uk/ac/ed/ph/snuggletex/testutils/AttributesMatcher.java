@@ -1,4 +1,4 @@
-/* $Id: AttributesMatcher.java,v 1.3 2008/04/08 15:08:27 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * EasyMock argument matcher that compares SAX {@link Attributes} Objects.
  * 
  * @author  David McKain
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public final class AttributesMatcher implements IArgumentMatcher {
     

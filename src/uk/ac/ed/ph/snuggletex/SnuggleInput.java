@@ -1,4 +1,4 @@
-/* $Id: SnuggleInput.java,v 1.4 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import java.io.Reader;
  * Simple container for an input into SnuggleTeX.
  * 
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public final class SnuggleInput {
 

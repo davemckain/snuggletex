@@ -1,4 +1,4 @@
-/* $Id: SessionContext.java,v 1.4 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -19,7 +19,7 @@ import java.util.Map;
  * Provides access to session-related Objects used during the various parts of the snuggle process.
  *
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public interface SessionContext {
 

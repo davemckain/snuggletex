@@ -1,4 +1,4 @@
-/* $Id: BeanToStringOptions.java,v 1.1 2008/01/14 10:54:06 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * details from being listed by {@link ObjectUtilities#beanToString(Object)}.
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

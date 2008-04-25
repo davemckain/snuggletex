@@ -1,4 +1,4 @@
-/* $Id: MboxBuilder.java,v 1.6 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
  * Handles <tt>\mbox</tt>, <tt>\fbox</tt> and friends.
  *
  * @author  David McKain
- * @version $Revision: 1.6 $
+ * @version $Revision$
  */
 public final class BoxBuilder implements CommandHandler {
     

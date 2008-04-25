@@ -1,4 +1,4 @@
-/* $Id: Interpretation.java,v 1.1 2008/01/14 10:54:06 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -25,7 +25,7 @@ import uk.ac.ed.ph.snuggletex.tokens.Token;
  * </ul>
  * 
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public interface Interpretation {
     

@@ -1,4 +1,4 @@
-/* $Id: TokenFixer.java,v 1.29 2008/04/22 17:22:44 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -43,7 +43,7 @@ import uk.ac.ed.ph.snuggletex.tokens.TokenType;
  * @see LaTeXTokeniser
  * 
  * @author  David McKain
- * @version $Revision: 1.29 $
+ * @version $Revision$
  */
 public final class TokenFixer {
     

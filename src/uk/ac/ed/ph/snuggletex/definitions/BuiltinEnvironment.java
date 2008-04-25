@@ -1,4 +1,4 @@
-/* $Id: BuiltinEnvironment.java,v 1.9 2008/04/18 16:09:21 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import java.util.EnumSet;
  * Enumerates the core LaTeX environments
  * 
  * @author  David McKain
- * @version $Revision: 1.9 $
+ * @version $Revision$
  */
 public final class BuiltinEnvironment implements Environment {
     

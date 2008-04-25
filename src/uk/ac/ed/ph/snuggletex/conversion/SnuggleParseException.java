@@ -1,4 +1,4 @@
-/* $Id: SnuggleParseException.java,v 1.1 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -13,7 +13,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
  * error occurs and the client has requested immediate failure in such circumstances.
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class SnuggleParseException extends Exception {
 

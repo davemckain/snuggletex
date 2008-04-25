@@ -1,4 +1,4 @@
-/* $Id: DoNothingHandler.java,v 1.2 2008/04/15 10:34:11 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
  * the resulting DOM. (E.g. <tt>\\newcommand</tt> doesn't make any visible output.)
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class DoNothingHandler implements CommandHandler, EnvironmentHandler {
     

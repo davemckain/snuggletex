@@ -1,4 +1,4 @@
-/* $Id: ListEnvironmentBuilder.java,v 1.1 2008/04/18 16:09:21 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
  * This handles LaTeX list environments (i.e. <tt>itemize</tt> and <tt>enumerate</tt>).
  * 
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class ListEnvironmentBuilder implements EnvironmentHandler, CommandHandler {
     

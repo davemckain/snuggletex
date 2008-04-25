@@ -1,4 +1,4 @@
-/* $Id: GlobalDefinitions.java,v 1.4 2008/04/21 16:13:06 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -54,7 +54,7 @@ import java.util.EnumSet;
  * supported by SnuggleTeX.
  *
  * @author  David McKain
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public final class GlobalBuiltins {
     

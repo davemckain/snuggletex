@@ -1,4 +1,4 @@
-/* $Id: TextSafeInterpretableMathIdentifierBuilder.java,v 1.1 2008/03/20 11:10:04 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,7 +17,7 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
  * Needed for things like <tt>\ldots</tt>, which works in both Math and Text modes
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class TextSafeInterpretableMathIdentifierBuilder implements CommandHandler {
     

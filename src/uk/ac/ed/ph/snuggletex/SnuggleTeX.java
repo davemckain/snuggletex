@@ -1,4 +1,4 @@
-/* $Id: SnuggleTeX.java,v 1.2 2008/04/17 16:45:39 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
  * TODO: This will contain a set of static methods for doing the most common types of jobs.
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class SnuggleTeX {
     

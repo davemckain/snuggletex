@@ -1,4 +1,4 @@
-/* $Id: EqnArrayBuilder.java,v 1.5 2008/04/18 09:44:05 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
  * instead of <table/>
  * 
  * @author  David McKain
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public final class EqnArrayBuilder implements EnvironmentHandler {
 

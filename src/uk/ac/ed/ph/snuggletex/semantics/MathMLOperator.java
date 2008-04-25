@@ -1,4 +1,4 @@
-/* $Id: MathMLOperator.java,v 1.3 2008/03/20 11:10:04 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -13,7 +13,7 @@ import static uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType.PREFI
  * FIXME: Document this type!
  * 
  * @author David McKain
- * @version $Revision: 1.3 $
+ * @version $Revision$
  */
 public enum MathMLOperator {
 

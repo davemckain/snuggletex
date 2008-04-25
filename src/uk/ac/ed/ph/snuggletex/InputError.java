@@ -1,4 +1,4 @@
-/* $Id: InputError.java,v 1.8 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -15,7 +15,7 @@ import java.io.Serializable;
  * where it occurred.
  * 
  * @author  David McKain
- * @version $Revision: 1.8 $
+ * @version $Revision$
  */
 public final class InputError implements Serializable {
     

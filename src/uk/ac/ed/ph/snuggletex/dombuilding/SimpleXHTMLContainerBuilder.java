@@ -1,4 +1,4 @@
-/* $Id: SimpleXHTMLContainerBuilder.java,v 1.2 2008/04/23 11:23:36 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
  * normal.
  *
  * @author  David McKain
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class SimpleXHTMLContainerBuilder implements CommandHandler, EnvironmentHandler {
     

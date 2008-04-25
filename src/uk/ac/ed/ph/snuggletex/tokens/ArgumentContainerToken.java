@@ -1,4 +1,4 @@
-/* $Id: ArgumentContainerToken.java,v 1.9 2008/04/22 15:17:13 dmckain Exp $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -26,7 +26,7 @@ import java.util.List;
  * {@link SnuggleInput} is parsed by {@link LaTeXTokeniser}.)
  * 
  * @author  David McKain
- * @version $Revision: 1.9 $
+ * @version $Revision$
  */
 @ObjectDumperOptions(DumpMode.DEEP)
 public final class ArgumentContainerToken extends Token implements Iterable<FlowToken> {

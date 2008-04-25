@@ -1,4 +1,4 @@
-/* $Id: ArrayListStack.java,v 1.1 2008/04/04 09:52:51 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -14,7 +14,7 @@ import java.util.EmptyStackException;
  * {@link java.util.Stack} whilst still being non-synchronized.
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ArrayListStack<E> extends ArrayList<E> {
     
