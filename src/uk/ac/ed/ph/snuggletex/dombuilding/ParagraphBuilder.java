@@ -1,0 +1,63 @@
+/* $Id: ParagraphBuilder.java,v 1.7 2008/04/18 09:44:05 dmckain Exp $
+ *
+ * Copyright 2008 University of Edinburgh.
+ * All Rights Reserved
+ */
+package uk.ac.ed.ph.snuggletex.dombuilding;
+
+import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
+import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+
+import java.util.List;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
+
+/**
+ * This builds the content of a (fixed) {@link GlobalBuiltins#PARAGRAPH} token.
+ * 
+ * @author  David McKain
+ * @version $Revision: 1.7 $
+ */
+public final class ParagraphBuilder implements CommandHandler {
+    
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
+            throws DOMException, SnuggleParseException {
+        buildParagraph(builder, parentElement, token.getArguments()[0].getContents());
+    }
+    
+    /**
+     * Builds a single paragraph, being careful to consider how best to represent it in the output
+     * tree at the existing position.
+     * 
+     * @param builder
+     * @param parentElement
+     * @param inlineContent
+     * @throws DOMException
+     * @throws SnuggleParseException
+     */
+    private void buildParagraph(DOMBuilder builder, Element parentElement, List<FlowToken> inlineContent)
+            throws DOMException, SnuggleParseException {
+        Element resultElement;
+        boolean isInline;
+        if (builder.isBuildingMathMLIsland(parentElement)) {
+            /* Paragraphs inside MathML are not allowed!
+             * 
+             * So we won't create an element. Instead, once building reaching the text content,
+             * it will be wrapped inside an <mtext/>
+             */
+            resultElement = parentElement;
+            isInline = true;
+        }
+        else {
+            resultElement = builder.appendXHTMLElement(parentElement, "p");
+            isInline = false;
+        }
+        
+        /* Handle content */
+        builder.handleTokens(resultElement, inlineContent, !isInline);
+    }
+}

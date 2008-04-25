@@ -1,0 +1,300 @@
+# Defines multiple-line tests
+#
+# Input format is:
+#
+# LaTeX (multiple lines)
+# ---- (divider)
+# Resulting set of Nodes, as many lines as required.
+# ==== (divider)
+#
+# Lines starting with '#' are documentation and are stripped out when running tests
+#
+##############################
+Hello
+
+There
+----
+<p>Hello</p>
+<p>There</p>
+====
+Hello
+
+There
+
+Again
+----
+<p>Hello</p>
+<p>There</p>
+<p>Again</p>
+====
+Hello
+
+\begin{itemize}
+\item A
+\item B
+\end{itemize}
+
+There
+----
+<p>Hello</p>
+<ul>
+  <li>A</li>
+  <li>B</li>
+</ul>
+<p>There</p>
+====
+# Comments mixed in with blank lines should not be treated as new paragraphs
+Hello
+
+%
+
+There
+----
+<p>Hello</p>
+<p>There</p>
+====
+# Similarly, macros which produce no output should have the same effect
+Hello
+
+\newcommand{\bob}{Hello}
+
+\bob
+----
+<p>Hello</p>
+<p>Hello</p>
+====
+## Test Whitespace in lists
+\begin{itemize}
+  \item A
+\end{itemize}
+----
+<ul>
+  <li>A</li>
+</ul>
+====
+# Test mixes of itemize and paragraphs
+\begin{itemize}
+
+\item
+  First Item
+
+  New Paragraph
+
+\item
+  Second Item
+
+
+\end{itemize}
+----
+<ul>
+  <li>
+    <p>First Item</p>
+    <p>New Paragraph</p>
+  </li>
+  <li>
+    Second Item
+  </li>
+</ul>
+====
+# Compact input gives compact output
+Hello
+----
+Hello
+====
+# Leading or trailing whitespace shouldn't trigger a pointless paragraph
+%
+
+
+Hello
+
+
+%
+----
+Hello
+====
+# Paragraphs inside mbox
+Hello \mbox{Hello
+
+There}
+----
+Hello <span class="mbox">Hello There</span>
+====
+# Multi-line bold font handling
+{\bf Hello
+
+There}
+----
+<div class="bf">
+  <p>Hello</p>
+  <p>There</p>
+</div>
+====
+# Tests spacing between 2 block elements
+\xmlBlockElement{urn}{qName}{Content}
+\xmlBlockElement{urn}{qName}{Content}
+----
+<qName xmlns="urn">Content</qName>
+<qName xmlns="urn">Content</qName>
+====
+# Tests spacing between 2 environments
+\begin{itemize} \item A\end{itemize}
+\begin{itemize} \item B\end{itemize}
+----
+<ul>
+  <li>A</li>
+</ul>
+<ul>
+  <li>B</li>
+</ul>
+====
+# Tests spacing between 2 user-defined block elements
+\newcommand{\bob}{\xmlBlockElement{urn}{qName}{Content}}
+
+\bob
+\bob
+----
+<qName xmlns="urn">Content</qName>
+<qName xmlns="urn">Content</qName>
+====
+# Tests additional spacing between 2 user-defined block elements
+\newcommand{\bob}{\xmlBlockElement{urn}{qName}{Content}}
+
+\bob
+
+\bob
+----
+<qName xmlns="urn">Content</qName>
+<qName xmlns="urn">Content</qName>
+====
+# Tests nested user-defined block elements
+\newcommand{\xml}[2]{\xmlBlockElement{urn}{#1}{#2}}
+\newcommand{\bob}{\xml{qName}{Content}}
+
+\bob
+\bob
+----
+<qName xmlns="urn">Content</qName>
+<qName xmlns="urn">Content</qName>
+====
+# From Aardvark
+\newcommand{\blockElement}[2][]{\xmlBlockElement[#1]{urn:aardvark}{a:#2}}
+\newcommand{\topic*}[1]{\blockElement{topic}{#1}}
+
+\topic*{Hello}
+
+----
+<a:topic xmlns:a="urn:aardvark">Hello</a:topic>
+====
+# Comment Test. LaTeX comments eat up the newline at the end of the line...
+White%
+Space
+----
+WhiteSpace
+====
+# Comment Test 2: ...they also eat up any following whitespace on the next line...
+White%
+   Space
+----
+WhiteSpace
+====
+# Comment Test 3: ...but not the line after
+White%
+  
+Space
+----
+<p>White</p>
+<p>Space</p>
+====
+# Breathing space test. When splitting up multi-line commands, we traditionally use
+# '%' at the end of a line to do a continuation that absorbs leading whitespace on
+# the next line. The following is an example of this.
+\newcommand{\bob}{%
+  \xmlBlockElement{urn}{qName}{Content}
+}
+
+\bob
+\bob
+----
+<qName xmlns="urn">Content</qName>
+<qName xmlns="urn">Content</qName>
+====
+## Horrible deep environment!
+\newenvironment{a}{\begin{itemize}}{\end{itemize}}
+\newenvironment{b}{\begin{a}}{\end{a}}
+\begin{b}
+  \item Hello!
+\end{b}
+----
+<ul>
+  <li>Hello!</li>
+</ul>
+====
+## This was added to test removal of first/last siblings when they're whitespace
+\newenvironment{columns}{\begin{xmlBlockElement}{}{columns}}{\end{xmlBlockElement}}
+\newenvironment{column}{\begin{xmlBlockElement}{}{column}}{\end{xmlBlockElement}}
+\begin{columns}
+  \begin{column}
+    Hello
+  \end{column}
+\end{columns}
+----
+<columns xmlns="">
+  <column>Hello</column>
+</columns>
+====
+## Regression test for a bug involving leading new paragraphs, related to whitespace handling
+\newenvironment{keypoint}{\begin{xmlBlockElement}{}{keypoint}}{\end{xmlBlockElement}}
+\begin{keypoint}
+
+The velocity
+\end{keypoint}
+----
+<keypoint xmlns="">The velocity</keypoint>
+====
+## It is useful to allow user-defined commands/environments which do nothing before first item in a list
+\newcommand{\vspace}[1]{}
+\begin{itemize}
+
+  \vspace{0.1cm}
+
+  \item A
+
+\end{itemize}
+----
+<ul>
+  <li>A</li>
+</ul>
+====
+\Huge
+This is some big huge text.
+
+New paragraph
+----
+<div class="Huge">
+  <p>This is some big huge text.</p>
+  <p>New paragraph</p>
+</div>
+====
+\Huge
+
+
+This is some big huge text.
+
+New paragraph
+----
+<div class="Huge">
+  <p>This is some big huge text.</p>
+  <p>New paragraph</p>
+</div>
+====
+## I haven't done much to support this in a nice way, but what we get by default is acceptable:
+\begin{center}
+Line 1\\
+Line 2\\
+\end{center}
+----
+<div class="center">
+Line 1<br/>
+&#x0a;Line 2<br/>
+</div>
+====

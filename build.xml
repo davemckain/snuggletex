@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================= -->
+<!-- Ant Build File for SnuggleTeX Project                                   -->
+<!--                                                                         -->
+<!-- $Id: build.xml 1 2008-03-10 17:01:01Z davemckain $                      -->
+<!-- ======================================================================= -->
+<project name="SnuggleTeX" default="webapp.war" basedir=".">
+
+  <!-- General Properties file defining the layout of the project -->
+  <property file="build.properties"/>
+
+  <!-- Defines version number properties -->
+  <property file="version.properties"/>
+
+  <!-- =================================================================== -->
+  <!-- Usual Ant initialisation target                                     -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <tstamp/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Prepares the build and generated source directories.                -->
+  <!-- =================================================================== -->
+  <target name="prepare.dirs" depends="init">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.lib.dir}"/>
+    <mkdir dir="${build.src.dir}"/>
+    <mkdir dir="${build.test.dir}"/>
+    <mkdir dir="${build.webapp.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Builds the main SnuggleTeX Java files                               -->
+  <!-- =================================================================== -->
+  <target name="build.src" depends="prepare.dirs">
+    <!-- Compile Java files -->
+    <javac destdir="${build.src.dir}"
+        source="1.5"
+        target="1.5"
+        deprecation="on">
+      <compilerarg value="-Xlint:all"/>
+      <src path="${src.dir}"/>
+    </javac>
+    <!-- Copy non-Java files -->
+    <copy todir="${build.src.dir}">
+      <fileset dir="${src.dir}">
+        <exclude name="**/*.java"/>
+      </fileset>
+      <filterset>
+        <filtersfile file="version.properties"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Builds the SnuggleTeX JAR                                           -->
+  <!-- =================================================================== -->
+  <target name="snuggletex.jar" depends="build.src" description="Builds SnuggleTeX JAR">
+    <jar destfile="${dist.dir}/snuggletex.jar" index="true">
+      <fileset dir="${build.src.dir}"/>
+    </jar>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Creates the default SnuggleTeX CSS                                  -->
+  <!-- =================================================================== -->
+  <target name="snuggletex.css" depends="build.src" description="Builds SnuggleTeX CSS">
+    <java classname="uk.ac.ed.ph.snuggletex.CSSUtilities">
+      <arg value="${dist.dir}/snuggletex.css"/>
+      <classpath path="${build.src.dir}"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Prepares 3rd party libraries, flattening the vendor/version         -->
+  <!-- hierarchy that we use to make it easier to reference them.          -->
+  <!-- =================================================================== -->
+  <target name="prepare.libs" depends="prepare.dirs">
+    <copy todir="${build.lib.dir}" flatten="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+        <exclude name="**/src.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- ClassPath for the Test Suite                                        -->
+  <!-- =================================================================== -->
+  <path id="test.libs.classpath">
+    <pathelement location="${build.lib.dir}/junit-4.4.jar"/>
+    <pathelement location="${build.lib.dir}/easymock.jar"/>
+  </path>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the Java test code                                         -->
+  <!-- =================================================================== -->
+  <target name="build.test" depends="prepare.libs, build.src">
+    <javac destdir="${build.test.dir}"
+        source="1.5"
+        target="1.5"
+        deprecation="on">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="test.libs.classpath"/>
+      <classpath path="${build.src.dir}"/>
+      <src path="${test.dir}"/>
+    </javac>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Runs the JUnit Test Suite                                           -->
+  <!-- =================================================================== -->
+  <target name="test" depends="build.test" description="Runs Test Suite">
+    <java classname="org.junit.runner.JUnitCore">
+      <arg value="uk.ac.ed.ph.snuggletex.SnuggleTeXTestSuite"/>
+      <classpath refid="test.libs.classpath"/>
+      <classpath path="${build.src.dir}"/>
+      <classpath path="${build.test.dir}"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Required libraries for compiling the demo webapp                    -->
+  <!-- =================================================================== -->
+  <path id="webapp.libs.classpath">
+    <pathelement location="${build.lib.dir}/servlet-api.jar"/>
+  </path>
+
+  <!-- =================================================================== -->
+  <!-- Builds the demo webapp hierarchy                                    -->
+  <!-- =================================================================== -->
+  <target name="build.webapp" depends="prepare.libs, build.src, snuggletex.jar">
+    <mkdir dir="${build.webapp.dir}/WEB-INF"/>
+    <mkdir dir="${build.webapp.dir}/WEB-INF/classes"/>
+    <!-- Compile webapp -->
+    <javac destdir="${build.webapp.dir}/WEB-INF/classes"
+        source="1.5"
+        target="1.5"
+        deprecation="on">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="webapp.libs.classpath"/>
+      <classpath path="${build.src.dir}"/>
+      <src path="${webapp.java.dir}"/>
+    </javac>
+    <!-- Copy in static files -->
+    <copy todir="${build.webapp.dir}">
+      <fileset dir="${webapp.dir}">
+        <exclude name="java/**"/>
+      </fileset>
+    </copy>
+    <!-- Add in snuggletex.jar -->
+    <copy todir="${build.webapp.dir}/WEB-INF/lib">
+      <fileset dir="${dist.dir}">
+        <include name="snuggletex.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Builds the demo webapp WAR, ready for deployment into a servlet     -->
+  <!-- container (e.g. Tomcat).                                            -->
+  <!-- =================================================================== -->
+  <target name="webapp.war" depends="build.webapp" description="Builds demo webapp WAR">
+    <jar destfile="${dist.dir}/snuggletex.war" basedir="${build.webapp.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Cleans up the build directories                                     -->
+  <!-- =================================================================== -->
+  <target name="clean" description="Cleans out build directories">
+    <delete dir="${build.dir}"/>
+  </target>
+
+</project>

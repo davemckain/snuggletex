@@ -1,0 +1,413 @@
+# Defines single-line math-related tests
+#
+# Input format is:
+#
+# LaTeX (interpreted inside $...$)
+# Resulting child content of MathML <math/> element
+# ==== (divider)
+#
+# Lines starting with '#' are documentation and are stripped out when running tests
+#
+###########################
+## Normal tests
+1
+<mn>1</mn>
+====
+-1
+<mn>-1</mn>
+====
+\alpha
+<mi>&#x3b1;</mi>
+=====
+1.6
+<mn>1.6</mn>
+====
+x
+<mi>x</mi>
+====
+-x
+<mo>-</mo><mi>x</mi>
+====
+1+x
+<mn>1</mn><mo>+</mo><mi>x</mi>
+====
+x = 3
+<mi>x</mi><mo>=</mo><mn>3</mn>
+====
+2x
+<mn>2</mn><mo>&#x2062;</mo><mi>x</mi>
+====
+\sin x
+<mi>sin</mi><mo>&#x2061;</mo><mi>x</mi>
+====
+2\alpha
+<mn>2</mn>
+<mo>&#x2062;</mo>
+<mi>&#x3b1;</mi>
+====
+2x+4
+<mrow>
+  <mn>2</mn>
+  <mo>&#x2062;</mo>
+  <mi>x</mi>
+</mrow>
+<mo>+</mo>
+<mn>4</mn>
+====
+2\alpha - \sin y + x
+<mrow>
+  <mn>2</mn>
+  <mo>&#x2062;</mo>
+  <mi>&#x3b1;</mi>
+</mrow>
+<mo>-</mo>
+<mrow>
+  <mi>sin</mi>
+  <mo>&#x2061;</mo>
+  <mi>y</mi>
+</mrow>
+<mo>+</mo>
+<mi>x</mi>
+====
+\frac{1}{2}
+<mfrac>
+  <mn>1</mn>
+  <mn>2</mn>
+</mfrac>
+====
+\frac{x+y}{2}
+<mfrac>
+  <mrow>
+    <mi>x</mi>
+    <mo>+</mo>
+    <mi>y</mi>
+  </mrow>
+  <mn>2</mn>
+</mfrac>
+====
+1 \over 2
+<mfrac>
+  <mn>1</mn>
+  <mn>2</mn>
+</mfrac>
+====
+1 \over 2 + x
+<mfrac>
+  <mn>1</mn>
+  <mrow>
+    <mn>2</mn>
+    <mo>+</mo>
+    <mi>x</mi>
+  </mrow>
+</mfrac>
+====
+\sqrt{x}
+<msqrt><mi>x</mi></msqrt>
+====
+\sqrt x
+<msqrt><mi>x</mi></msqrt>
+====
+\sqrt x y
+<msqrt><mi>x</mi></msqrt><mo>&#x2062;</mo><mi>y</mi>
+====
+\msup{x}{2}
+<msup>
+  <mi>x</mi>
+  <mn>2</mn>
+</msup>
+====
+x^2
+<msup>
+  <mi>x</mi>
+  <mn>2</mn>
+</msup>
+====
+x^2 + 1
+<msup>
+  <mi>x</mi>
+  <mn>2</mn>
+</msup>
+<mo>+</mo>
+<mn>1</mn>
+====
+\msub{a}{1}
+<msub>
+  <mi>a</mi>
+  <mn>1</mn>
+</msub>
+====
+a_1
+<msub>
+  <mi>a</mi>
+  <mn>1</mn>
+</msub>
+====
+a_{b_1}
+<msub>
+  <mi>a</mi>
+  <msub>
+    <mi>b</mi>
+    <mn>1</mn>
+  </msub>
+</msub>
+====
+\msubsup{x}{1}{2}
+<msubsup>
+  <mi>x</mi>
+  <mn>1</mn>
+  <mn>2</mn>
+</msubsup>
+====
+x_1^2
+<msubsup>
+  <mi>x</mi>
+  <mn>1</mn>
+  <mn>2</mn>
+</msubsup>
+====
+x^2_1
+<msubsup>
+  <mi>x</mi>
+  <mn>1</mn>
+  <mn>2</mn>
+</msubsup>
+====
+x^{2_1}
+<msup>
+  <mi>x</mi>
+  <msub>
+    <mn>2</mn>
+    <mn>1</mn>
+  </msub>
+</msup>
+====
+a\in A
+
+<mi>a</mi>
+<mo>&#x2208;</mo>
+<mi>A</mi>
+====
+a\not\in A
+<mi>a</mi>
+<mo>&#x2209;</mo>
+<mi>A</mi>
+====
+a\not \in A
+<mi>a</mi>
+<mo>&#x2209;</mo>
+<mi>A</mi>
+====
+(1,2,3]
+<mo>(</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mn>3</mn>
+<mo>]</mo>
+====
+(1,2,3)
+<mfenced open='(' close=')'>
+  <mn>1</mn>
+  <mn>2</mn>
+  <mn>3</mn>
+</mfenced>
+====
+\{1+x,2+y,3+z\}
+<mfenced open='{' close='}'>
+  <mrow>
+    <mn>1</mn>
+    <mo>+</mo>
+    <mi>x</mi>
+  </mrow>
+  <mrow>
+    <mn>2</mn>
+    <mo>+</mo>
+    <mi>y</mi>
+  </mrow>
+  <mrow>
+    <mn>3</mn>
+    <mo>+</mo>
+    <mi>z</mi>
+  </mrow>
+</mfenced>
+====
+((1,2),(3,4,5))
+<mfenced open='(' close=')'>
+  <mfenced open='(' close=')'>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mfenced>
+  <mfenced open='(' close=')'>
+    <mn>3</mn>
+    <mn>4</mn>
+    <mn>5</mn>
+  </mfenced>
+</mfenced>
+====
+\left( 1,2 \right]
+<mfenced open='(' close=']'>
+  <mn>1</mn>
+  <mn>2</mn>
+</mfenced>
+====
+\left\{ x \right\}
+<mfenced open='{' close='}'>
+  <mi>x</mi>
+</mfenced>
+====
+\left( (1,2) \right)
+<mfenced open='(' close=')'>
+  <mfenced open='(' close=')'>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mfenced>
+</mfenced>
+====
+\left( x, \left( x,2 \right) \right)
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+  <mfenced open='(' close=')'>
+    <mi>x</mi>
+    <mn>2</mn>
+  </mfenced>
+</mfenced>
+====
+\left[ x, \left\{ x,2 \right) \right)
+<mfenced open='[' close=')'>
+  <mi>x</mi>
+  <mfenced open='{' close=')'>
+    <mi>x</mi>
+    <mn>2</mn>
+  </mfenced>
+</mfenced>
+====
+\,
+<mspace width="0.167em"/>
+====
+\:
+<mspace width="0.222em"/>
+====
+\;
+<mspace width="0.278em"/>
+====
+\mbox{A}
+<mrow><mtext>A</mtext></mrow>
+====
+\mbox{\mbox{A}}
+<mrow><mrow><mtext>A</mtext></mrow></mrow>
+====
+\mbox{if $x=1$}
+<mrow><mtext>if </mtext><mrow><mi>x</mi><mo>=</mo><mn>1</mn></mrow></mrow>
+====
+\mbox{if $x\mbox{is}3$}
+<mrow>
+  <mtext>if </mtext>
+  <mrow>
+    <mi>x</mi>
+    <mo>&#x2062;</mo>
+    <mrow>
+      <mtext>is</mtext>
+    </mrow>
+    <mo>&#x2062;</mo>
+    <mn>3</mn>
+  </mrow>
+</mrow>
+====
+\mbox{A\par B}
+<mrow><mtext>A</mtext><mspace/><mtext>B</mtext></mrow>
+====
+########################
+# Tests various "empty" cases
+\mrow{}
+<mrow/>
+====
+\frac{}{}
+<mfrac><mrow/><mrow/></mfrac>
+====
+{}_{1}
+<msub><mrow/><mn>1</mn></msub>
+====
+{}_{}
+<msub><mrow/><mrow/></msub>
+====
+### This accent is safe for MathML
+\hat{a}
+<mi>&#xe2;</mi>
+====
+### This accent is assumed unsafe so is converted to an operator
+\hat{x}
+<mover accent="true"><mi>x</mi><mo>&#x302;</mo></mover>
+====
+### Composite accents are always done as operators
+\hat{ab}
+<mover accent="true"><mrow><mi>a</mi><mo>&#x2062;</mo><mi>b</mi></mrow><mo>&#x302;</mo></mover>
+====
+x'
+<msup><mi>x</mi><mi>'</mi></msup>
+====
+x'y'
+<msup><mi>x</mi><mi>'</mi></msup><mo>&#x2062;</mo><msup><mi>y</mi><mi>'</mi></msup>
+====
+v_{\mbox{\rm av}}
+<msub><mi>v</mi><mrow><mstyle mathvariant="normal"><mtext>av</mtext></mstyle></mrow></msub>
+====
+## The result here is probably not ideal, but I don't think it is worth worrying too much about
+1 \\ 2
+<mn>1</mn><mo>&#x2062;</mo><mtext>&#x0a;</mtext><mo>&#x2062;</mo><mn>2</mn>
+====
+## This one tests precedence of bracket groupings over powers.
+\left[x\right]^2
+<msup>
+  <mfenced open="[" close="]">
+    <mi>x</mi>
+  </mfenced>
+  <mn>2</mn>
+</msup>
+====
+## Precedence test
+\left[1\over 2\right]
+<mfenced open="[" close="]">
+  <mfrac>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mfrac>
+</mfenced>
+====
+## Test certain characters in Math mode
+\%
+<mi>%</mi>
+====
+\$
+<mi>$</mi>
+====
+\#
+<mi>#</mi>
+====
+\&
+<mi>&amp;</mi>
+====
+\_
+<mi>_</mi>
+====
+## Regression test: inferring fences on empty expressions caused an Exception before
+()
+<mfenced open="(" close=")"/>
+====
+\mathbf{A}
+<mstyle mathvariant="bold"><mi>A</mi></mstyle>
+====
+## Regression: can't do small-caps in Math mode so we just ignore this
+\mbox{\sc Hello}
+<mrow><mtext>Hello</mtext></mrow>
+====
+## We now support applying sub/super-scripts without an LHS, to be consistent with LaTeX
+^2
+<msup><mrow/><mn>2</mn></msup>
+====
+_2
+<msub><mrow/><mn>2</mn></msub>
+====
+_2^3
+<msubsup><mrow/><mn>2</mn><mn>3</mn></msubsup>
+====

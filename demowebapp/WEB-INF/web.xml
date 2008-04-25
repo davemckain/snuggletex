@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+
+Web Deployment Descriptor for the SnuggleTeX Demo Application
+
+FIXME: This is currently just a template for the real one!
+
+$Id: web.xml 2712 2008-03-10 17:01:01Z davemckain $
+
+-->
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>SnuggleTeX</display-name>
+  <description>SnuggleTeX Demo</description>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+  <!--
+  <servlet>
+    <description>
+      Converts SnuggleTeX content pages to XHTML + MathML
+    </description>
+    <servlet-name>ContentServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.ContentServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ContentServlet</servlet-name>
+    <url-pattern>/content/*</url-pattern>
+  </servlet-mapping>
+  -->
+
+</web-app>

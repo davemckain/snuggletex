@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/src" path="src"/>
+        <classpathentry kind="src" output="build/demowebapp/classes" path="demowebapp/java"/>
+	<classpathentry kind="src" output="build/test" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/junit/4.4/junit-4.4.jar" sourcepath="lib/junit/4.4/junit-4.4-src.zip"/>
+	<classpathentry kind="lib" path="lib/easymock/2.3/easymock.jar" sourcepath="lib/easymock/2.3/src.zip"/>
+	<classpathentry kind="lib" path="lib/servlet-api/2.4/servlet-api.jar"/>
+	<classpathentry kind="output" path="build/src"/>
+</classpath>
