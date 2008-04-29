@@ -86,6 +86,31 @@ public final class MessageFormatter {
         return result;
     }
     
+    public static Element formatErrorAsXHTML(Document ownerDocument, InputError error) {
+        Element result = ownerDocument.createElementNS(Globals.XHTML_NAMESPACE, "div");
+        result.setAttribute("class", "error");
+        
+        Element heading = ownerDocument.createElementNS(Globals.XHTML_NAMESPACE, "h2");
+        heading.appendChild(ownerDocument.createTextNode("SnuggleTeX Error (" + error.getErrorCode() + ")"));
+        
+        Element pre = ownerDocument.createElementNS(Globals.XHTML_NAMESPACE, "pre");
+        
+        /* Nicely format XML error content */
+        StringBuffer messageBuilder = new StringBuffer(getErrorMessage(error));
+        FrozenSlice errorSlice = error.getSlice();
+        if (errorSlice!=null) {
+            appendSliceContext(messageBuilder, errorSlice);
+        }
+        
+        /* Add message as child node */
+        pre.appendChild(ownerDocument.createTextNode(messageBuilder.toString()));
+        
+        /* That's it! */
+        result.appendChild(heading);
+        result.appendChild(pre);
+        return result;
+    }
+    
     public static void appendErrorAsString(StringBuffer messageBuilder, InputError error) {
         new MessageFormat(generalMessageBundle.getString("error_as_string")).format(new Object[] {
                 error.getErrorCode().toString(), /* Error code */
@@ -131,7 +156,7 @@ public final class MessageFormatter {
             new MessageFormat(generalMessageBundle.getString("input_context")).format(new Object[] {
                   location[0], /* Line */
                   location[1], /* Column */
-                  inputContext.getInput() /* Input description */
+                  inputContext.getInput().getIdentifier() /* Input description */
             }, messageBuilder, null);
         }
         if (source.substitutedSource!=null) {

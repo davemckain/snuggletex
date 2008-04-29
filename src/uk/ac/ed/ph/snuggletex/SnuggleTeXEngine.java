@@ -28,7 +28,11 @@ import java.util.List;
  *     documents and produce a DOM.
  *   </li>
  *   <li>
- *     Once configured, an instance of this class can be shared by multiple Threads.
+ *     Once configured, an instance of this Class can be shared by multiple Threads.
+ *   </li>
+ *   <li>
+ *     Don't let the usual connotations associated with the name of this Class worry you that
+ *     instantiating it is going to be expensive!
  *   </li>
  * </ul>
  *
@@ -37,10 +41,16 @@ import java.util.List;
  */
 public final class SnuggleTeXEngine {
     
+    /** List of all currently registered {@link DefinitionMap}s used by this Engine. */
     private final List<DefinitionMap> definitionMaps;
+    
+    private SessionConfiguration defaultSessionConfiguration;
+    private DOMBuilderOptions defaultDOMBuilderOptions;
+    private WebPageBuilderOptions defaultWebPageBuilderOptions;
   
     public SnuggleTeXEngine() {
         this.definitionMaps = new ArrayList<DefinitionMap>();
+        this.defaultSessionConfiguration = null;
         
         /* Add in global definitions */
         definitionMaps.add(GlobalBuiltins.getDefinitionMap());
@@ -50,13 +60,17 @@ public final class SnuggleTeXEngine {
         definitionMaps.add(definitionMap);
     }
     
+    //-------------------------------------------------
+    
     public SnuggleTeXSession createSession() {
-        return createSession(null);
+        return createSession(defaultSessionConfiguration);
     }
     
-    public SnuggleTeXSession createSession(SnuggleTeXConfiguration configuration) {
+    public SnuggleTeXSession createSession(SessionConfiguration configuration) {
         return new SnuggleTeXSession(this, configuration);
     }
+
+    //-------------------------------------------------
     
     public BuiltinCommand getCommandByTeXName(String texName) {
         BuiltinCommand result = null;
@@ -80,5 +94,32 @@ public final class SnuggleTeXEngine {
         return result;
     }
     
+    //-------------------------------------------------
+
+    public SessionConfiguration getDefaultSessionConfiguration() {
+        return defaultSessionConfiguration;
+    }
     
+    public void setDefaultSessionConfiguration(SessionConfiguration defaultSessionConfiguration) {
+        this.defaultSessionConfiguration = defaultSessionConfiguration;
+    }
+
+    
+    public DOMBuilderOptions getDefaultDOMBuilderOptions() {
+        return defaultDOMBuilderOptions;
+    }
+    
+    public void setDefaultDOMBuilderOptions(DOMBuilderOptions defaultDOMBuilderOptions) {
+        this.defaultDOMBuilderOptions = defaultDOMBuilderOptions;
+    }
+
+    
+    public WebPageBuilderOptions getDefaultWebPageBuilderOptions() {
+        return defaultWebPageBuilderOptions;
+    }
+
+    
+    public void setDefaultWebPageBuilderOptions(WebPageBuilderOptions defaultWebPageBuilderOptions) {
+        this.defaultWebPageBuilderOptions = defaultWebPageBuilderOptions;
+    }
 }

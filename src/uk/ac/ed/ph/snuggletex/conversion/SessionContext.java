@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXConfiguration;
+import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public interface SessionContext {
 
-    SnuggleTeXConfiguration getConfiguration();
+    SessionConfiguration getConfiguration();
 
     List<InputError> getErrors();
     

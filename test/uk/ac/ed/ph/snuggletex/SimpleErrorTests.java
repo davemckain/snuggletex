@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.SnuggleTeXConfiguration.ErrorOptions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 
 import java.util.Arrays;
@@ -54,9 +53,6 @@ public class SimpleErrorTests {
     
     @Test
     public void runTest() throws Throwable {
-        SnuggleTeXConfiguration configuration =  new SnuggleTeXConfiguration();
-        configuration.setErrorOptions(ErrorOptions.LIST_AND_XML_FULL);
-        
         /* Convert %n in input LaTeX to a newline (cheap hack for simple multi-line inputs!) */
         String inputLaTeXLines = inputLaTeX.replace("%n", "\n");
         

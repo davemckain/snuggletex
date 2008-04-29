@@ -30,7 +30,7 @@ public final class Snapshot {
 	final SnuggleTeXEngine engine;
 	
     /** Configuration for this session */
-	final SnuggleTeXConfiguration configuration;
+	final SessionConfiguration configuration;
     
     /** Errors accumulated during this session */
 	final List<InputError> errors;
@@ -43,7 +43,7 @@ public final class Snapshot {
     
 	final List<FlowToken> parsedTokens;
     
-    Snapshot(final SnuggleTeXEngine engine, final SnuggleTeXConfiguration configuration,
+    Snapshot(final SnuggleTeXEngine engine, final SessionConfiguration configuration,
     		final List<InputError> errors, final Map<String, UserDefinedCommand> userCommandMap,
     		final Map<String, UserDefinedEnvironment> userEnvironmentMap,
     		final List<FlowToken> parsedTokens) {

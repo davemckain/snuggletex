@@ -35,40 +35,76 @@ public final class SnuggleInput {
         READER;
     }
     
+    /** The "type" of input encapsulated by an instance of this class. */
     private final InputType type;
+    
+    /** 
+     * An "identifier" for this input. This is used when formulating error messages. Clients
+     * can use as they require - e.g. as a kind of System ID, URL or File name.
+     */
+    private String identifier;
+    
     private final String string;
     private final File file;
     private final InputStream inputStream;
     private final Reader reader;
     
     public SnuggleInput(final String string) {
-        this(InputType.STRING, string, null, null, null);
+        this(string, "\"" + string + "\"");
+    }
+    
+    public SnuggleInput(final String string, final String identifier) {
+        this(InputType.STRING, string, null, null, null, identifier);
     }
     
     public SnuggleInput(final File file) {
-        this(InputType.FILE, null, file, null, null);
+        this(file, file.getPath());
+    }
+    
+    public SnuggleInput(final File file, final String identifier) {
+        this(InputType.FILE, null, file, null, null, identifier);
     }
     
     public SnuggleInput(final InputStream inputStream) {
-        this(InputType.INPUT_STREAM, null, null, inputStream, null);
+        this(inputStream, "[Stream input @" + inputStream.hashCode() + "]");
+    }
+    
+    public SnuggleInput(final InputStream inputStream, final String identifier) {
+        this(InputType.INPUT_STREAM, null, null, inputStream, null, identifier);
     }
     
     public SnuggleInput(final Reader reader) {
-        this(InputType.READER, null, null, null, reader);
+        this(reader, "[Reader input @" + reader.hashCode() + "]");
+    }
+    
+    public SnuggleInput(final Reader reader, final String identifier) {
+        this(InputType.READER, null, null, null, reader, identifier);
     }
     
     private SnuggleInput(final InputType type, final String string, final File file,
-            final InputStream inputStream, final Reader reader) {
+            final InputStream inputStream, final Reader reader,
+            final String identifier) {
         this.type = type;
         this.string = string;
         this.file = file;
         this.inputStream = inputStream;
         this.reader = reader;
+        this.identifier = identifier;
     }
     
     public InputType getType() {
         return type;
     }
+    
+    
+    public String getIdentifier() {
+        return identifier;
+    }
+    
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
 
     public String getString() {
         return string;

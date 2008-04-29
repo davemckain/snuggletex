@@ -26,7 +26,7 @@ public final class SnuggleTeX {
         for (SnuggleInput input : inputs) {
             session.parseInput(input);
         }
-        session.buildDOM(targetRoot);
+        session.buildDOMSubtree(targetRoot);
         return session.getErrors();
     }
 }

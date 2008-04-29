@@ -11,7 +11,7 @@ import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectDumper;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXConfiguration;
+import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
@@ -88,8 +88,10 @@ abstract class AbstractGoodXMLTests {
          * have tests in different configurations. (This would be easier if configs could be
          * changed at run-time via LaTeX markup!)
          */
-        SnuggleTeXConfiguration configuration =  new SnuggleTeXConfiguration();
+        SessionConfiguration configuration =  new SessionConfiguration();
         configuration.setInferringMathStructure(true);
+        
+        DOMBuilderOptions domOptions = new DOMBuilderOptions();
         
         SessionContext context = new SnuggleTeXEngine().createSession(configuration);
         SnuggleInputReader inputReader = new SnuggleInputReader(context, new SnuggleInput(inputLaTeX));
@@ -118,7 +120,7 @@ abstract class AbstractGoodXMLTests {
             Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
             resultDocument.appendChild(rootElement);
             
-            DOMBuilder domBuilder = new DOMBuilder(resultDocument, context);
+            DOMBuilder domBuilder = new DOMBuilder(context, rootElement, domOptions);
             domBuilder.handleTokens(rootElement, outerToken, true);
                
             /* Make sure we have still got no errors */

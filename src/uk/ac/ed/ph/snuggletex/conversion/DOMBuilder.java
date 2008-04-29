@@ -6,12 +6,14 @@
 package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
+import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleTeX;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXConfiguration.ErrorOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
+import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
@@ -43,7 +45,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This takes a series of (fixed) {@link Token}s and builds a DOM tree branch from them.
+ * This takes a {@link List} of (fixed) {@link Token}s and builds a DOM tree branch from them.
+ * 
+ * <h2>Usage</h2>
+ * 
+ * Clients should not normally have to use this class directly -
+ * call {@link SnuggleTeXSession#buildDOMSubtree(Element, DOMBuilderOptions)} and friends.
+ * <p>
+ * An instance of this class is intended to be used once and then discarded.
+ * <p>
+ * This contains a number of callbacks that {@link CommandHandler}s and {@link EnvironmentHandler}s
+ * can use to do their magic.
  * 
  * @see TokenFixer
  * 
@@ -53,24 +65,39 @@ import org.w3c.dom.NodeList;
 public final class DOMBuilder {
     
     private final SessionContext sessionContext;
+    private final DOMBuilderOptions options;
     private final Document document;
-    
-    private Properties builtinInlineCSSProperties;
+    private final Element buildRootElement;
     private Properties currentInlineCSSProperties;
     
-    public DOMBuilder(final Document document, final SessionContext sessionContext) {
-        this.document = document;
+    public DOMBuilder(final SessionContext sessionContext, final Element buildRootElement,
+            final DOMBuilderOptions options) {
+        this.buildRootElement = buildRootElement;
+        this.document = buildRootElement.getOwnerDocument();
+        this.options = options!=null ? (DOMBuilderOptions) options.clone() : new DOMBuilderOptions();
         this.sessionContext = sessionContext;
-        this.builtinInlineCSSProperties = null;
         this.currentInlineCSSProperties = null;
     }
+    
+    //-------------------------------------------
+    // Entry points
+    
+    public void buildDOMSubtree(final List<FlowToken> fixedTokens)
+            throws DOMException, SnuggleParseException {
+        handleTokens(buildRootElement, fixedTokens, true);
+    }
+
+    //-------------------------------------------
+    // Callbacks
     
     public SessionContext getSessionContext() {
         return sessionContext;
     }
-
-    //-------------------------------------------
     
+    public DOMBuilderOptions getOptions() {
+        return options;
+    }
+
     /**
      * @param trimWhitespace removes leading whitespace from the first resulting Node if it is a Text Node and
      *   removes trailing whitespace from the last Node if it is a Text Node.
@@ -212,7 +239,7 @@ public final class DOMBuilder {
                 break;
             
             case COMMENT:
-                if (sessionContext.getConfiguration().isIncludingComments()) {
+                if (options.isIncludingComments()) {
                     SimpleToken commentToken = (SimpleToken) token;
                     Element commentElement = appendSnuggleElement(parentElement, "comment");
                     appendTextNode(commentElement, commentToken.getSlice().extract().toString(), true);
@@ -319,13 +346,12 @@ public final class DOMBuilder {
     }
     
     public Element appendMathMLElement(Element parentElement, String elementLocalName) {
-        String mathMLPrefix = sessionContext.getConfiguration().getMathMLPrefix();
         String qName;
-        if (mathMLPrefix==null || mathMLPrefix.length()==0) {
-            qName = elementLocalName;
+        if (options.isPrefixingMathML()) {
+            qName = options.getMathMLPrefix() + ":" + elementLocalName;
         }
         else {
-            qName = mathMLPrefix + ":" + elementLocalName;
+            qName = elementLocalName;
         }
         Element mathMLElement = document.createElementNS(Globals.MATHML_NAMESPACE, qName);
         parentElement.appendChild(mathMLElement);
@@ -411,7 +437,7 @@ public final class DOMBuilder {
     //-------------------------------------------
     
     public void applyCSSStyle(Element xhtmlElement, String cssClassName) {
-        if (sessionContext.getConfiguration().isInliningCSS()) {
+        if (options.isInliningCSS()) {
             /* Look for a 'localName.className' declaration in the properties file. If not
              * found, look up a generic '.className' declaration.
              */
@@ -433,22 +459,9 @@ public final class DOMBuilder {
     
     private Properties getCurrentInlineCSSProperties() {
         if (currentInlineCSSProperties==null) {
-            /* Nothing currently set. We'll see if client has supplied a Properties file, defaulting
-             * to the built-in one if not.
-             */
-            currentInlineCSSProperties = sessionContext.getConfiguration().getInlineCSSProperties();
-            if (currentInlineCSSProperties==null) {
-                currentInlineCSSProperties = getBuiltinInlineCSSProperties();
-            }
+            currentInlineCSSProperties = CSSUtilities.readInlineCSSProperties(options);
         }
         return currentInlineCSSProperties;
-    }
-    
-    private Properties getBuiltinInlineCSSProperties() {
-        if (builtinInlineCSSProperties==null) {
-            builtinInlineCSSProperties = CSSUtilities.readBuiltinInlineCSSProperties();
-        }
-        return builtinInlineCSSProperties;
     }
     
     //-------------------------------------------
@@ -510,13 +523,43 @@ public final class DOMBuilder {
         return appendErrorElement(parentElement, new ErrorToken(error, token.getLatexMode()));
     }
     
-    private Element appendErrorElement(Element parentElement, ErrorToken errorToken) {
-        ErrorOptions errorOptions = sessionContext.getConfiguration().getErrorOptions();
-        if (errorOptions==ErrorOptions.LIST_AND_XML_FULL || errorOptions==ErrorOptions.LIST_AND_XML_SHORT) {
-            Element errorElement = MessageFormatter.formatErrorAsXML(document,
-                    errorToken.getError(),
-                    errorOptions==ErrorOptions.LIST_AND_XML_FULL);
-            parentElement.appendChild(errorElement);
+    private Element appendErrorElement(final Element parentElement, final ErrorToken errorToken) {
+        ErrorOutputOptions errorOptions = options.getErrorOptions();
+        Element errorElement;
+        switch (errorOptions) {
+            case NO_OUTPUT:
+                /* Add nothing */
+                break;
+                
+            case XML_FULL:
+            case XML_SHORT:
+                /* Output XML at the current point in the DOM */
+                errorElement = MessageFormatter.formatErrorAsXML(document,
+                        errorToken.getError(),
+                        errorOptions==ErrorOutputOptions.XML_FULL);
+                parentElement.appendChild(errorElement);
+                
+            case XHTML:
+                /* If we're in the middle of a MathML island,
+                 * add a MathML <merror/> element at the current point */
+                if (isBuildingMathMLIsland(parentElement)) {
+                    Element merror = appendMathMLElement(parentElement, "merror");
+                    appendMathMLTextElement(merror, "mtext",
+                            errorToken.getError().getErrorCode().toString(), false);
+                }
+                
+                /* Output full XHTML fragment as a child of the nearest XHTML ancestor-or-self */
+                errorElement = MessageFormatter.formatErrorAsXHTML(document, errorToken.getError());
+                Element ancestorElement = parentElement;
+                Node ancestorNode;
+                while (!ancestorElement.getNamespaceURI().equals(Globals.XHTML_NAMESPACE)) {
+                    ancestorNode = parentElement.getParentNode();
+                    if (ancestorNode==null || ancestorNode.getNodeType()!=Node.ELEMENT_NODE) {
+                        throw new SnuggleLogicException("Could not find an XHTML ancestor to add error element to");
+                    }
+                    ancestorElement = (Element) ancestorNode;
+                }
+                ancestorElement.appendChild(errorElement);
         }
         return parentElement;
     }

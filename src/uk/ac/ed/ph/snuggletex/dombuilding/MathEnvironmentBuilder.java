@@ -36,7 +36,7 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
             if (environment==GlobalBuiltins.DISPLAYMATH) {
                 math.setAttribute("display", "block");
             }
-            if (builder.getSessionContext().getConfiguration().isAddingMathAnnotations()) {
+            if (builder.getOptions().isAddingMathAnnotations()) {
                 /* The structure here is <semantics>....<annotation-xml/></semantics> */
                 Element semantics = builder.appendMathMLElement(math, "semantics");
                 
