@@ -538,6 +538,7 @@ public final class DOMBuilder {
                         errorToken.getError(),
                         errorOptions==ErrorOutputOptions.XML_FULL);
                 parentElement.appendChild(errorElement);
+                break;
                 
             case XHTML:
                 /* If we're in the middle of a MathML island,
@@ -560,6 +561,10 @@ public final class DOMBuilder {
                     ancestorElement = (Element) ancestorNode;
                 }
                 ancestorElement.appendChild(errorElement);
+                break;
+                
+            default:
+                throw new SnuggleLogicException("Unexpected switch case " + errorOptions);
         }
         return parentElement;
     }
