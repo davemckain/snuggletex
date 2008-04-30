@@ -31,8 +31,10 @@ public final class AttributesMatcher implements IArgumentMatcher {
         Attributes actualAttrs = (Attributes) actual;
         
         /* Go through each attribute, comparing with an expected one. 
-         * We'll ignore 'xmlns' attributes. We succeed if there is the same
-         * number of successful matches as expected attributes.
+         * We'll ignore 'xmlns' attributes.
+         * 
+         * We succeed if there is a one-to-one correspondence between the non-xmlns attributes
+         * in the list of expected attributes with those in the actual attributes.
          * 
          * Since there's no order here, we need to compare both ways
          */
@@ -41,10 +43,13 @@ public final class AttributesMatcher implements IArgumentMatcher {
         int actualSize = actualAttrs.getLength();
         int expectedMatchCount = 0;
         int actualMatchCount = 0;
+        int expectedNonXmlnsCount = 0;
+        int actualNonXmlnsCount = 0;
         for (expectedIndex=0; expectedIndex<expectedSize; expectedIndex++) {
             if (expectedAttrs.getQName(expectedIndex).startsWith("xmlns")) {
                 continue;
             }
+            expectedNonXmlnsCount++;
             for (actualIndex=0; actualIndex<actualSize; actualIndex++) {
                 if (actualAttrs.getQName(actualIndex).equals(expectedAttrs.getQName(expectedIndex))
                         && actualAttrs.getLocalName(actualIndex).equals(expectedAttrs.getLocalName(expectedIndex))
@@ -59,6 +64,7 @@ public final class AttributesMatcher implements IArgumentMatcher {
             if (actualAttrs.getQName(actualIndex).startsWith("xmlns")) {
                 continue;
             }
+            actualNonXmlnsCount++;
             for (expectedIndex=0; expectedIndex<expectedSize; expectedIndex++) {
                 if (actualAttrs.getQName(actualIndex).equals(expectedAttrs.getQName(expectedIndex))
                         && actualAttrs.getLocalName(actualIndex).equals(expectedAttrs.getLocalName(expectedIndex))
@@ -69,7 +75,9 @@ public final class AttributesMatcher implements IArgumentMatcher {
                 }
             }
         }
-        return expectedMatchCount==actualMatchCount;
+        return expectedMatchCount==actualMatchCount
+            && expectedMatchCount==expectedNonXmlnsCount
+            && expectedNonXmlnsCount==actualNonXmlnsCount;
     }
     
     public void appendTo(StringBuffer buffer) {
