@@ -147,7 +147,7 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
         return cssStylesheetURLs;
     }
     
-    public void setCSSStylesheetURL(String... cssStylesheetURLs) {
+    public void setCSSStylesheetURLs(String... cssStylesheetURLs) {
         this.cssStylesheetURLs = cssStylesheetURLs;
     }
     
