@@ -137,7 +137,7 @@ public final class GlobalBuiltins {
         /* Traditional LaTeX commands */
         PAR = map.addSimpleCommand("par", TEXT_MODE_ONLY, null, null); /* (This is substituted during fixing) */
         map.addSimpleCommand("newline", ALL_MODES, new LineBreakHandler(), null);
-        VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, null, null);
+        VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, new VerbatimBuilder(), null);
         ITEM = map.addSimpleCommand("item", PARA_MODE_ONLY, new ListEnvironmentBuilder(), null);
 
         /* Tree version of a paragraph. The {@link TokenFixer} will create these, removing any

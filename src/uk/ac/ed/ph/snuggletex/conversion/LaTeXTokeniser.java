@@ -787,7 +787,7 @@ public final class LaTeXTokeniser {
             /* Internal only! */
             result = handleUserDefinedEnvironmentControl(afterCommandNameIndex);
         }
-        else if (commandName.equals("verb")) {
+        else if (commandName.equals(GlobalBuiltins.VERB.getTeXName())) {
             result = readVerbToken();
         }
         else {
@@ -830,13 +830,16 @@ public final class LaTeXTokeniser {
             return createError(ErrorCode.TTEV01, position, lineEndIndex+1);
         }
 
-        /* That's it - convert raw text to an environment */
+        /* That's it - convert raw text to a command */
         FrozenSlice verbatimSlice = workingDocument.freezeSlice(position, endDelimitIndex+1);
         FrozenSlice verbatimContentSlice = workingDocument.freezeSlice(afterStartDelimitIndex, endDelimitIndex);
         SimpleToken verbatimContentToken = new SimpleToken(verbatimContentSlice,
                 TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, TextFlowContext.ALLOW_INLINE);
-        return new EnvironmentToken(verbatimSlice, currentModeState.latexMode, GlobalBuiltins.VERBATIM,
-                ArgumentContainerToken.createFromSingleToken(LaTeXMode.VERBATIM, verbatimContentToken));
+        return new CommandToken(verbatimSlice, currentModeState.latexMode, GlobalBuiltins.VERB,
+                null,
+                new ArgumentContainerToken[] {
+                    ArgumentContainerToken.createFromSingleToken(LaTeXMode.VERBATIM, verbatimContentToken)
+                });
     }
     
     /**
@@ -1106,8 +1109,8 @@ public final class LaTeXTokeniser {
             /* Now handle optional argument, if provided */
             c = workingDocument.charAt(position);
             if (c=='[') {
-                position++; /* Advance to just after the '[' ... */
                 int openBracketIndex = position; /* And record this position as we're going to move on */
+                position++; /* Advance to just after the '[' ... */
                 
                 /* Go out and tokenise from this point onwards until the end of the ']' */
                 argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT, "]", argumentMode);
@@ -1147,8 +1150,8 @@ public final class LaTeXTokeniser {
             /* Now look for this required argument */
             c = workingDocument.charAt(position);
             if (c=='{') {
-                position++; /* Skip over open brace... */
                 int openBracketIndex = position; /* and record position before we move on */
+                position++; /* Skip over open brace... */
                 
                 /* Go out and tokenise from this point onwards until the end of the '}' */
                 argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT, "}", argumentMode);

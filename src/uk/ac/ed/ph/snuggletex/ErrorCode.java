@@ -69,8 +69,8 @@ public enum ErrorCode {
     TTEUE4(),
     
     /* Fixing errors */
-    TFEL00(),
     TFEG00(),
+    TFEL00(),
     TFEM00(),
     TFEM01(),
     TFEM02(),
@@ -87,6 +87,9 @@ public enum ErrorCode {
     TDETA0(),
     TDETA1(),
     TDETA2(),
+    TDETB0(),
+    TDETB1(),
+    TDETB2(),
     
     ;
 }

@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
+import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
@@ -436,24 +437,39 @@ public final class DOMBuilder {
     
     //-------------------------------------------
     
-    public void applyCSSStyle(Element xhtmlElement, String cssClassName) {
+    public void applyCSSStyle(Element xhtmlElement, String... cssClassNames) {
         if (options.isInliningCSS()) {
-            /* Look for a 'localName.className' declaration in the properties file. If not
-             * found, look up a generic '.className' declaration.
+            /* We'll go through each requested class in order and pull in the appropriate CSS styles.
+             * NOTE: We're not going to try to eliminate any duplicates here!
              */
             Properties inlineCSSProperties = getCurrentInlineCSSProperties();
-            String property = inlineCSSProperties.getProperty(xhtmlElement.getLocalName() + "." + cssClassName);
-            if (property==null) {
-                property = inlineCSSProperties.getProperty("." + cssClassName);
+            StringBuilder styleBuilder = new StringBuilder();
+            String property;
+            boolean needsSemiColon = false;
+            for (String cssClassName : cssClassNames) {
+                /* Look for a 'localName.className' declaration in the properties file. If not
+                 * found, look up a generic '.className' declaration.
+                 */
+                property = inlineCSSProperties.getProperty(xhtmlElement.getLocalName() + "." + cssClassName);
+                if (property==null) {
+                    property = inlineCSSProperties.getProperty("." + cssClassName);
+                }
+                if (needsSemiColon) {
+                    styleBuilder.append("; ");
+                }
+                property = property.trim();
+                styleBuilder.append(property);
+                needsSemiColon = property.endsWith(";");
             }
-            /* If we found a declaration, set style attribute accordingly. Otherwise, we'll ignore. */
-            if (property!=null) {
-                xhtmlElement.setAttribute("style", property);
+
+            /* If we found declarations, set style attribute accordingly. Otherwise, we'll ignore. */
+            if (styleBuilder.length()>0) {
+                xhtmlElement.setAttribute("style", styleBuilder.toString());
             }
         }
         else {
             /* Just set 'class' attribute */
-            xhtmlElement.setAttribute("class", cssClassName);
+            xhtmlElement.setAttribute("class", StringUtilities.join(cssClassNames, " "));
         }
     }
     

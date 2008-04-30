@@ -197,6 +197,15 @@ TDETA1
 \'{b}
 TDETA2
 ====
+\begin{tabular}{c} 1 & 2 \end{tabular}
+TDETB0
+====
+\begin{tabular}{cx} 1 \end{tabular}
+TDETB1
+====
+\begin{tabular}{} \end{tabular}
+TDETB2
+====
 ###################################################################
 ## Extra error examples... add new and interesting cases here when found
 $}

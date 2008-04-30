@@ -270,7 +270,7 @@ This is some big huge text.
 
 New paragraph
 ----
-<div class="Huge">
+<div class="huge2">
   <p>This is some big huge text.</p>
   <p>New paragraph</p>
 </div>
@@ -282,7 +282,7 @@ This is some big huge text.
 
 New paragraph
 ----
-<div class="Huge">
+<div class="huge2">
   <p>This is some big huge text.</p>
   <p>New paragraph</p>
 </div>
@@ -298,3 +298,21 @@ Line 1<br/>
 &#x0a;Line 2<br/>
 </div>
 ====
+## Fancy table 1
+\begin{tabular}{|r|l|}
+ 1 & 2 \\
+ 3 & 4
+\end{tabular}
+----
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-right left-border">1</td>
+      <td class="tabular align-left left-border right-border">2</td>
+    </tr>
+    <tr>
+      <td class="tabular align-right left-border">3</td>
+      <td class="tabular align-left left-border right-border">4</td>
+    </tr>
+  </tbody>
+</table>

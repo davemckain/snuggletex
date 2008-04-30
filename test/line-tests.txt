@@ -93,19 +93,19 @@ Empty $ $ Maths
 Empty <math xmlns="http://www.w3.org/1998/Math/MathML"/> Maths
 ====
 \verb|x|
-<pre>x</pre>
+<tt class="verb">x</tt>
 ====
 This is \verb|x| some verbatim
-<p>This is</p><pre>x</pre><p>some verbatim</p>
+This is <tt class="verb">x</tt> some verbatim
 ====
 This is \verb'verbatim!'
-This is <pre>verbatim!</pre>
+This is <tt class="verb">verbatim!</tt>
 ====
 \begin{verbatim}This is verbatim\end{verbatim}
-<pre>This is verbatim</pre>
+<pre class="verbatim">This is verbatim</pre>
 ====
 \begin{verbatim} This is verbatim \end{verbatim}?
-<pre> This is verbatim </pre>?
+<pre class="verbatim"> This is verbatim </pre>?
 ====
 This is\,thin space
 This is&#x2009;thin space
@@ -209,13 +209,35 @@ CHelloD
 &#xe0;a
 ====
 \begin{tabular}{cc} & \end{tabular}
-<table><tbody><tr><td/><td/></tr></tbody></table>
+<table class="tabular"><tbody><tr><td class="tabular align-center"/><td class="tabular align-center"/></tr></tbody></table>
 ====
 \begin{tabular}{cc} 1 & 2 \\ 3 & 4 \end{tabular}
-<table><tbody><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-center">1</td>
+      <td class="tabular align-center">2</td>
+    </tr>
+    <tr>
+      <td class="tabular align-center">3</td>
+      <td class="tabular align-center">4</td>
+    </tr>
+  </tbody>
+</table>
 ====
-\begin{tabular}{cc} 1 & 2 \\ 1 \end{tabular}
-<table><tbody><tr><td>1</td><td>2</td></tr><tr><td>1</td><td/></tr></tbody></table>
+\begin{tabular}{cc} 1 & 2 \\ 3 \end{tabular}
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-center">1</td>
+      <td class="tabular align-center">2</td>
+    </tr>
+    <tr>
+      <td class="tabular align-center">3</td>
+      <td class="tabular align-center"></td>
+    </tr>
+  </tbody>
+</table>
 ====
 \begin{xmlBlockElement}{urn}{p:name}Hello\end{xmlBlockElement}
 <p:name xmlns:p='urn'>Hello</p:name>
@@ -251,7 +273,7 @@ $1 + \xmlInlineElement{urn}{p:filter}{x}$
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>a</mi></math>
 ====
 \[ a \]
-<math xdisplaystyle="true" xmlns="http://www.w3.org/1998/Math/MathML"><mi>a</mi></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mi>a</mi></math>
 ====
 \newcommand{\bob}[1]{\xmlInlineElement{urn}{p:filter}{#1}}$1 + \bob{x}$
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mn>1</mn><mo>+</mo><p:filter xmlns:p='urn'><mi>x</mi></p:filter></math>
@@ -366,7 +388,7 @@ x
 <span class="fbox">Hello</span>
 ====
 \Huge This is \small small
-<span class="Huge">This is <span class="small">small</span></span>
+<span class="huge2">This is <span class="small">small</span></span>
 ====
 \textrm{Hello}
 <span class="rm">Hello</span>
