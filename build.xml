@@ -38,6 +38,7 @@
   <target name="build.src" depends="prepare.dirs">
     <!-- Compile Java files -->
     <javac destdir="${build.src.dir}"
+        debug="true"
         source="1.5"
         target="1.5"
         deprecation="on">
@@ -100,6 +101,7 @@
   <!-- =================================================================== -->
   <target name="build.test" depends="prepare.libs, build.src">
     <javac destdir="${build.test.dir}"
+        debug="true"
         source="1.5"
         target="1.5"
         deprecation="on">
@@ -108,17 +110,23 @@
       <classpath path="${build.src.dir}"/>
       <src path="${test.dir}"/>
     </javac>
+    <!-- Copy non-Java files -->
+    <copy todir="${build.test.dir}">
+      <fileset dir="${test.dir}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
   </target>
 
   <!-- =================================================================== -->
   <!-- Runs the JUnit Test Suite                                           -->
   <!-- =================================================================== -->
   <target name="test" depends="build.test" description="Runs Test Suite">
-    <java classname="org.junit.runner.JUnitCore">
+    <java classname="org.junit.runner.JUnitCore" fork="yes">
       <arg value="uk.ac.ed.ph.snuggletex.SnuggleTeXTestSuite"/>
       <classpath refid="test.libs.classpath"/>
-      <classpath path="${build.src.dir}"/>
       <classpath path="${build.test.dir}"/>
+      <classpath path="${build.src.dir}"/>
     </java>
   </target>
 
@@ -132,11 +140,12 @@
   <!-- =================================================================== -->
   <!-- Builds the demo webapp hierarchy                                    -->
   <!-- =================================================================== -->
-  <target name="build.webapp" depends="prepare.libs, build.src, snuggletex.jar">
+  <target name="build.webapp" depends="prepare.libs, build.src, snuggletex.jar, snuggletex.css">
     <mkdir dir="${build.webapp.dir}/WEB-INF"/>
     <mkdir dir="${build.webapp.dir}/WEB-INF/classes"/>
     <!-- Compile webapp -->
     <javac destdir="${build.webapp.dir}/WEB-INF/classes"
+        debug="true"
         source="1.5"
         target="1.5"
         deprecation="on">
@@ -157,6 +166,8 @@
         <include name="snuggletex.jar"/>
       </fileset>
     </copy>
+    <!-- Merge in CSS -->
+    <copy todir="${build.webapp.dir}/includes" file="${dist.dir}/snuggletex.css"/>
   </target>
 
   <!-- =================================================================== -->
