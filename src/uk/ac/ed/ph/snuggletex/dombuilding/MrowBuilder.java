@@ -13,7 +13,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Builds MathML <tt>mrow</tt>s.
  *
  * @author  David McKain
  * @version $Revision$

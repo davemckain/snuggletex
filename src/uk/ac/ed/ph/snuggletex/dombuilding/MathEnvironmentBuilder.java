@@ -15,7 +15,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Builds LaTeX math environments. Note that this might be inside an mbox inside
+ * an existing math environment.
  * 
  * @author  David McKain
  * @version $Revision$

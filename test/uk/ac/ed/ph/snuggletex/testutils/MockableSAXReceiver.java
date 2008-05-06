@@ -6,9 +6,16 @@
 package uk.ac.ed.ph.snuggletex.testutils;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 
 /**
- * FIXME: Document this type!
+ * Altered version of the standard SAX {@link ContentHandler} interface that simplifies
+ * the interface for handling text Nodes by assuming that incoming text (and whitespace)
+ * is coalesced.
+ * <p>
+ * This makes construction of mock Objects easier.
+ * 
+ * @see EasyMockContentHandler
  *
  * @author  David McKain
  * @version $Revision$

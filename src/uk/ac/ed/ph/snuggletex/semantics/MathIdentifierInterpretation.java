@@ -8,10 +8,12 @@ package uk.ac.ed.ph.snuggletex.semantics;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 
 /**
+ * Semantic interpretation for a mathematical identifier.
+ * 
  * @author  David McKain
  * @version $Revision$
  */
-public class MathIdentifierInterpretation implements MathInterpretation {
+public final class MathIdentifierInterpretation implements MathInterpretation {
     
     private final String name;
     

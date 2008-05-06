@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.definitions;
 
 /**
- * FIXME: Document this type!
+ * Base interface for LaTeX commands, i.e. things entered in the form <tt>\\command</tt>.
  *
  * @author  David McKain
  * @version $Revision$

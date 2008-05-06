@@ -8,6 +8,8 @@ package uk.ac.ed.ph.snuggletex.semantics;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 
 /**
+ * Represents a Mathematical operator.
+ * 
  * @author  David McKain
  * @version $Revision$
  */

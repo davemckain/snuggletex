@@ -6,7 +6,8 @@
 package uk.ac.ed.ph.snuggletex.definitions;
 
 /**
- * FIXME: Document this type!
+ * Base interface for LaTeX environment, i.e. constructs defined like
+ * <tt>\\begin{environment} ... \\end{environment}</tt>.
  *
  * @author  David McKain
  * @version $Revision$

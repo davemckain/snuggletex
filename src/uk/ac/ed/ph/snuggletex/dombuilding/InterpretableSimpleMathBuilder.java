@@ -12,7 +12,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * This builder calls back directly to the {@link DOMBuilder} to handle mathematical
+ * tokens with certain types of simple semantic interpretations.
  *
  * @author  David McKain
  * @version $Revision$

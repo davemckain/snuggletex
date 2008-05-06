@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 /**
- * FIXME: Document this type!
+ * Builds custom inline XML elements.
  *
  * @author  David McKain
  * @version $Revision$

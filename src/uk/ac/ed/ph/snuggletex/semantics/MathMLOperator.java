@@ -10,7 +10,7 @@ import static uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType.POSTF
 import static uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType.PREFIX;
 
 /**
- * FIXME: Document this type!
+ * Enumerates the various MathML operators.
  * 
  * @author David McKain
  * @version $Revision$

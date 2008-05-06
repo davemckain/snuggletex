@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.semantics;
 
 /**
- * FIXME: Document this type!
+ * Base for math-specified semantic interpretations.
  * 
  * @author  David McKain
  * @version $Revision$

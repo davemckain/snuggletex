@@ -12,6 +12,8 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 
 /**
+ * Represents a {@link BuiltinEnvironment}.
+ * 
  * @author  David McKain
  * @version $Revision$
  */

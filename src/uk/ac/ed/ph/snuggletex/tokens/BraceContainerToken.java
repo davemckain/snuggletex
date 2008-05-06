@@ -9,7 +9,10 @@ import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 
 /**
- * FIXME: Document this type!
+ * Represents a literal braced section the incoming LaTeX document, i.e. something like
+ * <tt>{ ... }</tt>.
+ * <p>
+ * Its content is represented by a single {@link ArgumentContainerToken}.
  *
  * @author  David McKain
  * @version $Revision$

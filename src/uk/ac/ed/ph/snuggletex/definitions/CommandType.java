@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.definitions;
 
 /**
- * FIXME: Document this type!
+ * Enumerates different types of LaTeX commands.
  * 
  * @author  David McKain
  * @version $Revision$

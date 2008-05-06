@@ -16,7 +16,8 @@ import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Document;
 
 /**
- * FIXME: Document this type!
+ * Set of multiple line tests, defined in <tt>{@link #TEST_RESOURCE_NAME}</tt>. See this file
+ * for examples of how it all works.
  * 
  * @author  David McKain
  * @version $Revision$

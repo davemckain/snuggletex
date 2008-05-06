@@ -20,10 +20,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
- * 
- * TODO: This should also be able to do mathematical constructs by generating <mtable/> and friends
- * instead of <table/>
+ * Handles the <tt>eqnarray*</tt> environment.
  * 
  * @author  David McKain
  * @version $Revision$

@@ -14,16 +14,18 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Handles complex Math commands (i.e. ones taking arguments) that map very easily onto
+ * MathML elements where each argument becomes a child element of the resulting MathML
+ * container.
  *
  * @author  David McKain
  * @version $Revision$
  */
-public class MathComplexCommandBuilder implements CommandHandler {
+public final class MathComplexCommandBuilder implements CommandHandler {
     
     private final String elementName;
     
-    public MathComplexCommandBuilder(String elementName) {
+    public MathComplexCommandBuilder(final String elementName) {
         this.elementName = elementName;
     }
     

@@ -16,7 +16,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Document;
 
 /**
- * FIXME: Document this type!
+ * Set of simple tests that read in data from <tt>{@link #TEST_RESOURCE_NAME}</tt>.
+ * These all take one input line, parse and compare with XML, which
+ * may be specified on multiple input lines for convenience.
  * 
  * @author  David McKain
  * @version $Revision$

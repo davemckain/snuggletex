@@ -22,7 +22,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 /**
- * FIXME: Document this type!
+ * Tests the {@link DefinitionMap} class.
  *
  * @author  David McKain
  * @version $Revision$

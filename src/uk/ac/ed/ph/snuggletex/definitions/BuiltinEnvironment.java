@@ -11,7 +11,10 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import java.util.EnumSet;
 
 /**
- * Enumerates the core LaTeX environments
+ * Defines a built-in LaTeX environment, as specified within a {@link DefinitionMap}.
+ * 
+ * @see BuiltinCommand
+ * @see GlobalBuiltins
  * 
  * @author  David McKain
  * @version $Revision$

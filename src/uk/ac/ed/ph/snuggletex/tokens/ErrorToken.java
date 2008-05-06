@@ -10,7 +10,7 @@ import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 
 /**
- * Special token encapsulating an error in parsing.
+ * Special token encapsulating a client error in parsing.
  *
  * @author  David McKain
  * @version $Revision$

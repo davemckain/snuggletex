@@ -20,7 +20,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * FIXME: Document this type!
+ * Set of simple maths-based tests that read their data in from <tt>{@link #TEST_RESOURCE_NAME}</tt>.
+ * The input is a single line of LaTeX which will be put into <tt>$...$</tt> and parsed
+ * then compared with the given multi-line XML. The enclosing <tt>math</tt> element is
+ * automatically added to the XML for convenience. See the sample file for examples.
  * 
  * @author  David McKain
  * @version $Revision$

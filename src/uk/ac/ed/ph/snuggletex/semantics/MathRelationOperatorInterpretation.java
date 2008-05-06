@@ -8,6 +8,8 @@ package uk.ac.ed.ph.snuggletex.semantics;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 
 /**
+ * Represents a mathematical relation operator.
+ * 
  * FIXME: This extends {@link MathOperatorInterpretation}, but has a different {@link InterpretationType}
  * which makes checking for operators a bit weird.
  * 

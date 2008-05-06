@@ -23,7 +23,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Handles fenced MathML operators, specified via <tt>\\left</tt> and <tt>\\right</tt> or
+ * via inferred fencing of brackets.
  *
  * @author  David McKain
  * @version $Revision$

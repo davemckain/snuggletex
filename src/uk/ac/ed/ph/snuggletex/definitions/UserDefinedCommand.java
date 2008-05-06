@@ -9,8 +9,11 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 
 /**
- * FIXME: Document this type!
- *
+ * Represents a user-defined {@link Command}, i.e. one defined in the client data using
+ * <tt>\\newcommand</tt>.
+ * 
+ * @see UserDefinedEnvironment
+ * 
  * @author  David McKain
  * @version $Revision$
  */

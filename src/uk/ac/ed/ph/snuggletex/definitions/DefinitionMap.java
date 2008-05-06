@@ -17,7 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FIXME: Document this type!
+ * Defines a set of built-in commands and environments.
+ * 
+ * @see BuiltinCommand
+ * @see BuiltinEnvironment
  *
  * @author  David McKain
  * @version $Revision$

@@ -5,25 +5,22 @@
  */
 package uk.ac.ed.ph.snuggletex.tokens;
 
-import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
-import uk.ac.ed.ph.aardvark.commons.util.ObjectDumperOptions;
-import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
-import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
-import uk.ac.ed.ph.snuggletex.definitions.Command;
-import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
+import uk.ac.ed.ph.aardvark.commons.util.ObjectDumperOptions;
+import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
+import uk.ac.ed.ph.snuggletex.definitions.Command;
+import uk.ac.ed.ph.snuggletex.definitions.Environment;
+import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+
 /**
  * This token is used as a container for the arguments specified for a particular
- * {@link Command} or {@link EnvironmentToken}.
- * <p>
- * (It is also used as a container for all of the {@link FlowToken}s that result when a
- * {@link SnuggleInput} is parsed by {@link LaTeXTokeniser}.)
+ * {@link Command} or {@link Environment}, along with regions of input that have
+ * been enclosed in braces.
  * 
  * @author  David McKain
  * @version $Revision$

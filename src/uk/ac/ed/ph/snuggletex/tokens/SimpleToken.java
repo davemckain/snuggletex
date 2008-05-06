@@ -11,7 +11,10 @@ import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 
 /**
- * FIXME: Document this!
+ * Represents a "simple" LaTeX token. See {@link TokenType} for
+ * the sorts of things this covers.
+ * 
+ * @see TokenType
  * 
  * @author  David McKain
  * @version $Revision$

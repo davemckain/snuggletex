@@ -14,7 +14,12 @@ import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import java.util.EnumSet;
 
 /**
- * FIXME: Document this type!
+ * Represents a {@link Command} that has been defined internally via a {@link DefinitionMap}.
+ * <p>
+ * All of the core LaTeX macros have been defined in this way - see {@link GlobalBuiltins}.
+ * 
+ * @see BuiltinEnvironment
+ * @see GlobalBuiltins
  * 
  * @author  David McKain
  * @version $Revision$

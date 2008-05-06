@@ -5,13 +5,18 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
+import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FIXME: Document this type!
+ * Represents the "working view" of the current {@link SnuggleInput} document. This is
+ * slightly non-trivial in that user-defined command and environments generally work as
+ * simple text substitutions, so the state of the document changes during tokenisation.
+ * However, we also need to be able to keep track of where each character in the document
+ * comes from so as to enable decent error reporting. hence the complexity within here.
  *
  * @author  David McKain
  * @version $Revision$
@@ -90,7 +95,9 @@ public final class WorkingDocument {
     }
 
     /**
-     * FIXME: Document this type!
+     * Represents a contiguous portion of the document hat comes from the same {@link CharacterSource}.
+     * During parsing, {@link Slice}s will be broken up to create new Slices whenever user-defined
+     * commands and environments are substituted.
      */
     public static final class Slice {
         public final int startIndex;
@@ -113,7 +120,8 @@ public final class WorkingDocument {
     }
     
     /**
-     * FIXME: Document this type!
+     * Holds information about how a particular index in the document is resolved against the {@link Slice}
+     * in which it is contained.
      *
      * @author  David McKain
      * @version $Revision$

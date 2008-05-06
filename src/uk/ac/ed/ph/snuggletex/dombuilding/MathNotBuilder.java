@@ -13,7 +13,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Handles the <tt>\\not</tt> combiner command.
  *
  * @author  David McKain
  * @version $Revision$

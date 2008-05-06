@@ -9,7 +9,10 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 
 /**
- * FIXME: Document this type!
+ * Represents a user-defined environment, created by clients using the
+ * <tt>\\newenvironment</tt> command.
+ * 
+ * @see UserDefinedCommand
  *
  * @author  David McKain
  * @version $Revision$

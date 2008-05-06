@@ -11,7 +11,7 @@ import uk.ac.ed.ph.snuggletex.definitions.CommandType;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 
 /**
- * FIXME: Document this type!
+ * This token represents a LaTeX {@link BuiltinCommand}.
  * 
  * @author  David McKain
  * @version $Revision$

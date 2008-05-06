@@ -26,7 +26,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Set of tests defined in <tt>{@link #TEST_RESOURCE_NAME}</tt> that take single line
+ * inputs in the hope of generating errors. These are then compared against the
+ * specified list of errors. See the input file for examples.
  *
  * @author  David McKain
  * @version $Revision$

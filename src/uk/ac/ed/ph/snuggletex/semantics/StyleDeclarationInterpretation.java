@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.semantics;
 
 /**
- * FIXME: Document this type;
+ * Represents styled text.
  * 
  * @author  David McKain
  * @version $Revision$

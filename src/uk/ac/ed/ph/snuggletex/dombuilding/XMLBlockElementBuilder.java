@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 /**
- * FIXME: Document this type!
+ * Builds custom block XML elements.
  *
  * @author  David McKain
  * @version $Revision$

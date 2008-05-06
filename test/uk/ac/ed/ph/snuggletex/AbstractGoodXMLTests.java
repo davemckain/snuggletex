@@ -47,7 +47,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 /**
- * FIXME: Document this type!
+ * Base for tests which take LaTeX input, parse it and compare the resulting XML
+ * against the specified output.
  * 
  * @author  David McKain
  * @version $Revision$

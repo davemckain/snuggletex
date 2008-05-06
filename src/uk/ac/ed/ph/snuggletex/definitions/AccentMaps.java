@@ -6,9 +6,12 @@
 package uk.ac.ed.ph.snuggletex.definitions;
 
 /**
- * FIXME: Document this type!
+ * Defines all of the {@link AccentMap}s for the various types of accents we support.
  * 
- * FIXME: Fill in more examples and stuff!!
+ * <h2>Developer Note</h2>
+ * 
+ * Add more entries to here as required, subject to the resulting accented characters
+ * having adequate font support across the targetted browsers.
  *
  * @author  David McKain
  * @version $Revision$

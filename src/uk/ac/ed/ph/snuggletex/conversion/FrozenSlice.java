@@ -5,8 +5,21 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
+import uk.ac.ed.ph.snuggletex.tokens.Token;
+
 /**
- * FIXME: Document this type!
+ * Represents a finished "segment" of text in the {@link WorkingDocument}. This
+ * represents the document after ALL text substitutions have been made so ought
+ * to be considered as representing a fixed block of text.
+ * <p>
+ * This is used to represent the block of text each parsed {@link Token} refers
+ * to.
+ * 
+ * <h2>Developer Note</h2>
+ * 
+ * At one point in {@link LaTeXTokeniser}, it is technically possible to have a
+ * {@link FrozenSlice} which may refer to text which could change, but this
+ * phenomenon is temporary.
  *
  * @author  David McKain
  * @version $Revision$

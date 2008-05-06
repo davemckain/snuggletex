@@ -6,7 +6,8 @@
 package uk.ac.ed.ph.snuggletex.definitions;
 
 /**
- * FIXME: Document this type!
+ * Map defines how unaccented alphabetic characters should map to corresponding
+ * Unicode characters when a particular type of accent is applied (e.g. circumflex).
  *
  * @author  David McKain
  * @version $Revision$

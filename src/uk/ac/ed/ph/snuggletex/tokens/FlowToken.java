@@ -21,14 +21,15 @@ public abstract class FlowToken extends Token {
     
     protected final TextFlowContext textFlowContext;
 
-    public FlowToken(FrozenSlice slice, TokenType type, LaTeXMode latexMode,
-            Interpretation interpretation, TextFlowContext textFlowContext) {
-        super(slice, type, latexMode, interpretation);
+    public FlowToken(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,
+    		final TextFlowContext textFlowContext) {
+        super(slice, type, latexMode);
         this.textFlowContext = textFlowContext;
     }
-
-    public FlowToken(FrozenSlice slice, TokenType type, LaTeXMode latexMode, TextFlowContext textFlowContext) {
-        super(slice, type, latexMode);
+    
+    public FlowToken(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,
+            final Interpretation interpretation, final TextFlowContext textFlowContext) {
+        super(slice, type, latexMode, interpretation);
         this.textFlowContext = textFlowContext;
     }
     

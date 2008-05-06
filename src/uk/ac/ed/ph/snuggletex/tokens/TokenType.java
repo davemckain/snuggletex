@@ -6,6 +6,12 @@
 package uk.ac.ed.ph.snuggletex.tokens;
 
 /**
+ * Enumerates the various types of LaTeX tokens.
+ * 
+ * <h2>Developer Note</h2>
+ * 
+ * The less complex types of tokens are described as {@link SimpleToken}s here.
+ * 
  * @author  David McKain
  * @version $Revision$
  */
