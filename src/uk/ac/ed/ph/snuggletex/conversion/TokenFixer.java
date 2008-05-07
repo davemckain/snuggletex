@@ -518,6 +518,10 @@ public final class TokenFixer {
                 /* Whitespace token - we'll ignore this */
                 continue;
             }
+            else if (token.getType()==TokenType.COMMENT) {
+                /* We'll strip comments as trying to keep them around makes life far too complicated */
+                continue;
+            }
             else if (token.getType()==TokenType.TAB_CHARACTER) {
                 /* Ends the column being built. This may be null (e.g. '& &') so we need to consider
                  * that case carefully.

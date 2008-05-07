@@ -338,3 +338,19 @@ Line 1<br/>
   </tbody>
 </table>
 ====
+## Comments inside tabulars need to be handled correctly
+\begin{tabular}{|r|l|}
+ \hline \\
+ 1 & 2 \\ %Blah
+ \hline %Blah
+\end{tabular}
+----
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-right left-border top-border bottom-border">1</td>
+      <td class="tabular align-left left-border right-border top-border bottom-border">2</td>
+    </tr>
+  </tbody>
+</table>
+====
