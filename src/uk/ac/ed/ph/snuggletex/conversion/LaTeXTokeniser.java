@@ -1953,7 +1953,7 @@ public final class LaTeXTokeniser {
                 index++;
                 return index;
             }
-            else if (c=='\\') {
+            else if (!inEscape && c=='\\') {
                 /* Start of an escape */
                 inEscape = true;
             }
@@ -1984,7 +1984,7 @@ public final class LaTeXTokeniser {
         int c;
         for (index=openBraceIndex; index<workingDocument.length(); index++) {
             c = workingDocument.charAt(index);
-            if (c=='\\') {
+            if (!inEscape && c=='\\') {
                 /* Start of an escape */
                 inEscape = true;
             }
