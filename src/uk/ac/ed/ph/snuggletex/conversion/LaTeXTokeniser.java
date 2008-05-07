@@ -1158,8 +1158,8 @@ public final class LaTeXTokeniser {
                 requiredArgumentSlices[i] = workingDocument.freezeSlice(openBracketIndex, position);
                 requiredArguments[i] = new ArgumentContainerToken(requiredArgumentSlices[i], argumentMode, argumentResult.tokens);
             }
-            else if (c!=-1 && i==0 && argCount==1 && optionalArgument==null) {
-                /* Special case listed above: 1 argument as a single token with no braces.
+            else if (c!=-1 && i==0 && argCount==1 && optionalArgument==null && commandOrEnvironment instanceof Command) {
+                /* Special case listed above: command with 1 argument as a single token with no braces.
                  * Temporarily change LaTeX mode to that of the argument, pull in the next
                  * token and revert the mode to what we had initially.
                  */
@@ -1167,9 +1167,15 @@ public final class LaTeXTokeniser {
                 currentModeState.latexMode = argumentMode;
                 FlowToken nextToken = readNextToken();
                 currentModeState.latexMode = currentLaTeXMode;
-                
-                requiredArguments[i] = ArgumentContainerToken.createFromSingleToken(argumentMode, nextToken);
-                requiredArgumentSlices[i] = requiredArguments[i].getSlice();
+                if (nextToken!=null) {
+                    requiredArguments[i] = ArgumentContainerToken.createFromSingleToken(argumentMode, nextToken);
+                    requiredArgumentSlices[i] = requiredArguments[i].getSlice();
+                }
+                else {
+                    /* Error: Missing first (and only) argument. */
+                    return createError(ErrorCode.TTEC02, startCommandIndex, position,
+                            commandOrEnvironment.getTeXName(), Integer.valueOf(1));
+                }
             }
             else {
                 /* Error: Missing '#n' argument (where n=i+1).

@@ -267,3 +267,7 @@ TTEG04
 $\mbox^$
 TTEM03
 ====
+## Regression: This was causing an NPE
+${\mathrm}{x}$
+TTEC02,TTEG00,TTEG00
+====
