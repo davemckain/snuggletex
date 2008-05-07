@@ -162,6 +162,16 @@ public final class GlobalBuiltins {
         TABLE_ROW = map.addComplexCommandSameArgMode("<tr>", false, 1, ALL_MODES, null, null);
         TABLE_COLUMN = map.addComplexCommandSameArgMode("<td>", false, 1, ALL_MODES, null, null);
         
+        /* We'll support the usual LaTeX sectioning commands...
+         * 
+         * TODO: Decide whether to support traditional LaTeX labelling or not.
+         * TODO: Decide whether to support traditional LaTeX numbering or not.
+         */
+        map.addComplexCommandOneArg("section", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h2"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("section*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h2"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
+        
         /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
         APPLY_FUNCTION = map.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
         INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new MathOperatorInterpretation(MathMLOperator.INVISIBLE_TIMES));
