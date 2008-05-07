@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
  * It also handles the <tt>\\hline</tt> command.
  * 
  * TODO: This is legal inside $\mbox{...}$ so needs to output MathML in this case. Eeek!!!
- * TODO: No support for \hline, \vline and friends!!!
+ * TODO: No support for \vline and friends!!!
  * 
  * @author  David McKain
  * @version $Revision$
