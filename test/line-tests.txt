@@ -211,6 +211,14 @@ CHelloD
 \begin{tabular}{cc} & \end{tabular}
 <table class="tabular"><tbody><tr><td class="tabular align-center"/><td class="tabular align-center"/></tr></tbody></table>
 ====
+\begin{tabular}{cc} & \\ & \end{tabular}
+<table class="tabular">
+  <tbody>
+    <tr><td class="tabular align-center"/><td class="tabular align-center"/></tr>
+    <tr><td class="tabular align-center"/><td class="tabular align-center"/></tr>
+  </tbody>
+</table>
+====
 \begin{tabular}{cc} 1 & 2 \\ 3 & 4 \end{tabular}
 <table class="tabular">
   <tbody>

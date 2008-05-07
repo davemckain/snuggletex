@@ -81,6 +81,7 @@ public final class GlobalBuiltins {
     public static BuiltinCommand TABLE_COLUMN;
     public static BuiltinCommand TABLE_ROW;
     public static BuiltinCommand VERB;
+    public static BuiltinCommand HLINE;
     public static BuiltinCommand XML_ATTR;
 
     public static BuiltinEnvironment DISPLAYMATH;
@@ -146,20 +147,20 @@ public final class GlobalBuiltins {
          * I am not allowing this to be directly input, as this makes processing a bit easier
          * since it avoids the possibility of nested paragraphs.
          */
-        PARAGRAPH = map.addComplexCommandSameArgMode(null, false, 1, TEXT_MODE_ONLY, new ParagraphBuilder(), START_NEW_XHTML_BLOCK);
+        PARAGRAPH = map.addComplexCommandSameArgMode("<paragraph>", false, 1, TEXT_MODE_ONLY, new ParagraphBuilder(), START_NEW_XHTML_BLOCK);
         
         /* Tree version of standard \item. Any \items are converted to these during token fixing.
          * I'm not allowing this to be directly input, which makes list handling a bit easier.
          */
-        LIST_ITEM = map.addComplexCommandSameArgMode(null, false, 1, PARA_MODE_ONLY, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
+        LIST_ITEM = map.addComplexCommandSameArgMode("<list item>", false, 1, PARA_MODE_ONLY, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
         
         /* Tree-like placeholders for specifying columns and rows in environments such as 'tabular'.
          * We don't allow to be inputed as the containment requirements can make it awkward to ensure
          * that the input is valid. These tokens are produced during the fixing process and make it
          * easier to handle the table content further down the line.
          */
-        TABLE_ROW = map.addComplexCommandSameArgMode(null, false, 1, ALL_MODES, null, null);
-        TABLE_COLUMN = map.addComplexCommandSameArgMode(null, false, 1, ALL_MODES, null, null);
+        TABLE_ROW = map.addComplexCommandSameArgMode("<tr>", false, 1, ALL_MODES, null, null);
+        TABLE_COLUMN = map.addComplexCommandSameArgMode("<td>", false, 1, ALL_MODES, null, null);
         
         /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
         APPLY_FUNCTION = map.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
@@ -521,6 +522,9 @@ public final class GlobalBuiltins {
         /* Complex multi-mode macros */
         map.addComplexCommandOneArg("mbox", false, ALL_MODES, LR, new BoxBuilder("mbox"), null);
         map.addComplexCommandOneArg("fbox", false, ALL_MODES, LR, new BoxBuilder("fbox"), null);
+        
+        /* Table stuff */
+        HLINE = map.addSimpleCommand("hline", ALL_MODES, new TabularBuilder(), IGNORE);
         
         /* Commands for creating user-defined commands and environments */
         NEWCOMMAND = map.addComplexCommandSameArgMode("newcommand", false, 1, ALL_MODES, new DoNothingHandler(), IGNORE);

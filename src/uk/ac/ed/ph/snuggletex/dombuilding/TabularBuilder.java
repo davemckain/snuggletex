@@ -14,16 +14,18 @@ import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
+import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.tokens.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
  * Handles the (rather complex) <tt>tabular</tt> environment.
+ * It also handles the <tt>\\hline</tt> command.
  * 
  * TODO: This is legal inside $\mbox{...}$ so needs to output MathML in this case. Eeek!!!
  * TODO: No support for \hline, \vline and friends!!!
@@ -31,10 +33,23 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class TabularBuilder implements EnvironmentHandler {
+public final class TabularBuilder implements CommandHandler, EnvironmentHandler {
+
+    /**
+     * The command matched here is <tt>\\hline</tt>.
+     * <p>
+     * This case will have been dealt with explicitly by the tabular environment when
+     * used correctly so, if we end up here, then client has made a boo-boo. 
+     */
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
+            throws SnuggleParseException {
+        /* Error: \hline (or similar) outside a table) */
+        builder.appendOrThrowError(parentElement, token, ErrorCode.TDETB3,
+                token.getCommand().getTeXName());
+    }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
         int[] geometry = computeTableDimensions(token.getContent());
         int numColumns = geometry[1];
@@ -117,37 +132,88 @@ public final class TabularBuilder implements EnvironmentHandler {
                     Integer.valueOf(columnClasses.size()), Integer.valueOf(numColumns));
         }
 
-        /* Build XHTML */
+        /* Build XHTML table */
         Element tableElement = builder.appendXHTMLElement(parentElement, "table");
         builder.applyCSSStyle(tableElement, "tabular");
         
         Element tbodyElement = builder.appendXHTMLElement(tableElement, "tbody");
         Element trElement, tdElement;
+        List<String> tdClasses = new ArrayList<String>(3); /* (We should only need 3 classes at the mo!) */
         int columnIndex, columnsInRow;
-        for (FlowToken rowToken : token.getContent()) {
-            trElement = builder.appendXHTMLElement(tbodyElement, "tr");
-            List<FlowToken> columns = ((CommandToken) rowToken).getArguments()[0].getContents();
-            columnsInRow = columns.size();
-            
-            /* Create a cell for each entry. Note that some entries may be empty if nothing
-             * has been specified for them and not all with have corresponding column specs.
-             */
-            for (columnIndex=0; columnIndex<numColumns; columnIndex++) {
-                tdElement = builder.appendXHTMLElement(trElement, "td");
-                
-                List<String> tdClasses = new ArrayList<String>();
-                tdClasses.add("tabular");
-                if (columnIndex<columnClasses.size()) {
-                    tdClasses.addAll(columnClasses.get(columnIndex));
+        int rowIndex;
+        FlowToken rowToken;
+        List<FlowToken> tableContents = token.getContent().getContents();
+        boolean topBorderFlag = false;
+        boolean bottomBorderFlag = false;
+        
+        /* We'll iterate over each "row", which might include \\hline's which are not real rows */
+        for (rowIndex=0; rowIndex<tableContents.size(); rowIndex++) {
+            rowToken = tableContents.get(rowIndex);
+            if (rowToken.isCommand(GlobalBuiltins.HLINE)) {
+                /* If we've got an \\hline, flag it to be added as a top border for the next proper row */
+                topBorderFlag = true;
+                continue;
+            }
+            else if (rowToken.isCommand(GlobalBuiltins.TABLE_ROW)) {
+                /* This is a proper table row. Let's see if all of the remaining "rows" are
+                 * \\hline and, if they are, add a bottom border.
+                 */
+                bottomBorderFlag = false;
+                for (int i=rowIndex+1; i<tableContents.size(); i++) {
+                    if (tableContents.get(i).isCommand(GlobalBuiltins.HLINE)) {
+                        bottomBorderFlag = true;
+                    }
+                    else {
+                        bottomBorderFlag = false;
+                        break;
+                    }
                 }
-                builder.applyCSSStyle(tdElement, tdClasses.toArray(new String[tdClasses.size()]));
-                if (columnIndex<columnsInRow) {
-                    builder.handleTokens(tdElement, ((CommandToken) columns.get(columnIndex)).getArguments()[0].getContents(), true);
+                /* Now build the row */
+                List<FlowToken> columns = ((CommandToken) rowToken).getArguments()[0].getContents();
+                trElement = builder.appendXHTMLElement(tbodyElement, "tr");
+                columnsInRow = columns.size();
+                
+                /* Create a cell for each entry. Note that some entries may be empty if nothing
+                 * has been specified for them and not all with have corresponding column specs.
+                 */
+                for (columnIndex=0; columnIndex<numColumns; columnIndex++) {
+                    tdElement = builder.appendXHTMLElement(trElement, "td");
+                    tdClasses.clear();
+                    tdClasses.add("tabular");
+                    if (columnIndex<columnClasses.size()) {
+                        tdClasses.addAll(columnClasses.get(columnIndex));
+                    }
+                    if (topBorderFlag) {
+                        tdClasses.add("top-border");
+                    }
+                    if (bottomBorderFlag) {
+                        tdClasses.add("bottom-border");
+                    }
+                    builder.applyCSSStyle(tdElement, tdClasses.toArray(new String[tdClasses.size()]));
+                    if (columnIndex<columnsInRow) {
+                        builder.handleTokens(tdElement, ((CommandToken) columns.get(columnIndex)).getArguments()[0].getContents(), true);
+                    }
+                }
+                topBorderFlag = false;
+                if (bottomBorderFlag) {
+                    /* That was the last proper row, so stop iterating now */
+                    break;
                 }
             }
+            else if (rowToken.getType()==TokenType.ERROR) {
+                trElement = builder.appendXHTMLElement(tbodyElement, "tr");
+                tdElement = builder.appendXHTMLElement(trElement, "td");
+                builder.appendErrorElement(tdElement, (ErrorToken) rowToken);
+            }
+            else {
+                throw new SnuggleLogicException("Expected table contents to be \\hline or table rows");
+            }
         }
+        /* NOTE: topBorderFlag might be true here, in which case we had a table containing an \\hline
+         * but no proper rows. LaTeX just ignores this so we'll do the same!
+         */
     }
-     
+    
     /**
      * Computes the dimensions of the table by looking at its content.
      * 
@@ -160,7 +226,10 @@ public final class TabularBuilder implements EnvironmentHandler {
         int rowCount = 0;
         int colCountWithinRow = 0;
         for (FlowToken contentToken : tableContent) {
-            if (contentToken.isCommand(GlobalBuiltins.TABLE_ROW)) {
+            if (contentToken.isCommand(GlobalBuiltins.HLINE) || contentToken.getType()==TokenType.ERROR) {
+                continue;
+            }
+            else if (contentToken.isCommand(GlobalBuiltins.TABLE_ROW)) {
                 rowCount++;
                 colCountWithinRow = 0;
                 CommandToken rowToken = (CommandToken) contentToken;

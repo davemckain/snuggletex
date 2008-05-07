@@ -170,6 +170,9 @@ TFEM03
 $\left($
 TFEM04
 ====
+\begin{tabular}{c} Hello \hline \end{tabular}
+TFETB0
+====
 &
 TDEG00
 ====

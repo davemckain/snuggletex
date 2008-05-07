@@ -48,6 +48,19 @@ public final class DefinitionMap {
     
     //-------------------------------------------------------
     
+    /**
+     * Tests whether the name of a command or environment is "inputable". Ones which cannot be
+     * directly input are enclosed in angle brackets. These commands are created during token
+     * fixing.
+     * 
+     * @param texName
+     */
+    public static boolean isInputableTeXName(final String texName) {
+        return texName!=null && !(texName.charAt(0)=='<' && texName.length()>3 && texName.endsWith(">"));
+    }
+    
+    //-------------------------------------------------------
+    
     public BuiltinCommand addSimpleCommand(final String name, final EnumSet<LaTeXMode> allowedModes,
             final CommandHandler nodeBuilder, final TextFlowContext context) {
         return addCommand(new BuiltinCommand(name, CommandType.SIMPLE, false, 0,
@@ -124,11 +137,13 @@ public final class DefinitionMap {
     }
     
     private BuiltinCommand addCommand(final BuiltinCommand command) {
-        if (command.getTeXName()!=null) {
+        if (isInputableTeXName(command.getTeXName())) {
             builtinCommandMap.put(command.getTeXName(), command);
         }
         return command;
     }
+    
+
     
     public BuiltinEnvironment addEnvironment(final String name, final EnumSet<LaTeXMode> allowedModes,
             final LaTeXMode contentMode, final Interpretation interpretation,
@@ -146,7 +161,7 @@ public final class DefinitionMap {
     }
     
     private BuiltinEnvironment addEnvironment(final BuiltinEnvironment environment) {
-        if (environment.getTeXName()!=null) {
+        if (isInputableTeXName(environment.getTeXName())) {
             builtinEnvironmentMap.put(environment.getTeXName(), environment);
         }
         return environment;

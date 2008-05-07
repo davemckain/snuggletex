@@ -316,3 +316,25 @@ Line 1<br/>
     </tr>
   </tbody>
 </table>
+====
+## Fancy table 2
+\begin{tabular}{|r|l|}
+ 1 & 2 \\
+ \hline \\
+ 3 & 4 \\
+ \hline
+\end{tabular}
+----
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-right left-border">1</td>
+      <td class="tabular align-left left-border right-border">2</td>
+    </tr>
+    <tr>
+      <td class="tabular align-right left-border top-border bottom-border">3</td>
+      <td class="tabular align-left left-border right-border top-border bottom-border">4</td>
+    </tr>
+  </tbody>
+</table>
+====

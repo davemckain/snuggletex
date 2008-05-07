@@ -5,10 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
@@ -35,6 +31,10 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.tokens.SimpleToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
 import uk.ac.ed.ph.snuggletex.tokens.TokenType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * This takes the output from {@link LaTeXTokeniser} and performs simplifications and
@@ -107,7 +107,6 @@ public final class TokenFixer {
         }
     }
 
-    
     private void visitEnvironment(EnvironmentToken environmentToken) throws SnuggleParseException {
         /* We may do special handling for certain environments */
         BuiltinEnvironment environment = environmentToken.getEnvironment();
@@ -465,38 +464,80 @@ public final class TokenFixer {
      * zero or more {@link GlobalBuiltins#TABLE_ROW} each containing zero or more
      * {@link GlobalBuiltins#TABLE_COLUMN}.
      */
-    private void fixTabularEnvironmentContent(EnvironmentToken environmentToken) {
+    private void fixTabularEnvironmentContent(EnvironmentToken environmentToken)
+            throws SnuggleParseException {
         List<FlowToken> resultBuilder = new ArrayList<FlowToken>();
         List<CommandToken> rowBuilder = new ArrayList<CommandToken>();
         List<FlowToken> columnBuilder = new ArrayList<FlowToken>();
         List<FlowToken> contents = environmentToken.getContent().getContents();
         
+        /* It's easier to process things if we explicitly add a final explicit "end row"
+         * token to the environment contents if there's not one there already as it simplifies
+         * the end of row processing. We'll cheat and use 'null' to signify this rather than
+         * create a fake token.
+         */
+        List<FlowToken> entries = contents;
+        if (entries.size()>1 && !entries.get(entries.size()-1).isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
+            entries = new ArrayList<FlowToken>(entries);
+            entries.add(null);
+        }
+        
         /* Go through contents, building up rows and columns */
         FlowToken token;
-        for (int i=0, size=contents.size(); i<size; i++) {
-            token = contents.get(i);
-            if (token.getType()==TokenType.TAB_CHARACTER) {
+        FlowToken hlineToken = null;
+        for (int i=0, size=entries.size(); i<size; i++) {
+            token = entries.get(i);
+            if (token==null || token.isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
+                /* End of a row (see above). */
+                if (hlineToken!=null) {
+                    /* This row contains \\hline. This must be only token in the row. */
+                    if (!columnBuilder.isEmpty()) {
+                        /* Error: \\hline must be on its own within a row */
+                        resultBuilder.add(createError(columnBuilder.get(0), ErrorCode.TFETB0));
+                    }
+                    else if (!rowBuilder.isEmpty()) {
+                        /* Error: \\hline must be on its own within a row */
+                        resultBuilder.add(createError(rowBuilder.get(0), ErrorCode.TFETB0));
+                    }
+                    /* Add \\hline to result as a "row" */
+                    resultBuilder.add(hlineToken);
+                    
+                    /* Reset for next row */
+                    hlineToken = null;
+                }
+                else {
+                    /* This is a normal row. First, finish off the last column (which may be
+                     * completely empty but should always exist) */
+                    rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
+                    
+                    /* Then add row */
+                    resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_ROW, rowBuilder));
+                }
+            }
+            else if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()) {
+                /* Whitespace token - we'll ignore this */
+                continue;
+            }
+            else if (token.getType()==TokenType.TAB_CHARACTER) {
                 /* Ends the column being built. This may be null (e.g. '& &') so we need to consider
                  * that case carefully.
                  */
                 rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
             }
-            else if (token.isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
-                /* Ends a row. Make sure last column completes first. */
-                if (!columnBuilder.isEmpty()) {
-                    rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
+            else if (token.isCommand(GlobalBuiltins.HLINE)) {
+                /* \\hline must be the only token in a row. */
+                if (hlineToken!=null) {
+                    /* Error: Only one \\hline per row */
+                    resultBuilder.add(createError(columnBuilder.get(0), ErrorCode.TFETB0));
                 }
-                resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_ROW, rowBuilder));
+                else {
+                    hlineToken = token;
+                }
             }
             else {
+                /* Add to current column */
                 columnBuilder.add(token);
             }
-        }
-        /* At end, finish off last row and column. We assume that the presence of a '&' always
-         * starts a new column, which may be empty. */
-        rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
-        if (!rowBuilder.isEmpty()) {
-            resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_ROW, rowBuilder));
         }
         /* Replace content */
         contents.clear();

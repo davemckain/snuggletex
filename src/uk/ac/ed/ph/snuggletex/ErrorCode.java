@@ -76,6 +76,7 @@ public enum ErrorCode {
     TFEM02(),
     TFEM03(),
     TFEM04(),
+    TFETB0(),
     
     /* DOM Building errors */
     TDEG00(),
@@ -90,6 +91,7 @@ public enum ErrorCode {
     TDETB0(),
     TDETB1(),
     TDETB2(),
+    TDETB3(),
     
     ;
 }

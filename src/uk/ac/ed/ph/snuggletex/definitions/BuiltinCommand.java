@@ -151,6 +151,9 @@ public final class BuiltinCommand implements Command {
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + texName + ")";
+        return getClass().getSimpleName()
+            + "("
+            + (texName!=null ? texName : "@" + Integer.toHexString(hashCode()))
+            + ")";
     }
 }
