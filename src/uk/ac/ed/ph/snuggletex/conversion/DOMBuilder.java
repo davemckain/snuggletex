@@ -539,7 +539,7 @@ public final class DOMBuilder {
         return appendErrorElement(parentElement, new ErrorToken(error, token.getLatexMode()));
     }
     
-    private Element appendErrorElement(final Element parentElement, final ErrorToken errorToken) {
+    public Element appendErrorElement(final Element parentElement, final ErrorToken errorToken) {
         ErrorOutputOptions errorOptions = options.getErrorOptions();
         Element errorElement;
         switch (errorOptions) {
