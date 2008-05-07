@@ -405,3 +405,7 @@ x
 \bf Hello $x$
 <b>Hello <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math></b>
 ====
+## This was breaking the tokeniser
+\newcommand{\hello}{A \\}\hello
+A <br/>
+====
