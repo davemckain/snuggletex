@@ -8,21 +8,26 @@ package uk.ac.ed.ph.snuggletex.semantics;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 
 /**
- * Special Math operator representing a bracket. This allows brackets to be matched
- * if required.
+ * Represents a mathematical operator representing a bracket, allowing brackets to be matched.
  * 
  * @author  David McKain
  * @version $Revision$
  */
-public class MathBracketOperatorInterpretation extends MathOperatorInterpretation {
+public final class MathBracketOperatorInterpretation implements MathOperatorInterpretation {
     
+    private final MathMLOperator operator;
     private final MathMLOperator partnerOperator;
     private final boolean isOpener;
     
-    public MathBracketOperatorInterpretation(MathMLOperator operator, MathMLOperator partnerOperator, boolean isOpener) {
-        super(operator);
+    public MathBracketOperatorInterpretation(final MathMLOperator operator,
+            final MathMLOperator partnerOperator, final boolean isOpener) {
+        this.operator = operator;
         this.partnerOperator = partnerOperator;
         this.isOpener = isOpener;
+    }
+    
+    public MathMLOperator getOperator() {
+        return operator;
     }
     
     public MathMLOperator getPartnerOperator() {
@@ -33,7 +38,6 @@ public class MathBracketOperatorInterpretation extends MathOperatorInterpretatio
         return isOpener;
     }
 
-    @Override
     public InterpretationType getType() {
         return InterpretationType.MATH_BRACKET_OPERATOR;
     }

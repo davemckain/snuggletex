@@ -25,8 +25,8 @@ import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -292,12 +292,12 @@ public final class DOMBuilder {
                 break;
                 
             case MATH_OPERATOR:
-                MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) interpretation;
+                SimpleMathOperatorInterpretation operatorInterp = (SimpleMathOperatorInterpretation) interpretation;
                 appendMathMLOperatorElement(parentElement, operatorInterp.getOperator());
                 break;
                 
             case MATH_RELATION_OPERATOR:
-                MathRelationOperatorInterpretation relationInterp = (MathRelationOperatorInterpretation) interpretation;
+                NottableMathOperatorInterpretation relationInterp = (NottableMathOperatorInterpretation) interpretation;
                 appendMathMLOperatorElement(parentElement, relationInterp.getOperator());
                 break;
                 

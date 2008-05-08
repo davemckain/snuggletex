@@ -12,7 +12,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
-import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -42,12 +42,12 @@ public final class Globals {
     
     /** Literal Math characters, mapped to their resulting interpretations */
     private static final Object[] mathCharacterData = new Object[] {
-       '_', new MathOperatorInterpretation(MathMLOperator.SUB),
-       '^', new MathOperatorInterpretation(MathMLOperator.SUPER),
-       '+', new MathOperatorInterpretation(MathMLOperator.ADD),
-       '-', new MathOperatorInterpretation(MathMLOperator.SUBTRACT),
-       '=', new MathOperatorInterpretation(MathMLOperator.EQUALS),
-       ',', new MathOperatorInterpretation(MathMLOperator.COMMA),
+       '_', new SimpleMathOperatorInterpretation(MathMLOperator.SUB),
+       '^', new SimpleMathOperatorInterpretation(MathMLOperator.SUPER),
+       '+', new SimpleMathOperatorInterpretation(MathMLOperator.ADD),
+       '-', new SimpleMathOperatorInterpretation(MathMLOperator.SUBTRACT),
+       '=', new SimpleMathOperatorInterpretation(MathMLOperator.EQUALS),
+       ',', new SimpleMathOperatorInterpretation(MathMLOperator.COMMA),
        '(', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_BRACKET, MathMLOperator.CLOSE_BRACKET, true),
        ')', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_BRACKET, MathMLOperator.OPEN_BRACKET, false),
        '[', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET, MathMLOperator.CLOSE_SQUARE_BRACKET, true),

@@ -11,7 +11,7 @@ import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
-import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -50,7 +50,7 @@ public final class MfenceBuilder implements EnvironmentHandler {
         ArgumentContainerToken contentContainer = token.getContent();
         for (FlowToken contentToken : contentContainer) {
             if (contentToken.isInterpretationType(InterpretationType.MATH_OPERATOR)
-                    && ((MathOperatorInterpretation) contentToken.getInterpretation()).getOperator()==MathMLOperator.COMMA) {
+                    && ((SimpleMathOperatorInterpretation) contentToken.getInterpretation()).getOperator()==MathMLOperator.COMMA) {
                 /* Found a comma, so add Node based on what's been found so far */
                 makeFenceGroup(builder, mfenced, groupBuilder);
                 groupBuilder.clear();

@@ -20,7 +20,8 @@ import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
@@ -674,7 +675,7 @@ public final class TokenFixer {
         int size, startModifyIndex;
         FlowToken subOrSuperToken;
         FlowToken t1, t2, t3;
-        MathOperatorInterpretation tokenInterp;
+        SimpleMathOperatorInterpretation tokenInterp;
         MathMLOperator tokenOperator = null;
         MathMLOperator followingOperator;
         boolean isSubOrSuper;
@@ -685,7 +686,7 @@ public final class TokenFixer {
             firstIsSuper = false;
             isSubOrSuper = false;
             if (subOrSuperToken.isInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                tokenInterp = (MathOperatorInterpretation) subOrSuperToken.getInterpretation();
+                tokenInterp = (SimpleMathOperatorInterpretation) subOrSuperToken.getInterpretation();
                 tokenOperator = tokenInterp.getOperator();
                 isSubOrSuper = tokenOperator==MathMLOperator.SUPER || tokenOperator==MathMLOperator.SUB;
             }
@@ -718,7 +719,7 @@ public final class TokenFixer {
             t3 = null;
             followingOperator = null;
             if (i+2<size && tokens.get(i+2).isInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                followingOperator = ((MathOperatorInterpretation) tokens.get(i+2).getInterpretation()).getOperator();
+                followingOperator = ((SimpleMathOperatorInterpretation) tokens.get(i+2).getInterpretation()).getOperator();
                 if (followingOperator==MathMLOperator.SUPER || followingOperator==MathMLOperator.SUB) {
                     /* OK, need to find the "T3" operator! */
                     if (i+3>=size) {
@@ -1063,7 +1064,7 @@ public final class TokenFixer {
             CommandToken notToken = (CommandToken) token;
             FlowToken targetToken = notToken.getCombinerTarget();
             if (targetToken.isInterpretationType(InterpretationType.MATH_RELATION_OPERATOR)) {
-                return ((MathRelationOperatorInterpretation) targetToken.getInterpretation()).getNotOperator();
+                return ((NottableMathOperatorInterpretation) targetToken.getInterpretation()).getNotOperator();
             }
             throw new SnuggleLogicException("Unexpected logic branch - we should already have ensured that \\not is followed by a relation operator?!");
         }
