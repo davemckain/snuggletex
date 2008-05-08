@@ -22,22 +22,20 @@ public enum MathMLOperator {
     COMMA(INFIX, ","),
     EQUALS(INFIX, "="),
     
-    /* Stretchy? */
     SUM(PREFIX, "\u2211"),
     INTEGRAL(PREFIX, "\u222b"),
     PROD(PREFIX, "\u220f"),
     COPROD(PREFIX, "\u2210"),
-    OINT(PREFIX, "\u222e"), /* TODO: Check this */
+    OINT(PREFIX, "\u222e"),
     BIGCAP(PREFIX, "\u22c2"),
     BIGCUP(PREFIX, "\u22c3"),
-    BIGSQCUP(PREFIX, "\u2a06"), /* TODO: Check this */
+    BIGSQCUP(PREFIX, "\u2a06"),
     BIGVEE(PREFIX, "\u22c1"),
     BIGWEDGE(PREFIX, "\u22c0"),
     BIGODOT(PREFIX, "\u2a00"),
-    BIGOTIMES(PREFIX, "\u2a06"), /* TODO: Check this */
-    BIGOPLUS(PREFIX, "\u2a01"), /* TODO: Check this */
-    BIGUPLUS(PREFIX, "\u2a04"), /* TODO: Check this */
-
+    BIGOTIMES(PREFIX, "\u2a02"),
+    BIGOPLUS(PREFIX, "\u2a01"),
+    BIGUPLUS(PREFIX, "\u2a04"),
     
     OPEN_BRACKET(PREFIX, "("),
     CLOSE_BRACKET(POSTFIX, ")"),

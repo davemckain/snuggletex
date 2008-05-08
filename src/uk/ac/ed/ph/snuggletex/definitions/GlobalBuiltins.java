@@ -273,7 +273,7 @@ public final class GlobalBuiltins {
         map.addSimpleMathCommand("nu", new MathIdentifierInterpretation("\u03bd"));
         map.addSimpleMathCommand("xi", new MathIdentifierInterpretation("\u03be"));
         map.addSimpleMathCommand("pi", new MathIdentifierInterpretation("\u03c0"));
-        map.addSimpleMathCommand("varpi", new MathIdentifierInterpretation("\u03b1"));
+        map.addSimpleMathCommand("varpi", new MathIdentifierInterpretation("\u03d6"));
         map.addSimpleMathCommand("rho", new MathIdentifierInterpretation("\u03c1"));
         map.addSimpleMathCommand("varrho", new MathIdentifierInterpretation("\u03f1"));
         map.addSimpleMathCommand("sigma", new MathIdentifierInterpretation("\u03c3"));
@@ -295,7 +295,7 @@ public final class GlobalBuiltins {
         map.addSimpleMathCommand("Upsilon", new MathIdentifierInterpretation("\u03a5"));
         map.addSimpleMathCommand("Phi", new MathIdentifierInterpretation("\u03a6"));
         map.addSimpleMathCommand("Psi", new MathIdentifierInterpretation("\u03a8"));
-        map.addSimpleMathCommand("Omega", new MathIdentifierInterpretation("\u03c9"));
+        map.addSimpleMathCommand("Omega", new MathIdentifierInterpretation("\u03a9"));
         
         /* Math "functions" (treated as identifiers in MathML) */
         map.addSimpleMathCommand("arccos", new MathFunctionIdentifierInterpretation("arccos"));
@@ -317,7 +317,7 @@ public final class GlobalBuiltins {
         map.addSimpleMathCommand("ker", new MathFunctionIdentifierInterpretation("ker"));
         map.addSimpleMathCommand("lg", new MathFunctionIdentifierInterpretation("lg"));
         map.addSimpleMathCommand("lim", new MathFunctionIdentifierInterpretation("lim"));
-        map.addSimpleMathCommand("liminf", new MathFunctionIdentifierInterpretation("lim inf")); /* TODO: Check spacing here! */
+        map.addSimpleMathCommand("liminf", new MathFunctionIdentifierInterpretation("lim inf"));
         map.addSimpleMathCommand("limsup", new MathFunctionIdentifierInterpretation("lim sup"));
         map.addSimpleMathCommand("ln", new MathFunctionIdentifierInterpretation("ln"));
         map.addSimpleMathCommand("log", new MathFunctionIdentifierInterpretation("log"));
