@@ -5,32 +5,14 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
-import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
-
 /**
- * Represents a Mathematical operator.
+ * Base interface for a Mathematical operator
  * 
  * @author  David McKain
  * @version $Revision$
  */
-public class MathOperatorInterpretation implements MathInterpretation {
+public interface MathOperatorInterpretation extends MathInterpretation {
     
-    private final MathMLOperator operator;
+    MathMLOperator getOperator();
     
-    public MathOperatorInterpretation(final MathMLOperator operator) {
-        this.operator = operator;
-    }
-    
-    public MathMLOperator getOperator() {
-        return operator;
-    }
-    
-    public InterpretationType getType() {
-        return InterpretationType.MATH_OPERATOR;
-    }
-    
-    @Override
-    public String toString() {
-        return ObjectUtilities.beanToString(this);
-    }
 }
