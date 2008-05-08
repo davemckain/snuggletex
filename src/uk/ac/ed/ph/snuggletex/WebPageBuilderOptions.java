@@ -115,6 +115,12 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
      */
     private String contentType;
     
+    /**
+     * Indicates whether page title should be inserted at the start of the web page
+     * body as an XHTML <tt>h1</tt> element. This has no effect if title is null.
+     */
+    private boolean addingTitleHeading;
+    
     public WebPageBuilderOptions() {
         super();
         this.pageType = WebPageType.DEFAULT;
@@ -185,5 +191,14 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
     
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    
+    public boolean isAddingTitleHeading() {
+        return addingTitleHeading;
+    }
+    
+    public void setAddingTitleHeading(boolean addingTitleHeading) {
+        this.addingTitleHeading = addingTitleHeading;
     }
 }

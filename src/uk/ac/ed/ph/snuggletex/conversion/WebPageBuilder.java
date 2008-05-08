@@ -117,8 +117,16 @@ public final class WebPageBuilder {
         /* Check options, making adjustments as required to ensure sanity */
         fixOptions();
 
-        /* Build <body/> */
+        /* Create <body/> and maybe add title header */
         Element body = document.createElementNS(Globals.XHTML_NAMESPACE, "body");
+        String title = options.getTitle();
+        if (title!=null && options.isAddingTitleHeading()) {
+            Element titleHeader = document.createElementNS(Globals.XHTML_NAMESPACE, "h1");
+            titleHeader.appendChild(document.createTextNode(title));
+            body.appendChild(titleHeader);
+        }
+        
+        /* Build <body/> */
         DOMBuilder domBuilder = new DOMBuilder(sessionContext, body, options);
         domBuilder.buildDOMSubtree(fixedTokens);
         
@@ -159,10 +167,10 @@ public final class WebPageBuilder {
         head.appendChild(meta);
         
         /* Add <title/>, if specified */
-        if (options.getTitle()!=null) {
-            Element title = document.createElementNS(Globals.XHTML_NAMESPACE, "title");
-            title.appendChild(document.createTextNode(options.getTitle()));
-            head.appendChild(title);
+        if (title!=null) {
+            Element titleElement = document.createElementNS(Globals.XHTML_NAMESPACE, "title");
+            titleElement.appendChild(document.createTextNode(options.getTitle()));
+            head.appendChild(titleElement);
         }
         
         /* CSS will either go via a <link href="..."/> if specified or will be put inline using
