@@ -3,8 +3,6 @@
 
 Web Deployment Descriptor for the SnuggleTeX Demo Application
 
-FIXME: This is currently just a template for the real one!
-
 $Id$
 
 -->
@@ -13,24 +11,35 @@ $Id$
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
   <display-name>SnuggleTeX</display-name>
-  <description>SnuggleTeX Demo</description>
+  <description>SnuggleTeX Documentation</description>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
-  <!--
   <servlet>
     <description>
       Converts SnuggleTeX content pages to XHTML + MathML
     </description>
-    <servlet-name>ContentServlet</servlet-name>
-    <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.ContentServlet</servlet-class>
+    <servlet-name>SnuggleTeXServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.SnuggleTeXServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>
+      Serves up static XHTML pages by applying some XSLT to them first
+    </description>
+    <servlet-name>StaticXSLTServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.StaticXSLTServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>ContentServlet</servlet-name>
+    <servlet-name>SnuggleTeXServlet</servlet-name>
     <url-pattern>/content/*</url-pattern>
   </servlet-mapping>
-  -->
+  <servlet-mapping>
+    <servlet-name>StaticXSLTServlet</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
 
 </web-app>

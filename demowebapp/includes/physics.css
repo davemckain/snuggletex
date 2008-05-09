@@ -1,0 +1,108 @@
+/* $Id: aardvark.css 2712 2008-03-10 17:01:01Z davemckain $
+ *
+ * Basic stylesheet for Physics webapps
+ *
+ * Copyright (c) 2008 University of Edinburgh.
+ * All Rights Reserved
+ */
+
+/************************************************************/
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 0px;
+  margin: 0px;
+}
+
+h1 {
+  font-size: 150%;
+}
+
+h2 {
+  font-size: 140%;
+}
+
+h3 {
+  font-size: 130%;
+}
+
+#header {
+  background-color: #232b5a;
+  background-repeat: no-repeat;
+  background-position: top right;
+  background-image: url(header.jpg);
+}
+
+#header a:link,
+#header a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+#header a:hover {
+  text-decoration: underline;
+}
+
+#header h1 {
+  color: white;
+  font-size: 150%;
+  font-weight: bold;
+  padding: 0px;
+  margin: 0px;
+}
+
+#header h3 {
+  color: white;
+  font-size: 130%;
+  font-weight: bold;
+  margin: 0px;
+  padding: 0px 0px 8px 0px;
+}
+
+
+#location {
+  background: #555588;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  font-size: 150%;
+  margin: 0;
+  padding: 0.3em;
+}
+
+#location a {
+  color: white;
+  text-decoration: none;
+}
+
+#location a:visited {
+  color: #ccccff;
+}
+
+#location a:hover {
+  text-decoration: underline;
+}
+
+#location a:visited:hover {
+  color: #ccccff;
+}
+
+#copyright {
+  margin-top: 10px;
+  border-top: 1px solid #232b5a;
+  clear: both;
+  padding: 10px 0.3em;
+  font-style: italic;
+}
+
+#copyright a:link {
+  color: black;
+}
+
+#copyright a:visited {
+  color: #000033;
+}
+
+#content {
+  padding: 1em;
+}

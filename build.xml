@@ -67,8 +67,18 @@
 
   <!-- =================================================================== -->
   <!-- Creates the default SnuggleTeX CSS                                  -->
+  <!--                                                                     -->
+  <!-- (We only do this if the source css.properties file has changed)     -->
   <!-- =================================================================== -->
-  <target name="snuggletex.css" depends="build.src" description="Builds SnuggleTeX CSS">
+  <target name="css.check">
+    <uptodate property="css.uptodate"
+      srcfile="${src.dir}/uk/ac/ed/ph/snuggletex/css.properties"
+      targetfile="${dist.dir}/snuggletex.css"/>
+  </target>
+
+  <target name="snuggletex.css" depends="build.src, css.check" unless="css.uptodate"
+      description="Builds SnuggleTeX CSS">
+    <echo>Building snuggletex.css from css.properties</echo>
     <java classname="uk.ac.ed.ph.snuggletex.CSSUtilities">
       <arg value="${dist.dir}/snuggletex.css"/>
       <classpath path="${build.src.dir}"/>
@@ -154,11 +164,21 @@
       <classpath path="${build.src.dir}"/>
       <src path="${webapp.java.dir}"/>
     </javac>
-    <!-- Copy in static files -->
+    <!-- Copy in static files, being careful with filtering -->
     <copy todir="${build.webapp.dir}">
       <fileset dir="${webapp.dir}">
         <exclude name="java/**"/>
+        <exclude name="**/*.xsl"/>
       </fileset>
+    </copy>
+    <copy todir="${build.webapp.dir}">
+      <fileset dir="${webapp.dir}">
+        <exclude name="java/**"/>
+        <include name="**/*.xsl"/>
+      </fileset>
+      <filterset>
+        <filtersfile file="version.properties"/>
+      </filterset>
     </copy>
     <!-- Add in snuggletex.jar -->
     <copy todir="${build.webapp.dir}/WEB-INF/lib">

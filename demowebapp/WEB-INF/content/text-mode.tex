@@ -1,0 +1,100 @@
+% Simple input/result table environment
+\newenvironment{demotable}
+{\begin{center}
+ \begin{tabular}{|r|c|}
+ \hline \\
+ Input & Result \\
+ \hline \\
+}{\hline
+ \end{tabular}
+ \end{center}
+}
+
+% Text-mode demo line
+\newcommand{\demo}[1]{\verb|#1| & #1 \\}
+
+\section*{Text Styling}
+
+These commands style text using the old TeX way whereby the
+style commands such as \verb|\em| modify the style until the
+end of the current level (i.e. closing curly bracket).
+
+\newcommand{\styledemo}[1]{\demo{#1 Some Text}}
+\begin{demotable}
+\styledemo{\em}
+\styledemo{\bf}
+\styledemo{\rm}
+\styledemo{\it}
+\styledemo{\tt}
+\styledemo{\sc}
+\styledemo{\sl}
+\styledemo{\sf}
+\end{demotable}
+
+\section*{Newer Text Stylings}
+
+The following commands are similar but the styles apply to their
+arguments explicitly.
+
+\newcommand{\textstyledemo}[1]{\demo{#1{Some Text}}}
+
+\begin{demotable}
+\textstyledemo{\textrm}
+\textstyledemo{\textsf}
+\textstyledemo{\textit}
+\textstyledemo{\textsl}
+\textstyledemo{\textsc}
+\textstyledemo{\textbf}
+\textstyledemo{\texttt}
+\textstyledemo{\emph}
+\end{demotable}
+
+\section*{Sizing Commands}
+
+The standard TeX sizing commands are supported. These apply until the
+end of the current level (i.e. closing curly bracket).
+
+\begin{demotable}
+\styledemo{\tiny}
+\styledemo{\scriptsize}
+\styledemo{\footnotesize}
+\styledemo{\small}
+\styledemo{\normalsize}
+\styledemo{\large}
+\styledemo{\Large}
+\styledemo{\LARGE}
+\styledemo{\huge}
+\styledemo{\Huge}
+\end{demotable}
+
+\section*{Text Mode Accents}
+
+SnuggleTeX supports the most basic accented characters. We will add support for
+less common accented characters provided the results work well across all
+target browsers and platforms. (You might be better creating Math-mode accents
+in these cases.)
+
+\newcommand{\ademo}[1]{\demo{#1{a}}}
+
+\begin{demotable}
+\ademo{\'}
+\ademo{\`}
+\ademo{\^}
+\ademo{\~}
+\ademo{\"}
+\ademo{\underline}
+\end{demotable}
+
+\section{Miscellaneous Text-mode Symbols}
+
+We also support the following basic text-mode symbols:
+
+\begin{demotable}
+\demo{\ae}
+\demo{\oe}
+\demo{\dag}
+\demo{\ldots}
+\demo{\pounds}
+\end{demotable}
+
+

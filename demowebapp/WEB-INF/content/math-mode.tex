@@ -1,0 +1,343 @@
+% Simple input/result table environment
+\newenvironment{demotable}
+{\begin{center}
+ \begin{tabular}{|r|c|}
+ \hline \\
+ Input & Result \\
+ \hline \\
+}{\hline
+ \end{tabular}
+ \end{center}
+}
+
+% Math-mode demo line
+\newcommand{\mdemo}[1]{\verb|$ #1 $| & $#1$ \\}
+
+\section*{Lower-case Greek Letters}
+
+\begin{demotable}
+\mdemo{\alpha}
+\mdemo{\beta}
+\mdemo{\gamma}
+\mdemo{\delta}
+\mdemo{\epsilon}
+\mdemo{\varepsilon}
+\mdemo{\zeta}
+\mdemo{\eta}
+\mdemo{\theta}
+\mdemo{\vartheta}
+\mdemo{\iota}
+\mdemo{\kappa}
+\mdemo{\lambda}
+\mdemo{\mu}
+\mdemo{\nu}
+\mdemo{\xi}
+\mdemo{\pi}
+\mdemo{\varpi}
+\mdemo{\rho}
+\mdemo{\varrho}
+\mdemo{\sigma}
+\mdemo{\varsigma}
+\mdemo{\tau}
+\mdemo{\upsilon}
+\mdemo{\phi}
+\mdemo{\varphi}
+\mdemo{\chi}
+\mdemo{\psi}
+\mdemo{\omega}
+\end{demotable}
+
+\section*{Upper Case Greek Letters}
+
+\begin{demotable}
+\mdemo{\Gamma}
+\mdemo{\Delta}
+\mdemo{\Theta}
+\mdemo{\Lambda}
+\mdemo{\Xi}
+\mdemo{\Pi}
+\mdemo{\Sigma}
+\mdemo{\Upsilon}
+\mdemo{\Phi}
+\mdemo{\Psi}
+\mdemo{\Omega}
+\end{demotable}
+
+\section*{Mathematical Functions}
+
+\begin{demotable}
+\mdemo{\arccos x}
+\mdemo{\arcsin x}
+\mdemo{\arctan x}
+\mdemo{\arg x}
+\mdemo{\cos x}
+\mdemo{\cosh x}
+\mdemo{\cot x}
+\mdemo{\coth x}
+\mdemo{\csc x}
+\mdemo{\deg x}
+\mdemo{\det x}
+\mdemo{\dim x}
+\mdemo{\exp x}
+\mdemo{\gcd x}
+\mdemo{\hom x}
+\mdemo{\inf x}
+\mdemo{\ker x}
+\mdemo{\lg x}
+\mdemo{\lim x}
+\mdemo{\liminf x}
+\mdemo{\limsup x}
+\mdemo{\ln x}
+\mdemo{\log x}
+\mdemo{\max x}
+\mdemo{\min x}
+\mdemo{\Pr x}
+\mdemo{\sec x}
+\mdemo{\sin x}
+\mdemo{\sinh x}
+\mdemo{\sup x}
+\mdemo{\tan x}
+\mdemo{\tanh x}
+\end{demotable}
+
+\section*{Ellipses}
+
+\begin{demotable}
+\mdemo{\cdots}
+\mdemo{\vdots}
+\mdemo{\ddots}
+\end{demotable}
+
+\section*{Variable-sized symbols}
+
+\newcommand{\dmdemo}[1]{\verb|$ #1 $| & $#1$ & \verb|$$ #1 $$| & $$#1$$ \\}
+\newcommand{\vdemo}[1]{\dmdemo{#1_a^b A_{\lambda}}}
+
+\newenvironment{dmdemotable}
+{\begin{center}
+ \begin{tabular}{|r|l|r|l|}
+ \hline \\
+ Input & Result & Input (Displaymath) & Result \\
+ \hline \\
+}{\hline
+ \end{tabular}
+ \end{center}
+}
+
+\begin{dmdemotable}
+\vdemo{\sum}
+\vdemo{\prod}
+\vdemo{\coprod}
+\vdemo{\int}
+\vdemo{\oint}
+\vdemo{\bigcap}
+\vdemo{\bigcup}
+\vdemo{\bigsqcup}
+\vdemo{\bigvee}
+\vdemo{\bigwedge}
+\vdemo{\bigodot}
+\vdemo{\bigotimes}
+\vdemo{\bigoplus}
+\vdemo{\biguplus}
+\end{dmdemotable}
+
+\section*{Binary Operators}
+
+As with LaTeX, we support the \verb|\not| command to negate certain operators. Only
+the ones listed in the table below are supported.
+
+\newcommand{\rdemo}[1]{\verb|$ #1 $| & $#1$ & & \\}
+\newcommand{\rndemo}[1]{\verb|$ #1 $| & $#1$ & \verb|$ \not#1 $| & $\not#1$ \\}
+\newenvironment{rdemotable}
+{\begin{center}
+ \begin{tabular}{|r|l|r|l|}
+ \hline \\
+ Input & Result & Input (notted) & Result \\
+ \hline \\
+}{\hline
+ \end{tabular}
+ \end{center}
+}
+
+\begin{rdemotable}
+\rdemo{\pm}
+\rdemo{\mp}
+\rdemo{\times}
+\rdemo{\div}
+\rdemo{\ast}
+\rdemo{\star}
+\rdemo{\circ}
+\rdemo{\bullet}
+\rdemo{\cdot}
+\rdemo{\cap}
+\rdemo{\cup}
+\rdemo{\uplus}
+\rdemo{\sqcap}
+\rdemo{\sqcup}
+\rdemo{\vee}
+\rdemo{\lor}
+\rdemo{\wedge}
+\rdemo{\land}
+\rdemo{\setminus}
+\rdemo{\wr}
+\rdemo{\diamond}
+\rdemo{\bigtriangleup}
+\rdemo{\bigtriangledown}
+\rdemo{\triangleleft}
+\rdemo{\triangleright}
+\rdemo{\oplus}
+\rdemo{\ominus}
+\rdemo{\otimes}
+\rdemo{\oslash}
+\rdemo{\odot}
+\rdemo{\bigcirc}
+\rdemo{\dagger}
+\rdemo{\ddagger}
+\rdemo{\amalg}
+\rndemo{\leq}
+\rndemo{\le}
+\rndemo{\prec}
+\rdemo{\preceq}
+\rdemo{\ll}
+\rndemo{\subset}
+\rndemo{\subseteq}
+\rdemo{\sqsubset}
+\rndemo{\sqsubseteq}
+\rndemo{\in}
+\rndemo{\vdash}
+\rndemo{\geq}
+\rndemo{\ge}
+\rndemo{\succ}
+\rdemo{\succeq}
+\rdemo{\gg}
+\rndemo{\supset}
+\rndemo{\supseteq}
+\rdemo{\sqsupset}
+\rndemo{\sqsupseteq}
+\rndemo{\ni}
+\rdemo{\dashv}
+\rndemo{\equiv}
+\rndemo{\sim}
+\rndemo{\simeq}
+\rdemo{\asymp}
+\rndemo{\approx}
+\rndemo{\cong}
+\rdemo{\neq}
+\rdemo{\doteq}
+\rdemo{\notin}
+\rdemo{\models}
+\rdemo{\perp}
+\rndemo{\mid}
+\rdemo{\parallel}
+\rdemo{\bowtie}
+\rdemo{\smile}
+\rdemo{\frown}
+\rdemo{\propto}
+\end{rdemotable}
+
+\section*{Arrows}
+
+\begin{demotable}
+\mdemo{\leftarrow}
+\mdemo{\Leftarrow}
+\mdemo{\rightarrow}
+\mdemo{\Rightarrow}
+\mdemo{\leftrightarrow}
+\mdemo{\Leftrightarrow}
+\mdemo{\mapsto}
+\mdemo{\hookleftarrow}
+\mdemo{\leftharpoonup}
+\mdemo{\leftharpoondown}
+\mdemo{\rightleftharpoons}
+\mdemo{\longleftarrow}
+\mdemo{\Longleftarrow}
+\mdemo{\longrightarrow}
+\mdemo{\Longrightarrow}
+\mdemo{\longleftrightarrow}
+\mdemo{\Longleftrightarrow}
+\mdemo{\longmapsto}
+\mdemo{\hookrightarrow}
+\mdemo{\rightharpoonup}
+\mdemo{\rightharpoondown}
+\mdemo{\uparrow}
+\mdemo{\Uparrow}
+\mdemo{\downarrow}
+\mdemo{\Downarrow}
+\mdemo{\updownarrow}
+\mdemo{\Updownarrow}
+\mdemo{\nearrow}
+\mdemo{\searrow}
+\mdemo{\swarrow}
+\mdemo{\nwarrow}
+\end{demotable}
+
+\section*{Miscellaneous Maths Symbols}
+
+\begin{demotable}
+\mdemo{\aleph}
+\mdemo{\imath}
+\mdemo{\jmath}
+\mdemo{\ell}
+\mdemo{\wp}
+\mdemo{\Re}
+\mdemo{\Im}
+\mdemo{\mho}
+\mdemo{\prime}
+\mdemo{\emptyset}
+\mdemo{\nabla}
+\mdemo{\surd}
+\mdemo{\top}
+\mdemo{\bot}
+\mdemo{\angle}
+\mdemo{\forall}
+\mdemo{\exists}
+\mdemo{\neg}
+\mdemo{\lnot}
+\mdemo{\flat}
+\mdemo{\natural}
+\mdemo{\sharp}
+\mdemo{\backslash}
+\mdemo{\partial}
+\mdemo{\infty}
+\mdemo{\triangle}
+\mdemo{\clubsuit}
+\mdemo{\diamondsuit}
+\mdemo{\heartsuit}
+\mdemo{\spadesuit}
+\mdemo{\hbar}
+\verb_$ \| $_ & $\|$ \\
+\end{demotable}
+
+\section*{Mathematical Accents}
+
+Some of these do not work particularly well in some cases, so it is wise to check the
+results on all of the browsers that you need to support!
+
+\newcommand{\mademo}[1]{\verb|$ #1{x} $| & $#1{x}$ & \verb|$ #1{x-y} $| & $#1{x-y}$ \\ }
+\newenvironment{mademotable}
+{\begin{center}
+ \begin{tabular}{|r|l|r|l|}
+ \hline \\
+ Input (narrow) & Result & Input (wide) & Result \\
+ \hline \\
+}{\hline
+ \end{tabular}
+ \end{center}
+}
+
+\begin{mademotable}
+\mademo{\hat}
+\mademo{\bar}
+\mademo{\vec}
+\mademo{\dot}
+\mademo{\ddot}
+\mademo{\tilde}
+\mademo{\widehat}
+\mademo{\widetilde}
+\mademo{\overline}
+\mademo{\overbrace}
+\mademo{\underbrace}
+\mademo{\overrightarrow}
+\mademo{\overleftarrow}
+\mademo{\underline}
+\end{mademotable}
