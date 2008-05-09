@@ -32,7 +32,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * This builds a simple web page representation of the LaTeX input, using the provided
+ * {@link WebPageBuilderOptions} to provide a certain amount of control over the results.
+ * <p>
+ * This is a convenient way of bashing out working web pages if you're happy with the inherent
+ * limitations of doing it this way.
  *
  * @author  David McKain
  * @version $Revision: 3 $

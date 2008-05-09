@@ -54,16 +54,10 @@ import java.util.regex.Pattern;
  * TODO: Add run-time configuration options
  * TODO: We are keeping command and env names separate - LaTeX doesn't do this!
  * 
- * Also @see {@link DOMBuilder} for more items!
- * 
- * THINGS FOR HERE
- * 
  * TODO: \cal and friends in normal mode
  * TODO: \mathcal (Note: this might not work very well due to font issues...)
  * TODO: matrices in math mode
- * TODO: Do we want \framebox?
- * TODO: Do we want \section and friends...? If so, how do we do labelling?
- * TODO: Support empty {}, especially if trying to kill space like \command{}Text in non-math mode
+ * TODO: \makebox and \framebox
  * 
  * @author  David McKain
  * @version $Revision$
