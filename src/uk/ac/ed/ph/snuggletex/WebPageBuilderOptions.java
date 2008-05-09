@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import javax.xml.transform.Transformer;
+
 /**
  * Builds on {@link DOMBuilderOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleTeXSession}
@@ -30,10 +32,10 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
     public static enum WebPageType {
         
         /** 
-         * "Default" Mozilla-compatible output. XHTML + MathML; no XML declaration; no DOCTYPE;
-         * served as <tt>application/xhtml+xml</tt> with encoding declared via
-         * HTTP header and <tt>meta</tt> element.
-         * 
+         * "Default" Mozilla-compatible output. XHTML + MathML; no XML declaration; no DOCTYPE.
+         * This is intended to be served as <tt>application/xhtml+xml</tt> with
+         * encoding declared via HTTP header and <tt>meta</tt> element.
+         * <p>
          * This is the best option for serving content exclusively on Mozilla-based browsers.
          */
         DEFAULT,
@@ -73,6 +75,18 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
     
     /** Desired "type" of web page to be constructed. */
     private WebPageType pageType;
+    
+    /**
+     * JAXP {@link Transformer} Object of an optional XSLT stylesheet that will be applied to the 
+     * resulting web page before it is serialised. This can be useful if you need to add in
+     * headers and footers to the resulting XHTML web page. Remember that the XHTML is all in
+     * its correct namespace so you will need to write your stylesheet appropriately!
+     * <p>
+     * Certain properties will be set on this Object to ensure the correct output type etc.
+     * <p>
+     * If null, then no stylesheet is applied.
+     */
+    private Transformer stylesheet;
     
     /** 
      * Array of relative URLs specifying client-side XSLT stylesheets to be specified in the
@@ -121,6 +135,8 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
      */
     private boolean addingTitleHeading;
     
+
+    
     public WebPageBuilderOptions() {
         super();
         this.pageType = WebPageType.DEFAULT;
@@ -137,6 +153,15 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
     
     public void setPageType(WebPageType type) {
         this.pageType = type;
+    }
+    
+    
+    public Transformer getStylesheet() {
+        return stylesheet;
+    }
+    
+    public void setStylesheet(Transformer stylesheet) {
+        this.stylesheet = stylesheet;
     }
 
 

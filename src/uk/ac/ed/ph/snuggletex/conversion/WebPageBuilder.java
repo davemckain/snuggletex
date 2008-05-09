@@ -258,15 +258,21 @@ public final class WebPageBuilder {
         }
     }
 
+    /**
+     * @throws SnuggleRuntimeException if a serializer cannot be created.
+     */
     private Transformer createSerializer() {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer result;
-        try {
-            result = transformerFactory.newTransformer();
+        Transformer result = options.getStylesheet();
+        if (result==null) {
+            try {
+                result = transformerFactory.newTransformer();
+            }
+            catch (TransformerConfigurationException e) {
+                throw new SnuggleRuntimeException("Could not create serializer", e);
+            }
         }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not create DOM serializer", e);
-        }
+
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
         result.setOutputProperty(OutputKeys.INDENT, "yes");
