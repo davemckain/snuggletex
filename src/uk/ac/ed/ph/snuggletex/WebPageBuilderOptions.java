@@ -135,6 +135,12 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
      */
     private boolean addingTitleHeading;
     
+    /**
+     * Whether to indent the resulting web page or not. (This depends on how clever the underlying
+     * XSLT engine will be!)
+     */
+    private boolean indenting;
+    
 
     
     public WebPageBuilderOptions() {
@@ -225,5 +231,14 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
     
     public void setAddingTitleHeading(boolean addingTitleHeading) {
         this.addingTitleHeading = addingTitleHeading;
+    }
+
+    
+    public boolean isIndenting() {
+        return indenting;
+    }
+    
+    public void setIndenting(boolean identing) {
+        this.indenting = identing;
     }
 }

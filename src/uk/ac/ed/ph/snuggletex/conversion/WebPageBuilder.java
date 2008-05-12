@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
+import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions;
@@ -275,7 +276,7 @@ public final class WebPageBuilder {
 
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
-        result.setOutputProperty(OutputKeys.INDENT, "yes");
+        result.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
         result.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
         result.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
         result.setOutputProperty(OutputKeys.METHOD, pageType==WebPageType.MATHPLAYER_HTML ? "html" : "xml");
