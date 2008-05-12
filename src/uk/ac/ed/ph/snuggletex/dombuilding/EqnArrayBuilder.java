@@ -35,7 +35,7 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
 
         /* Build MathML */
         Element mathElement = builder.appendMathMLElement(parentElement, "math");
-        mathElement.setAttribute("displaystyle", "true");
+        mathElement.setAttribute("display", "block");
         
         Element mtableElement = builder.appendMathMLElement(mathElement, "mtable");
         Element mtrElement, mtdElement;
