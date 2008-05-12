@@ -14,6 +14,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
 import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,7 +155,7 @@ public final class SnuggleTeXServlet extends HttpServlet {
          * We also save this into the ServletContext as the Static XSLT Servlet will use it as well.
          */
         StreamSource tidyupSource = new StreamSource(ensureReadResource(WEBPAGE_XSLT_RESOURCE_PATH));
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
         try {
             webPageTemplates = transformerFactory.newTemplates(tidyupSource);
         }

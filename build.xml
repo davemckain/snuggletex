@@ -180,10 +180,17 @@
         <filtersfile file="version.properties"/>
       </filterset>
     </copy>
-    <!-- Add in snuggletex.jar -->
+    <!-- Add in snuggletex.jar + Saxon 9 JARs. We're supplying an explicit XSLT
+    implementation here in order to avoid potential problems. (For example, Tomcat
+    on some Linux distros comes with a half-arsed XML configuration that doesn't work
+    out of the box! -->
     <copy todir="${build.webapp.dir}/WEB-INF/lib">
       <fileset dir="${dist.dir}">
         <include name="snuggletex.jar"/>
+      </fileset>
+      <fileset dir="${build.lib.dir}">
+        <include name="saxon9.jar"/>
+        <include name="saxon9-dom.jar"/>
       </fileset>
     </copy>
     <!-- Merge in CSS -->

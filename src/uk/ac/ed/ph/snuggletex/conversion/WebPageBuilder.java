@@ -262,7 +262,7 @@ public final class WebPageBuilder {
      * @throws SnuggleRuntimeException if a serializer cannot be created.
      */
     private Transformer createSerializer() {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
         Transformer result = options.getStylesheet();
         if (result==null) {
             try {
