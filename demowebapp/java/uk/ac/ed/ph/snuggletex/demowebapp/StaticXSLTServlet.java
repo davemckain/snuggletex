@@ -11,7 +11,6 @@ import java.io.InputStream;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Templates;
@@ -34,7 +33,7 @@ import javax.xml.transform.stream.StreamSource;
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public final class StaticXSLTServlet extends HttpServlet {
+public final class StaticXSLTServlet extends BaseServlet {
     
     private static final long serialVersionUID = 1372733519524963339L;
 
@@ -77,7 +76,12 @@ public final class StaticXSLTServlet extends HttpServlet {
         }
     }
     
-    private Templates getWebPageTemplates() {
-        return (Templates) getServletContext().getAttribute(SnuggleTeXServlet.WEBPAGE_XSLT_ATTRIBUTE_NAME);
+    private Templates getWebPageTemplates() throws ServletException {
+        Templates result = (Templates) getServletContext().getAttribute(SnuggleTeXServlet.WEBPAGE_XSLT_ATTRIBUTE_NAME);
+        if (result==null) {
+            throw new ServletException("Could not read in stored Templates Object as ServletContext Attribute at "
+                    + SnuggleTeXServlet.WEBPAGE_XSLT_ATTRIBUTE_NAME);
+        }
+        return result;
     }
 }

@@ -36,12 +36,8 @@ All Rights Reserved
               width="84" height="84" border="0" /></a>
           </td>
           <td align="left">
-            <h3>
-              THE UNIVERSITY of EDINBURGH
-            </h3>
-            <h1>
-              SCHOOL OF PHYSICS
-            </h1>
+            <h3>THE UNIVERSITY of EDINBURGH</h3>
+            <h1>SCHOOL OF PHYSICS</h1>
           </td>
           <td align="right">
             <table border="0" cellpadding="0" cellspacing="0" style="margin-right:20px;">
@@ -69,7 +65,7 @@ All Rights Reserved
         </a>
       </h1>
       <div id="content">
-        <xsl:copy-of select="node()"/>
+        <xsl:apply-templates select="." mode="make-content"/>
       </div>
       <div id="copyright">
         SnuggleTeX Release @uk.ac.ed.ph.snuggletex.version@
@@ -82,6 +78,10 @@ All Rights Reserved
         <a href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">David McKain</a>.
       </div>
     </body>
+  </xsl:template>
+
+  <xsl:template match="html:body" mode="make-content">
+    <xsl:copy-of select="node()"/>
   </xsl:template>
 
   <xsl:template match="html:h1">

@@ -14,7 +14,6 @@ import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
 import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions.WebPageType;
-import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,14 +23,11 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  * Trivial servlet used to serve up the sample SnuggleTeX pages within the documentation
@@ -45,7 +41,7 @@ import javax.xml.transform.stream.StreamSource;
  * @author  David McKain
  * @version $Revision$
  */
-public final class SnuggleTeXServlet extends HttpServlet {
+public final class SnuggleTeXServlet extends BaseServlet {
     
     private static final long serialVersionUID = 7013613625143346274L;
     
@@ -78,23 +74,45 @@ public final class SnuggleTeXServlet extends HttpServlet {
     
     /** "Map" of all supported content pages (name -> title) */
     private Properties pagesProperties;
+    
     private Snapshot snapshot;
     private Templates webPageTemplates;
     
     /**
-     * Helper that reads in a resource from the webapp hierarchy, throwing a {@link ServletException}
-     * if the resource could not be found.
-     * 
-     * @param resourcePath path of Resource to load, relative to base of webapp.
-     * @return resulting {@link InputStream}, which will not be null
-     * @throws ServletException
+     * Initialises certain things that won't change over the lifetime of the web application, such
+     * as the XSLT for generating web pages.
+     * <p>
+     * This also creates a SnuggleTeX {@link Snapshot} Object from the {@link #MACROS_RESOURCE_PATH}
+     * file, which is a useful example of how this can be used.
      */
-    protected InputStream ensureReadResource(String resourcePath) throws ServletException {
-        InputStream result = getServletContext().getResourceAsStream(resourcePath);
-        if (result==null) {
-            throw new ServletException("Could not read in required web resource at " + resourcePath);
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        
+        /* Make up list of "filenames" to match */
+        webPageTypeMap = new HashMap<String, WebPageType>();
+        webPageTypeMap.put("default.xml", WebPageType.DEFAULT);
+        webPageTypeMap.put("crossbrowser.xml", WebPageType.CROSS_BROWSER_XHTML);
+        webPageTypeMap.put("mathplayer.html", WebPageType.MATHPLAYER_HTML);
+        
+        /* Read in list of "content pages" */
+        InputStream propertiesStream = ensureReadResource(PAGES_RESOURCE_PATH);
+        pagesProperties = new Properties();
+        try {
+            pagesProperties.load(propertiesStream);
         }
-        return result;
+        catch (IOException e) {
+            throw new ServletException("IOException occurred when reading in " + PAGES_RESOURCE_PATH, e);
+        }
+
+        /* Parse common macros and create a snapshot to reuse on each request */
+        snapshot = createPostMacrosSnapshot();
+        
+        /* Read in the XSLT stylesheet that will be used to make the resulting web page pretty.
+         * We also save this into the ServletContext as the Static XSLT Servlet will use it as well.
+         */
+        webPageTemplates = compileStylesheet(WEBPAGE_XSLT_RESOURCE_PATH);
+        getServletContext().setAttribute(WEBPAGE_XSLT_ATTRIBUTE_NAME, webPageTemplates);
     }
     
     /**
@@ -121,48 +139,6 @@ public final class SnuggleTeXServlet extends HttpServlet {
             throw new ServletException("IOException whilst reading in macros file at " + MACROS_RESOURCE_PATH, e);
         }
         return session.createSnapshot();
-    }
-    
-    /**
-     * Initialises certain things that won't change over the lifetime of the web application, such
-     * as the XSLT for generating web pages.
-     * <p>
-     * This also creates a SnuggleTeX {@link Snapshot} Object from the {@link #MACROS_RESOURCE_PATH}
-     * file, which is a useful example of how this can be used.
-     */
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        webPageTypeMap = new HashMap<String, WebPageType>();
-        webPageTypeMap.put("default.xml", WebPageType.DEFAULT);
-        webPageTypeMap.put("crossbrowser.xml", WebPageType.CROSS_BROWSER_XHTML);
-        webPageTypeMap.put("mathplayer.html", WebPageType.MATHPLAYER_HTML);
-        
-        /* Read in list of "content pages" */
-        InputStream propertiesStream = ensureReadResource(PAGES_RESOURCE_PATH);
-        pagesProperties = new Properties();
-        try {
-            pagesProperties.load(propertiesStream);
-        }
-        catch (IOException e) {
-            throw new ServletException("IOException occurred when reading in " + PAGES_RESOURCE_PATH, e);
-        }
-
-        /* Parse common macros and create a snapshot to reuse on each request */
-        this.snapshot = createPostMacrosSnapshot();
-        
-        /* Read in the XSLT stylesheet that will be used to make the resulting web page pretty.
-         * We also save this into the ServletContext as the Static XSLT Servlet will use it as well.
-         */
-        StreamSource tidyupSource = new StreamSource(ensureReadResource(WEBPAGE_XSLT_RESOURCE_PATH));
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
-        try {
-            webPageTemplates = transformerFactory.newTemplates(tidyupSource);
-        }
-        catch (TransformerConfigurationException e) {
-            throw new ServletException("Could not compiles stylesheet at " + WEBPAGE_XSLT_RESOURCE_PATH);
-        }
-        getServletContext().setAttribute(WEBPAGE_XSLT_ATTRIBUTE_NAME, webPageTemplates);
     }
     
     @Override
@@ -214,7 +190,7 @@ public final class SnuggleTeXServlet extends HttpServlet {
         SnuggleInput input = new SnuggleInput(contentStream, contentResourceName);
         session.parseInput(input);
         
-        /* Create stylesheet to prettify the resulting web page */
+        /* Create stylesheet to format the resulting web page */
         Transformer stylesheet;
         try {
             stylesheet = webPageTemplates.newTransformer();
@@ -231,6 +207,7 @@ public final class SnuggleTeXServlet extends HttpServlet {
         options.setErrorOptions(ErrorOutputOptions.XHTML);
         options.setTitle(pageTitle);
         options.setAddingTitleHeading(true);
+        options.setIndenting(true);
         options.setCSSStylesheetURLs(
                 request.getContextPath() + "/includes/physics.css",
                 request.getContextPath() + "/includes/snuggletex.css"
