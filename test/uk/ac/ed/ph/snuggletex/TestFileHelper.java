@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * FIXME: Document this type!
+ * Trivial helper class to read in test file data
  *
  * @author  David McKain
  * @version $Revision$
  */
 public final class TestFileHelper {
-
 
     /**
      * Reads in the given "single line" test file, assuming it is of the format
