@@ -206,6 +206,29 @@
   </target>
 
   <!-- =================================================================== -->
+  <!-- Builds distributions for depositing to SourceForge.net              -->
+  <!-- =================================================================== -->
+  <target name="dist.src" description="Builds source ZIP distribution">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip" basedir="${basedir}">
+      <exclude name="build/**"/>
+      <exclude name="dist/**"/>
+    </zip>
+  </target>
+
+  <target name="dist.bin" depends="snuggletex.jar, snuggletex.css"
+      description="Builds binary ZIP distribution">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
+      <fileset file="LICENSE.txt"/>
+      <fileset dir="${dist.dir}">
+        <include name="snuggletex.jar"/>
+        <include name="snuggletex.css"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="dist" depends="dist.src, dist.bin"/>
+
+  <!-- =================================================================== -->
   <!-- Cleans up the build directories                                     -->
   <!-- =================================================================== -->
   <target name="clean" description="Cleans out build directories">
