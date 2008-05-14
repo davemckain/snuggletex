@@ -65,6 +65,7 @@
     </jar>
   </target>
 
+
   <!-- =================================================================== -->
   <!-- Creates the default SnuggleTeX CSS                                  -->
   <!--                                                                     -->
@@ -208,31 +209,52 @@
   <!-- =================================================================== -->
   <!-- Builds distributions for depositing to SourceForge.net              -->
   <!-- =================================================================== -->
-  <target name="dist.src" description="Builds source ZIP distribution">
-    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip" basedir="${basedir}">
-      <exclude name="build/**"/>
-      <exclude name="dist/**"/>
+  <target name="dist.src" description="Builds source distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
+      <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
+        <exclude name="build/**"/>
+        <exclude name="dist/**"/>
+      </zipfileset>
     </zip>
   </target>
 
-  <target name="dist.bin" depends="snuggletex.jar, snuggletex.css"
-      description="Builds binary ZIP distribution">
+  <target name="src.zip">
+    <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}"/>
+  </target>
+
+  <target name="dist.bin" depends="snuggletex.jar, snuggletex.css, src.zip"
+      description="Builds binary distribution ZIP">
     <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
-      <fileset file="LICENSE.txt"/>
-      <fileset dir="${dist.dir}">
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" file="LICENSE.txt"/>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" dir="${dist.dir}">
         <include name="snuggletex.jar"/>
         <include name="snuggletex.css"/>
-      </fileset>
+        <include name="src.zip"/>
+      </zipfileset>
     </zip>
   </target>
 
-  <target name="dist" depends="dist.src, dist.bin"/>
+  <target name="dist" depends="dist.src, dist.bin" description="Builds distribution ZIPs"/>
+
+  <!-- =================================================================== -->
+  <!-- Aardvark Intergration Target (not useful in general)                -->
+  <!-- =================================================================== -->
+
+  <target name="snuggletex.aardvark.jar" depends="build.src" description="Builds SnuggleTeX JAR (without Aardvark components)">
+    <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
+    <jar destfile="${dist.dir}/snuggletex-aardvark.jar" index="true">
+      <fileset dir="${build.src.dir}">
+        <exclude name="uk/ac/ed/ph/aardvark/**"/>
+      </fileset>
+    </jar>
+  </target>
 
   <!-- =================================================================== -->
   <!-- Cleans up the build directories                                     -->
   <!-- =================================================================== -->
   <target name="clean" description="Cleans out build directories">
     <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
   </target>
 
 </project>
