@@ -38,14 +38,18 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
                 math.setAttribute("display", "block");
             }
             if (builder.getOptions().isAddingMathAnnotations()) {
-                /* The structure here is <semantics>....<annotation-xml/></semantics> */
+                /* The structure here is <semantics>...<annotation/></semantics>
+                 * where the first child of <semantics> is the resulting MathML.
+                 * (Therefore, we need to wrap the MathML in an <mrow/> if there is
+                 * more than one top level element here)
+                 */
                 Element semantics = builder.appendMathMLElement(math, "semantics");
-                
-                builder.handleTokens(semantics, token.getContent(), false);
-                
-                Element annotation = builder.appendMathMLTextElement(semantics, "annotation-xml",
+                builder.handleMathTokensAsSingleElement(semantics, token.getContent());
+
+                /* Create annotation */
+                Element annotation = builder.appendMathMLTextElement(semantics, "annotation",
                         token.getContent().getSlice().extract().toString(), true);
-                annotation.setAttribute("encoding", "snuffle-tex");
+                annotation.setAttribute("encoding", "SnuggleTeX");
             }
             else {
                 builder.handleTokens(math, token.getContent(), false);
