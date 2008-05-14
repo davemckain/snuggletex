@@ -108,6 +108,7 @@ public class CSSUtilities {
     public static void main(String[] args) throws IOException {
         if (args.length!=1) {
             System.err.println("Usage: specify a File that the default SnuggleTeX CSS will be written to");
+            System.exit(1);
         }
         writeDefaultStylesheet(new FileOutputStream(new File(args[0])));
     }
