@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type: text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="includes/physics.css" />
+    <title>SnuggleTeX - Release Notes</title>
+  </head>
+  <body>
+
+    <h2>Release Notes</h2>
+
+    <h3>Version 1.0.0-beta2 (??/05/08)</h3>
+
+    <ul>
+      <li>
+        Distribution ZIPs now package all files into a single base directory, which
+        is more convenient for users.
+      </li>
+      <li>
+        Binary ZIP distribution now contains a <tt>src.zip</tt> file containing the
+        SnuggleTeX source code (excluding classes for the test suite and demonstration
+        webapp) as a convenience for users of IDEs such as Eclipse.
+      </li>
+      <li>
+        MathML annotations are now generated correctly (when requested)
+      </li>
+      <li>
+        Added support for <tt>\hspace</tt> (and <tt>\hspace*</tt>, though without its
+        proper LaTeX semantics), including all units supported by LaTeX plus the
+        <tt>em</tt> amd <tt>ex</tt> units commonly used on the web.
+      </li>
+      <li>
+        Fixed an obscure bug when trying to generate XHTML errors for errors occurring
+        within a MathML element that has no parent XHTML element.
+      </li>
+    </ul>
+
+    <hr />
+
+    <h3>Version 1.0.0-beta1 (13/05/08)</h3>
+
+    <p>First public beta release.</p>
+  </body>
+</html>

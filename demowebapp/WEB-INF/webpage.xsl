@@ -68,7 +68,8 @@ All Rights Reserved
         <xsl:apply-templates select="." mode="make-content"/>
       </div>
       <div id="copyright">
-        SnuggleTeX Release @uk.ac.ed.ph.snuggletex.version@
+        SnuggleTeX Release @uk.ac.ed.ph.snuggletex.version@ &#x2014;
+        <a href="{$context-path}/release-notes.html">Release Notes</a>
         <br />
         Copyright &#xa9; 2008
         <a href="http://www.ph.ed.ac.uk">The School of Physics</a>,
