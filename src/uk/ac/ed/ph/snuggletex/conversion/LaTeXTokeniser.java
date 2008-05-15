@@ -982,7 +982,7 @@ public final class LaTeXTokeniser {
             return finishCommandDefinition(command);
         }
         if (command==GlobalBuiltins.NEWENVIRONMENT || command==GlobalBuiltins.RENEWENVIRONMENT) {
-            return finishReadingEnvironmentDefinition(command);
+            return finishEnvironmentDefinition(command);
         }
 
         /* All other commands are handled according to their type */
@@ -1147,12 +1147,12 @@ public final class LaTeXTokeniser {
             /* Now handle optional argument, if provided */
             c = workingDocument.charAt(position);
             if (c=='[') {
-                int openBracketIndex = position; /* And record this position as we're going to move on */
-                position++; /* Advance to just after the '[' ... */
+                int startArgumentContentIndex = ++position; /* Skip over '[' */
                 
                 /* Go out and tokenise from this point onwards until the end of the ']' */
                 argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT, "]", argumentMode);
-                optionalArgumentSlice = workingDocument.freezeSlice(openBracketIndex, position);
+                int endArgumentContentIndex = (argumentResult.foundTerminator) ? position-1 : position;
+                optionalArgumentSlice = workingDocument.freezeSlice(startArgumentContentIndex, endArgumentContentIndex);
                 optionalArgument = new ArgumentContainerToken(optionalArgumentSlice, argumentMode, argumentResult.tokens);
             }
         }
@@ -1188,12 +1188,12 @@ public final class LaTeXTokeniser {
             /* Now look for this required argument */
             c = workingDocument.charAt(position);
             if (c=='{') {
-                int openBracketIndex = position; /* and record position before we move on */
-                position++; /* Skip over open brace... */
+                int startArgumentContentIndex = ++position; /* Skip over '{' */
                 
                 /* Go out and tokenise from this point onwards until the end of the '}' */
                 argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT, "}", argumentMode);
-                requiredArgumentSlices[i] = workingDocument.freezeSlice(openBracketIndex, position);
+                int endArgumentContentIndex = argumentResult.foundTerminator ? position-1 : position;
+                requiredArgumentSlices[i] = workingDocument.freezeSlice(startArgumentContentIndex, endArgumentContentIndex);
                 requiredArguments[i] = new ArgumentContainerToken(requiredArgumentSlices[i], argumentMode, argumentResult.tokens);
             }
             else if (c!=-1 && i==0 && argCount==1 && optionalArgument==null && commandOrEnvironment instanceof Command) {
@@ -1332,13 +1332,13 @@ public final class LaTeXTokeniser {
             c = workingDocument.charAt(position);
             if (c=='[') {
                 int openBracketIndex = position;
-                int afterCloseBracketIndex = findEndSquareBrackets(openBracketIndex);
-                if (afterCloseBracketIndex==-1) {
+                int closeBracketIndex = findEndSquareBrackets(openBracketIndex);
+                if (closeBracketIndex==-1) {
                     /* Error: no matching ']' */
                     return createError(ErrorCode.TTEG00, startTokenIndex, workingDocument.length(), ']');
                 }
-                optionalArgument = workingDocument.extract(openBracketIndex+1, afterCloseBracketIndex-1);
-                position = afterCloseBracketIndex;
+                optionalArgument = workingDocument.extract(openBracketIndex+1, closeBracketIndex);
+                position = closeBracketIndex + 1; /* Move past ']' */
             }
         }
         
@@ -1355,15 +1355,13 @@ public final class LaTeXTokeniser {
             c = workingDocument.charAt(position);
             if (c=='{') {
                 int openBraceIndex = position;
-                int afterCloseBraceIndex = findEndCurlyBrackets(openBraceIndex);
-                if (afterCloseBraceIndex==-1) {
+                int closeBraceIndex = findEndCurlyBrackets(openBraceIndex);
+                if (closeBraceIndex==-1) {
                     /* Error: no matching '}' */
                     return createError(ErrorCode.TTEG00, startTokenIndex, workingDocument.length(), '}');
                 }
-                requiredArguments[i] = workingDocument.extract(openBraceIndex+1, afterCloseBraceIndex-1);
-                
-                /* Move past close brace */
-                position = afterCloseBraceIndex;
+                requiredArguments[i] = workingDocument.extract(openBraceIndex+1, closeBraceIndex);
+                position = closeBraceIndex + 1; /* Move past '}' */
             }
             else if (c!=-1 && i==0 && argCount==1 && result.optionalArgument==null) {
                 /* Special case listed above: 1 argument as a single token with no braces.
@@ -1798,11 +1796,11 @@ public final class LaTeXTokeniser {
         }
         
         /* Skip trailing whitespace */
-        position = endCurlyIndex;
+        position = endCurlyIndex + 1;
         skipOverWhitespace();
         
         /* Now create the new command */
-        FrozenSlice definitionSlice = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex-1);
+        FrozenSlice definitionSlice = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
         UserDefinedCommand userCommand = new UserDefinedCommand(commandName,
                 argumentDefinitionResult.allowOptionalArgument,
                 argumentDefinitionResult.requiredArgumentCount,
@@ -1834,7 +1832,7 @@ public final class LaTeXTokeniser {
      * <p>
      * PRE-CONDITION: position will point to the character immediately after <tt>\\newenvironment</tt>.
      */
-    private FlowToken finishReadingEnvironmentDefinition(final BuiltinCommand definitionCommand)
+    private FlowToken finishEnvironmentDefinition(final BuiltinCommand definitionCommand)
             throws SnuggleParseException {
         /* Skip whitespace after \\newenvironment or whatever. */
         skipOverWhitespace();
@@ -1875,11 +1873,11 @@ public final class LaTeXTokeniser {
             int endCurlyIndex = findEndCurlyBrackets(position);
             
             /* Skip trailing whitespace */
-            position = endCurlyIndex;
+            position = endCurlyIndex + 1;
             skipOverWhitespace();
 
             /* Record slice */
-            definitionSlices[i] = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex-1);
+            definitionSlices[i] = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
         }
         
         /* Now create new environment */
@@ -1919,7 +1917,10 @@ public final class LaTeXTokeniser {
     
     /**
      * Reads in the argument specification for a new command or environment. This will be of
-     * the form <tt>[n]</tt> or <tt>[n][]</tt>.
+     * the form:
+     * <tt>[n]</tt>
+     * OR
+     * <tt>[n][]</tt>.
      * <p>
      * PRE-CONDITION: position should be set to just after <tt>\\newcommand{name}</tt>
      *   or <tt>\\newenvironment{name}</tt>
@@ -1944,41 +1945,43 @@ public final class LaTeXTokeniser {
          * Examples:
          * 
          * [2] -> no optional argument, 2 mandatory arguments
-         * [][2] -> 1 optional argument, 2-1=1 mandatory argument
+         * [2][] -> 1 optional argument, 2-1=1 mandatory argument
          */
         int argCount = 0;
         boolean allowOptArgs = false;
         int c = workingDocument.charAt(position);
         if (c=='[') {
-            int afterFirstSquare = findEndSquareBrackets(position);
-            if (afterFirstSquare==-1) {
+            int afterOpenSquare = position + 1;
+            int closeSquareIndex = findEndSquareBrackets(position);
+            if (closeSquareIndex==-1) {
                 /* Error: no ']' found! */
                 return createError(ErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
             }
-            String rawArgCount = workingDocument.extract(position+1, afterFirstSquare-1).toString().trim();
+            position = closeSquareIndex + 1; /* Move on to after ']' */
+            String rawArgCount = workingDocument.extract(afterOpenSquare, closeSquareIndex).toString().trim();
             try {
                 argCount = Integer.parseInt(rawArgCount);
             }
             catch (NumberFormatException e) {
                 /* Error: Not an integer! */
-                return createError(ErrorCode.TTEUC7, startTokenIndex, afterFirstSquare,
+                return createError(ErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
             if (argCount<1 || argCount>9) {
                 /* Error: Number of args must be between 1 and 9 inclusive */
-                return createError(ErrorCode.TTEUC7, startTokenIndex, afterFirstSquare,
+                return createError(ErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
-            position = afterFirstSquare;
             skipOverWhitespace();
             if (workingDocument.charAt(position)=='[') {
                 allowOptArgs = true;
                 argCount--;
-                position = findEndSquareBrackets(position);
-                if (position==-1) {
+                closeSquareIndex = findEndSquareBrackets(position);
+                if (closeSquareIndex==-1) {
                     /* Error: no ']' found! */
                     return createError(ErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
                 }
+                position = closeSquareIndex + 1; /* Move past ']' */
             }
         }
         
@@ -1995,7 +1998,7 @@ public final class LaTeXTokeniser {
     // General Helpers
     
     /**
-     * Returns the index after the next ']', handling any balanced braces appropriately.
+     * Returns the index of the next ']', handling any balanced braces appropriately.
      * Returns -1 if no corresponding ']' was found.
      */
     private int findEndSquareBrackets(final int openSquareBracketIndex) {
@@ -2006,7 +2009,6 @@ public final class LaTeXTokeniser {
         for (index=openSquareBracketIndex; index<workingDocument.length(); index++) {
             c = workingDocument.charAt(index);
             if (c==']') {
-                index++;
                 return index;
             }
             else if (!inEscape && c=='\\') {
@@ -2017,7 +2019,7 @@ public final class LaTeXTokeniser {
                 /* We have started {....}, which will protect any square brackets inside.
                  * Let's move over this.
                  */
-                index = findEndCurlyBrackets(index) - 1; /* Subtracting 1 as it'll get added again when loop continues */
+                index = findEndCurlyBrackets(index);
             }
             else if (inEscape) {
                 /* End of an escape - stop escaping and go back to normal */
@@ -2028,8 +2030,7 @@ public final class LaTeXTokeniser {
     }
     
     /**
-     * Returns the index <strong>after</strong> the next balanced '}', or -1 if no balance was
-     * found.
+     * Returns the index of the next balanced '}', or -1 if no balance was found.
      * 
      * @param openBraceIndex
      */
@@ -2057,7 +2058,6 @@ public final class LaTeXTokeniser {
                 depth--;
                 if (depth==0) {
                     /* Balanced delimiters */
-                    index++;
                     return index;
                 }
             }

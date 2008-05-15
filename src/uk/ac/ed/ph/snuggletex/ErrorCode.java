@@ -92,6 +92,9 @@ public enum ErrorCode {
     TDETB1(),
     TDETB2(),
     TDETB3(),
+    TDEUN0(),
+    TDEUN1(),
+    TDEUN2(),
     
     ;
 }

@@ -65,11 +65,11 @@ public final class TabularBuilder implements CommandHandler, EnvironmentHandler 
          */
         List<List<String>> columnClasses = new ArrayList<List<String>>();
         ArgumentContainerToken specToken = token.getArguments()[0];
-        CharSequence specData = token.getArguments()[0].getSlice().extract(); /* This includes {...} */
+        CharSequence specData = token.getArguments()[0].getSlice().extract(); /* This is something like "|c|" */
         char c;
         String cellAlign = null;
         boolean borderFlag = false; /* Gets set when we find '|' to indicate that next cell should include left border */
-        for (int i=1; i<specData.length()-1; i++) { /* We just iterate over content of {...} */
+        for (int i=0; i<specData.length(); i++) {
             c = specData.charAt(i);
             if (Character.isWhitespace(c)) {
                 continue;

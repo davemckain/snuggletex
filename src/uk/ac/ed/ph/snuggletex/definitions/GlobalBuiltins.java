@@ -19,6 +19,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.BoxBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.HSpaceNodeBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentBuilder;
@@ -43,8 +44,8 @@ import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
-import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 
 import java.util.EnumSet;
@@ -510,6 +511,8 @@ public final class GlobalBuiltins {
         /* Spacing */
         map.addSimpleCommand("quad", ALL_MODES, new SpaceNodeBuilder("\u00a0", "1em"), null);
         map.addSimpleCommand("qquad", ALL_MODES, new SpaceNodeBuilder("\u00a0\u00a0", "2em"), null);
+        map.addComplexCommandSameArgMode("hspace", false, 1, ALL_MODES, new HSpaceNodeBuilder(), null);
+        map.addComplexCommandSameArgMode("hspace*", false, 1, ALL_MODES, new HSpaceNodeBuilder(), null);
 
         /* Math accents */
         map.addComplexCommandSameArgMode("hat", false, 1, MATH_MODE_ONLY, new AccentBuilder(AccentMaps.CIRCUMFLEX, '\u0302', "mover"), null);

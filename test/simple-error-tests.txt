@@ -209,6 +209,15 @@ TDETB1
 \begin{tabular}{} \end{tabular}
 TDETB2
 ====
+\hspace*{a}
+TDEUN0
+====
+\hspace*{1.2.5 cm}
+TDEUN1
+====
+\hspace*{1 xx}
+TDEUN2
+====
 ###################################################################
 ## Extra error examples... add new and interesting cases here when found
 $}

@@ -113,8 +113,20 @@ This is&#x2009;thin space
 \newcommand{\test}[1]{Hello #1}Good
 Good
 ====
+\newcommand{\test}[1][]{Hello #1}Good
+Good
+====
+\newcommand{\test}[2][]{Hello #1 #2}Good
+Good
+====
 \newcommand{\test}[1]{Hello #1}\test{There}
 Hello There
+====
+\newcommand{\test}[1][]{Hello #1}\test[There]
+Hello There
+====
+\newcommand{\test}[2][]{Hello #1 #2}\test[You]{There}
+Hello You There
 ====
 \newcommand{\test}[1]{Hello #1}\test{There} more text afterwards
 Hello There more text afterwards
@@ -409,3 +421,6 @@ x
 \newcommand{\hello}{A \\}\hello
 A <br/>
 ====
+## Hspace tests
+A\hspace{1cm}B
+A<span style="margin-left:1.0cm;font-size:0">&#xa0;</span>B

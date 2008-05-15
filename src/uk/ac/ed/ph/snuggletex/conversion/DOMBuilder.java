@@ -484,16 +484,19 @@ public final class DOMBuilder {
     
     /**
      * Returns whether or not we're building a MathML island by checking the namespace of the
-     * parent element (and any of its ancestors if required) to ensure that we are within a
+     * given element (and any of its ancestors if required) to ensure that we are within a
      * MathML and custom (i.e. non-XHTML) output tree.
+     * <p>
+     * Traversal will stop at the {@link #buildRootElement}.
      * 
-     * @param parentElement
+     * @param element Element to start checking from
      */
-    public boolean isBuildingMathMLIsland(Element parentElement) {
-        Element currentElement = parentElement;
+    public boolean isBuildingMathMLIsland(final Element element) {
+        Element currentElement = element;
         Node parentNode;
+        String namespaceURI;
         while (true) {
-            String namespaceURI = currentElement.getNamespaceURI();
+            namespaceURI = currentElement.getNamespaceURI();
             if (Globals.MATHML_NAMESPACE.equals(namespaceURI)) {
                 return true;
             }
@@ -502,13 +505,36 @@ public final class DOMBuilder {
             }
             else  {
                 parentNode = currentElement.getParentNode();
-                if (parentNode==null || parentNode.getNodeType()!=Node.ELEMENT_NODE) {
+                if (parentNode==null || parentNode==buildRootElement || parentNode.getNodeType()!=Node.ELEMENT_NODE) {
                     break;
                 }
                 currentElement = (Element) parentNode;
             }
         }
         return false;
+    }
+    
+    public Element findNearestXHTMLAncestorOrSelf(final Element element) {
+        Element currentElement = element;
+        Node parentNode;
+        while (true) {
+            if (currentElement==buildRootElement) {
+                /* We're at the root of our tree, so stop */
+                return currentElement;
+            }
+            else if (Globals.XHTML_NAMESPACE.equals(currentElement.getNamespaceURI())) {
+                /* We're at an XHTML element, so stop */
+                return currentElement;
+            }
+            else  {
+                /* Go up */
+                parentNode = currentElement.getParentNode();
+                if (parentNode==null || parentNode.getNodeType()!=Node.ELEMENT_NODE) {
+                    throw new SnuggleLogicException("Traversed up DOM tree and never found our root Element!");
+                }
+                currentElement = (Element) parentNode;
+            }
+        }
     }
     
     public boolean isParentElement(final Element parentElement, final String requiredNamespaceUri,
@@ -565,17 +591,9 @@ public final class DOMBuilder {
                             errorToken.getError().getErrorCode().toString(), false);
                 }
                 
-                /* Output full XHTML fragment as a child of the nearest XHTML ancestor-or-self */
+                /* Output full XHTML fragment as a child of the nearest non-MathML ancestor-or-self */
+                Element ancestorElement = findNearestXHTMLAncestorOrSelf(parentElement);
                 errorElement = MessageFormatter.formatErrorAsXHTML(document, errorToken.getError());
-                Element ancestorElement = parentElement;
-                Node ancestorNode;
-                while (!ancestorElement.getNamespaceURI().equals(Globals.XHTML_NAMESPACE)) {
-                    ancestorNode = parentElement.getParentNode();
-                    if (ancestorNode==null || ancestorNode.getNodeType()!=Node.ELEMENT_NODE) {
-                        throw new SnuggleLogicException("Could not find an XHTML ancestor to add error element to");
-                    }
-                    ancestorElement = (Element) ancestorNode;
-                }
                 ancestorElement.appendChild(errorElement);
                 break;
                 

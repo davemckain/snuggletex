@@ -411,3 +411,16 @@ _2
 _2^3
 <msubsup><mrow/><mn>2</mn><mn>3</mn></msubsup>
 ====
+## HSpace tests
+\hspace{1cm}
+<mspace width="1.0cm"/>
+====
+\hspace{1pt}
+<mspace width="1.0pt"/>
+====
+\hspace{65536sp}
+<mspace width="1.0pt"/>
+====
+\hspace{36bp}
+<mspace width="0.5in"/>
+====

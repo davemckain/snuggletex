@@ -14,7 +14,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * Creates spacing elements in MATH and/or TEXT modes.
+ * Creates preset spacing elements in MATH and/or TEXT modes.
  *
  * @author  David McKain
  * @version $Revision$
