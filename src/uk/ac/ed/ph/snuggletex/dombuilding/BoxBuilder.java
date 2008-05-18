@@ -33,7 +33,7 @@ public final class BoxBuilder implements CommandHandler {
          * in LR mode and the XML application the parent element belongs.
          */
         Element containerElement;
-        if (builder.isBuildingMathMLIsland(parentElement)) {
+        if (builder.isBuildingMathMLIsland()) {
             containerElement = builder.appendMathMLElement(parentElement, "mrow");
         }
         else {

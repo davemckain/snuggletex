@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
@@ -26,15 +27,19 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws DOMException, SnuggleParseException {
         BuiltinEnvironment environment = token.getEnvironment();
-        if (builder.isBuildingMathMLIsland(parentElement)) {
+        if (builder.isBuildingMathMLIsland()) {
             /* We're putting maths inside maths (e.g. \mbox{$ $}) so make a <mrow/> */
             Element mrow = builder.appendMathMLElement(parentElement, "mrow");
             builder.handleTokens(mrow, token.getContent(), false);
         }
         else {
+        	/* Set output context appropriately */
+        	boolean isDisplayMath = environment==GlobalBuiltins.DISPLAYMATH;
+        	builder.setOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
+        	
             /* Create a proper <math>...</math> element with optional annotation */
             Element math = builder.appendMathMLElement(parentElement, "math");
-            if (environment==GlobalBuiltins.DISPLAYMATH) {
+            if (isDisplayMath) {
                 math.setAttribute("display", "block");
             }
             if (builder.getOptions().isAddingMathAnnotations()) {
@@ -54,6 +59,8 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
             else {
                 builder.handleTokens(math, token.getContent(), false);
             }
+            /* Reset output context back to XHTML */
+            builder.setOutputContext(OutputContext.XHTML);
         }
     }
 }

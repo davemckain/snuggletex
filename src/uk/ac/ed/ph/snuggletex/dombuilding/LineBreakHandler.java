@@ -21,7 +21,7 @@ public final class LineBreakHandler implements CommandHandler {
 
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws DOMException {
-        if (builder.isBuildingMathMLIsland(parentElement)) {
+        if (builder.isBuildingMathMLIsland()) {
             /* We're doing MathML. It appears that we the best thing to do is emit the
              * actual line feed character (U+000A) and leave it to MathML UA's to interpret.
              */

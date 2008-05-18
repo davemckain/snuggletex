@@ -53,7 +53,7 @@ public final class StyleInterpretationNodeBuilder implements CommandHandler, Env
             final StyleDeclarationInterpretation interpretation, final ArgumentContainerToken contentContainerToken)
             throws DOMException, SnuggleParseException {
         Element result = parentElement; /* Default if we can't do any sensible styling */
-        if (builder.isBuildingMathMLIsland(parentElement)) {
+        if (builder.isBuildingMathMLIsland()) {
             /* We're doing MathML. We create an <mstyle/> element, but only if we can reasonably
              * handle this style.
              * 

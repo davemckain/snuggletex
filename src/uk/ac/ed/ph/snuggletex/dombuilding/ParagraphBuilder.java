@@ -43,7 +43,7 @@ public final class ParagraphBuilder implements CommandHandler {
             throws DOMException, SnuggleParseException {
         Element resultElement;
         boolean isInline;
-        if (builder.isBuildingMathMLIsland(parentElement)) {
+        if (builder.isBuildingMathMLIsland()) {
             /* Paragraphs inside MathML are not allowed!
              * 
              * So we won't create an element. Instead, once building reaching the text content,

@@ -53,7 +53,7 @@ import org.w3c.dom.NodeList;
  * Clients should not normally have to use this class directly -
  * call {@link SnuggleTeXSession#buildDOMSubtree(Element, DOMBuilderOptions)} and friends.
  * <p>
- * An instance of this class is intended to be used once and then discarded.
+ * An instance of this class is intended to be used once and then discarded so can be stateful.
  * <p>
  * This contains a number of callbacks that {@link CommandHandler}s and {@link EnvironmentHandler}s
  * can use to do their magic.
@@ -64,12 +64,27 @@ import org.w3c.dom.NodeList;
  * @version $Revision$
  */
 public final class DOMBuilder {
+	
+	/** 
+	 * Trivial enumeration to keep track of where we are in the outgoing DOM. This makes life
+	 * a bit easier when handling certain types of tokens. Use the {@link DOMBuilder#getOutputContext()}
+	 * and {@link DOMBuilder#setOutputContext(OutputContext)} to manage the current status.
+	 */
+	public static enum OutputContext {
+		XHTML,
+		MATHML_BLOCK,
+		MATHML_INLINE,
+		;
+	}
     
     private final SessionContext sessionContext;
     private final DOMBuilderOptions options;
     private final Document document;
     private final Element buildRootElement;
+    
     private Properties currentInlineCSSProperties;
+    
+    private OutputContext outputContext;
     
     public DOMBuilder(final SessionContext sessionContext, final Element buildRootElement,
             final DOMBuilderOptions options) {
@@ -81,21 +96,24 @@ public final class DOMBuilder {
     }
     
     //-------------------------------------------
-    // Entry points
+    // "Public" entry points
     
     public void buildDOMSubtree(final List<FlowToken> fixedTokens)
             throws DOMException, SnuggleParseException {
+    	outputContext = OutputContext.XHTML;
         handleTokens(buildRootElement, fixedTokens, true);
     }
 
     //-------------------------------------------
-    // Callbacks
+    // Callbacks Start Below
+  
     
-    public SessionContext getSessionContext() {
+
+	public SessionContext getSessionContext() {
         return sessionContext;
     }
     
-    public DOMBuilderOptions getOptions() {
+	public DOMBuilderOptions getOptions() {
         return options;
     }
 
@@ -218,7 +236,7 @@ public final class DOMBuilder {
                     .replace("''", "\u201d")
                     .replace('`', '\u2018')
                     .replace('\'', '\u2019');
-                if (isBuildingMathMLIsland(parentElement)) {
+                if (isBuildingMathMLIsland()) {
                     /* Need to wrap in an <mtext>...</mtext> */
                     appendMathMLTextElement(parentElement, "mtext", textContent, false);
                 }
@@ -231,7 +249,7 @@ public final class DOMBuilder {
                 /* This is a special token to indicate that a "new paragraph" is required in LR mode,
                  * which is not really feasible so we just generate a space instead.
                  */
-                if (isBuildingMathMLIsland(parentElement)) {
+                if (isBuildingMathMLIsland()) {
                     appendMathMLElement(parentElement, "mspace");
                 }
                 else {
@@ -253,7 +271,7 @@ public final class DOMBuilder {
             case SINGLE_CHARACTER_MATH_IDENTIFIER:
             case SINGLE_CHARACTER_MATH_SPECIAL:
                 /* First check we are in a suitable mode */
-                if (isBuildingMathMLIsland(parentElement)) {
+                if (isBuildingMathMLIsland()) {
                     appendSimpleMathElement(parentElement, token);
                 }
                 break;
@@ -481,39 +499,26 @@ public final class DOMBuilder {
     }
     
     //-------------------------------------------
+    // Output context methods - records whether we're doing XHTML or MathML content,
+    // which is often useful.
+    
+	public OutputContext getOutputContext() {
+		return outputContext;
+	}
+
+	public void setOutputContext(OutputContext outputContext) {
+		this.outputContext = outputContext;
+	}  
     
     /**
-     * Returns whether or not we're building a MathML island by checking the namespace of the
-     * given element (and any of its ancestors if required) to ensure that we are within a
-     * MathML and custom (i.e. non-XHTML) output tree.
-     * <p>
-     * Traversal will stop at the {@link #buildRootElement}.
-     * 
-     * @param element Element to start checking from
+     * Returns whether or not we're building a MathML island by checking the current {@link OutputContext}.
      */
-    public boolean isBuildingMathMLIsland(final Element element) {
-        Element currentElement = element;
-        Node parentNode;
-        String namespaceURI;
-        while (true) {
-            namespaceURI = currentElement.getNamespaceURI();
-            if (Globals.MATHML_NAMESPACE.equals(namespaceURI)) {
-                return true;
-            }
-            else if (Globals.XHTML_NAMESPACE.equals(namespaceURI)) {
-                return false;
-            }
-            else  {
-                parentNode = currentElement.getParentNode();
-                if (parentNode==null || parentNode==buildRootElement || parentNode.getNodeType()!=Node.ELEMENT_NODE) {
-                    break;
-                }
-                currentElement = (Element) parentNode;
-            }
-        }
-        return false;
+    public boolean isBuildingMathMLIsland() {
+    	return outputContext==OutputContext.MATHML_BLOCK || outputContext==OutputContext.MATHML_INLINE;
     }
-    
+
+    //-------------------------------------------
+
     public Element findNearestXHTMLAncestorOrSelf(final Element element) {
         Element currentElement = element;
         Node parentNode;
@@ -585,7 +590,7 @@ public final class DOMBuilder {
             case XHTML:
                 /* If we're in the middle of a MathML island,
                  * add a MathML <merror/> element at the current point */
-                if (isBuildingMathMLIsland(parentElement)) {
+                if (isBuildingMathMLIsland()) {
                     Element merror = appendMathMLElement(parentElement, "merror");
                     appendMathMLTextElement(merror, "mtext",
                             errorToken.getError().getErrorCode().toString(), false);

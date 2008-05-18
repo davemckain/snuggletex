@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -34,6 +35,7 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
         int numColumns = geometry[1];
 
         /* Build MathML */
+        builder.setOutputContext(OutputContext.MATHML_BLOCK);
         Element mathElement = builder.appendMathMLElement(parentElement, "math");
         mathElement.setAttribute("display", "block");
         
@@ -51,6 +53,7 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
                 builder.appendMathMLElement(mtrElement, "mtd");
             }
         }
+        builder.setOutputContext(OutputContext.XHTML);
     }
      
     /**
