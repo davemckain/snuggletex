@@ -49,15 +49,6 @@ import java.util.regex.Pattern;
  * <p>
  * This is probably the most complex class in SnuggleTeX!
  * 
- * <h2>Developer Notes</h2>
- * 
- * TODO: Add run-time configuration options
- * TODO: We are keeping command and env names separate - LaTeX doesn't do this!
- * TODO: \cal and friends in normal mode
- * TODO: \mathcal (Note: this might not work very well due to font issues...)
- * TODO: matrices in math mode
- * TODO: \makebox and \framebox
- * 
  * @author  David McKain
  * @version $Revision$
  */
