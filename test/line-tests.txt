@@ -438,3 +438,13 @@ $\sum_1^n$
 $$\sum_1^n$$
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><munderover><mo>&#x2211;</mo><mn>1</mn><mi>n</mi></munderover></math>
 ====
+## Hyphens
+Hello - There
+Hello - There
+====
+Hello -- There
+Hello &#x2013; There
+====
+Hello --- There
+Hello &#x2014; There
+====

@@ -227,22 +227,7 @@ public final class DOMBuilder {
             /* Simple Tokens */
                 
             case TEXT_MODE_TEXT:
-                String textContent = token.getSlice().extract().toString()
-                    .replace("\r", "")
-                    .replace('~', '\u00a0')
-                    .replace('<', '\u00a1')
-                    .replace('>', '\u00bf')
-                    .replace("``", "\u201c")
-                    .replace("''", "\u201d")
-                    .replace('`', '\u2018')
-                    .replace('\'', '\u2019');
-                if (isBuildingMathMLIsland()) {
-                    /* Need to wrap in an <mtext>...</mtext> */
-                    appendMathMLTextElement(parentElement, "mtext", textContent, false);
-                }
-                else {
-                    appendTextNode(parentElement, textContent, false);
-                }
+            	handleTextToken(parentElement, (SimpleToken) token);
                 break;
                 
             case LR_MODE_NEW_PARAGRAPH:
@@ -286,6 +271,86 @@ public final class DOMBuilder {
             default:
                 throw new SnuggleLogicException("Unhandled switch case " + token.getType());
         }
+    }
+    
+    public void handleTextToken(Element parentElement, SimpleToken textToken) {
+    	CharSequence rawText = textToken.getSlice().extract();
+    	StringBuilder resultBuilder = new StringBuilder();
+    	char c;
+    	for (int i=0, length=rawText.length(); i<length; i++) {
+    		c = rawText.charAt(i);
+    		switch (c) {
+    			case '\r':
+    				break;
+    				
+    			case '~':
+    				resultBuilder.append('\u00a0');
+    				break;
+    				
+    			case '<':
+    				resultBuilder.append('\u00a1');
+    				break;
+    				
+    			case '>':
+    				resultBuilder.append('\u00bf');
+    				break;
+    				
+    			case '`':
+    				if (i+1<length && rawText.charAt(i+1)=='`') {
+    					/* Double open quote */
+    					resultBuilder.append('\u201c');
+    					i++;
+    				}
+    				else {
+    					/* Single open quote */
+    					resultBuilder.append('\u2018');
+    				}
+    				break;
+    				
+    			case '\'':
+    				if (i+1<length && rawText.charAt(i+1)=='\'') {
+    					/* Double close quote */
+    					resultBuilder.append('\u201d');
+    					i++;
+    				}
+    				else {
+    					/* Single close quote */
+    					resultBuilder.append('\u2019');
+    				}
+    				break;
+    				
+    			case '-':
+    				if (i+1<length && rawText.charAt(i+1)=='-') {
+        				if (i+2<length && rawText.charAt(i+2)=='-') {
+        					/* --- is a long dash */
+        					resultBuilder.append('\u2014');
+        					i += 2;
+        				}
+        				else {
+        					/* -- is a medium dash */
+        					resultBuilder.append('\u2013');
+        					i++;
+        				}
+    				}
+    				else {
+    					/* Just do a normal hyphen */
+    					resultBuilder.append('-');
+    				}
+    				break;
+    				
+    			default:
+    				resultBuilder.append(c);
+    				break;
+    		}
+    	}
+    	String resultString = resultBuilder.toString();
+	    if (isBuildingMathMLIsland()) {
+	        /* Need to wrap in an <mtext>...</mtext> */
+	        appendMathMLTextElement(parentElement, "mtext", resultString, false);
+	    }
+	    else {
+	        appendTextNode(parentElement, resultString, false);
+	    }
     }
 
     public void appendSimpleMathElement(Element parentElement, Token token) {
