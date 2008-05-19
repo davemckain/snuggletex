@@ -424,3 +424,17 @@ A <br/>
 ## Hspace tests
 A\hspace{1cm}B
 A<span style="margin-left:1.0cm;font-size:0">&#xa0;</span>B
+====
+## The following test various types of limit operators in inline/displaymath modes
+$\int_0^1$
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msubsup><mo>&#x222b;</mo><mn>0</mn><mn>1</mn></msubsup></math>
+====
+$$\int_0^1$$
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msubsup><mo>&#x222b;</mo><mn>0</mn><mn>1</mn></msubsup></math>
+====
+$\sum_1^n$
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msubsup><mo>&#x2211;</mo><mn>1</mn><mi>n</mi></msubsup></math>
+====
+$$\sum_1^n$$
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><munderover><mo>&#x2211;</mo><mn>1</mn><mi>n</mi></munderover></math>
+====

@@ -25,6 +25,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathNotBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MfenceBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingBuilder;
@@ -177,13 +178,16 @@ public final class GlobalBuiltins {
         APPLY_FUNCTION = map.addSimpleMathCommand("af", new SimpleMathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
         INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new SimpleMathOperatorInterpretation(MathMLOperator.INVISIBLE_TIMES));
         
-        /* Variants of MathML constructs. These are substituted from traditional LaTeX constructs
-         * by {@link TokenFixer}
+        /* Analogues of MathML constructs. These are substituted from traditional LaTeX constructs
+         * by {@link TokenFixer}.
+         * 
+         * However, note that '\\msub' may actually result in <munder/> if that makes more sense
+         * (with corresponding results for '\\msup' and '\\msubsup').
          */
         MROW = map.addComplexCommandSameArgMode("mrow", false, 1, MATH_MODE_ONLY, new MrowBuilder(), null);
-        MSUB = map.addComplexCommandSameArgMode("msub", false, 2, MATH_MODE_ONLY, new MathComplexCommandBuilder("msub"), null);
-        MSUP = map.addComplexCommandSameArgMode("msup", false, 2, MATH_MODE_ONLY, new MathComplexCommandBuilder("msup"), null);
-        MSUBSUP = map.addComplexCommandSameArgMode("msubsup", false, 3, MATH_MODE_ONLY, new MathComplexCommandBuilder("msubsup"), null);
+        MSUB = map.addComplexCommandSameArgMode("msub", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MSUP = map.addComplexCommandSameArgMode("msup", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MSUBSUP = map.addComplexCommandSameArgMode("msubsup", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
         
         /* old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.

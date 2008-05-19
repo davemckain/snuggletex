@@ -22,20 +22,20 @@ public enum MathMLOperator {
     COMMA(INFIX, ","),
     EQUALS(INFIX, "="),
     
-    SUM(PREFIX, "\u2211"),
+    SUM(PREFIX, "\u2211", true),
     INTEGRAL(PREFIX, "\u222b"),
-    PROD(PREFIX, "\u220f"),
-    COPROD(PREFIX, "\u2210"),
+    PROD(PREFIX, "\u220f", true),
+    COPROD(PREFIX, "\u2210", true),
     OINT(PREFIX, "\u222e"),
-    BIGCAP(PREFIX, "\u22c2"),
-    BIGCUP(PREFIX, "\u22c3"),
-    BIGSQCUP(PREFIX, "\u2a06"),
-    BIGVEE(PREFIX, "\u22c1"),
-    BIGWEDGE(PREFIX, "\u22c0"),
-    BIGODOT(PREFIX, "\u2a00"),
-    BIGOTIMES(PREFIX, "\u2a02"),
-    BIGOPLUS(PREFIX, "\u2a01"),
-    BIGUPLUS(PREFIX, "\u2a04"),
+    BIGCAP(PREFIX, "\u22c2", true),
+    BIGCUP(PREFIX, "\u22c3", true),
+    BIGSQCUP(PREFIX, "\u2a06", true),
+    BIGVEE(PREFIX, "\u22c1", true),
+    BIGWEDGE(PREFIX, "\u22c0", true),
+    BIGODOT(PREFIX, "\u2a00", true),
+    BIGOTIMES(PREFIX, "\u2a02", true),
+    BIGOPLUS(PREFIX, "\u2a01", true),
+    BIGUPLUS(PREFIX, "\u2a04", true),
     
     OPEN_BRACKET(PREFIX, "("),
     CLOSE_BRACKET(POSTFIX, ")"),
@@ -180,12 +180,18 @@ public enum MathMLOperator {
     };
 
     private final OperatorType operatorType;
-
     private final String output;
+    private final boolean limitsUnderOrOver;
 
     private MathMLOperator(final OperatorType operatorType, final String output) {
+    	this(operatorType, output, false);
+    }
+    
+    private MathMLOperator(final OperatorType operatorType, final String output,
+    		final boolean limitsUnderOrOver) {
         this.operatorType = operatorType;
         this.output = output;
+        this.limitsUnderOrOver = limitsUnderOrOver;
     }
 
     public OperatorType getOperatorType() {
@@ -195,4 +201,8 @@ public enum MathMLOperator {
     public String getOutput() {
         return output;
     }
+
+	public boolean isLimitsUnderOrOver() {
+		return limitsUnderOrOver;
+	}
 }

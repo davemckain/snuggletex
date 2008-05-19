@@ -32,6 +32,10 @@
         Fixed an obscure bug when trying to generate XHTML errors for errors occurring
         within a MathML element that has no parent XHTML element.
       </li>
+      <li>
+        Certain math operators (e.g. summation) now generate limits using <tt>munder</tt>
+        and friends rather than <tt>msub</tt> et al when used in displaymath mode.
+      </li>
     </ul>
 
     <hr />
