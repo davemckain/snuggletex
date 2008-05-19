@@ -110,12 +110,6 @@ x = 3
 \sqrt x y
 <msqrt><mi>x</mi></msqrt><mo>&#x2062;</mo><mi>y</mi>
 ====
-\msup{x}{2}
-<msup>
-  <mi>x</mi>
-  <mn>2</mn>
-</msup>
-====
 x^2
 <msup>
   <mi>x</mi>
@@ -129,12 +123,6 @@ x^2 + 1
 </msup>
 <mo>+</mo>
 <mn>1</mn>
-====
-\msub{a}{1}
-<msub>
-  <mi>a</mi>
-  <mn>1</mn>
-</msub>
 ====
 a_1
 <msub>
@@ -150,13 +138,6 @@ a_{b_1}
     <mn>1</mn>
   </msub>
 </msub>
-====
-\msubsup{x}{1}{2}
-<msubsup>
-  <mi>x</mi>
-  <mn>1</mn>
-  <mn>2</mn>
-</msubsup>
 ====
 x_1^2
 <msubsup>
@@ -319,9 +300,6 @@ a\not \in A
 ====
 ########################
 # Tests various "empty" cases
-\mrow{}
-<mrow/>
-====
 \frac{}{}
 <mfrac><mrow/><mrow/></mfrac>
 ====

@@ -70,9 +70,9 @@ public final class GlobalBuiltins {
     public static BuiltinCommand LEFT;
     public static BuiltinCommand RIGHT;
     public static BuiltinCommand MROW;
-    public static BuiltinCommand MSUB;
-    public static BuiltinCommand MSUP;
-    public static BuiltinCommand MSUBSUP;
+    public static BuiltinCommand MSUB_OR_MUNDER;
+    public static BuiltinCommand MSUP_OR_MOVER;
+    public static BuiltinCommand MSUBSUP_OR_MUNDEROVER;
     public static BuiltinCommand NEWCOMMAND;
     public static BuiltinCommand RENEWCOMMAND;
     public static BuiltinCommand NEWENVIRONMENT;
@@ -178,16 +178,16 @@ public final class GlobalBuiltins {
         APPLY_FUNCTION = map.addSimpleMathCommand("af", new SimpleMathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
         INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new SimpleMathOperatorInterpretation(MathMLOperator.INVISIBLE_TIMES));
         
-        /* Analogues of MathML constructs. These are substituted from traditional LaTeX constructs
+        /* Placeholders for corresponding MathML constructs. These are substituted from traditional LaTeX constructs
          * by {@link TokenFixer}.
          * 
-         * However, note that '\\msub' may actually result in <munder/> if that makes more sense
-         * (with corresponding results for '\\msup' and '\\msubsup').
+         * Note that subscript/superscripts will either be converted to <msub/> et al or <munder/> et al
+         * according to the type of operator being handled.
          */
-        MROW = map.addComplexCommandSameArgMode("mrow", false, 1, MATH_MODE_ONLY, new MrowBuilder(), null);
-        MSUB = map.addComplexCommandSameArgMode("msub", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
-        MSUP = map.addComplexCommandSameArgMode("msup", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
-        MSUBSUP = map.addComplexCommandSameArgMode("msubsup", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MROW = map.addComplexCommandSameArgMode("<mrow>", false, 1, MATH_MODE_ONLY, new MrowBuilder(), null);
+        MSUB_OR_MUNDER = map.addComplexCommandSameArgMode("<msubormunder>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MSUP_OR_MOVER = map.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MSUBSUP_OR_MUNDEROVER = map.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
         
         /* old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.

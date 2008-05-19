@@ -649,7 +649,7 @@ public final class TokenFixer {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());
-                replacementToken = new CommandToken(replacementSlice, LaTeXMode.MATH, GlobalBuiltins.MSUP, null,
+                replacementToken = new CommandToken(replacementSlice, LaTeXMode.MATH, GlobalBuiltins.MSUP_OR_MOVER, null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, leftToken),
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, maybePrimeToken),
@@ -747,7 +747,7 @@ public final class TokenFixer {
             if (t3!=null) {
                 /* Create replacement, replacing tokens at i-1,i+1,i+2 and i+3 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t3.getSlice());
-                replacementCommand = GlobalBuiltins.MSUBSUP;
+                replacementCommand = GlobalBuiltins.MSUBSUP_OR_MUNDEROVER;
                 CommandToken replacement = new CommandToken(replacementSlice,
                         LaTeXMode.MATH,
                         replacementCommand,
@@ -763,7 +763,7 @@ public final class TokenFixer {
             else {
                 /* Just replace tokens at i-1, i, i+1 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t2.getSlice());
-                replacementCommand = firstIsSuper ? GlobalBuiltins.MSUP : GlobalBuiltins.MSUB;
+                replacementCommand = firstIsSuper ? GlobalBuiltins.MSUP_OR_MOVER : GlobalBuiltins.MSUB_OR_MUNDER;
                 CommandToken replacement = new CommandToken(replacementSlice, LaTeXMode.MATH,
                         replacementCommand,
                         null, /* No optional args */
