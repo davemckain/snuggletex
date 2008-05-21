@@ -212,8 +212,16 @@
   <target name="dist.src" description="Builds source distribution ZIP">
     <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
       <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
-        <exclude name="build/**"/>
-        <exclude name="dist/**"/>
+        <include name="build.properties"/>
+        <include name="build.xml"/>
+        <include name=".classpath"/>
+        <include name="LICENSE.txt"/>
+        <include name=".project"/>
+        <include name=".settings"/>
+        <include name="lib/**"/>
+        <include name="src/**"/>
+        <include name="test/**"/>
+        <include name="demowebapp/**"/>
       </zipfileset>
     </zip>
   </target>
@@ -242,7 +250,7 @@
 
   <target name="snuggletex.aardvark.jar" depends="build.src" description="Builds SnuggleTeX JAR (without Aardvark components)">
     <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
-    <jar destfile="${dist.dir}/snuggletex-aardvark.jar" index="true">
+    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
       <fileset dir="${build.src.dir}">
         <exclude name="uk/ac/ed/ph/aardvark/**"/>
       </fileset>
