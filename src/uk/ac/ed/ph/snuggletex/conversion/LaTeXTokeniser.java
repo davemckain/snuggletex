@@ -1689,7 +1689,7 @@ public final class LaTeXTokeniser {
     private FlowToken finishVerbatimEnvironment() throws SnuggleParseException {
         /* The content model can be dealt with by a regular expression here as it is nicely flat. */
         CharSequence inputUntilEnd = workingDocument.extract(position, workingDocument.length());
-        Pattern contentPattern = Pattern.compile("^(.+?)\\\\end\\s*\\{verbatim\\}\\s*");
+        Pattern contentPattern = Pattern.compile("^(.+?)\\\\end\\s*\\{verbatim\\}\\s*", Pattern.DOTALL);
         Matcher contentMatcher = contentPattern.matcher(inputUntilEnd);
         if (!contentMatcher.find()) {
             /* Could not find end of verbatim environment */

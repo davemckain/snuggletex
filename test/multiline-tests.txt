@@ -96,6 +96,15 @@ Hello
   </li>
 </ul>
 ====
+# Verbatim tests are a bit limited by my crappy whitespace stripping in the test classes,
+# so you need to be add explicit &#x0a; into the XML to specify where explicit line breaks
+# should occur
+\begin{verbatim}
+Hello
+\end{verbatim}
+----
+<pre class="verbatim">&#x0a;Hello&#x0a;</pre>
+====
 # Compact input gives compact output
 Hello
 ----
