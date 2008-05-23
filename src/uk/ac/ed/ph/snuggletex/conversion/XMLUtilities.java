@@ -7,6 +7,9 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
@@ -62,7 +65,21 @@ public final class XMLUtilities {
                     + " needs to support feature "
                     + feature
                     + " in order to be used with SnuggleTeX");
+        }   
+    }
+    
+    /**
+     * Creates a (namespace-aware) DOM {@link DocumentBuilder}, throwing a {@link SnuggleRuntimeException}
+     * if such a thing cannot be created/configured.
+     */
+    public static DocumentBuilder createNSAwareDocumentBuilder() {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setNamespaceAware(true);
+        try {
+            return documentBuilderFactory.newDocumentBuilder();
         }
-        
+        catch (ParserConfigurationException e) {
+            throw new SnuggleRuntimeException("Could not create Namespace-aware DocumentBuilder", e);
+        }
     }
 }
