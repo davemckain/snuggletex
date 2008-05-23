@@ -14,6 +14,8 @@ import java.util.Iterator;
  * @version $Revision: 1.1 $
  */
 public final class StringUtilities {
+	
+	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
      * Joins the given collection of Objects using the given
@@ -101,28 +103,6 @@ public final class StringUtilities {
     //------------------------------------------------------------------------
 
     /**
-     * Convenience method that turns a String to null if it is blank.
-     *
-     * @param string
-     * @return same string if it is non-blank, otherwise null.
-     */
-    public static String nullIfBlank(String string) {
-        return string.length()==0 ? null : string;
-    }
-
-    /**
-     * Convenience method that turns a String to a blank if it is null.
-     *
-     * @param string
-     * @return same string if it is non-blank, otherwise null.
-     */
-    public static String blankIfNull(String string) {
-        return string!=null ? string : "";
-    }
-    
-    //------------------------------------------------------------------------
-
-    /**
      * Trivial helper method to convert a boolean into either
      * "yes" or "no" depending on its state.
      *
@@ -131,5 +111,16 @@ public final class StringUtilities {
      */
     public static String toYesNo(boolean state) {
         return state ? "yes" : "no";
+    }
+    
+    /**
+     * Trivial helper method to convert a boolean into either
+     * "true" or "false" depending on its state.
+     *
+     * @param state boolean to convert
+     * @return "true" if true, "false" if false.
+     */
+    public static String toTrueFalse(boolean state) {
+        return state ? "true" : "false";
     }
 }
