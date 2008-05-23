@@ -19,8 +19,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -57,7 +55,7 @@ public final class WebPageBuilder {
          * client-side XSLT either */
         if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
             options.setPrefixingMathML(true);
-            options.setClientSideXSLTStylesheetURLs(WebPageBuilderOptions.EMPTY_STRING_ARRAY);
+            options.setClientSideXSLTStylesheetURLs(StringUtilities.EMPTY_STRING_ARRAY);
         }
         /* 2. If client-side XSLT asked for then at least one URL must be specified. If not, we'll
          * do default output */
@@ -117,7 +115,7 @@ public final class WebPageBuilder {
      * @throws SnuggleParseException
      */
     public Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
-        Document document = createDOMDocument();
+        Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         
         /* Check options, making adjustments as required to ensure sanity */
         fixOptions();
@@ -285,16 +283,5 @@ public final class WebPageBuilder {
             result.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
         }
         return result;
-    }
-    
-    private Document createDOMDocument() {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-        try {
-            return documentBuilderFactory.newDocumentBuilder().newDocument();
-        }
-        catch (ParserConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not create Namespace-aware DocumentBuilder", e);
-        }
     }
 }

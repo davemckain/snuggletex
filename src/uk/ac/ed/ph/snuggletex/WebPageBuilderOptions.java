@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
+
 import javax.xml.transform.Transformer;
 
 /**
@@ -23,8 +25,6 @@ import javax.xml.transform.Transformer;
  * @version $Revision: 3 $
  */
 public final class WebPageBuilderOptions extends DOMBuilderOptions {
-    
-    public static final String[] EMPTY_STRING_ARRAY = new String[0];
     
     /**
      * Enumerates the different web page "templates" supported.
@@ -148,8 +148,8 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
         this.pageType = WebPageType.DEFAULT;
         this.encoding = "UTF-8";
         this.language = "en";
-        this.cssStylesheetURLs = EMPTY_STRING_ARRAY;
-        this.clientSideXSLTStylesheetURLs = EMPTY_STRING_ARRAY;
+        this.cssStylesheetURLs = StringUtilities.EMPTY_STRING_ARRAY;
+        this.clientSideXSLTStylesheetURLs = StringUtilities.EMPTY_STRING_ARRAY;
     }
 
     
