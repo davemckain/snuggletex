@@ -326,10 +326,10 @@ Line 1<br/>
   </tbody>
 </table>
 ====
-## Fancy table 2
+## Fancy table 2 (with \hline)
 \begin{tabular}{|r|l|}
  1 & 2 \\
- \hline \\
+ \hline
  3 & 4 \\
  \hline
 \end{tabular}
@@ -349,7 +349,7 @@ Line 1<br/>
 ====
 ## Comments inside tabulars need to be handled correctly
 \begin{tabular}{|r|l|}
- \hline \\
+ \hline
  1 & 2 \\ %Blah
  \hline %Blah
 \end{tabular}

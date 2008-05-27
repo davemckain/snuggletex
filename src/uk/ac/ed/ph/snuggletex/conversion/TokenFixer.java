@@ -485,35 +485,21 @@ public final class TokenFixer {
         
         /* Go through contents, building up rows and columns */
         FlowToken token;
-        FlowToken hlineToken = null;
+        FlowToken lastGoodToken = null;
         for (int i=0, size=entries.size(); i<size; i++) {
             token = entries.get(i);
             if (token==null || token.isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
                 /* End of a row (see above). */
-                if (hlineToken!=null) {
-                    /* This row contains \\hline. This must be only token in the row. */
-                    if (!columnBuilder.isEmpty()) {
-                        /* Error: \\hline must be on its own within a row */
-                        resultBuilder.add(createError(columnBuilder.get(0), ErrorCode.TFETB0));
-                    }
-                    else if (!rowBuilder.isEmpty()) {
-                        /* Error: \\hline must be on its own within a row */
-                        resultBuilder.add(createError(rowBuilder.get(0), ErrorCode.TFETB0));
-                    }
-                    /* Add \\hline to result as a "row" */
-                    resultBuilder.add(hlineToken);
-                    
-                    /* Reset for next row */
-                    hlineToken = null;
+                if (token==null && lastGoodToken!=null && lastGoodToken.isCommand(GlobalBuiltins.HLINE)) {
+                    /* Last good token was \\hline so leave it there */
+                    break;
                 }
-                else {
-                    /* This is a normal row. First, finish off the last column (which may be
-                     * completely empty but should always exist) */
-                    rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
-                    
-                    /* Then add row */
-                    resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_ROW, rowBuilder));
-                }
+                /* First, finish off the last column (which may be
+                 * completely empty but should always exist) */
+                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
+                
+                /* Then add row */
+                resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_ROW, rowBuilder));
             }
             else if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()) {
                 /* Whitespace token - we'll ignore this */
@@ -530,19 +516,28 @@ public final class TokenFixer {
                 rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
             }
             else if (token.isCommand(GlobalBuiltins.HLINE)) {
-                /* \\hline must be the only token in a row. */
-                if (hlineToken!=null) {
-                    /* Error: Only one \\hline per row */
+                /* \\hline must be the only token in a row. It immediately ends the current row */
+                if (!columnBuilder.isEmpty()) {
+                    /* Error: \\hline must be on its own within a row */
                     resultBuilder.add(createError(columnBuilder.get(0), ErrorCode.TFETB0));
+                    columnBuilder.clear(); 
                 }
-                else {
-                    hlineToken = token;
+                else if (!rowBuilder.isEmpty()) {
+                    /* Error: \\hline must be on its own within a row */
+                    resultBuilder.add(createError(rowBuilder.get(0), ErrorCode.TFETB0));
+                    rowBuilder.clear();
                 }
+                /* Add \\hline to result as a "row" */
+                resultBuilder.add(token);
             }
             else {
                 /* Add to current column */
                 columnBuilder.add(token);
             }
+            /* If we didn't "continue" above, then record this token for the next loop to help
+             * us to decide what to do on the last token.
+             */
+            lastGoodToken = token;
         }
         /* Replace content */
         contents.clear();
