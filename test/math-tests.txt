@@ -272,6 +272,9 @@ a\not \in A
 \;
 <mspace width="0.278em"/>
 ====
+\!
+<mspace width="-0.167em"/>
+====
 \mbox{A}
 <mrow><mtext>A</mtext></mrow>
 ====

@@ -126,6 +126,7 @@ public final class GlobalBuiltins {
         map.addSimpleCommand(",", ALL_MODES, new SpaceNodeBuilder("\u2009", "0.167em"), ALLOW_INLINE); /* Thin space, all modes */
         map.addSimpleCommand(":", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "0.222em"), null); /* Medium space, math only */
         map.addSimpleCommand(";", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "0.278em"), null); /* Thick space, math only */
+        map.addSimpleCommand("!", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "-0.167em"), null); /* Negative thin space */
         map.addSimpleCommand(" ", ALL_MODES, new CharacterCommandHandler("\u00a0"), ALLOW_INLINE);
         
         /* Accents (non-math, complex) See Table 3.1, p. 38 on LaTeX companion.
