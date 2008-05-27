@@ -363,3 +363,17 @@ Line 1<br/>
   </tbody>
 </table>
 ====
+## Regression: this was breaking in the token fixer; caused by bad recording of compound token slices
+\begin{eqnarray*}
+& 1 \\
+\end{eqnarray*}
+----
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mtable>
+    <mtr>
+      <mtd></mtd>
+      <mtd><mn>1</mn></mtd>
+    </mtr>
+  </mtable>
+</math>
+====

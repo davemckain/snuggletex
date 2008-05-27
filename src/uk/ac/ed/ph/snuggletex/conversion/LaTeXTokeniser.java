@@ -1032,6 +1032,9 @@ public final class LaTeXTokeniser {
         skipOverWhitespace();
         int afterWhitespaceIndex = position;
         
+        /* Record index of the start of this command since we're going to read in the next token */
+        int startCommandIndex = startTokenIndex;
+        
         /* Read in the next token */
         FlowToken nextToken = readNextToken();
         if (nextToken==null) {
@@ -1046,7 +1049,7 @@ public final class LaTeXTokeniser {
                     command.getTeXName());
         }
         /* Create combined token spanning the two "raw" tokens */
-        return new CommandToken(workingDocument.freezeSlice(startTokenIndex, nextToken.getSlice().endIndex),
+        return new CommandToken(workingDocument.freezeSlice(startCommandIndex, nextToken.getSlice().endIndex),
                 currentModeState.latexMode, command, nextToken);
     }
     
@@ -1057,6 +1060,8 @@ public final class LaTeXTokeniser {
      * PRE-CONDITION: position will point to the character immediately after <tt>\commandName</tt>.
      */
     private FlowToken finishComplexCommand(final BuiltinCommand command) throws SnuggleParseException {
+        int startCommandIndex = startTokenIndex; /* Record this as we'll be parsing following tokens */
+        
         /* Read in and tokenise arguments, passing a "struct" to store the results in.
          * I've done it this way as this process is used in a number of different places but
          * we still need to be able to return an error if required.
@@ -1070,7 +1075,7 @@ public final class LaTeXTokeniser {
         }
 
         /* That's it! */
-        FrozenSlice commandSlice = workingDocument.freezeSlice(startTokenIndex, position);
+        FrozenSlice commandSlice = workingDocument.freezeSlice(startCommandIndex, position);
         return new CommandToken(commandSlice, currentModeState.latexMode, command,
                 argumentSearchResult.optionalArgument,
                 argumentSearchResult.requiredArguments);
@@ -1521,6 +1526,9 @@ public final class LaTeXTokeniser {
         /* Record that this environment has opened */
         openEnvironmentStack.push(environment.getTeXName());
         
+        /* Record where the \\begin token starts as we're going to advance */
+        int startEnvironmentIndex = startTokenIndex;
+        
         /* Check whether we can use this environment in this mode.
          * 
          * We won't bail immediately on error here as it is prudent to pull in the content
@@ -1568,7 +1576,7 @@ public final class LaTeXTokeniser {
         }
         
         /* Success! */
-        FrozenSlice environmentSlice = workingDocument.freezeSlice(startTokenIndex, position);
+        FrozenSlice environmentSlice = workingDocument.freezeSlice(startEnvironmentIndex, position);
         return new EnvironmentToken(environmentSlice, startLatexMode, environment,
                 argumentSearchResult.optionalArgument,
                 argumentSearchResult.requiredArguments,
