@@ -49,8 +49,10 @@ TTEV00
 \verb|x %n Can't span newlines! |
 TTEV01
 ====
+# NB: This one changed in revision 69 after generalising how verbatim arguments work
 \verb|Hello
-TTEV02
+#TTEV02
+TTEG00
 ====
 \begin{verbatim}Hello
 TTEV03

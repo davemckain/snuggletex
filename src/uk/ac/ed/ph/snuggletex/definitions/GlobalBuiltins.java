@@ -20,6 +20,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.HSpaceNodeBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.HrefBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentBuilder;
@@ -549,6 +550,10 @@ public final class GlobalBuiltins {
         RENEWCOMMAND = map.addComplexCommandSameArgMode("renewcommand", false, 1, ALL_MODES, new DoNothingHandler(), IGNORE);
         NEWENVIRONMENT = map.addComplexCommandSameArgMode("newenvironment", false, 2, ALL_MODES, new DoNothingHandler(), IGNORE);
         RENEWENVIRONMENT = map.addComplexCommandSameArgMode("renewenvironment", false, 2, ALL_MODES, new DoNothingHandler(), IGNORE);
+        
+        /* Special XHTML helpers */
+        map.addComplexCommand("href", true, 1, ALL_MODES, new LaTeXMode[] { LR, LaTeXMode.VERBATIM },
+                new HrefBuilder(), ALLOW_INLINE);
         
         /* Commands for creating custom XML (also see related environments) */
         XML_ATTR = map.addComplexCommand("xmlAttr", false, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR }, new XMLAttrHandler(), IGNORE);

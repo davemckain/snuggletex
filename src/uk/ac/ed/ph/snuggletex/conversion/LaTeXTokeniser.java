@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.conversion.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
@@ -127,7 +128,8 @@ public final class LaTeXTokeniser {
     private final Set<String> userEnvironmentsOpeningSet;
     
     /**
-     * Enumeration of the various "tokenisation modes" we will be running in
+     * Enumeration of the various "tokenisation modes" we will be running in. This is only
+     * really used for documentation during debugging!
      */
     public static enum TokenisationMode {
         TOP_LEVEL,
@@ -136,6 +138,7 @@ public final class LaTeXTokeniser {
         COMMAND_ARGUMENT,
         BUILTIN_ENVIRONMENT_CONTENT,
         USER_DEFINED_ENVIRONMENT_BEGIN,
+        VERB_COMMAND_CONTENT,
         ;
     }
     
@@ -254,6 +257,16 @@ public final class LaTeXTokeniser {
             currentModeState.tokens.add(token);
         }
         
+        /*
+         * When parsing in VERBATIM Mode, if there was no real content before
+         * the terminator (or end of input) then the list of resulting tokens will be empty. In
+         * this case, it is more useful to add a token representing the empty content.
+         */
+        if (currentModeState.latexMode==LaTeXMode.VERBATIM && currentModeState.tokens.isEmpty()) {
+            FrozenSlice emptySlice = workingDocument.freezeSlice(currentModeState.startPosition, currentModeState.startPosition);
+            currentModeState.tokens.add(new SimpleToken(emptySlice, TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, null));
+        }
+        
         /* Check that we got the required terminator */
         if (terminator!=null && !currentModeState.foundTerminator) {
             /* Error: Input ended before required terminator */
@@ -338,8 +351,12 @@ public final class LaTeXTokeniser {
                 result = readNextTokenMathMode();
                 break;
                 
+            case VERBATIM:
+                result = readNextTokenVerbatimMode();
+                break;
+                
             default:
-                throw new SnuggleLogicException("Unhandled switch case " + currentModeState.latexMode);
+                throw new SnuggleLogicException("Unexpected switch case " + currentModeState.latexMode);
         }
         
         /* Advance current position past this token, if we actually got something */
@@ -373,6 +390,30 @@ public final class LaTeXTokeniser {
      *
      * These will update the value of 'position' incrementally, so be careful!
      */
+    
+    //-----------------------------------------
+    // Tokenisation in VERBATIM Mode (easy peasy!)
+    
+    /**
+     * This reads the next token in {@link LaTeXMode#VERBATIM} Mode. This is actually easy
+     * as it simply amounts to reading in all text until the required terminator, if found.
+     */
+    private FlowToken readNextTokenVerbatimMode() {
+        int endIndex;
+        if (currentModeState.terminator!=null) {
+            endIndex = workingDocument.indexOf(startTokenIndex, currentModeState.terminator);
+            if (endIndex==-1) {
+                /* No terminator found, so pull in the rest of the document */
+                endIndex = workingDocument.length();
+            }
+        }
+        else {
+            /* No terminator specified, so pull in the rest of the document */
+            endIndex = workingDocument.length();
+        }
+        FrozenSlice verbatimContentSlice = workingDocument.freezeSlice(startTokenIndex, endIndex);
+        return new SimpleToken(verbatimContentSlice, TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, null);
+    }
     
     //-----------------------------------------
     // Tokenisation in MATH Mode
@@ -884,35 +925,56 @@ public final class LaTeXTokeniser {
         int startDelimitIndex = position;
         int delimitChar = workingDocument.charAt(startDelimitIndex);
         if (delimitChar==-1) {
+            /* Error: Could not find delimiter */
             return createError(ErrorCode.TTEV00, startTokenIndex, startDelimitIndex);
         }
         else if (Character.isWhitespace(delimitChar)) {
+            /* Error: delimiter is whitespace */
             return createError(ErrorCode.TTEV00, startTokenIndex, startDelimitIndex+1);
         }
-        /* We now find the end delimiter, which must occur on the same line */
-        int afterStartDelimitIndex = startDelimitIndex + 1;
-        int lineEndIndex = workingDocument.indexOf(afterStartDelimitIndex, '\n');
-        if (lineEndIndex==-1) {
-            lineEndIndex = workingDocument.length() - 1;
+        /* Now parse from the character after the delimiter until the next instance of
+         * the delimiter is found. This should result in zero or one content tokens, plus
+         * a possible error token if the end delimiter was not found.
+         */
+        position++; /* Advance over delimiter */
+        ModeState contentState = tokeniseInNewState(TokenisationMode.VERB_COMMAND_CONTENT, Character.toString((char) delimitChar), LaTeXMode.VERBATIM);
+        List<FlowToken> contentTokens = contentState.tokens;
+        SimpleToken verbatimContentToken = null;
+        for (FlowToken resultToken : contentTokens) {
+            if (resultToken.getType()==TokenType.VERBATIM_MODE_TEXT && verbatimContentToken==null) {
+                /* Got content */
+                verbatimContentToken = (SimpleToken) resultToken;
+            }
+            else if (resultToken.getType()==TokenType.ERROR) {
+                if (((ErrorToken) resultToken).getError().getErrorCode()!=ErrorCode.TTEG00) {
+                    throw new SnuggleLogicException("Unexpected error when parsing \\verb content: " + resultToken);
+                }
+            }
+            else {
+                throw new SnuggleLogicException("Unexpected token when examining \\verb content: " + resultToken);
+            }
         }
-        int endDelimitIndex = workingDocument.indexOf(afterStartDelimitIndex, (char) delimitChar);
-        if (endDelimitIndex==-1) {
-            return createError(ErrorCode.TTEV02, startTokenIndex, lineEndIndex+1,
-                    Character.toString((char) delimitChar));
+        if (verbatimContentToken==null) {
+            /* This shouldn't have happened as we're guaranteed to get something! */
+            throw new SnuggleLogicException("\\verb had no proper content token");
         }
-        if (lineEndIndex < endDelimitIndex) {
-            return createError(ErrorCode.TTEV01, startTokenIndex, lineEndIndex+1);
+        
+        /* Recall that the content of \\verb must be on a single line, so make sure that is the
+         * case.
+         */
+        FrozenSlice contentSlice = verbatimContentToken.getSlice();
+        int newlineIndex = workingDocument.indexOf(contentSlice.startIndex, '\n');
+        if (newlineIndex!=-1 && newlineIndex<contentSlice.endIndex) {
+            /* Error: Line ended before end of \\verb content */
+            return createError(ErrorCode.TTEV01, startTokenIndex, contentSlice.endIndex+1);
         }
-
-        /* That's it - convert raw text to a command */
-        FrozenSlice verbatimSlice = workingDocument.freezeSlice(startTokenIndex, endDelimitIndex+1);
-        FrozenSlice verbatimContentSlice = workingDocument.freezeSlice(afterStartDelimitIndex, endDelimitIndex);
-        SimpleToken verbatimContentToken = new SimpleToken(verbatimContentSlice,
-                TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, TextFlowContext.ALLOW_INLINE);
+        
+        /* That's it! */
+        FrozenSlice verbatimSlice = workingDocument.freezeSlice(startTokenIndex, position);
         return new CommandToken(verbatimSlice, currentModeState.latexMode, GlobalBuiltins.VERB,
                 null,
                 new ArgumentContainerToken[] {
-                    ArgumentContainerToken.createFromSingleToken(LaTeXMode.VERBATIM, verbatimContentToken)
+                    new ArgumentContainerToken(contentSlice, LaTeXMode.VERBATIM, contentTokens)
                 });
     }
     
@@ -1558,6 +1620,10 @@ public final class LaTeXTokeniser {
         if (contentMode==null) {
             contentMode = currentModeState.latexMode;
         }
+        if (contentMode==LaTeXMode.VERBATIM) {
+            throw new SnuggleRuntimeException("SnuggleTeX currently does not support environments "
+                    + "containing verbatim content  other than the standard 'verbatim' environment");
+        }
         ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT, null, contentMode);
         int endContentIndex = contentResult.computeLastTokenEndIndex();
         FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
@@ -1695,7 +1761,12 @@ public final class LaTeXTokeniser {
      * PRE-CONDITION: position will point to the character immediately after <tt>\\begin{verbatim}</tt>.
      */
     private FlowToken finishVerbatimEnvironment() throws SnuggleParseException {
-        /* The content model can be dealt with by a regular expression here as it is nicely flat. */
+        /* The content model is best dealt with by a regular expression here as it is nicely flat,
+         * so we're going to deviate from the normal tokenisation approach.
+         * 
+         * FIXME: This is not ideal. If we fixed this, then it would also allow us to deal with
+         * other environments containing verbatim content.
+         */
         CharSequence inputUntilEnd = workingDocument.extract(position, workingDocument.length());
         Pattern contentPattern = Pattern.compile("^(.+?)\\\\end\\s*\\{verbatim\\}\\s*", Pattern.DOTALL);
         Matcher contentMatcher = contentPattern.matcher(inputUntilEnd);

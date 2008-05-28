@@ -38,7 +38,14 @@ public final class Globals {
     public static final EnumSet<LaTeXMode> MATH_MODE_ONLY = EnumSet.of(MATH);
     public static final EnumSet<LaTeXMode> PARA_MODE_ONLY = EnumSet.of(PARAGRAPH);
     public static final EnumSet<LaTeXMode> TEXT_MODE_ONLY = EnumSet.of(PARAGRAPH, LR);
-    public static final EnumSet<LaTeXMode> ALL_MODES = EnumSet.allOf(LaTeXMode.class);
+    
+    /**
+     * This represents all modes that LaTeX commands can be used in, so is currently a bit
+     * of a misnomer as it excludes {@link LaTeXMode#VERBATIM}!
+     * 
+     * TODO: Think of a more sensible name for this!!
+     */
+    public static final EnumSet<LaTeXMode> ALL_MODES = EnumSet.of(PARAGRAPH, MATH, LR);
     
     /** Literal Math characters, mapped to their resulting interpretations */
     private static final Object[] mathCharacterData = new Object[] {
