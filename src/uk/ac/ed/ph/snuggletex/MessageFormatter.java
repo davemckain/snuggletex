@@ -149,6 +149,7 @@ public final class MessageFormatter {
     
     private static void appendFrame(StringBuffer messageBuilder, CharacterSource source, int offsetInSource) {
         SourceContext context = source.context;
+        System.out.println("source=" + source + ",offsetInSource=" + offsetInSource + ",context=" + context);
         if (context instanceof SnuggleInputReader) {
             SnuggleInputReader inputContext = (SnuggleInputReader) context;
             int[] location = inputContext.getLineAndColumn(offsetInSource);
@@ -159,12 +160,27 @@ public final class MessageFormatter {
                   inputContext.getInput().getIdentifier() /* Input description */
             }, messageBuilder, null);
         }
-        if (source.substitutedSource!=null) {
+        else if (context instanceof WorkingDocument.SubstitutionContext) {
+            WorkingDocument.SubstitutionContext substitutionContext = (WorkingDocument.SubstitutionContext) context;
             appendNewlineIfRequired(messageBuilder);
+            
+            /* The replacement text can be a bit long and span multiple lines so we'll tidy it up
+             * a bit first.
+             */
+            String tidiedReplacement = substitutionContext.replacement.toString().replaceAll("\\s", " ");
+            if (tidiedReplacement.length()>20) {
+                tidiedReplacement = tidiedReplacement.substring(0, 20) + "...";
+            }
             new MessageFormat(generalMessageBundle.getString("subs_context")).format(new Object[] {
-                    offsetInSource, /* Character */
-                    source.substitutedText, /* Original text */
+                    offsetInSource, /* Character index */
+                    source.substitutedText, /* Before subs */
+                    tidiedReplacement /* After subs */
             }, messageBuilder, null);
+        }
+        else {
+            throw new SnuggleLogicException("Unexpected SourceContext " + context.getClass().getName());
+        }
+        if (source.substitutedSource!=null) {
             appendFrame(messageBuilder, source.substitutedSource, source.substitutionOffset);
         }
     }

@@ -380,19 +380,10 @@ public final class LaTeXTokeniser {
      * the substitution came from, if required.
      */
     private void makeSubstitutionAndRewind(final int startIndex, final int endIndex,
-            final CharSequence replacement, final SourceContext context) {
-        workingDocument.substitute(startIndex, endIndex, replacement, context);
+            final CharSequence replacement) {
+        workingDocument.substitute(startIndex, endIndex, replacement);
         position = startIndex;
     }
-    
-    /* TOKENISATION METHODS START BELOW
-     * ================================
-     *
-     * These will update the value of 'position' incrementally, so be careful!
-     */
-    
-    //-----------------------------------------
-    // Tokenisation in VERBATIM Mode (easy peasy!)
     
     /**
      * This reads the next token in {@link LaTeXMode#VERBATIM} Mode. This is actually easy
@@ -1335,7 +1326,7 @@ public final class LaTeXTokeniser {
          * then continue parsing as normal.
          */
         int afterCommandIndex = position;
-        makeSubstitutionAndRewind(startTokenIndex, afterCommandIndex, replacement, null /* No special context info */);
+        makeSubstitutionAndRewind(startTokenIndex, afterCommandIndex, replacement);
         return readNextToken();
     }
     
@@ -1698,8 +1689,7 @@ public final class LaTeXTokeniser {
 
         /* Substitute our \begin{...} clause with the replacement */
         int endBeginIndex = position;
-        makeSubstitutionAndRewind(startTokenIndex, endBeginIndex, resolvedBegin,
-                null /* No special context information required */);
+        makeSubstitutionAndRewind(startTokenIndex, endBeginIndex, resolvedBegin);
         
         /* Then just return the next token */
         return readNextToken();
@@ -1716,8 +1706,7 @@ public final class LaTeXTokeniser {
         /* Substitute the whole \end{...} clause with the definition */
         int endEndIndex = position;
         makeSubstitutionAndRewind(startTokenIndex, endEndIndex,
-                environment.getEndDefinitionSlice().extract(),
-                null /* No special context information */);
+                environment.getEndDefinitionSlice().extract());
         return readNextToken();
     }
     
@@ -1749,7 +1738,7 @@ public final class LaTeXTokeniser {
         openEnvironmentStack.push(environmentName);
         
         /* Next, we obliterate this temporary token from the input and re-parse */
-        makeSubstitutionAndRewind(startTokenIndex, position, "", null);
+        makeSubstitutionAndRewind(startTokenIndex, position, "");
         return readNextToken();
     }
     

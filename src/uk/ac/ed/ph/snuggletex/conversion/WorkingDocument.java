@@ -24,19 +24,6 @@ import java.util.List;
 public final class WorkingDocument {
     
     /**
-     * Marker interface that can be applied to classes that provide information for a
-     * {@link CharacterSource}.
-     *
-     * @author  David McKain
-     * @version $Revision$
-     */
-    public static interface SourceContext {
-        
-        /* (Marker interface) */
-
-    }
-    
-    /**
      * Represents a block of text that has been imported into this document.
      */
     public static final class CharacterSource {
@@ -147,8 +134,36 @@ public final class WorkingDocument {
         }
     }
     
-    //----------------------------------------------------------------
+    /**
+     * Marker interface that can be applied to classes that provide information for a
+     * {@link CharacterSource}.
+     */
+    public static interface SourceContext {
+        
+        /* (Marker interface) */
+
+    }
     
+    /**
+     * Implementation of {@link SourceContext} that represents the result of a substitution.
+     */
+    public static final class SubstitutionContext implements SourceContext {
+        
+        /** The characters that replaced what was originally in the document. */
+        public CharSequence replacement;
+        
+        public SubstitutionContext(final CharSequence replacement) {
+            this.replacement = replacement;
+        }
+        
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(replacement=" + replacement + ")";
+        }
+    }
+    
+    //----------------------------------------------------------------
+
     private final StringBuilder buffer;
     private final List<Slice> scoreBoard;
 
@@ -300,8 +315,11 @@ public final class WorkingDocument {
     }
     
     public CharacterSource substitute(final int startIndex, final int endIndex,
-            final CharSequence data, final SourceContext context) {
+            final CharSequence replacement) {
         checkRange(startIndex, endIndex);
+        
+        /* Create a SourceContext indicating that we've done a substitution */
+        SubstitutionContext context = new SubstitutionContext(replacement);
         
         /* Make sure we are not trying to change the frozen part of the document */
         if (startIndex < freezeIndex) {
@@ -321,7 +339,7 @@ public final class WorkingDocument {
              */
             CharacterSource toAppend = new CharacterSource(context);
             int newStartIndex = length;
-            buffer.append(data);
+            buffer.append(replacement);
             int newLength = buffer.length();
             Slice newEndSlice = new Slice(newStartIndex, newLength, toAppend, -newStartIndex);
             scoreBoard.add(newEndSlice);
@@ -334,8 +352,8 @@ public final class WorkingDocument {
          */
         CharSequence beingReplaced = buffer.subSequence(startIndex, endIndex);
         buffer.delete(startIndex, endIndex);
-        buffer.insert(startIndex, data);
-
+        buffer.insert(startIndex, replacement);
+        
         /* Next up, we have to rebuild the scoreboard. This is much more complicated so is best
          * demonstrated with some examples.
          * 
@@ -394,7 +412,7 @@ public final class WorkingDocument {
          * shift left by currentIndex.
          */
         int currentIndex = startIndex;
-        int substitutionSize = data.length();
+        int substitutionSize = replacement.length();
         CharacterSource result = new CharacterSource(context, startResolution.slice.resolvedComponent,
                 startResolution.indexInComponent, beingReplaced);
         Slice substitutionSlice = new Slice(currentIndex, currentIndex + substitutionSize, result, -currentIndex);
@@ -481,17 +499,16 @@ public final class WorkingDocument {
     }
     
     public static void main(String[] args) {
-        SourceContext ctx = null;
-        WorkingDocument d = new WorkingDocument("\\mycommand blah blah", ctx);
+        WorkingDocument d = new WorkingDocument("\\mycommand blah blah", null);
       
         System.out.println("INITIAL STATE\n");
 //        d.dumpScoreboard();
 //        
-        d.substitute(0, 10, "This expands to \\bob", ctx);
+        d.substitute(0, 10, "This expands to \\bob");
         System.out.println("AFTER FIRST");
         d.dumpScoreboard();
 //        
-        d.substitute(16, 20, "[Bob expanded]", ctx);
+        d.substitute(16, 20, "[Bob expanded]");
         System.out.println("\nAFTER SECOND");
         d.dumpScoreboard();
       
