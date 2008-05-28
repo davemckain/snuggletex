@@ -149,7 +149,6 @@ public final class MessageFormatter {
     
     private static void appendFrame(StringBuffer messageBuilder, CharacterSource source, int offsetInSource) {
         SourceContext context = source.context;
-        System.out.println("source=" + source + ",offsetInSource=" + offsetInSource + ",context=" + context);
         if (context instanceof SnuggleInputReader) {
             SnuggleInputReader inputContext = (SnuggleInputReader) context;
             int[] location = inputContext.getLineAndColumn(offsetInSource);
