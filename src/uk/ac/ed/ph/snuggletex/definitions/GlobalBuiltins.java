@@ -50,6 +50,7 @@ import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
 
 import java.util.EnumSet;
 
@@ -120,10 +121,10 @@ public final class GlobalBuiltins {
         map.addSimpleCommand("&", ALL_MODES, new CharacterCommandHandler("&"), ALLOW_INLINE);
         map.addSimpleCommand("_", ALL_MODES, new CharacterCommandHandler("_"), ALLOW_INLINE);
         map.addSimpleCommand("{", ALL_MODES,
-                new MathBracketOperatorInterpretation(MathMLOperator.OPEN_CURLY_BRACKET, MathMLOperator.CLOSE_CURLY_BRACKET, true),
+                new MathBracketOperatorInterpretation(MathMLOperator.OPEN_CURLY_BRACKET, MathMLOperator.CLOSE_CURLY_BRACKET, BracketType.OPENER),
                 new ModeDelegatingBuilder(new CharacterCommandHandler("{"), new InterpretableSimpleMathBuilder()), null);
         map.addSimpleCommand("}", ALL_MODES,
-                new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_CURLY_BRACKET, MathMLOperator.OPEN_CURLY_BRACKET, false),
+                new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_CURLY_BRACKET, MathMLOperator.OPEN_CURLY_BRACKET, BracketType.CLOSER),
                 new ModeDelegatingBuilder(new CharacterCommandHandler("}"), new InterpretableSimpleMathBuilder()), null);
         map.addSimpleCommand(",", ALL_MODES, new SpaceNodeBuilder("\u2009", "0.167em"), ALLOW_INLINE); /* Thin space, all modes */
         map.addSimpleCommand(":", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "0.222em"), null); /* Medium space, math only */
@@ -504,6 +505,10 @@ public final class GlobalBuiltins {
          */
         LEFT = map.addCombinerCommand("left", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_BRACKET_OPERATOR), null, null);
         RIGHT = map.addCombinerCommand("right", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_BRACKET_OPERATOR), null, null);
+        
+        /* Special bracket commands */
+        map.addSimpleMathCommand("vert", new MathBracketOperatorInterpretation(MathMLOperator.VERT_BRACKET, MathMLOperator.VERT_BRACKET, BracketType.OPENER_OR_CLOSER));
+        map.addSimpleMathCommand("Vert", new MathBracketOperatorInterpretation(MathMLOperator.DOUBLE_VERT_BRACKET, MathMLOperator.DOUBLE_VERT_BRACKET, BracketType.OPENER_OR_CLOSER));
 
         /* This is a LaTeX-specific combiner macro that always comes before a
          * {@link MathRelationOperatorInterpretation} command.

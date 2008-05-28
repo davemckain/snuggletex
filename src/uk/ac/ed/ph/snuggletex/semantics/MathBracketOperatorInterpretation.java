@@ -15,15 +15,21 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
  */
 public final class MathBracketOperatorInterpretation implements MathOperatorInterpretation {
     
+    public static enum BracketType {
+        OPENER,
+        CLOSER,
+        OPENER_OR_CLOSER
+    }
+    
     private final MathMLOperator operator;
     private final MathMLOperator partnerOperator;
-    private final boolean isOpener;
+    private final BracketType bracketType;
     
     public MathBracketOperatorInterpretation(final MathMLOperator operator,
-            final MathMLOperator partnerOperator, final boolean isOpener) {
+            final MathMLOperator partnerOperator, final BracketType bracketType) {
         this.operator = operator;
         this.partnerOperator = partnerOperator;
-        this.isOpener = isOpener;
+        this.bracketType = bracketType;
     }
     
     public MathMLOperator getOperator() {
@@ -34,8 +40,8 @@ public final class MathBracketOperatorInterpretation implements MathOperatorInte
         return partnerOperator;
     }
     
-    public boolean isOpener() {
-        return isOpener;
+    public BracketType getBracketType() {
+        return bracketType;
     }
 
     public InterpretationType getType() {

@@ -38,6 +38,17 @@
         Added <tt>\xmlName</tt> command which takes a single argument (in verbatim mode)
         and verifies that it is a proper XML Name.
       </li>
+      <li>
+        Improved information provided by <tt>MessageFormatter</tt> class when expanding
+        out error messages.
+      </li>
+      <li>
+        Added support for <tt>\vert</tt> and <tt>\Vert</tt>, both as standalone operators
+        and as combiners for <tt>\left</tt> and <tt>\right</tt>. Changed the way math
+        bracket operators are represented internally to accommodate this as these are
+        the first examples where the openers and closers are identical, hence can't be
+        inferred.
+      </li>
     </ul>
 
     <hr />

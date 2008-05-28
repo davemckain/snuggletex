@@ -263,6 +263,34 @@ a\not \in A
   </mfenced>
 </mfenced>
 ====
+\left\vert x \right\vert
+<mfenced open='|' close='|'>
+  <mi>x</mi>
+</mfenced>
+====
+\vert
+<mo>|</mo>
+====
+## Test inference of fences including \vert which can't be inferred
+(1 + \vert x-[a-b] \vert)
+<mfenced open='(' close=')'>
+  <mrow>
+    <mn>1</mn>
+    <mo>+</mo>
+    <mo>|</mo>
+    <mi>x</mi>
+    <mo>-</mo>
+    <mfenced open='[' close=']'>
+      <mrow>
+        <mi>a</mi>
+        <mo>-</mo>
+        <mi>b</mi>
+      </mrow>
+    </mfenced>
+    <mo>|</mo>
+  </mrow>
+</mfenced>
+====
 \,
 <mspace width="0.167em"/>
 ====

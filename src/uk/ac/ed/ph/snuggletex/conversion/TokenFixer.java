@@ -22,6 +22,7 @@ import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
@@ -868,9 +869,14 @@ public final class TokenFixer {
                 continue LEFT_SEARCH;
             }
             MathBracketOperatorInterpretation interpretation = (MathBracketOperatorInterpretation) token.getInterpretation();
-            if (!interpretation.isOpener()) {
-                /* No use - we started with a close! */
+            BracketType bracketType = interpretation.getBracketType();
+            if (bracketType==BracketType.CLOSER) {
+                /* Give up completely - we started with a close! */
                 return;
+            }
+            else if (bracketType==BracketType.OPENER_OR_CLOSER) {
+                /* Brackets like |...| can't be inferred so ignore but continue */
+                continue LEFT_SEARCH;
             }
             /* If we're here, then we found some sort of open bracket. We'll search forward for
              * the matching close, taking care to balance up matching open/close pairs we see on our way.
@@ -879,31 +885,39 @@ public final class TokenFixer {
             FlowToken openBracketToken = token;
             FlowToken matchingCloseBracketToken = null;
             int matchingCloseBracketIndex = -1;
-            FlowToken innerToken;
+            FlowToken afterToken;
             Stack<MathBracketOperatorInterpretation> openerStack = new Stack<MathBracketOperatorInterpretation>();
             openerStack.add(interpretation);
             MATCH_SEARCH: for (int j=i+1; j<tokens.size(); j++) { /* 'j' is search index from current point onwards */
-                innerToken = tokens.get(j);
-                if (innerToken.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
-                    MathBracketOperatorInterpretation innerInterpretation = (MathBracketOperatorInterpretation) innerToken.getInterpretation();
-                    if (innerInterpretation.isOpener()) {
-                        openerStack.add(innerInterpretation);
-                    }
-                    else {
-                        /* Make sure the close matches the last open */
-                        MathBracketOperatorInterpretation lastOpen = openerStack.pop(); /* (This will always succeed here) */
-                        if (!innerInterpretation.getOperator().equals(lastOpen.getPartnerOperator())) {
-                            return;
-                        }
-                        if (openerStack.isEmpty()) {
-                            /* Yay! We've found a balance */
-                            matchingCloseBracketToken = innerToken;
-                            matchingCloseBracketIndex = j;
-                            break MATCH_SEARCH;
-                        }
+                afterToken = tokens.get(j);
+                if (afterToken.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
+                    MathBracketOperatorInterpretation afterInterpretation = (MathBracketOperatorInterpretation) afterToken.getInterpretation();
+                    BracketType afterBracketType = afterInterpretation.getBracketType();
+                    switch (afterBracketType) {
+                        case OPENER:
+                            openerStack.add(afterInterpretation);
+                            break;
+                            
+                        case OPENER_OR_CLOSER:
+                            /* Treat this like any other token */
+                            break;
+                            
+                        case CLOSER:
+                            /* Make sure the close matches the last open */
+                            MathBracketOperatorInterpretation lastOpen = openerStack.pop(); /* (This will always succeed here) */
+                            if (!afterInterpretation.getOperator().equals(lastOpen.getPartnerOperator())) {
+                                return;
+                            }
+                            if (openerStack.isEmpty()) {
+                                /* Yay! We've found a balance */
+                                matchingCloseBracketToken = afterToken;
+                                matchingCloseBracketIndex = j;
+                                break MATCH_SEARCH;
+                            }
+                            break;
                     }
                 }
-                innerTokens.add(innerToken);
+                innerTokens.add(afterToken);
             }
             if (matchingCloseBracketToken==null) {
                 /* We never found a match */

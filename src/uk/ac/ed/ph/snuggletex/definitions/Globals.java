@@ -13,6 +13,7 @@ import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -55,10 +56,10 @@ public final class Globals {
        '-', new SimpleMathOperatorInterpretation(MathMLOperator.SUBTRACT),
        '=', new SimpleMathOperatorInterpretation(MathMLOperator.EQUALS),
        ',', new SimpleMathOperatorInterpretation(MathMLOperator.COMMA),
-       '(', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_BRACKET, MathMLOperator.CLOSE_BRACKET, true),
-       ')', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_BRACKET, MathMLOperator.OPEN_BRACKET, false),
-       '[', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET, MathMLOperator.CLOSE_SQUARE_BRACKET, true),
-       ']', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET, MathMLOperator.OPEN_SQUARE_BRACKET, false)
+       '(', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_BRACKET, MathMLOperator.CLOSE_BRACKET, BracketType.OPENER),
+       ')', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_BRACKET, MathMLOperator.OPEN_BRACKET, BracketType.CLOSER),
+       '[', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET, MathMLOperator.CLOSE_SQUARE_BRACKET, BracketType.OPENER),
+       ']', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET, MathMLOperator.OPEN_SQUARE_BRACKET, BracketType.CLOSER)
     };
     
     private static final Map<Character, MathInterpretation> mathCharacterMap;
