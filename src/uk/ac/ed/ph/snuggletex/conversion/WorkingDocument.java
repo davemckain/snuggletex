@@ -246,15 +246,6 @@ public final class WorkingDocument {
         }
         return -1;
     }
-    
-    public int indexOf(final int startSearchIndex, final char c) {
-        for (int i=startSearchIndex; i<length(); i++) {
-            if (charAt(i)==c) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
     public boolean matchesAt(final int index, final char c) {
         return charAt(index)==c;
@@ -266,6 +257,25 @@ public final class WorkingDocument {
             return false;
         }
         return s.equals(extract(index, index+s.length()));
+    }
+    
+    public int indexOf(final int startSearchIndex, final char c) {
+        for (int i=startSearchIndex; i<length(); i++) {
+            if (charAt(i)==c) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public int indexOf(final int startSearchIndex, final String s) {
+        int lastSearchIndex = length() - s.length();
+        for (int i=startSearchIndex; i<=lastSearchIndex; i++) {
+            if (matchesAt(i, s)) {
+                return i;
+            }
+        }
+        return -1;
     }
     
     public boolean isRegionWhitespace(final int startIndex, final int endIndex) {
