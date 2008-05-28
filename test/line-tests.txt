@@ -454,3 +454,6 @@ Hello &#x2014; There
 \href{urn:x#a}
 <a href="urn:x#a">urn:x#a</a>
 ====
+\xmlName{a}
+a
+====

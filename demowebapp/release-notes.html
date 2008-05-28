@@ -25,6 +25,19 @@
         Fixed handling of <tt>\hline</tt> inside tabular environments. I had forgotten that
         this explicitly starts a new row!
       </li>
+      <li>
+        Added support for verbatim-mode arguments in built-in commands and environments.
+        (We don't support having verbatim-mode content for environments yet, apart from
+        the usual <tt>verbatim</tt> environment.)
+      </li>
+      <li>
+        Added special <tt>\href</tt> macro to make it easy to create a hypertext link
+        with optional link text. (This may change before 1.0.0)
+      </li>
+      <li>
+        Added <tt>\xmlName</tt> command which takes a single argument (in verbatim mode)
+        and verifies that it is a proper XML Name.
+      </li>
     </ul>
 
     <hr />

@@ -41,6 +41,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.VerbatimBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLAttrHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLBlockElementBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLInlineElementBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameHandler;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
@@ -559,6 +560,7 @@ public final class GlobalBuiltins {
         XML_ATTR = map.addComplexCommand("xmlAttr", false, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR }, new XMLAttrHandler(), IGNORE);
         map.addComplexCommand("xmlBlockElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLBlockElementBuilder(), START_NEW_XHTML_BLOCK);
         map.addComplexCommand("xmlInlineElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLInlineElementBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("xmlName", false, ALL_MODES, LaTeXMode.VERBATIM, new XMLNameHandler(), IGNORE);
         
         /* =================================== ENVIRONMENTS ================================= */
         

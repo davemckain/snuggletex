@@ -187,6 +187,9 @@ TDEX01
 \xmlAttr{urn:ns}{qName}{value}
 TDEX02
 ====
+\xmlName{0}
+TDEX03
+====
 \item A
 TDEL00
 ====
