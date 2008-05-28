@@ -19,7 +19,7 @@ import javax.xml.transform.dom.DOMSource;
  * Some trivial little helpers for creating suitably-configured {@link TransformerFactory}
  * instances.
  * <p>
- * (This is based on a cut-down version of the class of the same name in Aardvark.)
+ * (This is based on similar utility methods in Aardvark.)
  *
  * @author David McKain
  * @version $Revision: 2724 $
