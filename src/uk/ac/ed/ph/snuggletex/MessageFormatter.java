@@ -162,18 +162,10 @@ public final class MessageFormatter {
         else if (context instanceof WorkingDocument.SubstitutionContext) {
             WorkingDocument.SubstitutionContext substitutionContext = (WorkingDocument.SubstitutionContext) context;
             appendNewlineIfRequired(messageBuilder);
-            
-            /* The replacement text can be a bit long and span multiple lines so we'll tidy it up
-             * a bit first.
-             */
-            String tidiedReplacement = substitutionContext.replacement.toString().replaceAll("\\s", " ");
-            if (tidiedReplacement.length()>20) {
-                tidiedReplacement = tidiedReplacement.substring(0, 20) + "...";
-            }
             new MessageFormat(generalMessageBundle.getString("subs_context")).format(new Object[] {
                     offsetInSource, /* Character index */
-                    source.substitutedText, /* Before subs */
-                    tidiedReplacement /* After subs */
+                    formatText(source.substitutedText), /* Before subs */
+                    formatText(substitutionContext.replacement) /* After subs */
             }, messageBuilder, null);
         }
         else {
@@ -182,5 +174,20 @@ public final class MessageFormatter {
         if (source.substitutedSource!=null) {
             appendFrame(messageBuilder, source.substitutedSource, source.substitutionOffset);
         }
+    }
+    
+    private static final int TRUNCATE_LENGTH = 20;
+    
+    /**
+     * Trivial helper to truncate a portion of text if it goes longer than {@link #TRUNCATE_LENGTH}.
+     * This also replaces all whitespace with a spaces so as to avoid the results spanning
+     * multiple lines.
+     */
+    private static String formatText(CharSequence content) {
+        String result = content.toString().replaceAll("\\s", " ");
+        if (result.length()>TRUNCATE_LENGTH) {
+            result = result.substring(0, TRUNCATE_LENGTH) + "...";
+        }
+        return result;
     }
 }
