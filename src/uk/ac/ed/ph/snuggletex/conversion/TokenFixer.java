@@ -206,11 +206,11 @@ public final class TokenFixer {
      * to make things a bit easier to handle.
      * <p>
      * Only commands that take no arguments are handled this way, since LaTeX style commands like
-     * <tt>\\underline</tt> behave more like normal commands. 
+     * <tt>\\underline</tt> behave more like normal commands.
      */
     private void groupStyleCommands(Token parentToken, List<FlowToken> tokens) {
         FlowToken token;
-        for (int i=0; i<tokens.size(); i++) {
+        for (int i=0; i<tokens.size(); i++) { /* (This does fix-in-place) */
             token = tokens.get(i);
             if (token.getType()==TokenType.COMMAND && token.isInterpretationType(InterpretationType.STYLE_DECLARATION)
                     && ((CommandToken) token).getCommand().getArgumentCount()==0) {
@@ -221,16 +221,23 @@ public final class TokenFixer {
                 if (environment==null) {
                     throw new SnuggleLogicException("No environment defined to replace old TeX command " + command);
                 }
-                
-                /* Replacement environment content is everything from after the token */
-                FlowToken lastToken = tokens.get(tokens.size()-1);
-                ArgumentContainerToken contentToken = ArgumentContainerToken.createFromContiguousTokens(parentToken, token.getLatexMode(), tokens, i+1, tokens.size());
-                FrozenSlice replacementSlice = token.getSlice().rightOuterSpan(lastToken.getSlice());
-                
-                /* Now make replacement and remove all tokens that come afterwards */
-                EnvironmentToken replacement = new EnvironmentToken(replacementSlice, token.getLatexMode(), environment, contentToken);
-                tokens.set(i, replacement);
-                tokens.subList(i+1, tokens.size()).clear();
+                if (i+1<tokens.size()) {
+                    /* Replacement environment content is everything from after the token */
+                    FlowToken lastToken = tokens.get(tokens.size()-1);
+                    ArgumentContainerToken contentToken = ArgumentContainerToken.createFromContiguousTokens(parentToken, token.getLatexMode(), tokens, i+1, tokens.size());
+                    FrozenSlice replacementSlice = token.getSlice().rightOuterSpan(lastToken.getSlice());
+                    
+                    /* Now make replacement and remove all tokens that come afterwards */
+                    EnvironmentToken replacement = new EnvironmentToken(replacementSlice, token.getLatexMode(), environment, contentToken);
+                    tokens.set(i, replacement);
+                    tokens.subList(i+1, tokens.size()).clear();
+                }
+                else {
+                    /* Something like {\\bf}, which we'll convert to an empty environment */
+                    ArgumentContainerToken contentToken = ArgumentContainerToken.createEmptyContainer(token, token.getLatexMode());
+                    EnvironmentToken replacement = new EnvironmentToken(token.getSlice(), token.getLatexMode(), environment, contentToken);
+                    tokens.set(i, replacement);
+                }
                 break;
             }
         }

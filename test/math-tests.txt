@@ -101,6 +101,12 @@ x = 3
   </mrow>
 </mfrac>
 ====
+1 \over
+<mfrac><mn>1</mn><mrow/></mfrac>
+====
+\over 2
+<mfrac><mrow/><mn>2</mn></mfrac>
+====
 \sqrt{x}
 <msqrt><mi>x</mi></msqrt>
 ====
