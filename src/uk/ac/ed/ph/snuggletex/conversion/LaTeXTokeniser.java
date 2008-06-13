@@ -827,6 +827,20 @@ public final class LaTeXTokeniser {
         /* Advance over the command name */
         position += 1 + commandName.length();
         
+        /* Convert whitespace-only command name to ' ', which allows a trailing '\' on a line
+         * to be equivalent to '\ ' 
+         */
+        boolean isWhitespaceCommand = true;
+        for (int i=0; i<commandName.length(); i++) {
+            if (!Character.isWhitespace(commandName.charAt(i))) {
+                isWhitespaceCommand = false;
+                break;
+            }
+        }
+        if (isWhitespaceCommand) {
+            commandName = " ";
+        }
+        
         /* Now see if we're doing a command or an environment */
         FlowToken result = null;
         if (commandName.equals("begin")) {

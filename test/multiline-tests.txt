@@ -390,3 +390,9 @@ Line 1<br/>
   </tbody>
 </table>
 ====
+## Regression: support '\' at the end of a line so that it is treated as '\ '
+\ae\
+X
+----
+&#xe6;&#xa0;X
+====
