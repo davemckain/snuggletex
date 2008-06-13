@@ -89,6 +89,9 @@ Change to <b>Bold Text</b>
 Change to {\bf Bold Text}
 Change to <b>Bold Text</b>
 ====
+Change to \textbf{Bold Text}
+Change to <b>Bold Text</b>
+====
 Empty $ $ Maths
 Empty <math xmlns="http://www.w3.org/1998/Math/MathML"/> Maths
 ====

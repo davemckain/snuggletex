@@ -8,7 +8,6 @@
 #
 # Lines starting with '#' are documentation and are stripped out when running tests
 #
-###########################
 ## Normal tests
 1
 <mn>1</mn>
@@ -438,4 +437,16 @@ _2^3
 ====
 \hspace{36bp}
 <mspace width="0.5in"/>
+====
+### Styling tests
+\mathrm{A+B}
+<mstyle mathvariant="normal"><mi>A</mi><mo>+</mo><mi>B</mi></mstyle>
+====
+### \rm behaves in the same way as \mathrm
+{\rm A+B}
+<mstyle mathvariant="normal"><mi>A</mi><mo>+</mo><mi>B</mi></mstyle>
+====
+### \textrm behaves differently in that its content is parsed in text mode
+\textrm{A+B}
+<mstyle mathvariant="normal"><mtext>A+B</mtext></mstyle>
 ====

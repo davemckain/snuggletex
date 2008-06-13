@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.semantics;
 
 /**
- * Represents styled text.
+ * Represents styled text in either MATH and/or TEXT Modes.
  * 
  * @author  David McKain
  * @version $Revision$
@@ -15,7 +15,7 @@ public enum StyleDeclarationInterpretation implements TextInterpretation {
 
     BF("div", "bf", "b",    null, "bold"),
     RM("div", "rm", "span", "rm", "normal"),
-    EM("div", "em", "em",   null, null),
+    EM("div", "em", "em",   null, "italic"),
     IT("div", "it", "i",    null, "italic"),
     TT("div", "tt", "tt",   null, "monospace"),
     SC("div", "sc", "span", "sc", null),
@@ -37,10 +37,22 @@ public enum StyleDeclarationInterpretation implements TextInterpretation {
     
     ;
     
+    /** Name of resulting XHTML block element name */
     private final String targetBlockXHTMLElementName;
+    
+    /** Name of resulting CSS class for XHTML block elements */
     private final String targetBlockCSSClassName;
+    
+    /** Name of resulting XHTML inline element name */
     private final String targetInlineXHTMLElementName;
+    
+    /** Name of resulting CSS class for XHTML inline elements */
     private final String targetInlineCSSClassName;
+    
+    /** 
+     * Name of 'variant' attribute in resulting MathML <mstyle/> element, if supported, or null
+     * if this style cannot be used in Math mode.
+     */
     private final String targetMathMLMathVariantName;
     
     private StyleDeclarationInterpretation(final String targetBlockXHTMLElementName,

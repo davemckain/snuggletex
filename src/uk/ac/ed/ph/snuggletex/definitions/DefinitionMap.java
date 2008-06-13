@@ -127,12 +127,21 @@ public final class DefinitionMap {
     }
     
     public BuiltinCommand addComplexCommandOneArg(final String name, final boolean allowOptionalArgument,
-            final EnumSet<LaTeXMode> allowedModes,
-            final LaTeXMode argumentMode,
+            final EnumSet<LaTeXMode> allowedModes, final LaTeXMode argumentMode,
             final CommandHandler nodeBuilder, final TextFlowContext context) {
         return addCommand(new BuiltinCommand(name, CommandType.COMPLEX, allowOptionalArgument, 1,
                 allowedModes, new LaTeXMode[] { argumentMode },
                 null, nodeBuilder,
+                context, null));
+    }
+    
+    public BuiltinCommand addComplexCommandOneArg(final String name, final boolean allowOptionalArgument,
+            final EnumSet<LaTeXMode> allowedModes, final LaTeXMode argumentMode,
+            final Interpretation interpretation, final CommandHandler nodeBuilder,
+            final TextFlowContext context) {
+        return addCommand(new BuiltinCommand(name, CommandType.COMPLEX, allowOptionalArgument, 1,
+                allowedModes, new LaTeXMode[] { argumentMode },
+                interpretation, nodeBuilder,
                 context, null));
     }
     

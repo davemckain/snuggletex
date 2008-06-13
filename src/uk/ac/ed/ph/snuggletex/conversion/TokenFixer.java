@@ -276,7 +276,7 @@ public final class TokenFixer {
     /**
      * Infers explicit paragraphs by searching for the traditional LaTeX
      * {@link TokenType#NEW_PARAGRAPH} and/or {@link GlobalBuiltins#PAR} tokens, replacing with
-     * the more tree-like {@link GlobalBuiltins#PARAGRAPH}.
+     * the more tree-like {@link GlobalBuiltins#PARAGRAPH_COMMAND}.
      * 
      * @param tokens
      */
@@ -291,7 +291,7 @@ public final class TokenFixer {
                 /* This token is an explicit "end current paragraph" token */
                 hasParagraphs = true;
                 if (!paragraphBuilder.isEmpty()) {
-                    resultBuilder.add(buildGroupedCommandToken(token, GlobalBuiltins.PARAGRAPH, paragraphBuilder));
+                    resultBuilder.add(buildGroupedCommandToken(token, GlobalBuiltins.PARAGRAPH_COMMAND, paragraphBuilder));
                     paragraphCount++;
                 }
             }
@@ -300,7 +300,7 @@ public final class TokenFixer {
                  * being built and then add token. */
                 hasParagraphs = true;
                 if (!paragraphBuilder.isEmpty()) {
-                    CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.PARAGRAPH, paragraphBuilder);
+                    CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.PARAGRAPH_COMMAND, paragraphBuilder);
                     resultBuilder.add(leftOver);
                     paragraphCount++;
                 }
@@ -326,7 +326,7 @@ public final class TokenFixer {
         
         /* Finish off current paragraph */
         if (!paragraphBuilder.isEmpty()) {
-            CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.PARAGRAPH, paragraphBuilder);
+            CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.PARAGRAPH_COMMAND, paragraphBuilder);
             resultBuilder.add(leftOver);
             paragraphCount++;
         }
@@ -343,7 +343,7 @@ public final class TokenFixer {
              * comments and stuff. As a slight optimisation, we'll pull up the paragraph's contents.
              */
             for (FlowToken resultToken : resultBuilder) {
-                if (resultToken.isCommand(GlobalBuiltins.PARAGRAPH)) {
+                if (resultToken.isCommand(GlobalBuiltins.PARAGRAPH_COMMAND)) {
                     tokens.addAll(((CommandToken) resultToken).getArguments()[0].getContents());
                 }
                 else {
@@ -555,17 +555,16 @@ public final class TokenFixer {
     //-----------------------------------------
     // MathML stuff
     
-    private void visitSiblingsMathMode(ArgumentContainerToken parent, List<FlowToken> tokens) throws SnuggleParseException {
+    private void visitSiblingsMathMode(ArgumentContainerToken parentToken, List<FlowToken> tokens)
+            throws SnuggleParseException {
+        if (tokens.isEmpty()) {
+            return;
+        }
+        
         /* Perform fixes and semantic guess work as required if the tokens are in a context that would normally
          * make up some kind of expression. Examples where this is not the case is in the structural parts
          * of tabular content (after being fixed) which contain either a number of TABLE_ROW or TABLE_COLUMN
          * tokens.
-         */
-        if (tokens.isEmpty()) {
-            return;
-        }
-
-        /* Decide whether we've got something structural as opposed to an expression.
          * 
          * NOTE: We may need to add things here if new types of structures need to be considered.
          */
@@ -581,13 +580,14 @@ public final class TokenFixer {
         /* If it looks like we've got an expression then tidy it up and try to infer semantics */
         if (!isStructural) {
             /* The order below is important in order to establish precedence */
-            fencePairedParentheses(parent, tokens); /* (Want to get parentheses first) */
-            fixOverInstances(parent, tokens);
-            fixSubscriptAndSuperscripts(parent, tokens);
+            groupStyleCommands(parentToken, tokens);
+            fencePairedParentheses(parentToken, tokens); /* (Want to get parentheses first) */
+            fixOverInstances(parentToken, tokens);
+            fixSubscriptAndSuperscripts(parentToken, tokens);
             fixPrimes(tokens);
             if (sessionContext.getConfiguration().isInferringMathStructure()) {
-                inferParenthesisFences(parent, tokens);
-                groupOverInfixOperators(parent, tokens);
+                inferParenthesisFences(parentToken, tokens);
+                groupOverInfixOperators(parentToken, tokens);
                 inferApplyFunctionAndInvisibleTimes(tokens);
             }
         }

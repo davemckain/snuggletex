@@ -10,6 +10,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.Globals.MATH_MODE_ONLY;
 import static uk.ac.ed.ph.snuggletex.definitions.Globals.PARA_MODE_ONLY;
 import static uk.ac.ed.ph.snuggletex.definitions.Globals.TEXT_MODE_ONLY;
 import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.LR;
+import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.ALLOW_INLINE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.IGNORE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML_BLOCK;
@@ -82,7 +83,7 @@ public final class GlobalBuiltins {
     public static BuiltinCommand RENEWENVIRONMENT;
     public static BuiltinCommand OVER;
     public static BuiltinCommand PAR;
-    public static BuiltinCommand PARAGRAPH;
+    public static BuiltinCommand PARAGRAPH_COMMAND;
     public static BuiltinCommand TABLE_COLUMN;
     public static BuiltinCommand TABLE_ROW;
     public static BuiltinCommand VERB;
@@ -153,7 +154,7 @@ public final class GlobalBuiltins {
          * I am not allowing this to be directly input, as this makes processing a bit easier
          * since it avoids the possibility of nested paragraphs.
          */
-        PARAGRAPH = map.addComplexCommandSameArgMode("<paragraph>", false, 1, TEXT_MODE_ONLY, new ParagraphBuilder(), START_NEW_XHTML_BLOCK);
+        PARAGRAPH_COMMAND = map.addComplexCommandSameArgMode("<paragraph>", false, 1, TEXT_MODE_ONLY, new ParagraphBuilder(), START_NEW_XHTML_BLOCK);
         
         /* Tree version of standard \item. Any \items are converted to these during token fixing.
          * I'm not allowing this to be directly input, which makes list handling a bit easier.
@@ -193,34 +194,41 @@ public final class GlobalBuiltins {
         MSUP_OR_MOVER = map.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
         MSUBSUP_OR_MUNDEROVER = map.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
         
-        /* old-style P/LR mode style change macros, slightly complicated due to the way they
+        /* Old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.
          * These are replaced by environments of the same name during token fixing, which agrees
          * with LaTeX spec. (see p28 of Lamport)
          * 
          * Note: each of these MUST be accompanied by a corresponding Environment definition.
          * (These are declared later in this file.)
+         * 
+         * As of 1.0.0-beta4, these are supported in MATH mode and behave in the same way as
+         * the corresponding member of \mathxx{..} command family (defined below).
          */
-        map.addSimpleCommand("em", TEXT_MODE_ONLY, StyleDeclarationInterpretation.EM, null, null);
-        map.addSimpleCommand("bf", TEXT_MODE_ONLY, StyleDeclarationInterpretation.BF, null, null);
-        map.addSimpleCommand("rm", TEXT_MODE_ONLY, StyleDeclarationInterpretation.RM, null, null);
-        map.addSimpleCommand("it", TEXT_MODE_ONLY, StyleDeclarationInterpretation.IT, null, null);
-        map.addSimpleCommand("tt", TEXT_MODE_ONLY, StyleDeclarationInterpretation.TT, null, null);
-        map.addSimpleCommand("sc", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SC, null, null);
-        map.addSimpleCommand("sl", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SL, null, null);
-        map.addSimpleCommand("sf", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SF, null, null);
+        map.addSimpleCommand("em", ALL_MODES, StyleDeclarationInterpretation.EM, null, null);
+        map.addSimpleCommand("bf", ALL_MODES, StyleDeclarationInterpretation.BF, null, null);
+        map.addSimpleCommand("rm", ALL_MODES, StyleDeclarationInterpretation.RM, null, null);
+        map.addSimpleCommand("it", ALL_MODES, StyleDeclarationInterpretation.IT, null, null);
+        map.addSimpleCommand("tt", ALL_MODES, StyleDeclarationInterpretation.TT, null, null);
+        map.addSimpleCommand("sc", ALL_MODES, StyleDeclarationInterpretation.SC, null, null);
+        map.addSimpleCommand("sl", ALL_MODES, StyleDeclarationInterpretation.SL, null, null);
+        map.addSimpleCommand("sf", ALL_MODES, StyleDeclarationInterpretation.SF, null, null);
         
         /* New style P/LR mode style change macros. These take the text they are being applied to
          * as a single argument.
+         * 
+         * As of 1.0.0-beta4, we now support using these macros in MATH mode. We force the arguments
+         * into PARAGRAPH mode here so that the resulting content will end up inside <mtext/>
+         * element(s) wrapped inside a <mstyle/> setting the appropriate style.
          */
-        map.addComplexCommandSameArgMode("textrm", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.RM, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("textsf", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.SF, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("textit", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.IT, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("textsl", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.SL, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("textsc", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.SC, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("textbf", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.BF, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("texttt", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.TT, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("emph", false, 1, TEXT_MODE_ONLY, StyleDeclarationInterpretation.EM, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("textrm", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.RM, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("textsf", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SF, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("textit", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.IT, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("textsl", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SL, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("textsc", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SC, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("textbf", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.BF, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("texttt", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.TT, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("emph",   false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.EM, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
         
         /* Text size control macros. As above, these are converted to environments of the same name
          * during token fixing, which are easier to deal with.

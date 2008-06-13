@@ -17,7 +17,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * This builds the content of a (fixed) {@link GlobalBuiltins#PARAGRAPH} token.
+ * This builds the content of a (fixed) {@link GlobalBuiltins#PARAGRAPH_COMMAND} token.
  * 
  * @author  David McKain
  * @version $Revision$
