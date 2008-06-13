@@ -276,6 +276,19 @@ a\not \in A
 \vert
 <mo>|</mo>
 ====
+\left< x \right>
+<mfenced open='&lt;' close='&gt;'>
+  <mi>x</mi>
+</mfenced>
+====
+|x|
+<mo>|</mo><mi>x</mi><mo>|</mo>
+====
+\left| x \right|
+<mfenced open='|' close='|'>
+  <mi>x</mi>
+</mfenced>
+====
 ## Test inference of fences including \vert which can't be inferred
 (1 + \vert x-[a-b] \vert)
 <mfenced open='(' close=')'>
@@ -438,15 +451,15 @@ _2^3
 \hspace{36bp}
 <mspace width="0.5in"/>
 ====
-### Styling tests
+## Styling tests
 \mathrm{A+B}
 <mstyle mathvariant="normal"><mi>A</mi><mo>+</mo><mi>B</mi></mstyle>
 ====
-### \rm behaves in the same way as \mathrm
+## \rm behaves in the same way as \mathrm
 {\rm A+B}
 <mstyle mathvariant="normal"><mi>A</mi><mo>+</mo><mi>B</mi></mstyle>
 ====
-### \textrm behaves differently in that its content is parsed in text mode
+## \textrm behaves differently in that its content is parsed in text mode
 \textrm{A+B}
 <mstyle mathvariant="normal"><mtext>A+B</mtext></mstyle>
 ====

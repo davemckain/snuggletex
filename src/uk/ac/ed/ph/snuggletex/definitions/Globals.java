@@ -59,7 +59,10 @@ public final class Globals {
        '(', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_BRACKET, MathMLOperator.CLOSE_BRACKET, BracketType.OPENER),
        ')', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_BRACKET, MathMLOperator.OPEN_BRACKET, BracketType.CLOSER),
        '[', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET, MathMLOperator.CLOSE_SQUARE_BRACKET, BracketType.OPENER),
-       ']', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET, MathMLOperator.OPEN_SQUARE_BRACKET, BracketType.CLOSER)
+       ']', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET, MathMLOperator.OPEN_SQUARE_BRACKET, BracketType.CLOSER),
+       '<', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_ANGLE_BRACKET, MathMLOperator.CLOSE_ANGLE_BRACKET, BracketType.OPENER),
+       '>', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_ANGLE_BRACKET, MathMLOperator.OPEN_ANGLE_BRACKET, BracketType.CLOSER),
+       '|', new MathBracketOperatorInterpretation(MathMLOperator.VERT_BRACKET, MathMLOperator.VERT_BRACKET, BracketType.OPENER_OR_CLOSER),
     };
     
     private static final Map<Character, MathInterpretation> mathCharacterMap;
