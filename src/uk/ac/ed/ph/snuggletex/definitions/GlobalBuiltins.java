@@ -499,6 +499,8 @@ public final class GlobalBuiltins {
         
         /* Extra identifiers */
         map.addSimpleMathCommand("hbar", new MathIdentifierInterpretation("\u210f"));
+        map.addSimpleMathCommand("aa", new MathIdentifierInterpretation("\u00e5"));
+        map.addSimpleMathCommand("AA", new MathIdentifierInterpretation("\u00c5"));
 
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.
