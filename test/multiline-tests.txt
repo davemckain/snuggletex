@@ -377,3 +377,16 @@ Line 1<br/>
   </mtable>
 </math>
 ====
+## Regression: this trivial endpoint case was producing no output due to a silly error by me.
+\begin{tabular}{c}
+  Hello
+\end{tabular}
+----
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-center">Hello</td>
+    </tr>
+  </tbody>
+</table>
+====

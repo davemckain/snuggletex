@@ -486,7 +486,7 @@ public final class TokenFixer {
          * create a fake token.
          */
         List<FlowToken> entries = contents;
-        if (entries.size()>1 && !entries.get(entries.size()-1).isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
+        if (entries.size()>0 && !entries.get(entries.size()-1).isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
             entries = new ArrayList<FlowToken>(entries);
             entries.add(null);
         }
