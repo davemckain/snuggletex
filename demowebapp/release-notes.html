@@ -37,6 +37,11 @@
         Added support for having trailing <tt>\</tt> on lines, behaving as in LaTeX.
         (I.e. effectively concatenating the two lines with a '<tt>\ </tt>' command.)
       </li>
+      <li>
+        Fixed bug in matching up curly and square brackets when the content contains
+        a LaTeX comment containing close brackets. These were being counted as balancers,
+        rather than being ignored.
+      </li>
     </ul>
 
     <hr />

@@ -396,3 +396,24 @@ X
 ----
 &#xe6;&#xa0;X
 ====
+## Regression: comments were not being skipped when matching up curly/square brackets
+\newcommand{\bob}{%} This close bracket should not be counted!
+A}
+\bob
+----
+A
+====
+### Similar regression case to above
+\newcommand{\bob}[1]{|#1|}
+\bob{A%}
+B}
+----
+|AB|
+====
+### Similar regression but with square brackets
+\newcommand{\bob}[1][]{|#1|}
+\bob[A%]
+B]
+----
+|AB|
+====

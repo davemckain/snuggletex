@@ -2077,26 +2077,38 @@ public final class LaTeXTokeniser {
     private int findEndSquareBrackets(final int openSquareBracketIndex) {
         /* NOTE: Curly brackets protect square brackets */
         boolean inEscape = false; /* Whether we are in the middle of a character escape */
+        boolean inComment = false; /* Whether we are inside a comment, i.e. skipping to end of line */
         int index;
         int c;
         for (index=openSquareBracketIndex; index<workingDocument.length(); index++) {
             c = workingDocument.charAt(index);
-            if (c==']') {
+            if (inComment) {
+            	/* We're in a comment, so skip this character */
+            	if (c=='\n') {
+            		/* End of line so end of comment */
+            		inComment = false;
+            	}
+            }
+            else if (c==']') {
                 return index;
             }
-            else if (!inEscape && c=='\\') {
+            else if (inEscape) {
+                /* End of an escape - stop escaping and go back to normal */
+                inEscape = false;
+            }
+            else if (c=='\\') {
                 /* Start of an escape */
                 inEscape = true;
             }
-            else if (!inEscape && c=='{') {
+            else if (c=='{') {
                 /* We have started {....}, which will protect any square brackets inside.
                  * Let's move over this.
                  */
                 index = findEndCurlyBrackets(index);
             }
-            else if (inEscape) {
-                /* End of an escape - stop escaping and go back to normal */
-                inEscape = false;
+            else if (c=='%') {
+            	/* Start of a comment */
+            	inComment = true;
             }
         }
         return -1;
@@ -2109,6 +2121,7 @@ public final class LaTeXTokeniser {
      */
     private int findEndCurlyBrackets(final int openBraceIndex) {
         boolean inEscape = false; /* Whether we are in the middle of a character escape */
+        boolean inComment = false; /* Whether we are inside a comment, i.e. skipping to end of line */
         int depth = 0; /* Current depth of brackets */
         int index;
         int c;
@@ -2121,6 +2134,17 @@ public final class LaTeXTokeniser {
             else if (inEscape) {
                 /* End of an escape - stop escaping and go back to normal */
                 inEscape = false;
+            }
+            else if (inComment) {
+            	/* In a comment, so skip */
+            	if (c=='\n') {
+            		/* End of a comment line */
+            		inComment = false;
+            	}
+            }
+            else if (c=='%') {
+            	/* Start of a comment */
+            	inComment = true;
             }
             else if (c=='{') {
                 /* Found generic opener */
