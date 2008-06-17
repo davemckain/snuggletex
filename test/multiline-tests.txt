@@ -403,17 +403,25 @@ A}
 ----
 A
 ====
-### Similar regression case to above
+## Similar regression case to above
 \newcommand{\bob}[1]{|#1|}
 \bob{A%}
 B}
 ----
 |AB|
 ====
-### Similar regression but with square brackets
+## Similar regression but with square brackets
 \newcommand{\bob}[1][]{|#1|}
 \bob[A%]
 B]
 ----
 |AB|
+====
+## Regression: commands at end of lines were eating up the newline as trailing whitespace
+Hello\ldots
+
+There\ldots
+----
+<p>Hello&#x2026;</p>
+<p>There&#x2026;</p>
 ====

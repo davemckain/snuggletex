@@ -1081,7 +1081,7 @@ public final class LaTeXTokeniser {
             isFunnyCommand = !((c>='a' && c<='z') || (c>='A' && c<='Z'));
         }
         if (!isFunnyCommand) {
-            skipOverWhitespace();
+            skipOverTrailingWhitespace();
         }
         return new CommandToken(workingDocument.freezeSlice(startTokenIndex, position),
                 currentModeState.latexMode, command);
@@ -2163,25 +2163,24 @@ public final class LaTeXTokeniser {
     }
     
     /**
-     * Locates the first non-whitespace character in the document after the given index.
-     * <p>
-     * The result will be >= startIndex, and strictly greater if there was whitespace found.
-     * 
-     * @param startIndex
+     * Advances the current position past any whitespace, including newlines.
      */
-    private int findNextNonWhitespace(final int startIndex) {
-        int index = startIndex;
-        while (index<workingDocument.length() && Character.isWhitespace(workingDocument.charAt(index))) {
-            index++;
+    private void skipOverWhitespace() {
+        while (position<workingDocument.length() && Character.isWhitespace(workingDocument.charAt(position))) {
+            position++;
         }
-        return index;
     }
     
     /**
-     * Advances the current position past any whitespace.
+     * Advances the current position past any whitespace, excluding newlines.
      */
-    private void skipOverWhitespace() {
-        position = findNextNonWhitespace(position);
+    private void skipOverTrailingWhitespace() {
+        int c;
+        while (position<workingDocument.length()
+                && Character.isWhitespace(c = workingDocument.charAt(position))
+                && c!='\n') {
+            position++;
+        }
     }
     
     //-----------------------------------------
