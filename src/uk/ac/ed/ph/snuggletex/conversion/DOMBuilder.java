@@ -235,7 +235,7 @@ public final class DOMBuilder {
                  * which is not really feasible so we just generate a space instead.
                  */
                 if (isBuildingMathMLIsland()) {
-                    appendMathMLElement(parentElement, "mspace");
+                    appendMathMLSpace(parentElement, "1ex");
                 }
                 else {
                     appendTextNode(parentElement, " ", false);
@@ -345,8 +345,17 @@ public final class DOMBuilder {
     	}
     	String resultString = resultBuilder.toString();
 	    if (isBuildingMathMLIsland()) {
-	        /* Need to wrap in an <mtext>...</mtext> */
-	        appendMathMLTextElement(parentElement, "mtext", resultString, false);
+	        /* Need to wrap in an <mtext>...</mtext>.
+	         * Note that leading and trailing whitespace is ignored in <mtext/> elements so, if
+	         * whitespace is asked for, it must be added via a <mspace/>
+	         */
+	        if (Character.isWhitespace(resultString.charAt(0))) {
+	            appendMathMLSpace(parentElement, "1ex");
+	        }
+	        appendMathMLTextElement(parentElement, "mtext", resultString, true);
+	        if (Character.isWhitespace(resultString.charAt(resultString.length()-1))) {
+               appendMathMLSpace(parentElement, "1ex");
+	        }
 	    }
 	    else {
 	        appendTextNode(parentElement, resultString, false);
@@ -446,6 +455,12 @@ public final class DOMBuilder {
         Element mathMLElement = appendMathMLElement(parentElement, elementName);
         appendTextNode(mathMLElement, content, trim);
         return mathMLElement;
+    }
+    
+    public Element appendMathMLSpace(Element parentElement, String width) {
+        Element mspaceElement = appendMathMLElement(parentElement, "mspace");
+        mspaceElement.setAttribute("width", width);
+        return mspaceElement;
     }
     
     public Element appendMathMLOperatorElement(Element parentElement, MathMLOperator operator) {

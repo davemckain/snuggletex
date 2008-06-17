@@ -328,11 +328,31 @@ a\not \in A
 <mrow><mrow><mtext>A</mtext></mrow></mrow>
 ====
 \mbox{if $x=1$}
-<mrow><mtext>if </mtext><mrow><mi>x</mi><mo>=</mo><mn>1</mn></mrow></mrow>
+<mrow><mtext>if</mtext><mspace width="1ex"/><mrow><mi>x</mi><mo>=</mo><mn>1</mn></mrow></mrow>
+====
+\mbox{if $x=1$ or $x=2$}
+<mrow>
+  <mtext>if</mtext>
+  <mspace width="1ex"/>
+  <mrow>
+    <mi>x</mi>
+    <mo>=</mo>
+    <mn>1</mn>
+  </mrow>
+  <mspace width="1ex"/>
+  <mtext>or</mtext>
+  <mspace width="1ex"/>
+  <mrow>
+    <mi>x</mi>
+    <mo>=</mo>
+    <mn>2</mn>
+  </mrow>
+</mrow>
 ====
 \mbox{if $x\mbox{is}3$}
 <mrow>
-  <mtext>if </mtext>
+  <mtext>if</mtext>
+  <mspace width="1ex"/>
   <mrow>
     <mi>x</mi>
     <mo>&#x2062;</mo>
@@ -345,7 +365,7 @@ a\not \in A
 </mrow>
 ====
 \mbox{A\par B}
-<mrow><mtext>A</mtext><mspace/><mtext>B</mtext></mrow>
+<mrow><mtext>A</mtext><mspace width="1ex"/><mtext>B</mtext></mrow>
 ====
 ########################
 # Tests various "empty" cases
