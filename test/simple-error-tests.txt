@@ -196,6 +196,12 @@ TDEL00
 $\begin{fenced}{Hello}{End} a+b \end{fenced}$
 TDEM00
 ====
+$\begin{array}{x} 1 \end{array}$
+TDEMA0
+====
+$\begin{array}{} \end{array}$
+TDEMA1
+====
 \'{\mbox{a}}
 TDETA0
 ====

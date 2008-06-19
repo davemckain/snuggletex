@@ -5,12 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
-import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -21,7 +18,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * Handles the <tt>eqnarray*</tt> environment.
+ * Handles the <tt>eqnarray*</tt> environment. 
  * 
  * @author  David McKain
  * @version $Revision$
@@ -31,7 +28,7 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws DOMException, SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
-        int[] geometry = computeTableDimensions(token.getContent());
+        int[] geometry = TabularBuilder.computeTableDimensions(token.getContent());
         int numColumns = geometry[1];
 
         /* Build MathML */
@@ -54,43 +51,5 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
             }
         }
         builder.setOutputContext(OutputContext.XHTML);
-    }
-     
-    /**
-     * This is fairly generic so could be shared amongst all of the related builders.
-     * 
-     * @param tableContent
-     */
-    protected int[] computeTableDimensions(ArgumentContainerToken tableContent) {
-        int maxColumns = 0;
-        int rowCount = 0;
-        int colCountWithinRow = 0;
-        for (FlowToken contentToken : tableContent) {
-            if (contentToken.isCommand(GlobalBuiltins.TABLE_ROW)) {
-                rowCount++;
-                colCountWithinRow = 0;
-                CommandToken rowToken = (CommandToken) contentToken;
-                ArgumentContainerToken rowContents = rowToken.getArguments()[0];
-                for (FlowToken rowContentToken : rowContents) {
-                    if (rowContentToken.isCommand(GlobalBuiltins.TABLE_COLUMN)) {
-                        colCountWithinRow++;
-                    }
-                    else {
-                        throw new SnuggleLogicException("Did not expect to find token "
-                                + rowContentToken
-                                + " within a table row");
-                    }
-                }
-                if (colCountWithinRow>maxColumns) {
-                    maxColumns = colCountWithinRow;
-                }
-            }
-            else {
-                throw new SnuggleLogicException("Did not expect to find token "
-                        + contentToken
-                        + " within a top-level table content");
-            }
-        }
-        return new int[] { rowCount, maxColumns };
     }
 }

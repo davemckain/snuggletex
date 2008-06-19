@@ -85,6 +85,8 @@ public enum ErrorCode {
     TDEX02(),
     TDEX03(),
     TDEM00(),
+    TDEMA0(),
+    TDEMA1(),
     TDEL00(),
     TDETA0(),
     TDETA1(),

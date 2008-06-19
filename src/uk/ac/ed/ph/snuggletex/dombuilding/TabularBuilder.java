@@ -221,7 +221,7 @@ public final class TabularBuilder implements CommandHandler, EnvironmentHandler 
      * 
      * @return { rowCount, columnCount } pair
      */
-    protected int[] computeTableDimensions(ArgumentContainerToken tableContent) {
+    protected static int[] computeTableDimensions(ArgumentContainerToken tableContent) {
         int maxColumns = 0;
         int rowCount = 0;
         int colCountWithinRow = 0;

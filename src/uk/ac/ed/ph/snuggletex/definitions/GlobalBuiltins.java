@@ -16,6 +16,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.IGNORE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML_BLOCK;
 
 import uk.ac.ed.ph.snuggletex.dombuilding.AccentBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.ArrayBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.BoxBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
@@ -98,6 +99,7 @@ public final class GlobalBuiltins {
     public static BuiltinEnvironment ITEMIZE;
     public static BuiltinEnvironment ENUMERATE;
     public static BuiltinEnvironment TABULAR;
+    public static BuiltinEnvironment ARRAY;
     public static BuiltinEnvironment EQNARRAY;
     public static BuiltinEnvironment EQNARRAYSTAR;
     
@@ -180,24 +182,6 @@ public final class GlobalBuiltins {
         map.addComplexCommandOneArg("subsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
         map.addComplexCommandOneArg("subsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
         
-        /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
-        APPLY_FUNCTION = map.addSimpleMathCommand("af", new SimpleMathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
-        INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new SimpleMathOperatorInterpretation(MathMLOperator.INVISIBLE_TIMES));
-        
-        /* Placeholders for corresponding MathML constructs. These are substituted from traditional LaTeX constructs
-         * by {@link TokenFixer}.
-         * 
-         * Note that subscript/superscripts will either be converted to <msub/> et al or <munder/> et al
-         * according to the type of operator being handled.
-         */
-        MROW = map.addComplexCommandSameArgMode("<mrow>", false, 1, MATH_MODE_ONLY, new MrowBuilder(), null);
-        MSUB_OR_MUNDER = map.addComplexCommandSameArgMode("<msubormunder>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
-        MSUP_OR_MOVER = map.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
-        MSUBSUP_OR_MUNDEROVER = map.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
-        
-        /* A related idea to sub/super is \\stackrel */
-        map.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelBuilder(), null);
-        
         /* Old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.
          * These are replaced by environments of the same name during token fixing, which agrees
@@ -263,6 +247,24 @@ public final class GlobalBuiltins {
         
         //---------------------------------------------------------------
         // Math Mode stuff (see LaTeX Companion pp39-52)
+        
+        /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
+        APPLY_FUNCTION = map.addSimpleMathCommand("af", new SimpleMathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
+        INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new SimpleMathOperatorInterpretation(MathMLOperator.INVISIBLE_TIMES));
+        
+        /* Placeholders for corresponding MathML constructs. These are substituted from traditional LaTeX constructs
+         * by {@link TokenFixer}.
+         * 
+         * Note that subscript/superscripts will either be converted to <msub/> et al or <munder/> et al
+         * according to the type of operator being handled.
+         */
+        MROW = map.addComplexCommandSameArgMode("<mrow>", false, 1, MATH_MODE_ONLY, new MrowBuilder(), null);
+        MSUB_OR_MUNDER = map.addComplexCommandSameArgMode("<msubormunder>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MSUP_OR_MOVER = map.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        MSUBSUP_OR_MUNDEROVER = map.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        
+        /* A related idea to sub/super is \\stackrel */
+        map.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelBuilder(), null);
         
         /* Styling (c.f. equivalents in text mode, listed above) */
         map.addComplexCommandSameArgMode("mathrm", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.RM, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
@@ -589,6 +591,7 @@ public final class GlobalBuiltins {
         ITEMIZE = map.addEnvironment("itemize", PARA_MODE_ONLY, null, null, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
         ENUMERATE = map.addEnvironment("enumerate", PARA_MODE_ONLY, null, null, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
         TABULAR = map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, LaTeXMode.PARAGRAPH, null, new TabularBuilder(), START_NEW_XHTML_BLOCK);
+        ARRAY = map.addEnvironment("array", false, 1, MATH_MODE_ONLY, LaTeXMode.MATH, null, new ArrayBuilder(), null);
         EQNARRAY = map.addEnvironment("eqnarray", PARA_MODE_ONLY, LaTeXMode.MATH, null, new EqnArrayBuilder(), START_NEW_XHTML_BLOCK);
         EQNARRAYSTAR = map.addEnvironment("eqnarray*", PARA_MODE_ONLY, LaTeXMode.MATH, null, new EqnArrayBuilder(), START_NEW_XHTML_BLOCK);
         

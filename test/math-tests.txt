@@ -390,6 +390,9 @@ a\not \in A
 \hat{ab}
 <mover accent="true"><mrow><mi>a</mi><mo>&#x2062;</mo><mi>b</mi></mrow><mo>&#x302;</mo></mover>
 ====
+\stackrel{a}{+}
+<mover><mo>+</mo><mi>a</mi></mover>
+====
 x'
 <msup><mi>x</mi><mi>'</mi></msup>
 ====
@@ -436,6 +439,18 @@ v_{\mbox{\rm av}}
 ====
 \_
 <mi>_</mi>
+====
+\begin{array}{lc} 1 & 2 \\ 3 & 4 \end{array}
+<mtable>
+  <mtr>
+    <mtd columnalign="left"><mn>1</mn></mtd>
+    <mtd columnalign="center"><mn>2</mn></mtd>
+  </mtr>
+  <mtr>
+    <mtd columnalign="left"><mn>3</mn></mtd>
+    <mtd columnalign="center"><mn>4</mn></mtd>
+  </mtr>
+</mtable>
 ====
 ## Regression test: inferring fences on empty expressions caused an Exception before
 ()

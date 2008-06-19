@@ -115,8 +115,10 @@ public final class TokenFixer {
         if (environment==GlobalBuiltins.ITEMIZE || environment==GlobalBuiltins.ENUMERATE) {
             fixListEnvironmentContent(environmentToken);
         }
-        else if (environment==GlobalBuiltins.TABULAR || environment==GlobalBuiltins.EQNARRAY
-                    || environment==GlobalBuiltins.EQNARRAYSTAR) {
+        else if (environment==GlobalBuiltins.TABULAR
+                || environment==GlobalBuiltins.ARRAY
+                || environment==GlobalBuiltins.EQNARRAY
+                || environment==GlobalBuiltins.EQNARRAYSTAR) {
             fixTabularEnvironmentContent(environmentToken);
         }
         
