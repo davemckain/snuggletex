@@ -29,6 +29,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathNotBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MfenceBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MrowBuilder;
@@ -193,6 +194,9 @@ public final class GlobalBuiltins {
         MSUB_OR_MUNDER = map.addComplexCommandSameArgMode("<msubormunder>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
         MSUP_OR_MOVER = map.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
         MSUBSUP_OR_MUNDEROVER = map.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, new MathLimitsBuilder(), null);
+        
+        /* A related idea to sub/super is \\stackrel */
+        map.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelBuilder(), null);
         
         /* Old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.
