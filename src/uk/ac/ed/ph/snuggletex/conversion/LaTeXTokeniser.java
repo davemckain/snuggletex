@@ -691,7 +691,8 @@ public final class LaTeXTokeniser {
      * Reads in a Math environment opened with <tt>$</tt> or <tt>$$</tt>.
      */
     private FlowToken readDollarMath() throws SnuggleParseException {
-    	/* Record current LaTeX mode */
+    	/* Record current LaTeX mode and position */
+        int openDollarPosition = position;
     	LaTeXMode startLatexMode = currentModeState.latexMode;
     	
         /* See if we are doing '$' or '$$' */
@@ -720,7 +721,7 @@ public final class LaTeXTokeniser {
         /* Right, that's it! */
         FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
         ArgumentContainerToken contentToken = new ArgumentContainerToken(contentSlice, LaTeXMode.MATH, contentResult.tokens);
-        FrozenSlice environmentSlice = workingDocument.freezeSlice(startTokenIndex, position);
+        FrozenSlice environmentSlice = workingDocument.freezeSlice(openDollarPosition, position);
         BuiltinEnvironment environment = isDisplayMath ? GlobalBuiltins.DISPLAYMATH : GlobalBuiltins.MATH;
         return new EnvironmentToken(environmentSlice, startLatexMode, environment, contentToken);
     }
