@@ -22,7 +22,8 @@ import org.junit.runners.Suite.SuiteClasses;
     MathTests.class,
     MultiLineTests.class,
     DefinitionMapTest.class,
-    CommandArgumentsTest.class
+    CommandArgumentsTest.class,
+    MathAnnotationTests.class
 })
 public final class SnuggleTeXTestSuite {
     

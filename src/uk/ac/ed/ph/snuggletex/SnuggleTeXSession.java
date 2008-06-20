@@ -12,6 +12,7 @@ import uk.ac.ed.ph.snuggletex.conversion.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.TokenFixer;
 import uk.ac.ed.ph.snuggletex.conversion.WebPageBuilder;
+import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
@@ -21,13 +22,20 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * This represents a single "job" for SnuggleTeX.
@@ -214,6 +222,64 @@ public final class SnuggleTeXSession implements SessionContext {
     }
     
     /**
+     * Convenience method to build a DOM {@link NodeList} representing the converted Tokens.
+     * These Nodes will belong to a "fake root" element in the
+     * {@link SnuggleTeX#SNUGGLETEX_NAMESPACE} namespace called "root".
+     * 
+     * @return resulting {@link NodeList} or null if failure caused the process to terminate
+     */
+    public NodeList buildDOMSubtree() {
+        return buildDOMSubtree(engine.getDefaultDOMBuilderOptions());
+    }
+    
+    /**
+     * Convenience method to build a DOM {@link NodeList} representing the converted Tokens.
+     * These Nodes will belong to a "fake root" element in the
+     * {@link SnuggleTeX#SNUGGLETEX_NAMESPACE} namespace called "root". The given
+     * {@link DOMBuilderOptions} Object is used to configure the process.
+     * 
+     * @return resulting {@link NodeList} or null if failure caused the process to terminate
+     */
+    public NodeList buildDOMSubtree(final DOMBuilderOptions options) {
+        Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        Element temporaryRoot = document.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "root");
+        document.appendChild(temporaryRoot);
+        if (!buildDOMSubtree(temporaryRoot, options)) {
+            return null;
+        }
+        return temporaryRoot.getChildNodes();
+    }
+    
+    /**
+     * Convenience method to create a well-formed external general parsed entity out of the
+     * currently parsed tokens.
+     * 
+     * @param options
+     * @return resulting XML or null if a failure caused the process the terminate
+     */
+    public String buildXMLString(final DOMBuilderOptions options) {
+        DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
+        Document document = documentBuilder.newDocument();
+        Element temporaryRoot = document.createElement("root");
+        if (!buildDOMSubtree(temporaryRoot)) {
+            return null;
+        }
+        NodeList nodes = temporaryRoot.getChildNodes();
+        for (int i=0, length=nodes.getLength(); i<length; i++) {
+            document.appendChild(nodes.item(i));
+        }
+        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+        StringWriter resultWriter = new StringWriter();
+        try {
+            transformerFactory.newTransformer().transform(new DOMSource(document), new StreamResult(resultWriter));
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Could not serialize DOM document", e);
+        }
+        return resultWriter.toString();
+    }
+    
+    /**
      * Builds a complete web page based on the currently parsed tokens, returning a DOM
      * {@link Document} Object. The provided {@link WebPageBuilderOptions} are used to
      * configure the process.
@@ -254,6 +320,8 @@ public final class SnuggleTeXSession implements SessionContext {
             return false;
         }
     }
+    
+
     
     //---------------------------------------------
     // Business helpers

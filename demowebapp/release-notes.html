@@ -56,6 +56,24 @@
       <li>
         Added support for the <tt>array</tt> environment.
       </li>
+      <li>
+        Added convenience method to <tt>SnuggleTeXSession</tt> that can create a
+        standalone <tt>NodeList</tt> inside a fresh <tt>Document</tt>, which
+        can be sometimes be useful.
+      </li>
+      <li>
+        Fixed bug in the reporting of the start index of a dollar math environment.
+      </li>
+      <li>
+        The <tt>eqnarray*</tt> environment and friends now generate MathML annotations
+        (if requested).
+      </li>
+      <li>
+        Added some new static methods to <tt>SnuggleTeX</tt>, such as some convenience methods
+        for driving web page generation and a method for extracting a SnuggleTeX annotation
+        from a created MathML <tt>math</tt> element (providing annotation generating is
+        turned on, of course).
+      </li>
     </ul>
 
     <hr />

@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
+import uk.ac.ed.ph.snuggletex.SnuggleTeX;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
@@ -18,7 +19,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * Handles the <tt>eqnarray*</tt> environment. 
+ * Handles the <tt>eqnarray*</tt> environment.
+ * 
+ * @see MathEnvironmentBuilder
  * 
  * @author  David McKain
  * @version $Revision$
@@ -30,13 +33,29 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
         /* Compute the geometry of the table and make sure its content model is OK */
         int[] geometry = TabularBuilder.computeTableDimensions(token.getContent());
         int numColumns = geometry[1];
+        
+        /* This is the element we'll append the <mtable/> to. It will be either <math/>
+         * (if no annotations) or <semantics/> (if annotations) */
+        Element mtableParent; 
 
-        /* Build MathML */
+        /* Build MathML container and structure */
         builder.setOutputContext(OutputContext.MATHML_BLOCK);
         Element mathElement = builder.appendMathMLElement(parentElement, "math");
         mathElement.setAttribute("display", "block");
+        if (builder.getOptions().isAddingMathAnnotations()) {
+            /* This is similar to what we do in MathEnvironmentBuilder. Things are a bit
+             * simpler here, though, as we are only going to generate a single <mtable/>
+             * element so there's no need to consider multiple child elements.
+             */
+            Element semantics = builder.appendMathMLElement(mathElement, "semantics");
+            mtableParent = semantics;
+        }
+        else {
+            mtableParent = mathElement;
+        }
         
-        Element mtableElement = builder.appendMathMLElement(mathElement, "mtable");
+        /* Build <mtable/> */
+        Element mtableElement = builder.appendMathMLElement(mtableParent, "mtable");
         Element mtrElement, mtdElement;
         for (FlowToken rowToken : token.getContent()) {
             mtrElement = builder.appendMathMLElement(mtableElement, "mtr");
@@ -50,6 +69,15 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
                 builder.appendMathMLElement(mtrElement, "mtd");
             }
         }
+        
+        /* Maybe create MathML annotation */
+        if (builder.getOptions().isAddingMathAnnotations()) {
+            Element annotation = builder.appendMathMLTextElement(mtableParent, "annotation",
+                    token.getSlice().extract().toString(), true);
+            annotation.setAttribute("encoding", SnuggleTeX.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+        }
+        
+        /* Reset output context back to XHTML */
         builder.setOutputContext(OutputContext.XHTML);
     }
 }
