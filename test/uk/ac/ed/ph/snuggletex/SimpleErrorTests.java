@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 
 import java.util.Arrays;
@@ -12,9 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.Assert;
 
@@ -61,10 +59,7 @@ public class SimpleErrorTests {
         List<InputError> errors;
         try {
             /* Parse document and build XML */
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setNamespaceAware(true);
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document resultDocument = docBuilder.newDocument();
+            Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
             Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
             resultDocument.appendChild(rootElement);
             

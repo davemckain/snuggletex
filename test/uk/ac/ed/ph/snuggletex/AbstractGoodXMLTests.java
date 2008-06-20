@@ -9,15 +9,12 @@ import static org.easymock.EasyMock.createStrictControl;
 
 import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectDumper;
-import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SessionConfiguration;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.conversion.TokenFixer;
+import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.testutils.EasyMockContentHandler;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -27,8 +24,6 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
@@ -114,10 +109,7 @@ abstract class AbstractGoodXMLTests {
             checkNoErrors(context);
     
             /* Convert to XML */
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setNamespaceAware(true);
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document resultDocument = docBuilder.newDocument();
+            Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
             Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
             resultDocument.appendChild(rootElement);
             
