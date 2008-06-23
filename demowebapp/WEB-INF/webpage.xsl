@@ -68,15 +68,21 @@ All Rights Reserved
         <xsl:apply-templates select="." mode="make-content"/>
       </div>
       <div id="copyright">
-        SnuggleTeX Release @uk.ac.ed.ph.snuggletex.version@ &#x2014;
-        <a href="{$context-path}/release-notes.html">Release Notes</a>
-        <br />
-        Copyright &#xa9; 2008
-        <a href="http://www.ph.ed.ac.uk">The School of Physics</a>,
-        <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
-        <br />
-        For more information, contact
-        <a href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">David McKain</a>.
+        <p>
+          SnuggleTeX Release @uk.ac.ed.ph.snuggletex.version@ &#x2014;
+          <a href="{$context-path}/release-notes.html">Release Notes</a>
+          <br />
+          Copyright &#xa9; 2008
+          <a href="http://www.ph.ed.ac.uk">The School of Physics</a>,
+          <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
+          <br />
+          For more information, contact
+          <a href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">David McKain</a>.
+        </p>
+        <p>
+          The University of Edinburgh is a charitable body, registered in Scotland,
+          with registration number SC005336.
+        </p>
       </div>
     </body>
   </xsl:template>
