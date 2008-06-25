@@ -115,6 +115,9 @@ x = 3
 \sqrt x y
 <msqrt><mi>x</mi></msqrt><mo>&#x2062;</mo><mi>y</mi>
 ====
+\sqrt[n]{x}
+<mroot><mi>x</mi><mi>n</mi></mroot>
+====
 x^2
 <msup>
   <mi>x</mi>

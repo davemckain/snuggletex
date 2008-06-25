@@ -33,6 +33,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathNotBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathRootBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MfenceBuilder;
@@ -546,7 +547,7 @@ public final class GlobalBuiltins {
         CMD_NOT = map.addCombinerCommand("not", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_RELATION_OPERATOR), new MathNotBuilder(), null);
 
         /* Complex math macros */
-        map.addComplexCommandSameArgMode("sqrt", false, 1, MATH_MODE_ONLY, new MathComplexCommandBuilder("msqrt"), null);
+        map.addComplexCommandSameArgMode("sqrt", true, 1, MATH_MODE_ONLY, new MathRootBuilder(), null);
         CMD_FRAC = map.addComplexCommandSameArgMode("frac", false, 2, MATH_MODE_ONLY, new MathComplexCommandBuilder("mfrac"), null);
         CMD_OVER = map.addSimpleCommand("over", MATH_MODE_ONLY, null, null); /* TeX style fractions {... \over ...}, replaced during fixing *;
         
