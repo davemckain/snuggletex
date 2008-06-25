@@ -95,6 +95,10 @@ Change to <b>Bold Text</b>
 Empty $ $ Maths
 Empty <math xmlns="http://www.w3.org/1998/Math/MathML"/> Maths
 ====
+## Use of \ensuremath
+\ensuremath{x}
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math>
+====
 \verb|x|
 <tt class="verb">x</tt>
 ====

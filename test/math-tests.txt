@@ -505,3 +505,7 @@ _2^3
 \mathcal{a+b}
 <mi mathvariant="script">a</mi><mo>+</mo><mi mathvariant="script">b</mi>
 ====
+## \ensuremath does nothing when we're already in Math mode
+\ensuremath{a+\ensuremath{b}}
+<mi>a</mi><mo>+</mo><mi>b</mi>
+====
