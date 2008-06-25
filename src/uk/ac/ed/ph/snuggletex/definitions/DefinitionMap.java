@@ -33,7 +33,11 @@ public final class DefinitionMap {
     /** Map of built-in environments, keyed on name */
     public final Map<String, BuiltinEnvironment> builtinEnvironmentMap;
     
+    /** Share instance of {@link InterpretableSimpleMathBuilder} since it is stateless */
+    private final InterpretableSimpleMathBuilder interpretableSimpleMathBuilder;
+    
     public DefinitionMap() {
+        this.interpretableSimpleMathBuilder = new InterpretableSimpleMathBuilder();
         this.builtinCommandMap = new HashMap<String, BuiltinCommand>();
         this.builtinEnvironmentMap = new HashMap<String, BuiltinEnvironment>();
     }
@@ -85,7 +89,7 @@ public final class DefinitionMap {
     }
     
     public BuiltinCommand addSimpleMathCommand(final String name, final MathInterpretation interpretation) {
-        return addSimpleMathCommand(name, interpretation, new InterpretableSimpleMathBuilder());
+        return addSimpleMathCommand(name, interpretation, interpretableSimpleMathBuilder);
     }
     
     public BuiltinCommand addCombinerCommand(final String name, final EnumSet<LaTeXMode> allowedModes,

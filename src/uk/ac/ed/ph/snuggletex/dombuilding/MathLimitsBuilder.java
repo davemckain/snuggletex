@@ -23,9 +23,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * Handles the mathematical "limit" tokens like {@link GlobalBuiltins#MSUB_OR_MUNDER}, generating
+ * Handles the mathematical "limit" tokens like {@link GlobalBuiltins#CMD_MSUB_OR_MUNDER}, generating
  * either <tt>msub</tt> or <tt>munder</tt> as appropriate, with analogous results for
- * {@link GlobalBuiltins#MSUP_OR_MOVER} and {@link GlobalBuiltins#MSUBSUP_OR_MUNDEROVER}.
+ * {@link GlobalBuiltins#CMD_MSUP_OR_MOVER} and {@link GlobalBuiltins#CMD_MSUBSUP_OR_MUNDEROVER}.
  *
  * @author  David McKain
  * @version $Revision: 12 $
@@ -49,13 +49,13 @@ public final class MathLimitsBuilder implements CommandHandler {
     		&& ((MathOperatorInterpretation) limitand.get(0).getInterpretation()).getOperator().isLimitsUnderOrOver();
     	BuiltinCommand command = token.getCommand();
     	String elementName;
-    	if (command.equals(GlobalBuiltins.MSUB_OR_MUNDER)) {
+    	if (command.equals(GlobalBuiltins.CMD_MSUB_OR_MUNDER)) {
     		elementName = isUnderOver ? "munder" : "msub";
     	}
-    	else if (command.equals(GlobalBuiltins.MSUP_OR_MOVER)) {
+    	else if (command.equals(GlobalBuiltins.CMD_MSUP_OR_MOVER)) {
     		elementName = isUnderOver ? "mover" : "msup";
     	}
-    	else if (command.equals(GlobalBuiltins.MSUBSUP_OR_MUNDEROVER)) {
+    	else if (command.equals(GlobalBuiltins.CMD_MSUBSUP_OR_MUNDEROVER)) {
     		elementName = isUnderOver ? "munderover" : "msubsup";
     	}
     	else {

@@ -37,7 +37,7 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
             builder.handleTokens(mrow, token.getContent(), false);
         }
         else {
-        	boolean isDisplayMath = environment==GlobalBuiltins.DISPLAYMATH;
+        	boolean isDisplayMath = environment==GlobalBuiltins.ENV_DISPLAYMATH;
         	buildMathElement(builder, parentElement, token, token.getContent(), isDisplayMath);
         }
     }

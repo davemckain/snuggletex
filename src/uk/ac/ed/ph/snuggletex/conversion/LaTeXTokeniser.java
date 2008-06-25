@@ -722,7 +722,7 @@ public final class LaTeXTokeniser {
         FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
         ArgumentContainerToken contentToken = new ArgumentContainerToken(contentSlice, LaTeXMode.MATH, contentResult.tokens);
         FrozenSlice environmentSlice = workingDocument.freezeSlice(openDollarPosition, position);
-        BuiltinEnvironment environment = isDisplayMath ? GlobalBuiltins.DISPLAYMATH : GlobalBuiltins.MATH;
+        BuiltinEnvironment environment = isDisplayMath ? GlobalBuiltins.ENV_DISPLAYMATH : GlobalBuiltins.ENV_MATH;
         return new EnvironmentToken(environmentSlice, startLatexMode, environment, contentToken);
     }
     
@@ -782,7 +782,7 @@ public final class LaTeXTokeniser {
                 FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
                 FrozenSlice mathSlice = workingDocument.freezeSlice(startCommandIndex, position);
                 ArgumentContainerToken contentToken = new ArgumentContainerToken(contentSlice, LaTeXMode.MATH, contentResult.tokens);
-                BuiltinEnvironment environment = (c=='(') ? GlobalBuiltins.MATH : GlobalBuiltins.DISPLAYMATH;
+                BuiltinEnvironment environment = (c=='(') ? GlobalBuiltins.ENV_MATH : GlobalBuiltins.ENV_DISPLAYMATH;
                 result = new EnvironmentToken(mathSlice, currentModeState.latexMode, environment, contentToken);
             }
         }
@@ -856,7 +856,7 @@ public final class LaTeXTokeniser {
             /* Internal only! */
             result = handleUserDefinedEnvironmentControl();
         }
-        else if (commandName.equals(GlobalBuiltins.VERB.getTeXName())) {
+        else if (commandName.equals(GlobalBuiltins.CMD_VERB.getTeXName())) {
             /* It's \\verb... which needs special parsing */
             result = finishVerbToken();
         }
@@ -977,7 +977,7 @@ public final class LaTeXTokeniser {
         
         /* That's it! */
         FrozenSlice verbatimSlice = workingDocument.freezeSlice(startTokenIndex, position);
-        return new CommandToken(verbatimSlice, currentModeState.latexMode, GlobalBuiltins.VERB,
+        return new CommandToken(verbatimSlice, currentModeState.latexMode, GlobalBuiltins.CMD_VERB,
                 null,
                 new ArgumentContainerToken[] {
                     new ArgumentContainerToken(contentSlice, LaTeXMode.VERBATIM, contentTokens)
@@ -1037,10 +1037,10 @@ public final class LaTeXTokeniser {
         /* Command and environment definitions need to be handled specifically as their structure is quite
          * specific
          */
-        if (command==GlobalBuiltins.NEWCOMMAND || command==GlobalBuiltins.RENEWCOMMAND) {
+        if (command==GlobalBuiltins.CMD_NEWCOMMAND || command==GlobalBuiltins.CMD_RENEWCOMMAND) {
             return finishCommandDefinition(command);
         }
-        if (command==GlobalBuiltins.NEWENVIRONMENT || command==GlobalBuiltins.RENEWENVIRONMENT) {
+        if (command==GlobalBuiltins.CMD_NEWENVIRONMENT || command==GlobalBuiltins.CMD_RENEWENVIRONMENT) {
             return finishEnvironmentDefinition(command);
         }
 
@@ -1477,7 +1477,7 @@ public final class LaTeXTokeniser {
         /* If this is a 'verbatim' environment then we'll handle things explicitly and return
          * now since it doesn't behave like other environments.
          */
-        if (environmentName.equals(GlobalBuiltins.VERBATIM.getTeXName())) {
+        if (environmentName.equals(GlobalBuiltins.ENV_VERBATIM.getTeXName())) {
             return finishVerbatimEnvironment();
         }
         
@@ -1790,7 +1790,7 @@ public final class LaTeXTokeniser {
         FrozenSlice envSlice = workingDocument.freezeSlice(startTokenIndex, nextReadIndex);
         SimpleToken contentToken = new SimpleToken(contentSlice,
                 TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, TextFlowContext.START_NEW_XHTML_BLOCK);
-        return new EnvironmentToken(envSlice, currentModeState.latexMode, GlobalBuiltins.VERBATIM,
+        return new EnvironmentToken(envSlice, currentModeState.latexMode, GlobalBuiltins.ENV_VERBATIM,
                 ArgumentContainerToken.createFromSingleToken(currentModeState.latexMode, contentToken));
     }
     
@@ -1883,7 +1883,7 @@ public final class LaTeXTokeniser {
         /* Register the command so that it can be used, depending on whether we are doing a renew
          * or not. */
         Map<String, UserDefinedCommand> userCommandMap = sessionContext.getUserCommandMap();
-        boolean isRenewing = definitionCommand==GlobalBuiltins.RENEWCOMMAND;
+        boolean isRenewing = definitionCommand==GlobalBuiltins.CMD_RENEWCOMMAND;
         boolean isCommandAlreadyDefined = userCommandMap.containsKey(commandName) || sessionContext.getCommandByTeXName(commandName)!=null;
         if (isRenewing && !isCommandAlreadyDefined) {
             /* Command does not already exist so can't be renewed */
@@ -1963,7 +1963,7 @@ public final class LaTeXTokeniser {
         /* Register the environment so that it can be used, depending on whether we are doing a renew
          * or not. */
         Map<String, UserDefinedEnvironment> userEnvironmentMap = sessionContext.getUserEnvironmentMap();
-        boolean isRenewing = definitionCommand==GlobalBuiltins.RENEWENVIRONMENT;
+        boolean isRenewing = definitionCommand==GlobalBuiltins.CMD_RENEWENVIRONMENT;
         boolean isEnvAlreadyDefined = userEnvironmentMap.containsKey(environmentName) || sessionContext.getEnvironmentByTeXName(environmentName)!=null;
         if (isRenewing && !isEnvAlreadyDefined) {
             /* Error: Environment is not already defined so can't be renewed */

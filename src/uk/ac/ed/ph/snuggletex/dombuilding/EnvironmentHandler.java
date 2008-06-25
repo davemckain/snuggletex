@@ -15,7 +15,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * Defines how a {@link BuiltinEnvironment} should append children to the out-going DOM.
+ * Defines how a {@link BuiltinEnvironment} should append children to the outgoing DOM.
+ * <p>
+ * An instance of this interface must be stateless once created.
  *
  * @author  David McKain
  * @version $Revision$

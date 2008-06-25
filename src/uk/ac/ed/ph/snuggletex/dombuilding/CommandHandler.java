@@ -15,7 +15,9 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
 /**
  * Defines how a {@link BuiltinCommand} should append children to the outgoing
- * DOM tree. 
+ * DOM tree.
+ * <p>
+ * An instance of this interface must be stateless once created.
  *
  * @author  David McKain
  * @version $Revision$

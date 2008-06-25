@@ -86,7 +86,7 @@ abstract class AbstractCustomXMLElementBuilder implements EnvironmentHandler, Co
             throws DOMException, SnuggleParseException {
         CommandToken resolvedAttrToken;
         for (FlowToken rawAttrToken : attrsToken) {
-            if (rawAttrToken.isCommand(GlobalBuiltins.XML_ATTR)) {
+            if (rawAttrToken.isCommand(GlobalBuiltins.CMD_XML_ATTR)) {
                 resolvedAttrToken = (CommandToken) rawAttrToken;
                 String namespace = builder.extractStringValue(resolvedAttrToken.getArguments()[0]);
                 String qName = builder.extractStringValue(resolvedAttrToken.getArguments()[1]);

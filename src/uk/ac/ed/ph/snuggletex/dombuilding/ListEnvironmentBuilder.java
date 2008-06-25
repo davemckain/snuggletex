@@ -35,10 +35,10 @@ public final class ListEnvironmentBuilder implements EnvironmentHandler, Command
             throws DOMException, SnuggleParseException {
         String listElementName = null;
         BuiltinEnvironment environment = token.getEnvironment();
-        if (environment==GlobalBuiltins.ITEMIZE) {
+        if (environment==GlobalBuiltins.ENV_ITEMIZE) {
             listElementName = "ul";
         }
-        else if (environment==GlobalBuiltins.ENUMERATE) {
+        else if (environment==GlobalBuiltins.ENV_ENUMERATE) {
             listElementName = "ol";
         }
         else {
@@ -46,7 +46,7 @@ public final class ListEnvironmentBuilder implements EnvironmentHandler, Command
         }
         Element listElement = builder.appendXHTMLElement(parentElement, listElementName);
         for (FlowToken contentToken : token.getContent()) {
-            if (contentToken.isCommand(GlobalBuiltins.LIST_ITEM)) {
+            if (contentToken.isCommand(GlobalBuiltins.CMD_LIST_ITEM)) {
                 builder.handleToken(listElement, contentToken);
             }
             else if (contentToken.getType()==TokenType.ERROR) {
@@ -71,7 +71,7 @@ public final class ListEnvironmentBuilder implements EnvironmentHandler, Command
      */
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken itemToken)
             throws DOMException, SnuggleParseException {
-        if (itemToken.isCommand(GlobalBuiltins.LIST_ITEM)) {
+        if (itemToken.isCommand(GlobalBuiltins.CMD_LIST_ITEM)) {
             /* Right, this is one of the special LIST_ITEM tokens, creating during the fixing
              * stage when they are allowed.
              * 
@@ -87,7 +87,7 @@ public final class ListEnvironmentBuilder implements EnvironmentHandler, Command
                 throw new SnuggleLogicException("List item outside environment - this should not have occurred");
             }
         }
-        else if (itemToken.isCommand(GlobalBuiltins.ITEM)) {
+        else if (itemToken.isCommand(GlobalBuiltins.CMD_ITEM)) {
             /* This is a standard LaTeX \item. This would have been substituted if it was used
              * in a legal position so we must conclude that it cannot be used here.
              */

@@ -112,13 +112,13 @@ public final class TokenFixer {
     private void visitEnvironment(EnvironmentToken environmentToken) throws SnuggleParseException {
         /* We may do special handling for certain environments */
         BuiltinEnvironment environment = environmentToken.getEnvironment();
-        if (environment==GlobalBuiltins.ITEMIZE || environment==GlobalBuiltins.ENUMERATE) {
+        if (environment==GlobalBuiltins.ENV_ITEMIZE || environment==GlobalBuiltins.ENV_ENUMERATE) {
             fixListEnvironmentContent(environmentToken);
         }
-        else if (environment==GlobalBuiltins.TABULAR
-                || environment==GlobalBuiltins.ARRAY
-                || environment==GlobalBuiltins.EQNARRAY
-                || environment==GlobalBuiltins.EQNARRAYSTAR) {
+        else if (environment==GlobalBuiltins.ENV_TABULAR
+                || environment==GlobalBuiltins.ENV_ARRAY
+                || environment==GlobalBuiltins.ENV_EQNARRAY
+                || environment==GlobalBuiltins.ENV_EQNARRAYSTAR) {
             fixTabularEnvironmentContent(environmentToken);
         }
         
@@ -277,8 +277,8 @@ public final class TokenFixer {
     
     /**
      * Infers explicit paragraphs by searching for the traditional LaTeX
-     * {@link TokenType#NEW_PARAGRAPH} and/or {@link GlobalBuiltins#PAR} tokens, replacing with
-     * the more tree-like {@link GlobalBuiltins#PARAGRAPH_COMMAND}.
+     * {@link TokenType#NEW_PARAGRAPH} and/or {@link GlobalBuiltins#CMD_PAR} tokens, replacing with
+     * the more tree-like {@link GlobalBuiltins#CMD_PARAGRAPH}.
      * 
      * @param tokens
      */
@@ -289,11 +289,11 @@ public final class TokenFixer {
         boolean hasParagraphs = false;
         for (int i=0; i<tokens.size(); i++) {
             FlowToken token = tokens.get(i);
-            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(GlobalBuiltins.PAR)) {
+            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(GlobalBuiltins.CMD_PAR)) {
                 /* This token is an explicit "end current paragraph" token */
                 hasParagraphs = true;
                 if (!paragraphBuilder.isEmpty()) {
-                    resultBuilder.add(buildGroupedCommandToken(token, GlobalBuiltins.PARAGRAPH_COMMAND, paragraphBuilder));
+                    resultBuilder.add(buildGroupedCommandToken(token, GlobalBuiltins.CMD_PARAGRAPH, paragraphBuilder));
                     paragraphCount++;
                 }
             }
@@ -302,7 +302,7 @@ public final class TokenFixer {
                  * being built and then add token. */
                 hasParagraphs = true;
                 if (!paragraphBuilder.isEmpty()) {
-                    CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.PARAGRAPH_COMMAND, paragraphBuilder);
+                    CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.CMD_PARAGRAPH, paragraphBuilder);
                     resultBuilder.add(leftOver);
                     paragraphCount++;
                 }
@@ -328,7 +328,7 @@ public final class TokenFixer {
         
         /* Finish off current paragraph */
         if (!paragraphBuilder.isEmpty()) {
-            CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.PARAGRAPH_COMMAND, paragraphBuilder);
+            CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.CMD_PARAGRAPH, paragraphBuilder);
             resultBuilder.add(leftOver);
             paragraphCount++;
         }
@@ -345,7 +345,7 @@ public final class TokenFixer {
              * comments and stuff. As a slight optimisation, we'll pull up the paragraph's contents.
              */
             for (FlowToken resultToken : resultBuilder) {
-                if (resultToken.isCommand(GlobalBuiltins.PARAGRAPH_COMMAND)) {
+                if (resultToken.isCommand(GlobalBuiltins.CMD_PARAGRAPH)) {
                     tokens.addAll(((CommandToken) resultToken).getArguments()[0].getContents());
                 }
                 else {
@@ -382,7 +382,7 @@ public final class TokenFixer {
         /* This does fix-in-place */
         for (int i=0; i<tokens.size(); i++) {
             FlowToken token = tokens.get(i);
-            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(GlobalBuiltins.PAR)) {
+            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(GlobalBuiltins.CMD_PAR)) {
                 /* We'll replace with a space */
                 tokens.set(i, new SimpleToken(token.getSlice(), TokenType.LR_MODE_NEW_PARAGRAPH,
                         LaTeXMode.LR, TextFlowContext.ALLOW_INLINE));
@@ -408,7 +408,7 @@ public final class TokenFixer {
      * 
      * \item ..... \item ..... \item ......
      * 
-     * (and maybe include {@link GlobalBuiltins#LIST_ITEM}s as well)
+     * (and maybe include {@link GlobalBuiltins#CMD_LIST_ITEM}s as well)
      * 
      * We replace with a more tree-like version.
      * 
@@ -428,11 +428,11 @@ public final class TokenFixer {
         boolean foundItem = false;
         for (int i=0, size=contents.size(); i<size; i++) {
             token = contents.get(i);
-            if (token.isCommand(GlobalBuiltins.ITEM)) {
+            if (token.isCommand(GlobalBuiltins.CMD_ITEM)) {
                 /* Old-style \item. Stop building up content (if appropriate) and replace with
                  * new LIST_ITEM command */
                 if (foundItem) {
-                    CommandToken itemBefore = buildGroupedCommandToken(environmentToken, GlobalBuiltins.LIST_ITEM, itemBuilder);
+                    CommandToken itemBefore = buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_LIST_ITEM, itemBuilder);
                     resultBuilder.add(itemBefore);
                 }
                 foundItem = true;
@@ -460,7 +460,7 @@ public final class TokenFixer {
         }
         /* At end, finish off last item */
         if (foundItem) {
-            resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.LIST_ITEM, itemBuilder));
+            resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_LIST_ITEM, itemBuilder));
         }
         
         /* Replace content */
@@ -470,10 +470,10 @@ public final class TokenFixer {
     
     /**
      * Helper to fix the content of tabular environments to make it more clearly demarcated
-     * as rows and columns. This kills off instances of {@link GlobalBuiltins#CHAR_BACKSLASH} and
+     * as rows and columns. This kills off instances of {@link GlobalBuiltins#CMD_CHAR_BACKSLASH} and
      * {@link TokenType#TAB_CHARACTER} within tables/arrays and replaces then with
-     * zero or more {@link GlobalBuiltins#TABLE_ROW} each containing zero or more
-     * {@link GlobalBuiltins#TABLE_COLUMN}.
+     * zero or more {@link GlobalBuiltins#CMD_TABLE_ROW} each containing zero or more
+     * {@link GlobalBuiltins#CMD_TABLE_COLUMN}.
      */
     private void fixTabularEnvironmentContent(EnvironmentToken environmentToken)
             throws SnuggleParseException {
@@ -488,7 +488,7 @@ public final class TokenFixer {
          * create a fake token.
          */
         List<FlowToken> entries = contents;
-        if (entries.size()>0 && !entries.get(entries.size()-1).isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
+        if (entries.size()>0 && !entries.get(entries.size()-1).isCommand(GlobalBuiltins.CMD_CHAR_BACKSLASH)) {
             entries = new ArrayList<FlowToken>(entries);
             entries.add(null);
         }
@@ -498,18 +498,18 @@ public final class TokenFixer {
         FlowToken lastGoodToken = null;
         for (int i=0, size=entries.size(); i<size; i++) {
             token = entries.get(i);
-            if (token==null || token.isCommand(GlobalBuiltins.CHAR_BACKSLASH)) {
+            if (token==null || token.isCommand(GlobalBuiltins.CMD_CHAR_BACKSLASH)) {
                 /* End of a row (see above). */
-                if (token==null && lastGoodToken!=null && lastGoodToken.isCommand(GlobalBuiltins.HLINE)) {
+                if (token==null && lastGoodToken!=null && lastGoodToken.isCommand(GlobalBuiltins.CMD_HLINE)) {
                     /* Last good token was \\hline so leave it there */
                     break;
                 }
                 /* First, finish off the last column (which may be
                  * completely empty but should always exist) */
-                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
+                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_TABLE_COLUMN, columnBuilder));
                 
                 /* Then add row */
-                resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_ROW, rowBuilder));
+                resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_TABLE_ROW, rowBuilder));
             }
             else if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()) {
                 /* Whitespace token - we'll ignore this */
@@ -523,9 +523,9 @@ public final class TokenFixer {
                 /* Ends the column being built. This may be null (e.g. '& &') so we need to consider
                  * that case carefully.
                  */
-                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.TABLE_COLUMN, columnBuilder));
+                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_TABLE_COLUMN, columnBuilder));
             }
-            else if (token.isCommand(GlobalBuiltins.HLINE)) {
+            else if (token.isCommand(GlobalBuiltins.CMD_HLINE)) {
                 /* \\hline must be the only token in a row. It immediately ends the current row */
                 if (!columnBuilder.isEmpty()) {
                     /* Error: \\hline must be on its own within a row */
@@ -574,7 +574,7 @@ public final class TokenFixer {
         FlowToken firstToken = tokens.get(0);
         if (firstToken.getType()==TokenType.COMMAND) {
             Command command = ((CommandToken) firstToken).getCommand();
-            if (command==GlobalBuiltins.TABLE_ROW || command==GlobalBuiltins.TABLE_COLUMN) {
+            if (command==GlobalBuiltins.CMD_TABLE_ROW || command==GlobalBuiltins.CMD_TABLE_COLUMN) {
                 isStructural = true;
             }
         }
@@ -610,7 +610,7 @@ public final class TokenFixer {
         FlowToken token;
         for (int i=0; i<tokens.size(); i++) { /* Note: size() may change here */
             token = tokens.get(i);
-            if (token.isCommand(GlobalBuiltins.OVER)) {
+            if (token.isCommand(GlobalBuiltins.CMD_OVER)) {
                 if (overIndex!=-1) {
                     /* Multiple \over occurrence, which we're not going to allow so kill this expression */
                     tokens.clear();
@@ -626,7 +626,7 @@ public final class TokenFixer {
             List<FlowToken> afterTokens = new ArrayList<FlowToken>(tokens.subList(overIndex+1, tokens.size()));
             CommandToken replacement = new CommandToken(parentToken.getSlice(),
                     LaTeXMode.MATH,
-                    GlobalBuiltins.FRAC,
+                    GlobalBuiltins.CMD_FRAC,
                     null, /* No optional arg */
                     new ArgumentContainerToken[] {
                         ArgumentContainerToken.createFromContiguousTokens(parentToken, LaTeXMode.MATH, beforeTokens), /* Numerator */
@@ -654,7 +654,7 @@ public final class TokenFixer {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());
-                replacementToken = new CommandToken(replacementSlice, LaTeXMode.MATH, GlobalBuiltins.MSUP_OR_MOVER, null,
+                replacementToken = new CommandToken(replacementSlice, LaTeXMode.MATH, GlobalBuiltins.CMD_MSUP_OR_MOVER, null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, leftToken),
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, maybePrimeToken),
@@ -752,7 +752,7 @@ public final class TokenFixer {
             if (t3!=null) {
                 /* Create replacement, replacing tokens at i-1,i+1,i+2 and i+3 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t3.getSlice());
-                replacementCommand = GlobalBuiltins.MSUBSUP_OR_MUNDEROVER;
+                replacementCommand = GlobalBuiltins.CMD_MSUBSUP_OR_MUNDEROVER;
                 CommandToken replacement = new CommandToken(replacementSlice,
                         LaTeXMode.MATH,
                         replacementCommand,
@@ -768,7 +768,7 @@ public final class TokenFixer {
             else {
                 /* Just replace tokens at i-1, i, i+1 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t2.getSlice());
-                replacementCommand = firstIsSuper ? GlobalBuiltins.MSUP_OR_MOVER : GlobalBuiltins.MSUB_OR_MUNDER;
+                replacementCommand = firstIsSuper ? GlobalBuiltins.CMD_MSUP_OR_MOVER : GlobalBuiltins.CMD_MSUB_OR_MUNDER;
                 CommandToken replacement = new CommandToken(replacementSlice, LaTeXMode.MATH,
                         replacementCommand,
                         null, /* No optional args */
@@ -800,12 +800,12 @@ public final class TokenFixer {
              * wrap inside a fake environment. We'll also make sure we don't find a 
              * \right before a left!
              */
-            if (token.isCommand(GlobalBuiltins.RIGHT)) {
+            if (token.isCommand(GlobalBuiltins.CMD_RIGHT)) {
                 /* \right had not preceding \left */
                 tokens.set(i, createError(token, ErrorCode.TFEM03));
                 continue LEFT_SEARCH;
             }
-            else if (token.isCommand(GlobalBuiltins.LEFT)) {
+            else if (token.isCommand(GlobalBuiltins.CMD_LEFT)) {
                 /* Now search forward for matching \right */
                 List<FlowToken> innerTokens = new ArrayList<FlowToken>();
                 CommandToken openBracketToken = (CommandToken) token;
@@ -815,10 +815,10 @@ public final class TokenFixer {
                 FlowToken innerToken;
                 MATCH_SEARCH: for (int j=i+1; j<tokens.size(); j++) { /* 'j' is search index from current point onwards */
                     innerToken = tokens.get(j);
-                    if (innerToken.isCommand(GlobalBuiltins.LEFT)) {
+                    if (innerToken.isCommand(GlobalBuiltins.CMD_LEFT)) {
                         bracketLevel++;
                     }
-                    else if (innerToken.isCommand(GlobalBuiltins.RIGHT)) {
+                    else if (innerToken.isCommand(GlobalBuiltins.CMD_RIGHT)) {
                         bracketLevel--;
                         if (bracketLevel==0) {
                             /* We've found the matcher */
@@ -839,7 +839,7 @@ public final class TokenFixer {
                 FrozenSlice replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
                 EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
                         LaTeXMode.MATH,
-                        GlobalBuiltins.FENCED,
+                        GlobalBuiltins.ENV_FENCED,
                         null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken.getCombinerTarget()),
@@ -936,7 +936,7 @@ public final class TokenFixer {
             FrozenSlice replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
             EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
                     LaTeXMode.MATH,
-                    GlobalBuiltins.FENCED,
+                    GlobalBuiltins.ENV_FENCED,
                     null,
                     new ArgumentContainerToken[] {
                         ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken),
@@ -999,7 +999,7 @@ public final class TokenFixer {
                     /* This operator ends the current group. So group together what's there so far
                      * (if required) and add to result list.
                      */
-                    resultBuilder.add(maybeBuildGroupedCommandContainerToken(parent, GlobalBuiltins.MROW, groupBuilder));
+                    resultBuilder.add(maybeBuildGroupedCommandContainerToken(parent, GlobalBuiltins.CMD_MROW, groupBuilder));
                     resultBuilder.add(token);
                 }
             }
@@ -1012,7 +1012,7 @@ public final class TokenFixer {
         }
         /* Handle final group in expression */
         if (!groupBuilder.isEmpty()) {
-            resultBuilder.add(maybeBuildGroupedCommandContainerToken(parent, GlobalBuiltins.MROW, groupBuilder));
+            resultBuilder.add(maybeBuildGroupedCommandContainerToken(parent, GlobalBuiltins.CMD_MROW, groupBuilder));
         }
         
         /* Replace original tokens with our result */
@@ -1042,16 +1042,16 @@ public final class TokenFixer {
             }
             
             /* If we did a function last time round and this token isn't an "ApplyFunction", add one now */
-            if (justDidFunction && !token.isCommand(GlobalBuiltins.APPLY_FUNCTION)) {
+            if (justDidFunction && !token.isCommand(GlobalBuiltins.CMD_APPLY_FUNCTION)) {
                 /* We post-increment 'i' so it still points to the current token, which has moved right one place */
-                resultBuilder.add(new CommandToken(token.getSlice(), token.getLatexMode(), GlobalBuiltins.APPLY_FUNCTION));
+                resultBuilder.add(new CommandToken(token.getSlice(), token.getLatexMode(), GlobalBuiltins.CMD_APPLY_FUNCTION));
             }
             /* If we did a non-fn/operator last time round, add "InivisibleTimes" now, but only
              * if we're not about to output a postfix operator and if the current token is not an explicit InvisibleTimes
              */
-            if (justDidNonOperator && !token.isCommand(GlobalBuiltins.INVISIBLE_TIMES) &&
+            if (justDidNonOperator && !token.isCommand(GlobalBuiltins.CMD_INVISIBLE_TIMES) &&
                     (operatorType==null || operatorType!=OperatorType.POSTFIX)) {
-                resultBuilder.add(new CommandToken(token.getSlice(), token.getLatexMode(), GlobalBuiltins.INVISIBLE_TIMES));
+                resultBuilder.add(new CommandToken(token.getSlice(), token.getLatexMode(), GlobalBuiltins.CMD_INVISIBLE_TIMES));
             }
             /* Then add the current token */
             resultBuilder.add(token);
@@ -1078,7 +1078,7 @@ public final class TokenFixer {
         if (interpretation instanceof MathOperatorInterpretation) {
             return ((MathOperatorInterpretation) interpretation).getOperator();
         }
-        if (token.isCommand(GlobalBuiltins.NOT)) {
+        if (token.isCommand(GlobalBuiltins.CMD_NOT)) {
             CommandToken notToken = (CommandToken) token;
             FlowToken targetToken = notToken.getCombinerTarget();
             if (targetToken.isInterpretationType(InterpretationType.MATH_RELATION_OPERATOR)) {
