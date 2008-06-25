@@ -26,6 +26,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.HrefBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsBuilder;
@@ -272,6 +273,12 @@ public final class GlobalBuiltins {
         map.addComplexCommandSameArgMode("mathit", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.IT, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
         map.addComplexCommandSameArgMode("mathbf", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.BF, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
         map.addComplexCommandSameArgMode("mathtt", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.TT, new StyleInterpretationNodeBuilder(), ALLOW_INLINE);
+        
+        /* Styling done via character mappings (e.g. calligraphic) */
+        map.addComplexCommandSameArgMode("mathcal", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.SCRIPT), null);
+        map.addComplexCommandSameArgMode("mathsc", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.SCRIPT), null);
+        map.addComplexCommandSameArgMode("mathbb", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.DOUBLE_STRUCK), null);
+        map.addComplexCommandSameArgMode("mathfrak", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.FRAKTUR), null);
         
         /* Ellipses (Math-mode only) */
         map.addSimpleMathCommand("cdots", new MathIdentifierInterpretation("\u00b7\u00b7\u00b7"));

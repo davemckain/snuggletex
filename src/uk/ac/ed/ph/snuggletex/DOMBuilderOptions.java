@@ -86,6 +86,19 @@ public class DOMBuilderOptions implements Cloneable {
      */
     private String mathMLPrefix;
     
+    /**
+     * Set to true to perform automatic mappings of (safe) Unicode characters when applying
+     * "stylings" like <tt>\\mathcal</tt> and <tt>\\mathbb</tt>. Doing this can help if you
+     * don't have control over CSS and if clients may not have appropriate fonts installed
+     * as it forces the mapping of certain characters to glyphs that may be available.
+     * <p>
+     * (Firefox by default does not change fonts for these cases as it is not clear what
+     * font to map to so setting this to true can help with some characters.)
+     * 
+     * TODO: Revisit how best to do mathvariant with Firefox.
+     */
+    private boolean mathVariantMapping;
+    
     public DOMBuilderOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
         this.inliningCSS = false;
@@ -94,6 +107,7 @@ public class DOMBuilderOptions implements Cloneable {
         this.inlineCSSProperties = null;
         this.mathMLPrefix = "m";
         this.prefixingMathML = false;
+        this.mathVariantMapping = false;
     }
     
     public ErrorOutputOptions getErrorOptions() {
@@ -168,6 +182,16 @@ public class DOMBuilderOptions implements Cloneable {
         }
         this.mathMLPrefix = mathMLPrefix;
     }
+    
+
+    public boolean isMathVariantMapping() {
+        return mathVariantMapping;
+    }
+
+    public void setMathVariantMapping(boolean mathVariantMapping) {
+        this.mathVariantMapping = mathVariantMapping;
+    }
+
 
     @Override
     public Object clone() {

@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
+import uk.ac.ed.ph.aardvark.commons.util.ArrayListStack;
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
@@ -15,6 +16,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleTeX;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
@@ -65,18 +67,6 @@ import org.w3c.dom.NodeList;
  */
 public final class DOMBuilder {
 	
-	/** 
-	 * Trivial enumeration to keep track of where we are in the outgoing DOM. This makes life
-	 * a bit easier when handling certain types of tokens. Use the {@link DOMBuilder#getOutputContext()}
-	 * and {@link DOMBuilder#setOutputContext(OutputContext)} to manage the current status.
-	 */
-	public static enum OutputContext {
-		XHTML,
-		MATHML_BLOCK,
-		MATHML_INLINE,
-		;
-	}
-    
     private final SessionContext sessionContext;
     private final DOMBuilderOptions options;
     private final Document document;
@@ -84,7 +74,25 @@ public final class DOMBuilder {
     
     private Properties currentInlineCSSProperties;
     
+    //-------------------------------------------
+    // Building State
+    
+    /** 
+     * Trivial enumeration to keep track of where we are in the outgoing DOM. This makes life
+     * a bit easier when handling certain types of tokens. Use the {@link DOMBuilder#getOutputContext()}
+     * and {@link DOMBuilder#setOutputContext(OutputContext)} to manage the current status.
+     */
+    public static enum OutputContext {
+        XHTML,
+        MATHML_BLOCK,
+        MATHML_INLINE,
+        ;
+    }
+    
     private OutputContext outputContext;
+    private ArrayListStack<MathVariantMap> mathVariantMapStack;
+    
+    //-------------------------------------------
     
     public DOMBuilder(final SessionContext sessionContext, final Element buildRootElement,
             final DOMBuilderOptions options) {
@@ -93,6 +101,9 @@ public final class DOMBuilder {
         this.options = options!=null ? (DOMBuilderOptions) options.clone() : new DOMBuilderOptions();
         this.sessionContext = sessionContext;
         this.currentInlineCSSProperties = null;
+        
+        this.outputContext = null;
+        this.mathVariantMapStack = new ArrayListStack<MathVariantMap>();
     }
     
     //-------------------------------------------
@@ -100,22 +111,55 @@ public final class DOMBuilder {
     
     public void buildDOMSubtree(final List<FlowToken> fixedTokens)
             throws DOMException, SnuggleParseException {
-    	outputContext = OutputContext.XHTML;
+    	this.outputContext = OutputContext.XHTML;
+    	this.mathVariantMapStack.clear();
         handleTokens(buildRootElement, fixedTokens, true);
     }
-
-    //-------------------------------------------
-    // Callbacks Start Below
-  
     
-
-	public SessionContext getSessionContext() {
+    //-------------------------------------------
+    // Usual Accessors
+    
+    public SessionContext getSessionContext() {
         return sessionContext;
     }
     
-	public DOMBuilderOptions getOptions() {
+    public DOMBuilderOptions getOptions() {
         return options;
     }
+    
+    public Document getDocument() {
+        return document;
+    }
+    
+    //-------------------------------------------
+    // State Accessors
+    
+    public ArrayListStack<MathVariantMap> getMathVariantMapStack() {
+        return mathVariantMapStack;
+    }
+    
+    //-------------------------------------------
+    // Output context mutators - records whether we're doing XHTML or MathML content,
+    // which is often useful.
+    
+    public OutputContext getOutputContext() {
+        return outputContext;
+    }
+
+    public void setOutputContext(OutputContext outputContext) {
+        this.outputContext = outputContext;
+    }  
+    
+    /**
+     * Returns whether or not we're building a MathML island by checking the current
+     * {@link OutputContext}.
+     */
+    public boolean isBuildingMathMLIsland() {
+        return outputContext==OutputContext.MATHML_BLOCK || outputContext==OutputContext.MATHML_INLINE;
+    }
+    
+    //-------------------------------------------
+    // Callbacks Start Below
 
     /**
      * @param trimWhitespace removes leading whitespace from the first resulting Node if it is a Text Node and
@@ -405,10 +449,7 @@ public final class DOMBuilder {
 
     //-------------------------------------------
     // Helpers
-    
-    public Document getDocument() {
-        return document;
-    }
+
 
     public Node appendTextNode(Element parentElement, String content, boolean trim) {
         String toAppend = trim ? content.trim() : content;
@@ -480,8 +521,41 @@ public final class DOMBuilder {
         return appendMathMLTextElement(parentElement, "mn", number, true);
     }
     
+    /**
+     * Creates a MathML identifier element, which may either be a single character or multiple
+     * characters (e.g. "sin"). The single-character case is interesting if we are currently
+     * applying a "mathvariant" in that it may or may not then be mapped into a corresponding
+     * target character.
+     * 
+     * @see DOMBuilderOptions#isMathVariantMapping()
+     * 
+     * @param parentElement
+     * @param name
+     */
     public Element appendMathMLIdentifierElement(Element parentElement, String name) {
-        return appendMathMLTextElement(parentElement, "mi", name, true);
+    	String mappedIdentifier = name;
+    	String mathVariant = null;
+    	if (name.length()==1 && !mathVariantMapStack.isEmpty()) {
+    	    /* If we have a single character identifier and something like \\mathcal is in force,
+    	     * then we will apply a "mathvariant" attribute.
+    	     */
+    		MathVariantMap currentMathCharacterMap = mathVariantMapStack.peek();
+    		mathVariant = currentMathCharacterMap.getMathVariantName();
+    		if (options.isMathVariantMapping()) {
+    		    /* Client has asked to try to map this character to a suitable target Unicode
+    		     * character, so let's try this.
+    		     */
+	            char mappedChar = currentMathCharacterMap.getAccentedChar(name.charAt(0));
+	            if (mappedChar!=0) {
+	                mappedIdentifier = Character.toString(mappedChar);
+	            }
+    		}
+    	}
+        Element result = appendMathMLTextElement(parentElement, "mi", mappedIdentifier, true);
+        if (mathVariant!=null) {
+        	result.setAttribute("mathvariant", mathVariant);
+        }
+        return result;
     }
     
     public void handleMathTokensAsSingleElement(Element parentElement, ArgumentContainerToken containerToken)
@@ -578,24 +652,7 @@ public final class DOMBuilder {
         return currentInlineCSSProperties;
     }
     
-    //-------------------------------------------
-    // Output context methods - records whether we're doing XHTML or MathML content,
-    // which is often useful.
-    
-	public OutputContext getOutputContext() {
-		return outputContext;
-	}
 
-	public void setOutputContext(OutputContext outputContext) {
-		this.outputContext = outputContext;
-	}  
-    
-    /**
-     * Returns whether or not we're building a MathML island by checking the current {@link OutputContext}.
-     */
-    public boolean isBuildingMathMLIsland() {
-    	return outputContext==OutputContext.MATHML_BLOCK || outputContext==OutputContext.MATHML_INLINE;
-    }
 
     //-------------------------------------------
 

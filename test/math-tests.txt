@@ -456,9 +456,6 @@ v_{\mbox{\rm av}}
 ()
 <mfenced open="(" close=")"/>
 ====
-\mathbf{A}
-<mstyle mathvariant="bold"><mi>A</mi></mstyle>
-====
 ## Regression: can't do small-caps in Math mode so we just ignore this
 \mbox{\sc Hello}
 <mrow><mtext>Hello</mtext></mrow>
@@ -487,6 +484,9 @@ _2^3
 <mspace width="0.5in"/>
 ====
 ## Styling tests
+\mathbf{A}
+<mstyle mathvariant="bold"><mi>A</mi></mstyle>
+====
 \mathrm{A+B}
 <mstyle mathvariant="normal"><mi>A</mi><mo>+</mo><mi>B</mi></mstyle>
 ====
@@ -497,4 +497,11 @@ _2^3
 ## \textrm behaves differently in that its content is parsed in text mode
 \textrm{A+B}
 <mstyle mathvariant="normal"><mtext>A+B</mtext></mstyle>
+====
+## Calligraphic and related stuff is (optionally) helped via character mappings
+\mathcal{F}
+<mi mathvariant="script">&#x2131;</mi>
+====
+\mathcal{a+b}
+<mi mathvariant="script">a</mi><mo>+</mo><mi mathvariant="script">b</mi>
 ====

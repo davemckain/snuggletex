@@ -87,7 +87,9 @@ abstract class AbstractGoodXMLTests {
         SessionConfiguration configuration =  new SessionConfiguration();
         configuration.setInferringMathStructure(true);
         
+        /* DOM options will be fairly vanilla, though we'll turn on mathvariant character mappings */
         DOMBuilderOptions domOptions = new DOMBuilderOptions();
+        domOptions.setMathVariantMapping(true);
         
         SessionContext context = new SnuggleTeXEngine().createSession(configuration);
         SnuggleInputReader inputReader = new SnuggleInputReader(context, new SnuggleInput(inputLaTeX));

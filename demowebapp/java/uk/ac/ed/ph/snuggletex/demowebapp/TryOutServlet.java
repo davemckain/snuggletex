@@ -92,6 +92,7 @@ public final class TryOutServlet extends BaseServlet {
         
         /* Generate and serve the resulting web page */
         WebPageBuilderOptions options = new WebPageBuilderOptions();
+        options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setPageType(WebPageType.CROSS_BROWSER_XHTML);
         options.setStylesheet(stylesheet);

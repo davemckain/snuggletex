@@ -202,6 +202,7 @@ public final class SnuggleTeXServlet extends BaseServlet {
         
         /* Generate and serve the resulting web page */
         WebPageBuilderOptions options = new WebPageBuilderOptions();
+        options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setPageType(pageType);
         options.setStylesheet(stylesheet);
