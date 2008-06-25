@@ -5,9 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
-import uk.ac.ed.ph.aardvark.commons.util.ObjectDumper;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -48,7 +45,6 @@ public final class MathAnnotationTests {
         SnuggleTeXEngine engine = new SnuggleTeXEngine();
         SnuggleTeXSession session = engine.createSession();
         session.parseInput(new SnuggleInput(inputMathLaTeX));
-        System.out.println(ObjectDumper.dumpObject(session.getParsedTokens(), DumpMode.DEEP));
         
         DOMBuilderOptions domOptions = new DOMBuilderOptions();
         domOptions.setAddingMathAnnotations(true);
