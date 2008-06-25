@@ -6,7 +6,6 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 
@@ -21,16 +20,17 @@ import org.w3c.dom.Element;
 public final class VerbatimBuilder implements CommandHandler, EnvironmentHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token) {
-        FrozenSlice verbContentSlice = token.getArguments()[0].getSlice();
+        String verbContent = token.getArguments()[0].getSlice().extract().toString()
+            .replace(' ', '\u00a0'); /* Convert spaces to non-breaking spaces */
         Element verbatimElement = builder.appendXHTMLElement(parentElement, "tt");
         verbatimElement.setAttribute("class", "verb");
-        builder.appendTextNode(verbatimElement, verbContentSlice.extract().toString(), false);
+        builder.appendTextNode(verbatimElement, verbContent, false);
     }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token) {
-        FrozenSlice verbatimContentSlice = token.getContent().getSlice();
+        String verbatimContent = token.getContent().getSlice().extract().toString();
         Element verbatimElement = builder.appendXHTMLElement(parentElement, "pre");
         verbatimElement.setAttribute("class", "verbatim");
-        builder.appendTextNode(verbatimElement, verbatimContentSlice.extract().toString(), false);
+        builder.appendTextNode(verbatimElement, verbatimContent, false);
     }
 }
