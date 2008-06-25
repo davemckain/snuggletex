@@ -1,7 +1,7 @@
 % Simple input/result table environment
 \newenvironment{demotable}
 {\begin{center}
- \begin{tabular}{|r|c|}
+ \begin{tabular}{|l|l|}
  \hline \\
  Input & Result \\
  \hline \\
@@ -10,8 +10,74 @@
  \end{center}
 }
 
+\newenvironment{ndemotable}
+{\begin{center}
+ \begin{tabular}{|l|l|l|}
+ \hline \\
+ Input & Result & Notes \\
+ \hline \\
+}{\hline
+ \end{tabular}
+ \end{center}
+}
+
 % Text-mode demo line
+\newcommand{\note}[1]{\small #1}
 \newcommand{\demo}[1]{\verb|#1| & #1 \\}
+\newcommand{\ndemo}[2]{\verb|#1| & #1 & \note{#2} \\}
+\newcommand{\bigdemo}[1]{\begin{verbatim}#1\end{verbatim} & #1 \\}
+
+\section*{Text Escapes}
+
+SnuggleTeX supports the usual ways of escaping characters that are normally
+special in LaTeX.
+
+\begin{ndemotable}
+\demo{\$}
+\demo{\%}
+\demo{\#}
+\demo{\&}
+\demo{\_}
+\demo{\{}
+\demo{\}}
+\ndemo{No\ break}{Produces a non-breaking space}
+\end{ndemotable}
+
+\section*{Text Spacing Commands}
+
+\begin{demotable}
+\demo{A\,B}
+\demo{A\hspace{2em}B}
+\end{demotable}
+
+\section*{Lists}
+
+SnuggleTeX supports the {\tt itemize} and {\tt enumerate} environments.
+
+\begin{demotable}
+\bigdemo{\begin{itemize}
+  \item First item
+  \item Second item
+\end{itemize}}
+\bigdemo{\begin{enumerate}
+  \item First item
+  \item Second item
+\end{enumerate}}
+\end{demotable}
+
+\section*{Punctuation}
+
+\begin{ndemotable}
+\demo{`Single Quotes'}
+\demo{``Double Quotes''}
+\ndemo{Yes --- but no!}{Dash}
+\ndemo{1--2}{Dash used for numerical ranges}
+\ndemo{Mr.\ Blitherington-Smythe}{Single '-' is a hyphen}
+\ndemo{No~Break}{Non-breaking space}
+\demo{Boring\ldots}
+\demo{<}
+\demo{>}
+\end{ndemotable}
 
 \section*{Text Styling}
 
@@ -93,7 +159,6 @@ We also support the following basic text-mode symbols:
 \demo{\ae}
 \demo{\oe}
 \demo{\dag}
-\demo{\ldots}
 \demo{\pounds}
 \end{demotable}
 
