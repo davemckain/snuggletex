@@ -5,7 +5,7 @@
 <!--                                                                         -->
 <!-- $Id$                      -->
 <!-- ======================================================================= -->
-<project name="SnuggleTeX" default="webapp.war" basedir=".">
+<project name="SnuggleTeX" default="build" basedir=".">
 
   <!-- General Properties file defining the layout of the project -->
   <property file="build.properties"/>
@@ -35,7 +35,7 @@
   <!-- =================================================================== -->
   <!-- Builds the main SnuggleTeX Java files                               -->
   <!-- =================================================================== -->
-  <target name="build.src" depends="prepare.dirs">
+  <target name="build" depends="prepare.dirs">
     <!-- Compile Java files -->
     <javac destdir="${build.src.dir}"
         debug="true"
@@ -59,7 +59,7 @@
   <!-- =================================================================== -->
   <!-- Builds the SnuggleTeX JAR                                           -->
   <!-- =================================================================== -->
-  <target name="snuggletex.jar" depends="build.src" description="Builds SnuggleTeX JAR">
+  <target name="snuggletex.jar" depends="build" description="Builds SnuggleTeX JAR">
     <jar destfile="${dist.dir}/snuggletex.jar" index="true">
       <fileset dir="${build.src.dir}"/>
     </jar>
@@ -77,7 +77,7 @@
       targetfile="${dist.dir}/snuggletex.css"/>
   </target>
 
-  <target name="snuggletex.css" depends="build.src, css.check" unless="css.uptodate"
+  <target name="snuggletex.css" depends="build, css.check" unless="css.uptodate"
       description="Builds SnuggleTeX CSS">
     <echo>Building snuggletex.css from css.properties</echo>
     <java classname="uk.ac.ed.ph.snuggletex.CSSUtilities">
@@ -110,7 +110,7 @@
   <!-- =================================================================== -->
   <!-- Compiles the Java test code                                         -->
   <!-- =================================================================== -->
-  <target name="build.test" depends="prepare.libs, build.src">
+  <target name="build.test" depends="prepare.libs, build">
     <javac destdir="${build.test.dir}"
         debug="true"
         source="1.5"
@@ -142,6 +142,14 @@
   </target>
 
   <!-- =================================================================== -->
+  <!-- Runs the JUnit Test Suite                                           -->
+  <!-- =================================================================== -->
+  <target name="javadoc" description="Builds JavaDoc">
+    <javadoc sourcepath="${src.dir}"
+      destdir="${build.webapp.dir}/javadoc"/>
+  </target>
+
+  <!-- =================================================================== -->
   <!-- Required libraries for compiling the demo webapp                    -->
   <!-- =================================================================== -->
   <path id="webapp.libs.classpath">
@@ -151,7 +159,8 @@
   <!-- =================================================================== -->
   <!-- Builds the demo webapp hierarchy                                    -->
   <!-- =================================================================== -->
-  <target name="build.webapp" depends="prepare.libs, build.src, snuggletex.jar, snuggletex.css">
+  <target name="webapp" depends="prepare.libs, build, snuggletex.jar, snuggletex.css, javadoc"
+      description="Builds demo webapp">
     <mkdir dir="${build.webapp.dir}/WEB-INF"/>
     <mkdir dir="${build.webapp.dir}/WEB-INF/classes"/>
     <!-- Compile webapp -->
@@ -202,14 +211,14 @@
   <!-- Builds the demo webapp WAR, ready for deployment into a servlet     -->
   <!-- container (e.g. Tomcat).                                            -->
   <!-- =================================================================== -->
-  <target name="webapp.war" depends="build.webapp" description="Builds demo webapp WAR">
+  <target name="webapp.war" depends="webapp" description="Builds demo webapp WAR">
     <jar destfile="${dist.dir}/snuggletex.war" basedir="${build.webapp.dir}"/>
   </target>
 
   <!-- =================================================================== -->
   <!-- Builds distributions for depositing to SourceForge.net              -->
   <!-- =================================================================== -->
-  <target name="dist.src" description="Builds source distribution ZIP">
+  <target name="dist.src" depends="prepare.dirs" description="Builds source distribution ZIP">
     <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
       <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
         <include name="build.properties"/>
@@ -248,7 +257,7 @@
   <!-- Aardvark Intergration Target (not useful in general)                -->
   <!-- =================================================================== -->
 
-  <target name="snuggletex.aardvark.jar" depends="build.src" description="Builds SnuggleTeX JAR (without Aardvark components)">
+  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (without Aardvark components)">
     <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
     <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
       <fileset dir="${build.src.dir}">
