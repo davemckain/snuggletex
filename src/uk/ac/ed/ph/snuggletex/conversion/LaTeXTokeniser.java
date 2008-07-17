@@ -471,7 +471,7 @@ public final class LaTeXTokeniser {
     }
     
     /**
-     * Attempts to read in a number at the current position, returning null if the input
+     * Attempts to read in a (positive) number at the current position, returning null if the input
      * doesn't look like a number.
      * 
      * @return SimpleToken representing the number, or null if input wasn't a number.
@@ -489,10 +489,6 @@ public final class LaTeXTokeniser {
         boolean foundDigitsAfterDecimalPoint  = false;
         boolean foundDecimalPoint = false;
         
-        /* Look for leading negative sign if we are at the start of the slice */
-        if (workingDocument.charAt(index)=='-') {
-            index++;
-        }
         /* Read zero or more digits */
         while(true) {
             c = workingDocument.charAt(index);

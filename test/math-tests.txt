@@ -15,6 +15,9 @@
 -1
 <mn>-1</mn>
 ====
+- 1
+<mn>-1</mn>
+====
 \alpha
 <mi>&#x3b1;</mi>
 =====
@@ -511,4 +514,12 @@ _2^3
 ## \ensuremath does nothing when we're already in Math mode
 \ensuremath{a+\ensuremath{b}}
 <mi>a</mi><mo>+</mo><mi>b</mi>
+====
+## Regression: silly bug in DOMBuilding code for 'array' was messing up everything that followed
+\begin{array}{c} 1 \end{array} + 3
+<mtable><mtr><mtd columnalign="center"><mn>1</mn></mtd></mtr></mtable><mo>+</mo><mn>3</mn>
+====
+## Silly Regression: with the old handling of numbers, this was treated as 1 juxtaposed with -2 !
+1-2
+<mn>1</mn><mo>-</mo><mn>2</mn>
 ====

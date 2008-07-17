@@ -19,6 +19,7 @@ import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
@@ -582,6 +583,7 @@ public final class TokenFixer {
         /* If it looks like we've got an expression then tidy it up and try to infer semantics */
         if (!isStructural) {
             /* The order below is important in order to establish precedence */
+        	fixLeadingNegativeNumber(tokens);
             groupStyleCommands(parentToken, tokens);
             fencePairedParentheses(parentToken, tokens); /* (Want to get parentheses first) */
             fixOverInstances(parentToken, tokens);
@@ -598,6 +600,30 @@ public final class TokenFixer {
         for (FlowToken token : tokens) {
             visitBranch(token);
         }
+    }
+    
+    /**
+     * Converts leading occurrences of {@link MathMLOperator#SUBTRACT} followed by a {@link MathNumberInterpretation}
+     * into a single token representing the negation of the given number.
+     * 
+     * @param tokens
+     */
+    private void fixLeadingNegativeNumber(List<FlowToken> tokens) {
+    	if (tokens.size() < 2) {
+    		return;
+    	}
+    	FlowToken firstToken = tokens.get(0);
+    	FlowToken secondToken = tokens.get(1);
+    	if (firstToken.isInterpretationType(InterpretationType.MATH_OPERATOR) &&
+    			((MathOperatorInterpretation) firstToken.getInterpretation()).getOperator()==MathMLOperator.SUBTRACT
+    			&& secondToken.isInterpretationType(InterpretationType.MATH_NUMBER)) {
+    		CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation()).getNumber();
+    		SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
+    				TokenType.MATH_NUMBER, firstToken.getLatexMode(),
+    				new MathNumberInterpretation(negation), null);
+    		tokens.remove(0);
+    		tokens.set(0, replacementToken);
+    	}
     }
     
     /**
