@@ -8,7 +8,6 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
@@ -31,7 +30,7 @@ import org.w3c.dom.Element;
  * @version $Revision: 52 $
  */
 public final class ArrayBuilder implements EnvironmentHandler {
-
+	
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws DOMException, SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
@@ -95,6 +94,5 @@ public final class ArrayBuilder implements EnvironmentHandler {
                 builder.appendMathMLElement(mtrElement, "mtd");
             }
         }
-        builder.setOutputContext(OutputContext.XHTML);
     }
 }
