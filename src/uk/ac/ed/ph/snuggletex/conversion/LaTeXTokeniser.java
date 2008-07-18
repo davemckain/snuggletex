@@ -10,7 +10,6 @@ import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.conversion.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
@@ -128,6 +127,89 @@ public final class LaTeXTokeniser {
     private final Set<String> userEnvironmentsOpeningSet;
     
     /**
+     * Represents the "terminator" characters that signify the end of a parsing mode. I have
+     * made this an interface is some terminators are static Strings, whereas others are best
+     * considered as {@link Pattern}s.
+     */
+    public static interface Terminator {
+        
+        /**
+         * Tests whether this Terminator matches the {@link WorkingDocument} at the given index.
+         * 
+         * @param workingDocument {@link WorkingDocument} to check
+         * @param index index to match at
+         * 
+         * @return -1 if no match, otherwise the index <strong>after</strong> the match.
+         */
+        int matchesAt(final WorkingDocument workingDocument, int index);
+        
+        /**
+         * Finds the next match of this Terminator in the given {@link WorkingDocument} starting
+         * at the given index.
+         * 
+         * @param workingDocument {@link WorkingDocument} to check
+         * @param index index to search from
+         */
+        int nextMatchFrom(final WorkingDocument workingDocument, int index);
+    }
+    
+    /**
+     * This implementation of {@link Terminator} is used to handle fixed {@link String}s as
+     * terminators.
+     */
+    public static final class StringTerminator implements Terminator {
+        
+        private final String terminatorString;
+        
+        public StringTerminator(final String terminatorString) {
+            this.terminatorString = terminatorString;
+        }
+        
+        public int matchesAt(final WorkingDocument workingDocument, int index) {
+            return workingDocument.matchesAt(index, terminatorString) ?
+                    index + terminatorString.length() : -1;
+        }
+        
+        public int nextMatchFrom(WorkingDocument workingDocument, int index) {
+            return workingDocument.indexOf(index, terminatorString);
+        }
+        
+        @Override
+        public String toString() {
+            return terminatorString;
+        }
+    }
+    
+    /**
+     * This implementation of {@link Terminator} represents terminators specified as regular
+     * expressions. This is generally only useful for hunting out the end of <tt>verbatim</tt>
+     * environments. 
+     */
+    public static final class PatternTerminator implements Terminator {
+        
+        private final Pattern terminatorPattern;
+        
+        public PatternTerminator(final Pattern terminatorPattern) {
+            this.terminatorPattern = terminatorPattern;
+        }
+        
+        public int matchesAt(final WorkingDocument workingDocument, int index) {
+            Matcher matcher = terminatorPattern.matcher(workingDocument.extract());
+            return matcher.find(index) && matcher.start()==index ? matcher.end() : -1;
+        }
+        
+        public int nextMatchFrom(WorkingDocument workingDocument, int index) {
+            Matcher matcher = terminatorPattern.matcher(workingDocument.extract());
+            return matcher.find(index) ? matcher.start() : -1;
+        }
+        
+        @Override
+        public String toString() {
+            return "(pattern) " + terminatorPattern;
+        }
+    }
+    
+    /**
      * Enumeration of the various "tokenisation modes" we will be running in. This is only
      * really used for documentation during debugging!
      */
@@ -138,12 +220,11 @@ public final class LaTeXTokeniser {
         COMMAND_ARGUMENT,
         BUILTIN_ENVIRONMENT_CONTENT,
         USER_DEFINED_ENVIRONMENT_BEGIN,
-        VERB_COMMAND_CONTENT,
         ;
     }
     
     /**
-     * Trivial "struc"t encapsulating information about the state of a tokenisation mode.
+     * Trivial "struct" encapsulating information about the state of a tokenisation mode.
      */
     public static class ModeState {
         
@@ -157,7 +238,7 @@ public final class LaTeXTokeniser {
         public final int startPosition;
         
         /** Terminator we are searching for */
-        public final String terminator;
+        public final Terminator terminator;
         
         /** Tokens accumulated in this mode */
         public final List<FlowToken> tokens;
@@ -169,7 +250,7 @@ public final class LaTeXTokeniser {
         public boolean foundTerminator;
         
         public ModeState(final TokenisationMode tokenisationMode, final LaTeXMode latexMode,
-                final int startPosition, final String terminator) {
+                final int startPosition, final Terminator terminator) {
             this.tokenisationMode = tokenisationMode;
             this.latexMode = latexMode;
             this.startPosition = startPosition;
@@ -179,8 +260,9 @@ public final class LaTeXTokeniser {
         }
         
         /**
-         * Gets the end index of the Slice corresponding to the last Token recorded, returning
-         * the start position if nothing has been recorded. This is useful for getting at the
+         * Gets the end index of the {@link FrozenSlice} corresponding to the last {@link Token}
+         * recorded, returning the start position if nothing has been recorded.
+         * This is useful for getting at the
          * "useful" content of a parse as it won't include the terminator.
          */
         public int computeLastTokenEndIndex() {
@@ -246,7 +328,7 @@ public final class LaTeXTokeniser {
      * @throws SnuggleParseException
      */
     private ModeState tokeniseInNewState(final TokenisationMode tokenisationMode,
-            final String terminator, final LaTeXMode latexMode) throws SnuggleParseException {
+            final Terminator terminator, final LaTeXMode latexMode) throws SnuggleParseException {
         /* Create new parsing state */
         currentModeState = new ModeState(tokenisationMode, latexMode, position, terminator);
         modeStack.push(currentModeState);
@@ -314,24 +396,17 @@ public final class LaTeXTokeniser {
         
         /* See if we are at our required terminator or at the end of the document */
         if (currentModeState.terminator!=null) {
-            if (position>workingDocument.length() - currentModeState.terminator.length()) {
-                /* Terminator wasn't found, so wind to end of document and return null */
-                position = workingDocument.length();
-                currentModeState.foundTerminator = false;
-                return null;
-            }
-            if (workingDocument.matchesAt(position, currentModeState.terminator)) {
+            int afterTerminator = currentModeState.terminator.matchesAt(workingDocument, position);
+            if (afterTerminator!=-1) {
                 /* Terminator found, so mark success and return null */
-                position += currentModeState.terminator.length();
+                position = afterTerminator;
                 currentModeState.foundTerminator = true;
                 return null;
             }
         }
-        else {
-            if (position==workingDocument.length()) {
-                /* Natural end of document */
-                return null;
-            }
+        if (position==workingDocument.length()) {
+            /* Natural end of document */
+            return null;
         }
         
         /* Record position of the start of this token so that 'position' can be messed
@@ -386,22 +461,21 @@ public final class LaTeXTokeniser {
     }
     
     /**
-     * This reads the next token in {@link LaTeXMode#VERBATIM} Mode. This is actually easy
-     * as it simply amounts to reading in all text until the required terminator, if found.
+     * This reads the next token in {@link LaTeXMode#VERBATIM} Mode, which is "simply" a case
+     * of pulling in everything until the next match of the required terminator.
+     * This always returns exactly one {@link Token}.
      */
     private FlowToken readNextTokenVerbatimMode() {
-        int endIndex;
-        if (currentModeState.terminator!=null) {
-            endIndex = workingDocument.indexOf(startTokenIndex, currentModeState.terminator);
-            if (endIndex==-1) {
-                /* No terminator found, so pull in the rest of the document */
-                endIndex = workingDocument.length();
-            }
+        Terminator terminator = currentModeState.terminator;
+        if (terminator==null) {
+            throw new SnuggleLogicException("No terminator specified for VERBATIM Mode");
         }
-        else {
-            /* No terminator specified, so pull in the rest of the document */
+        int endIndex = terminator.nextMatchFrom(workingDocument, startTokenIndex);
+        if (endIndex==-1) {
+            /* No terminator found, so pull in the rest of the document */
             endIndex = workingDocument.length();
         }
+
         FrozenSlice verbatimContentSlice = workingDocument.freezeSlice(startTokenIndex, endIndex);
         return new SimpleToken(verbatimContentSlice, TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, null);
     }
@@ -414,7 +488,7 @@ public final class LaTeXTokeniser {
         int c = workingDocument.charAt(position);
         switch(c) {
             case -1:
-                throw new SnuggleLogicException("EOF should have been detected by caller");
+                return null;
                 
             case '\\':
                 /* Macro or special characters. Read in macro name, look it up and then
@@ -544,7 +618,7 @@ public final class LaTeXTokeniser {
         int c = workingDocument.charAt(position);
         switch(c) {
             case -1:
-                throw new SnuggleLogicException("EOF should have been detected by caller");
+                return null;
                 
             case '\\':
                 /* This is \command, \verb or an environment control */
@@ -618,7 +692,7 @@ public final class LaTeXTokeniser {
             if (c=='\\' || c=='$' || c=='{' || c=='%' || c=='&' || c=='#' || c=='^' || c=='_') {
                 break;
             }
-            else if (currentModeState.terminator!=null && workingDocument.matchesAt(index, currentModeState.terminator)) {
+            else if (currentModeState.terminator!=null && currentModeState.terminator.matchesAt(workingDocument, index)!=-1) {
                 break;
             }
             else if (Character.isWhitespace(c)) {
@@ -703,7 +777,8 @@ public final class LaTeXTokeniser {
          * are tokenised separately so we don't have to worry.
          */
         int startContentIndex = position; /* And record this position as we're going to move on */
-        ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT, delimiter, LaTeXMode.MATH);
+        ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT,
+                new StringTerminator(delimiter), LaTeXMode.MATH);
         
         /* position now points just after the delimiter. */
         int endContentIndex = contentResult.foundTerminator ? position - delimiter.length() : position;
@@ -733,7 +808,8 @@ public final class LaTeXTokeniser {
         position++; /* Advance over the '{' */
         
         /* Go out and tokenise from this point onwards until the end of the '}' */
-        ModeState result = tokeniseInNewState(TokenisationMode.BRACE, "}", currentModeState.latexMode);
+        ModeState result = tokeniseInNewState(TokenisationMode.BRACE, new StringTerminator("}"),
+                currentModeState.latexMode);
         
         int endInnerIndex = result.foundTerminator ? position-1 : position;
         FrozenSlice braceOuterSlice = workingDocument.freezeSlice(openBraceIndex, position); /* Includes {...} */
@@ -765,7 +841,8 @@ public final class LaTeXTokeniser {
                 position += 2;
                 int startContentIndex = position;
                 String closer = (c=='(') ? "\\)" : "\\]";
-                ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT, closer, LaTeXMode.MATH);
+                ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT,
+                        new StringTerminator(closer), LaTeXMode.MATH);
                 if (!contentResult.foundTerminator) {
                     /* Error: We didn't find the required terminator so we'll register an error. There
                      * are probably lots of other errors caused by the missing terminator so we'll
@@ -939,7 +1016,8 @@ public final class LaTeXTokeniser {
          * a possible error token if the end delimiter was not found.
          */
         position++; /* Advance over delimiter */
-        ModeState contentState = tokeniseInNewState(TokenisationMode.VERB_COMMAND_CONTENT, Character.toString((char) delimitChar), LaTeXMode.VERBATIM);
+        ModeState contentState = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT,
+                new StringTerminator(Character.toString((char) delimitChar)), LaTeXMode.VERBATIM);
         List<FlowToken> contentTokens = contentState.tokens;
         SimpleToken verbatimContentToken = null;
         for (FlowToken resultToken : contentTokens) {
@@ -1210,7 +1288,8 @@ public final class LaTeXTokeniser {
                 int startArgumentContentIndex = ++position; /* Skip over '[' */
                 
                 /* Go out and tokenise from this point onwards until the end of the ']' */
-                argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT, "]", argumentMode);
+                argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT,
+                        new StringTerminator("]"), argumentMode);
                 int endArgumentContentIndex = (argumentResult.foundTerminator) ? position-1 : position;
                 optionalArgumentSlice = workingDocument.freezeSlice(startArgumentContentIndex, endArgumentContentIndex);
                 optionalArgument = new ArgumentContainerToken(optionalArgumentSlice, argumentMode, argumentResult.tokens);
@@ -1251,7 +1330,8 @@ public final class LaTeXTokeniser {
                 int startArgumentContentIndex = ++position; /* Skip over '{' */
                 
                 /* Go out and tokenise from this point onwards until the end of the '}' */
-                argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT, "}", argumentMode);
+                argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT,
+                        new StringTerminator("}"), argumentMode);
                 int endArgumentContentIndex = argumentResult.foundTerminator ? position-1 : position;
                 requiredArgumentSlices[i] = workingDocument.freezeSlice(startArgumentContentIndex, endArgumentContentIndex);
                 requiredArguments[i] = new ArgumentContainerToken(requiredArgumentSlices[i], argumentMode, argumentResult.tokens);
@@ -1470,13 +1550,6 @@ public final class LaTeXTokeniser {
             return createError(ErrorCode.TTEE01, startTokenIndex, position);
         }
         
-        /* If this is a 'verbatim' environment then we'll handle things explicitly and return
-         * now since it doesn't behave like other environments.
-         */
-        if (environmentName.equals(GlobalBuiltins.ENV_VERBATIM.getTeXName())) {
-            return finishVerbatimEnvironment();
-        }
-        
         /* Look up environment, taking user-defined on in preference to built-in */
         UserDefinedEnvironment userEnvironment = sessionContext.getUserEnvironmentMap().get(environmentName);
         FlowToken result = null;
@@ -1609,29 +1682,51 @@ public final class LaTeXTokeniser {
         BuiltinCommandArgumentSearchResult argumentSearchResult = new BuiltinCommandArgumentSearchResult();
         errorToken = advanceOverBuiltinCommandOrEnvironmentArguments(environment, argumentSearchResult);
         
-        /* Gobble up any whitespace before the start of the content */
-        skipOverWhitespace();
-        
-        /* Now we parse the environment content. We don't set a terminator here - the tokenisation
-         * logic knows to search for \\end and make sure things are balanced up with whatever
-         * is open. When an \\end is encountered, it returns a null token and leaves the
-         * position just after the \\end.
-         */
-        int startContentIndex = position; /* And record this position as we're going to move on */
+        /* Work out what mode we're going to parse the content in */
         LaTeXMode contentMode = environment.getContentMode();
         if (contentMode==null) {
             contentMode = currentModeState.latexMode;
         }
-        if (contentMode==LaTeXMode.VERBATIM) {
-            throw new SnuggleRuntimeException("SnuggleTeX currently does not support environments "
-                    + "containing verbatim content  other than the standard 'verbatim' environment");
-        }
-        ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT, null, contentMode);
-        int endContentIndex = contentResult.computeLastTokenEndIndex();
-        FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
-        ArgumentContainerToken contentToken = new ArgumentContainerToken(contentSlice, contentMode, contentResult.tokens);
         
-        /* position now points just after the \\end{envName} */
+        /* We now pull in the content. The non-VERBATIM and VERBATIM cases differ here */
+        ArgumentContainerToken contentToken;
+        if (contentMode==LaTeXMode.VERBATIM) {
+            /* Parse looking for the explicit \\end{envName} terminator. Because whitespace is
+             * allowed, we use a PatternTerminator for this.
+             */
+            int startContentIndex = position; /* Record this position as we're going to move on */
+            Pattern terminatorPattern = Pattern.compile("\\\\end\\s*\\{"
+                    + environment.getTeXName()
+                    + "\\}\\s*");
+            ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT,
+                    new PatternTerminator(terminatorPattern), LaTeXMode.VERBATIM);
+            int endContentIndex = contentResult.computeLastTokenEndIndex();
+            FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
+            contentToken = new ArgumentContainerToken(contentSlice, contentMode, contentResult.tokens);
+            
+            /* The above will have pulled in the end environment, so we need to explicitly pop the stack
+             * of what is open */
+            openEnvironmentStack.pop();
+        }
+        else {
+            /* Gobble up any whitespace before the start of the content */
+            skipOverWhitespace();
+            
+            /* Now we parse the environment content. We don't set a terminator here - the tokenisation
+             * logic knows to search for \\end and make sure things are balanced up with whatever
+             * is open. When an \\end is encountered, it returns a null token and leaves the
+             * position just after the \\end.
+             */
+            int startContentIndex = position; /* And record this position as we're going to move on */
+            ModeState contentResult = tokeniseInNewState(TokenisationMode.BUILTIN_ENVIRONMENT_CONTENT, null, contentMode);
+            int endContentIndex = contentResult.computeLastTokenEndIndex();
+            FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
+            contentToken = new ArgumentContainerToken(contentSlice, contentMode, contentResult.tokens);
+            
+            /* (The normal parsing will have found the \\end{envName} and popped the stack for us) */
+        }
+        
+        /* (position now points just after the \\end{envName}) */
         
         /* Bail now if we encountered any errors */
         if (errorToken!=null) {
@@ -1684,7 +1779,7 @@ public final class LaTeXTokeniser {
         String resolvedBegin = beginSlice.extract().toString();
         int argumentNumber = 1;
         if (environment.isAllowingOptionalArgument()) {
-                resolvedBegin = resolvedBegin.replace("#1",
+              resolvedBegin = resolvedBegin.replace("#1",
                       argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : "");
               argumentNumber++;
         }
@@ -1751,43 +1846,6 @@ public final class LaTeXTokeniser {
         /* Next, we obliterate this temporary token from the input and re-parse */
         makeSubstitutionAndRewind(startTokenIndex, position, "");
         return readNextToken();
-    }
-    
-    /**
-     * This does the job of reading in the content of a <tt>verbatim</tt> environment. The content
-     * mode is different here - we treat everything after <tt>\begin{verbatim}</tt> until before
-     * the next <tt>\end{verbatim}</tt> as the environment content.
-     * <p>
-     * PRE-CONDITION: position will point to the character immediately after <tt>\\begin{verbatim}</tt>.
-     */
-    private FlowToken finishVerbatimEnvironment() throws SnuggleParseException {
-        /* The content model is best dealt with by a regular expression here as it is nicely flat,
-         * so we're going to deviate from the normal tokenisation approach.
-         * 
-         * FIXME: This is not ideal. If we fixed this, then it would also allow us to deal with
-         * other environments containing verbatim content.
-         */
-        CharSequence inputUntilEnd = workingDocument.extract(position, workingDocument.length());
-        Pattern contentPattern = Pattern.compile("^(.+?)\\\\end\\s*\\{verbatim\\}\\s*", Pattern.DOTALL);
-        Matcher contentMatcher = contentPattern.matcher(inputUntilEnd);
-        if (!contentMatcher.find()) {
-            /* Could not find end of verbatim environment */
-            return createError(ErrorCode.TTEV03, startTokenIndex, workingDocument.length());
-        }
-        /* Need to work out how much content there is any also the first non-whitespace after
-         * \end{verbatim} so that the next token can be found.
-         * (Also remember that the indexes have to be taken relative to the document, not
-         * the String we're matching on)
-         */
-        int contentEndIndex = position + contentMatcher.group(1).length();
-        int nextReadIndex = position + contentMatcher.group().length();
-        FrozenSlice contentSlice = workingDocument.freezeSlice(position, contentEndIndex);
-        
-        FrozenSlice envSlice = workingDocument.freezeSlice(startTokenIndex, nextReadIndex);
-        SimpleToken contentToken = new SimpleToken(contentSlice,
-                TokenType.VERBATIM_MODE_TEXT, LaTeXMode.VERBATIM, TextFlowContext.START_NEW_XHTML_BLOCK);
-        return new EnvironmentToken(envSlice, currentModeState.latexMode, GlobalBuiltins.ENV_VERBATIM,
-                ArgumentContainerToken.createFromSingleToken(currentModeState.latexMode, contentToken));
     }
     
     //-----------------------------------------

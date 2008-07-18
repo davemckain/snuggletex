@@ -461,6 +461,9 @@ Hello &#x2014; There
 \href{urn:x#a}
 <a href="urn:x#a">urn:x#a</a>
 ====
+\href{urn:x%20b}
+<a href="urn:x%20b">urn:x%20b</a>
+====
 \xmlName{a}
 a
 ====

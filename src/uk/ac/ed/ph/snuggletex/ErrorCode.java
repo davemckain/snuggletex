@@ -38,8 +38,6 @@ public enum ErrorCode {
     TTEG04(),
     TTEV00(),
     TTEV01(),
-    TTEV02(),
-    TTEV03(),
     TTEC00(),
     TTEC01(),
     TTEC02(),

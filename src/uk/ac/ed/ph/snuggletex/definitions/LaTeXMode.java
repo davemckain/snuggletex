@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.definitions;
 
+import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser.Terminator;
+
 /**
  * Enumerates the various modes of LaTeX input.
  * 
@@ -31,10 +33,8 @@ public enum LaTeXMode {
     MATH,
 
     /**
-     * This isn't really a proper LaTeX parsing mode, but we use it here whenever we need to
-     * pull in raw text until a given terminator is found. The content may be multi-line;
-     * the <tt>\\verb</tt> command does not allow multi-line text so does its own further checks on
-     * the content.
+     * LaTeX VERBATIM Mode, which pulls in all content until a mandatory {@link Terminator}
+     * is found.
      */
     VERBATIM,
     

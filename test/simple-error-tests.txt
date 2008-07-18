@@ -15,7 +15,7 @@
 # thus allowing very basic multi-line inputs to be emulated.
 #
 ###################################################################
-## Simple tests created to trigger each explicit error code
+### Simple tests created to trigger each explicit error code
 {
 TTEG00
 ====
@@ -51,11 +51,7 @@ TTEV01
 ====
 # NB: This one changed in revision 69 after generalising how verbatim arguments work
 \verb|Hello
-#TTEV02
 TTEG00
-====
-\begin{verbatim}Hello
-TTEV03
 ====
 \susan
 TTEC00
@@ -237,6 +233,9 @@ TTEG00
 $
 TTEG00
 ====
+\begin{verbatim}Hello
+TTEG00
+====
 # See TTEM01, though this is different.
 $$x$
 TTEG00
@@ -289,5 +288,5 @@ TTEM03
 ====
 ## Regression: This was causing an NPE
 ${\mathrm}{x}$
-TTEC02,TTEG00,TTEG00
+TTEC02,TTEG00
 ====
