@@ -145,7 +145,7 @@
   <!-- Runs the JUnit Test Suite                                           -->
   <!-- =================================================================== -->
   <target name="javadoc" description="Builds JavaDoc">
-    <javadoc sourcepath="${src.dir}"
+    <javadoc sourcepath="${src.dir}" packagenames="uk.ac.ed.ph.snuggletex.*"
       destdir="${build.webapp.dir}/javadoc"/>
   </target>
 
