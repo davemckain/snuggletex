@@ -37,7 +37,7 @@ All Rights Reserved
           </td>
           <td align="left">
             <h3>THE UNIVERSITY of EDINBURGH</h3>
-            <h1>SCHOOL OF PHYSICS</h1>
+            <h1>SCHOOL OF PHYSICS AND ASTRONOMY</h1>
           </td>
           <td align="right">
             <table border="0" cellpadding="0" cellspacing="0" style="margin-right:20px;">
@@ -51,7 +51,7 @@ All Rights Reserved
                   <a href="http://www.ph.ed.ac.uk" class="headertext"><img
                     src="{$context-path}/includes/arrow.gif"
                     width="16" height="11" border="0"
-                    alt="" />School of Physics Homepage</a>
+                    alt="" />School of Physics and Astronomy Homepage</a>
                   <br />
                 </td>
               </tr>
@@ -73,7 +73,7 @@ All Rights Reserved
           <a href="{$context-path}/release-notes.html">Release Notes</a>
           <br />
           Copyright &#xa9; 2008
-          <a href="http://www.ph.ed.ac.uk">The School of Physics</a>,
+          <a href="http://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
           <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
           <br />
           For more information, contact
