@@ -46,12 +46,17 @@ $Id$
     <url-pattern>/content/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>StaticXSLTServlet</servlet-name>
-    <url-pattern>*.html</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>TryOutServlet</servlet-name>
     <url-pattern>/tryout.xml</url-pattern>
+  </servlet-mapping>
+  <!-- TODO: I think I'm going to replace the following 2 with JSPs, which is how the documentation will work as well -->
+  <servlet-mapping>
+    <servlet-name>StaticXSLTServlet</servlet-name>
+    <url-pattern>/index.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>StaticXSLTServlet</servlet-name>
+    <url-pattern>/release-notes.html</url-pattern>
   </servlet-mapping>
 
 </web-app>
