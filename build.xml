@@ -146,7 +146,7 @@
   <!-- =================================================================== -->
   <target name="javadoc" description="Builds JavaDoc">
     <javadoc sourcepath="${src.dir}" packagenames="uk.ac.ed.ph.snuggletex.*"
-      destdir="${build.webapp.dir}/javadoc"/>
+      destdir="${build.javadoc.dir}"/>
   </target>
 
   <!-- =================================================================== -->
@@ -205,6 +205,10 @@
     </copy>
     <!-- Merge in CSS -->
     <copy todir="${build.webapp.dir}/includes" file="${dist.dir}/snuggletex.css"/>
+    <!-- Copy in JavaDoc -->
+    <copy todir="${build.webapp.dir}/javadoc">
+      <fileset dir="${build.javadoc.dir}"/>
+    </copy>
   </target>
 
   <!-- =================================================================== -->
@@ -239,7 +243,7 @@
     <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}"/>
   </target>
 
-  <target name="dist.bin" depends="snuggletex.jar, snuggletex.css, src.zip"
+  <target name="dist.bin" depends="snuggletex.jar, snuggletex.css, src.zip, javadoc"
       description="Builds binary distribution ZIP">
     <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
       <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" file="LICENSE.txt"/>
@@ -247,6 +251,9 @@
         <include name="snuggletex.jar"/>
         <include name="snuggletex.css"/>
         <include name="src.zip"/>
+      </zipfileset>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/javadoc" dir="${build.javadoc.dir}">
+        <include name="**"/>
       </zipfileset>
     </zip>
   </target>
