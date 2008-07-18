@@ -167,7 +167,7 @@ public final class WorkingDocument {
     private final StringBuilder buffer;
     private final List<Slice> scoreBoard;
 
-    /** Current length of document (kept synced with buffer) */
+    /** Current length of document (this is kept in sync with buffer.length()) */
     private int length;
     
     private int freezeIndex;
