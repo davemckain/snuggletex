@@ -141,8 +141,6 @@ public final class WebPageBuilderOptions extends DOMBuilderOptions {
      */
     private boolean indenting;
     
-
-    
     public WebPageBuilderOptions() {
         super();
         this.pageType = WebPageType.DEFAULT;

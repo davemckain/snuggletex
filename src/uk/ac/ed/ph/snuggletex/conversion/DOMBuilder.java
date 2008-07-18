@@ -98,8 +98,8 @@ public final class DOMBuilder {
             final DOMBuilderOptions options) {
         this.buildRootElement = buildRootElement;
         this.document = buildRootElement.getOwnerDocument();
-        this.options = options!=null ? (DOMBuilderOptions) options.clone() : new DOMBuilderOptions();
         this.sessionContext = sessionContext;
+        this.options = options;
         this.currentInlineCSSProperties = null;
         
         this.outputContext = null;

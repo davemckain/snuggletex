@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.aardvark.commons.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
@@ -46,11 +47,11 @@ public final class SnuggleTeXEngine {
     
     private SessionConfiguration defaultSessionConfiguration;
     private DOMBuilderOptions defaultDOMBuilderOptions;
-    private WebPageBuilderOptions defaultWebPageBuilderOptions;
   
     public SnuggleTeXEngine() {
         this.definitionMaps = new ArrayList<DefinitionMap>();
-        this.defaultSessionConfiguration = null;
+        this.defaultSessionConfiguration = new SessionConfiguration();
+        this.defaultDOMBuilderOptions = new DOMBuilderOptions();
         
         /* Add in global definitions */
         definitionMaps.add(GlobalBuiltins.getDefinitionMap());
@@ -67,12 +68,14 @@ public final class SnuggleTeXEngine {
     }
     
     public SnuggleTeXSession createSession(SessionConfiguration configuration) {
+        ConstraintUtilities.ensureNotNull(configuration, "configuration");
         return new SnuggleTeXSession(this, configuration);
     }
 
     //-------------------------------------------------
     
     public BuiltinCommand getCommandByTeXName(String texName) {
+        ConstraintUtilities.ensureNotNull(texName, "texName");
         BuiltinCommand result = null;
         for (DefinitionMap map : definitionMaps) {
             result = map.getCommandByTeXName(texName);
@@ -84,6 +87,7 @@ public final class SnuggleTeXEngine {
     }
     
     public BuiltinEnvironment getEnvironmentByTeXName(String texName) {
+        ConstraintUtilities.ensureNotNull(texName, "texName");
         BuiltinEnvironment result = null;
         for (DefinitionMap map : definitionMaps) {
             result = map.getEnvironmentByTeXName(texName);
@@ -101,6 +105,7 @@ public final class SnuggleTeXEngine {
     }
     
     public void setDefaultSessionConfiguration(SessionConfiguration defaultSessionConfiguration) {
+        ConstraintUtilities.ensureNotNull(defaultSessionConfiguration, "defaultSessionConfiguration");
         this.defaultSessionConfiguration = defaultSessionConfiguration;
     }
 
@@ -111,15 +116,5 @@ public final class SnuggleTeXEngine {
     
     public void setDefaultDOMBuilderOptions(DOMBuilderOptions defaultDOMBuilderOptions) {
         this.defaultDOMBuilderOptions = defaultDOMBuilderOptions;
-    }
-
-    
-    public WebPageBuilderOptions getDefaultWebPageBuilderOptions() {
-        return defaultWebPageBuilderOptions;
-    }
-
-    
-    public void setDefaultWebPageBuilderOptions(WebPageBuilderOptions defaultWebPageBuilderOptions) {
-        this.defaultWebPageBuilderOptions = defaultWebPageBuilderOptions;
     }
 }

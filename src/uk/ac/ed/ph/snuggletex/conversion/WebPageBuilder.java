@@ -46,8 +46,8 @@ public final class WebPageBuilder {
     private final SessionContext sessionContext;
     
     public WebPageBuilder(final SessionContext sessionContext, final WebPageBuilderOptions options) {
-        this.options = options!=null ? (WebPageBuilderOptions) options.clone() : new WebPageBuilderOptions();
         this.sessionContext = sessionContext;
+        this.options = options;
     }
     
     private void fixOptions() {
