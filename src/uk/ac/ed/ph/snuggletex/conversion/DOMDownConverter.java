@@ -13,11 +13,14 @@ import uk.ac.ed.ph.snuggletex.definitions.Globals;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
@@ -38,9 +41,11 @@ import org.w3c.dom.Element;
  */
 public class DOMDownConverter {
 	
+	private final SessionContext sessionContext;
 	private final DOMBuilderOptions options;
     
-    public DOMDownConverter(final DOMBuilderOptions options) {
+    public DOMDownConverter(final SessionContext sessionContext, final DOMBuilderOptions options) {
+    	this.sessionContext = sessionContext;
         this.options = options;
     }
     
@@ -56,14 +61,25 @@ public class DOMDownConverter {
     	/* Create URI Resolver to let the XSLT get at this document */
     	CSSPropertiesURIResolver uriResolver = new CSSPropertiesURIResolver(cssPropertiesDocument);
 
-    	/* Compile the MathML -> XHTML stylesheet and run on the input Document, creating
+    	/* Compile and cache the MathML -> XHTML stylesheet and run on the input Document, creating
     	 * a replacement Document as the result */
-		TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
-		InputStream xslStream = getClass().getClassLoader().getResourceAsStream(Globals.MATHML_TO_XHTML_XSL_NAME);
+    	Map<String, Templates> stylesheetCache = sessionContext.getXSLTStylesheetCache();
+    	Templates templates = stylesheetCache.get(Globals.MATHML_TO_XHTML_XSL_NAME);
+    	if (templates==null) {
+    		TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+    		InputStream xslStream = getClass().getClassLoader().getResourceAsStream(Globals.MATHML_TO_XHTML_XSL_NAME);
+    		try {
+				templates = transformerFactory.newTemplates(new StreamSource(xslStream));
+			}
+    		catch (TransformerConfigurationException e) {
+    			throw new SnuggleRuntimeException("Could not compile down-conversion XSLT stylesheet", e);
+			}
+    		stylesheetCache.put(Globals.MATHML_TO_XHTML_XSL_NAME, templates);
+    	}
+
 		Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-		Transformer transformer;
 		try {
-			transformer = transformerFactory.newTransformer(new StreamSource(xslStream));
+			Transformer transformer = templates.newTransformer();
 			transformer.setURIResolver(uriResolver);
 			transformer.transform(new DOMSource(document), new DOMResult(result));
 		}

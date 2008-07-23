@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.Templates;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -218,7 +219,8 @@ public final class SnuggleTeXSession implements SessionContext {
                 domBuilder.buildDOMSubtree(parsedTokens);
                 
                 /* Down-convert our work document */
-        		Document downConvertedDocument = new DOMDownConverter(options).downConvertDOM(workDocument);
+        		Document downConvertedDocument = new DOMDownConverter(this, options)
+        			.downConvertDOM(workDocument);
         		
         		/* Pull the children of the <root/> in the resulting Document into the targetRoot */
         		Element resultRoot = downConvertedDocument.getDocumentElement();
@@ -387,6 +389,10 @@ public final class SnuggleTeXSession implements SessionContext {
     
     public Map<String, UserDefinedEnvironment> getUserEnvironmentMap() {
         return userEnvironmentMap;
+    }
+    
+    public Map<String, Templates> getXSLTStylesheetCache() {
+    	return engine.getXSLTStylesheetCache();
     }
 
     /**

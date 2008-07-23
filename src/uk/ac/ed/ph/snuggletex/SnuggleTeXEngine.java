@@ -12,7 +12,11 @@ import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Templates;
 
 /**
  * This is the main entry point into SnuggleTeX.
@@ -45,6 +49,9 @@ public final class SnuggleTeXEngine {
     /** List of all currently registered {@link DefinitionMap}s used by this Engine. */
     private final List<DefinitionMap> definitionMaps;
     
+    /** Cache of XSLT Stylesheets to use for certain built-in processes */
+    private final Map<String, Templates> xsltStylesheetCache;
+    
     private SessionConfiguration defaultSessionConfiguration;
     private DOMBuilderOptions defaultDOMBuilderOptions;
   
@@ -52,10 +59,13 @@ public final class SnuggleTeXEngine {
         this.definitionMaps = new ArrayList<DefinitionMap>();
         this.defaultSessionConfiguration = new SessionConfiguration();
         this.defaultDOMBuilderOptions = new DOMBuilderOptions();
+        this.xsltStylesheetCache = new HashMap<String, Templates>();
         
         /* Add in global definitions */
         definitionMaps.add(GlobalBuiltins.getDefinitionMap());
     }
+    
+    //-------------------------------------------------
     
     public void registerDefinitions(DefinitionMap definitionMap) {
         definitionMaps.add(definitionMap);
@@ -117,4 +127,8 @@ public final class SnuggleTeXEngine {
     public void setDefaultDOMBuilderOptions(DOMBuilderOptions defaultDOMBuilderOptions) {
         this.defaultDOMBuilderOptions = defaultDOMBuilderOptions;
     }
+
+	public Map<String, Templates> getXSLTStylesheetCache() {
+		return xsltStylesheetCache;
+	}
 }

@@ -15,6 +15,8 @@ import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Templates;
+
 /**
  * Provides access to session-related Objects used during the various parts of the snuggle process.
  *
@@ -34,6 +36,8 @@ public interface SessionContext {
     BuiltinCommand getCommandByTeXName(String texName);
     
     BuiltinEnvironment getEnvironmentByTeXName(String texName);
+    
+    Map<String, Templates> getXSLTStylesheetCache();
 
     void registerError(InputError error) throws SnuggleParseException;
 }
