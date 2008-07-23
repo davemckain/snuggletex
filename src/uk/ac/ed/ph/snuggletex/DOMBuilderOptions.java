@@ -99,6 +99,17 @@ public class DOMBuilderOptions implements Cloneable {
      */
     private boolean mathVariantMapping;
     
+    /**
+     * Set to true to attempt to "down-convert" simple MathML expressions into (X)HTML equivalents.
+     * For example, simple linear expressions and simple sub/superscripts can often be converted
+     * to acceptable XHTML alternatives.
+     * <p>
+     * Any expressions deemed too complex to be down-converted are kept as MathML.
+     * 
+     * <strong>NOTE:</strong> This is an experimental new feature. Feedback welcome!!
+     */
+    private boolean downConverting;
+    
     public DOMBuilderOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
         this.inliningCSS = false;
@@ -108,6 +119,7 @@ public class DOMBuilderOptions implements Cloneable {
         this.mathMLPrefix = "m";
         this.prefixingMathML = false;
         this.mathVariantMapping = false;
+        this.downConverting = false;
     }
     
     public ErrorOutputOptions getErrorOptions() {
@@ -191,9 +203,18 @@ public class DOMBuilderOptions implements Cloneable {
     public void setMathVariantMapping(boolean mathVariantMapping) {
         this.mathVariantMapping = mathVariantMapping;
     }
+    
+    
+	public boolean isDownConverting() {
+		return downConverting;
+	}
+
+	public void setDownConverting(boolean downConverting) {
+		this.downConverting = downConverting;
+	}
 
 
-    @Override
+	@Override
     public Object clone() {
         try {
             return super.clone();

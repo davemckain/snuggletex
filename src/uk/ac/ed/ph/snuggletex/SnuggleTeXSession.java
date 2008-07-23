@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.aardvark.commons.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.conversion.DOMDownConverter;
 import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleInputReader;
@@ -23,21 +24,16 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -193,6 +189,58 @@ public final class SnuggleTeXSession implements SessionContext {
     			new ArrayList<FlowToken>(parsedTokens));
     }
     
+    //---------------------------------------------
+    
+    /**
+     * Builds a DOM sub-tree based on the currently parsed tokens, appending the results as
+     * children of the given target root Element. The given {@link DOMBuilderOptions} Object
+     * is used to configure the process.
+     * <p>
+     * If the {@link DOMBuilderOptions} specifies that MathML should be down-converted to
+     * XHTML where possible, then this will also happen.
+     * 
+     * @param targetRoot
+     * @return true if successful, false if a failure caused the process to terminate.
+     */
+    public boolean buildDOMSubtree(final Element targetRoot, final DOMBuilderOptions options) {
+        ConstraintUtilities.ensureNotNull(targetRoot, "targetRoot");
+        ConstraintUtilities.ensureNotNull(options, "options");
+        try {
+        	if (options.isDownConverting()) {
+        		/* We'll build into a "work" Document first and then adopt all of the final
+        		 * resulting Nodes as children of the targetRoot
+        		 */
+        	   	Document workDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+            	Element workRoot = workDocument.createElement("root");
+            	workDocument.appendChild(workRoot);
+            	
+                DOMBuilder domBuilder = new DOMBuilder(this, workRoot, options);
+                domBuilder.buildDOMSubtree(parsedTokens);
+                
+                /* Down-convert our work document */
+        		Document downConvertedDocument = new DOMDownConverter(options).downConvertDOM(workDocument);
+        		
+        		/* Pull the children of the <root/> in the resulting Document into the targetRoot */
+        		Element resultRoot = downConvertedDocument.getDocumentElement();
+            	NodeList childNodes = resultRoot.getChildNodes();
+            	Node childNode;
+            	for (int i=0, size=childNodes.getLength(); i<size; i++) {
+        			childNode = childNodes.item(i);
+        			targetRoot.appendChild(targetRoot.getOwnerDocument().adoptNode(childNode));
+            	}
+        	}
+        	else {
+        		/* Just build as normal */
+                DOMBuilder domBuilder = new DOMBuilder(this, targetRoot, options);
+                domBuilder.buildDOMSubtree(parsedTokens);
+        	}
+        }
+        catch (SnuggleParseException e) {
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * Builds a DOM sub-tree based on the currently parsed tokens, appending the results as
      * children of the given target root Element. This uses the default {@link DOMBuilderOptions}
@@ -203,27 +251,6 @@ public final class SnuggleTeXSession implements SessionContext {
      */
     public boolean buildDOMSubtree(final Element targetRoot) {
         return buildDOMSubtree(targetRoot, engine.getDefaultDOMBuilderOptions());
-    }
-    
-    /**
-     * Builds a DOM sub-tree based on the currently parsed tokens, appending the results as
-     * children of the given target root Element. The given {@link DOMBuilderOptions} Object
-     * is used to configure the process.
-     * 
-     * @param targetRoot
-     * @return true if successful, false if a failure caused the process to terminate.
-     */
-    public boolean buildDOMSubtree(final Element targetRoot, final DOMBuilderOptions options) {
-        ConstraintUtilities.ensureNotNull(targetRoot, "targetRoot");
-        ConstraintUtilities.ensureNotNull(options, "options");
-        try {
-            DOMBuilder domBuilder = new DOMBuilder(this, targetRoot, options);
-            domBuilder.buildDOMSubtree(parsedTokens);
-        }
-        catch (SnuggleParseException e) {
-            return false;
-        }
-        return true;
     }
     
     /**
@@ -293,17 +320,7 @@ public final class SnuggleTeXSession implements SessionContext {
         for (int i=0, length=nodes.getLength(); i<length; i++) {
             document.appendChild(nodes.item(i));
         }
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
-        StringWriter resultWriter = new StringWriter();
-        try {
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.transform(new DOMSource(document), new StreamResult(resultWriter));
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Could not serialize DOM document", e);
-        }
-        return resultWriter.toString();
+        return XMLUtilities.serializeXMLFragment(document);
     }
     
     //---------------------------------------------
