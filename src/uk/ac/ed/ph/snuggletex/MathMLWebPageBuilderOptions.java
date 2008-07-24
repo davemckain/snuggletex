@@ -6,12 +6,12 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.BaseWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions;
 
 /**
  * Builds on {@link DOMBuilderOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleTeXSession}
- * (e.g. {@link SnuggleTeXSession#createWebPage(BaseWebPageBuilderOptions)}).
+ * (e.g. {@link SnuggleTeXSession#createWebPage(AbstractWebPageBuilderOptions)}).
  * 
  * <h2>Note</h2>
  * 
@@ -23,7 +23,7 @@ import uk.ac.ed.ph.snuggletex.conversion.BaseWebPageBuilderOptions;
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public final class MathMLWebPageBuilderOptions extends BaseWebPageBuilderOptions {
+public final class MathMLWebPageBuilderOptions extends AbstractWebPageBuilderOptions {
     
     /**
      * Enumerates the different web page "templates" supported.

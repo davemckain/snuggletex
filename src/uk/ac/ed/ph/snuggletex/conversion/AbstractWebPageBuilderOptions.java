@@ -7,26 +7,31 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
 
 import javax.xml.transform.Transformer;
 
 /**
- * Builds on {@link DOMBuilderOptions} to add in options for configuring how to build a
+ * Builds on {@link DOMBuilderOptions} to add in basic options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleTeXSession}
- * (e.g. {@link SnuggleTeXSession#createWebPage(BaseWebPageBuilderOptions)}).
+ * (e.g. {@link SnuggleTeXSession#createWebPage(AbstractWebPageBuilderOptions)}).
+ * <p>
+ * Concrete web page building processes will subclass this to add in extra features relevant
+ * to the type of pages they support.
  * 
  * <h2>Note</h2>
  * 
  * There are some dependencies between various properties here due to real-world difficulties
- * in serving up Mathematical web content.
- * Rather than failing, you may find that properties you set here get changed by SnuggleTeX
- * to make them more sane.
+ * in serving up Mathematical web content. Rather than failing, you may find that properties
+ * you set here get changed by SnuggleTeX to make them more sane.
+ * 
+ * @see MathMLWebPageBuilderOptions
  *
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public abstract class BaseWebPageBuilderOptions extends DOMBuilderOptions {
+public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
     
     /**
      * JAXP {@link Transformer} Object of an optional XSLT stylesheet that will be applied to the 
@@ -81,7 +86,7 @@ public abstract class BaseWebPageBuilderOptions extends DOMBuilderOptions {
      */
     private boolean indenting;
     
-    public BaseWebPageBuilderOptions() {
+    public AbstractWebPageBuilderOptions() {
         super();
         this.encoding = "UTF-8";
         this.language = "en";

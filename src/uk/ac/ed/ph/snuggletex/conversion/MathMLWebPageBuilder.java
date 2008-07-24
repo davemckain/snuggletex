@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public final class MathMLWebPageBuilder extends BaseWebPageBuilder<MathMLWebPageBuilderOptions> {
+public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWebPageBuilderOptions> {
     
     public MathMLWebPageBuilder(final SessionContext sessionContext, final MathMLWebPageBuilderOptions options) {
     	super(sessionContext, options);
@@ -212,9 +212,7 @@ public final class MathMLWebPageBuilder extends BaseWebPageBuilder<MathMLWebPage
 	protected void configureSerializer(Transformer serializer) {
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
-        serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
         serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
-        serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
         serializer.setOutputProperty(OutputKeys.METHOD, pageType==WebPageType.MATHPLAYER_HTML ? "html" : "xml");
         if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
             serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");

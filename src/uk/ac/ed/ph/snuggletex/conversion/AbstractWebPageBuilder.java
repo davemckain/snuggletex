@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
+import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -13,6 +14,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -23,34 +25,57 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 
 /**
- * FIXME: Document this type!
- * FIXME: Tidy this up!
+ * Template for a class that can build a web page from a {@link List} of fixed {@link FlowToken}s.
+ * The default realisation of this template is {@link MathMLWebPageBuilder} that writes out nice
+ * standards-compliant web pages.
+ * <p>
+ * SnuggleTeX comes optionally bundled with an extension that can create "legacy" HTML 4.0
+ * pages with MathML converted to images.
+ * 
+ * @param <P> type of {@link AbstractWebPageBuilderOptions} supported by this builder
  *
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public abstract class BaseWebPageBuilder<P extends BaseWebPageBuilderOptions> {
+public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOptions> {
 	
 	protected final SessionContext sessionContext;
+	
     protected final P options;
     
-    public BaseWebPageBuilder(final SessionContext sessionContext, final P options) {
+    public AbstractWebPageBuilder(final SessionContext sessionContext, final P options) {
         this.sessionContext = sessionContext;
         this.options = options;
     }
     
     /**
-     * Creates a web page representing the given (fixed) Tokens, returning the result as a
-     * DOM Document.
+     * Subclasses should fill in to creates a DOM {@link Document} representing a compleete
+     * web page representing the given (fixed) Tokens.
      * 
      * @param fixedTokens fixed Tokens from earlier stages of parsing
-     * 
-     * @return full DOM Document (with namespaces)
+     * @return full DOM Document (which must support namespaces)
      * 
      * @throws SnuggleParseException
      */
     public abstract Document createWebPage(final List<FlowToken> fixedTokens)
     		throws SnuggleParseException;
+    
+    /**
+     * Subclasses should fill in the compute the appropriate HTTP <tt>Content-Type</tt>
+     * header to use when using {@link #writeWebPage(List, Object, OutputStream)}.
+     * 
+     * @return
+     */
+    protected abstract String computeContentTypeHeader();
+    
+    /**
+     * Subclasses should fill in to configure the {@link Transformer} that will be used
+     * to serialize the resulting web page. The {@link OutputKeys#INDENT} and
+     * {@link OutputKeys#ENCODING} will have been set correctly already.
+     */
+    protected abstract void configureSerializer(Transformer serializer);
+    
+    //------------------------------------------------------------
     
     /**
      * Creates a web page representing the given (fixed) Tokens, and writes the results to
@@ -104,13 +129,15 @@ public abstract class BaseWebPageBuilder<P extends BaseWebPageBuilderOptions> {
                 throw new SnuggleRuntimeException("Could not create serializer", e);
             }
         }
+
+        /* Set core serialization properties */
+        serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
+        serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
         
-        /* Let subclass configure the Serializer as appropriate */
+        /* Let subclass further configure the Serializer as appropriate */
         configureSerializer(serializer);
         return serializer;
     }
     
-    protected abstract String computeContentTypeHeader();
-    
-    protected abstract void configureSerializer(Transformer serializer);
+
 }
