@@ -6,14 +6,15 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.aardvark.commons.util.ConstraintUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
-import uk.ac.ed.ph.snuggletex.conversion.DOMDownConverter;
+import uk.ac.ed.ph.snuggletex.conversion.BaseWebPageBuilder;
+import uk.ac.ed.ph.snuggletex.conversion.BaseWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
 import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
+import uk.ac.ed.ph.snuggletex.conversion.MathMLWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.TokenFixer;
-import uk.ac.ed.ph.snuggletex.conversion.WebPageBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
@@ -24,6 +25,7 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,6 @@ import javax.xml.transform.Templates;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -207,40 +208,12 @@ public final class SnuggleTeXSession implements SessionContext {
         ConstraintUtilities.ensureNotNull(targetRoot, "targetRoot");
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
-        	if (options.isDownConverting()) {
-        		/* We'll build into a "work" Document first and then adopt all of the final
-        		 * resulting Nodes as children of the targetRoot
-        		 */
-        	   	Document workDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-            	Element workRoot = workDocument.createElement("root");
-            	workDocument.appendChild(workRoot);
-            	
-                DOMBuilder domBuilder = new DOMBuilder(this, workRoot, options);
-                domBuilder.buildDOMSubtree(parsedTokens);
-                
-                /* Down-convert our work document */
-        		Document downConvertedDocument = new DOMDownConverter(this, options)
-        			.downConvertDOM(workDocument);
-        		
-        		/* Pull the children of the <root/> in the resulting Document into the targetRoot */
-        		Element resultRoot = downConvertedDocument.getDocumentElement();
-            	NodeList childNodes = resultRoot.getChildNodes();
-            	Node childNode;
-            	for (int i=0, size=childNodes.getLength(); i<size; i++) {
-        			childNode = childNodes.item(i);
-        			targetRoot.appendChild(targetRoot.getOwnerDocument().adoptNode(childNode));
-            	}
-        	}
-        	else {
-        		/* Just build as normal */
-                DOMBuilder domBuilder = new DOMBuilder(this, targetRoot, options);
-                domBuilder.buildDOMSubtree(parsedTokens);
-        	}
+            new DOMBuilderFacade(this, options).buildDOMSubtree(targetRoot, parsedTokens);
+            return true;
         }
         catch (SnuggleParseException e) {
             return false;
         }
-        return true;
     }
     
     /**
@@ -329,13 +302,13 @@ public final class SnuggleTeXSession implements SessionContext {
 
     /**
      * Builds a complete web page based on the currently parsed tokens, returning a DOM
-     * {@link Document} Object. The provided {@link WebPageBuilderOptions} are used to
+     * {@link Document} Object. The provided {@link MathMLWebPageBuilderOptions} are used to
      * configure the process.
      */
-    public Document createWebPage(final WebPageBuilderOptions options) {
+    public Document createWebPage(final BaseWebPageBuilderOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
-            WebPageBuilder webBuilder = new WebPageBuilder(this, options);
+            BaseWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
             return webBuilder.createWebPage(parsedTokens);
         }
         catch (SnuggleParseException e) {
@@ -347,7 +320,7 @@ public final class SnuggleTeXSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      */
-    public boolean writeWebPage(final WebPageBuilderOptions options, final OutputStream outputStream)
+    public boolean writeWebPage(final BaseWebPageBuilderOptions options, final OutputStream outputStream)
             throws IOException {
         return writeWebPage(options, null, outputStream);
     }
@@ -358,18 +331,45 @@ public final class SnuggleTeXSession implements SessionContext {
      * property called <tt>contentType</tt>, then it is set in advance to the appropriate HTTP
      * <tt>Content-Type</tt> header for the resulting page before the web page data is written.
      */
-    public boolean writeWebPage(final WebPageBuilderOptions options, final Object contentTypeSettable,
+    public boolean writeWebPage(final BaseWebPageBuilderOptions options, final Object contentTypeSettable,
             final OutputStream outputStream) throws IOException {
         ConstraintUtilities.ensureNotNull(options, "options");
         ConstraintUtilities.ensureNotNull(outputStream, "outputStream");
         try {
-            WebPageBuilder webBuilder = new WebPageBuilder(this, options);
+            BaseWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
             webBuilder.writeWebPage(parsedTokens, contentTypeSettable, outputStream);
             return true;
         }
         catch (SnuggleParseException e) {
             return false;
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+	private BaseWebPageBuilder<?> createWebPageBuilder(BaseWebPageBuilderOptions options) {
+    	BaseWebPageBuilder<?> result = null;
+    	if (options instanceof MathMLWebPageBuilderOptions) {
+    		result = new MathMLWebPageBuilder(this, (MathMLWebPageBuilderOptions) options);
+    	}
+    	else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions")) {
+    		/* Use reflection to instantiate as this is an "extension" and we don't want to
+    		 * hard-wire a dependency on it.
+    		 */
+    		try {
+				Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilder");
+				Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions");
+				Constructor<?> constructor = builderClass.getConstructor(SessionContext.class, optionsClass);
+				result = (BaseWebPageBuilder<?>) constructor.newInstance(this, options);
+			}
+    		catch (Exception e) {
+    			throw new SnuggleRuntimeException("Could not load SnuggleTeX JEuclid Extensions - please check your ClassPath", e);
+			}
+    	}
+    	else {
+        	throw new SnuggleRuntimeException("SnuggleTeX doesn't know how to build web pages using options of type "
+        			+ options.getClass().getName());
+    	}
+    	return result;
     }
     
     //---------------------------------------------

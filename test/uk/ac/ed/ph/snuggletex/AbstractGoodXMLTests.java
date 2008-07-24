@@ -9,7 +9,7 @@ import static org.easymock.EasyMock.createStrictControl;
 
 import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectDumper;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
 import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleInputReader;
@@ -115,8 +115,8 @@ abstract class AbstractGoodXMLTests {
             Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
             resultDocument.appendChild(rootElement);
             
-            DOMBuilder domBuilder = new DOMBuilder(context, rootElement, domOptions);
-            domBuilder.handleTokens(rootElement, outerToken, true);
+            DOMBuilderFacade domBuilder = new DOMBuilderFacade(context, domOptions);
+            domBuilder.buildDOMSubtree(rootElement, outerToken.getContents());
                
             /* Make sure we have still got no errors */
             checkNoErrors(context);

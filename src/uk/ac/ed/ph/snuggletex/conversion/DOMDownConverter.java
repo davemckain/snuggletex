@@ -1,4 +1,4 @@
-/* $Id: org.eclipse.jdt.ui.prefs 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -12,7 +12,6 @@ import uk.ac.ed.ph.snuggletex.SnuggleTeX;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
@@ -25,19 +24,19 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * This class handles the optional "down-conversion" of simple MathML expressions into
+ * XHTML + CSS alternatives, where possible.
  * 
- * FIXME: Add caching of the stylesheet for this!
+ * @see DOMBuilderFacade
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public class DOMDownConverter {
 	
@@ -90,10 +89,9 @@ public class DOMDownConverter {
     }
     
     /**
-     * FIXME: Document this type!
-     *
-     * @author  David McKain
-     * @version $Revision: 3 $
+     * Trivial {@link URIResolver} that returns an XML Document corresponding to
+     * the current session's CSS Properties when the URI
+     * {@link Globals#CSS_PROPERTIES_DOCUMENT_URN} is used.
      */
     protected static class CSSPropertiesURIResolver implements URIResolver {
     	
@@ -133,56 +131,4 @@ public class DOMDownConverter {
 			root.appendChild(element);
 		}
     }
-    
-    public static void main(String[] args) throws Exception {
-		Document d = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-		Element math = d.createElementNS(Globals.MATHML_NAMESPACE, "math");
-		d.appendChild(math);
-		
-		Element e = d.createElementNS(Globals.MATHML_NAMESPACE, "mn");
-		e.appendChild(d.createTextNode("1"));
-		math.appendChild(e);
-		
-		e = d.createElementNS(Globals.MATHML_NAMESPACE, "mo");
-		e.appendChild(d.createTextNode("+"));
-		math.appendChild(e);
-		
-		e = d.createElementNS(Globals.MATHML_NAMESPACE, "mn");
-		e.appendChild(d.createTextNode("2"));
-		math.appendChild(e);
-		
-		/* Make Properties XML */
-		Properties properties = CSSUtilities.readBuiltinInlineCSSProperties();
-		Document pd = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-		Element root = pd.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "properties");
-		pd.appendChild(root);
-		for (Entry<Object,Object> entry : properties.entrySet()) {
-			e = pd.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "property");
-			e.setAttribute("name", (String) entry.getKey());
-			e.setAttribute("value", (String) entry.getValue());
-			root.appendChild(e);
-		}
-		
-		final Source propertiesSource = new DOMSource(pd);
-		final URIResolver propertiesResolver = new URIResolver() {
-			public Source resolve(String href, String base) {
-				System.out.println("Resolve: href=" + href + ",base=" + base);
-				return href.equals("urn:snuggletex-properties") ? propertiesSource : null;
-			}
-		};
-		
-		StringWriter resultWriter = new StringWriter();
-		TransformerFactory tf = XMLUtilities.createTransformerFactory();
-		tf.setURIResolver(propertiesResolver);
-		
-		InputStream xslStream = DOMDownConverter.class.getClassLoader().getResourceAsStream("uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl");
-		System.out.println("GOT " + xslStream);
-		Transformer t = tf.newTransformer(new StreamSource(xslStream));
-		t.transform(new DOMSource(d), new StreamResult(resultWriter));
-		
-		System.out.println("Got " + resultWriter);
-		
-	}
-
-
 }

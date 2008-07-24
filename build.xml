@@ -33,9 +33,22 @@
   </target>
 
   <!-- =================================================================== -->
+  <!-- Prepares 3rd party libraries, flattening the vendor/version         -->
+  <!-- hierarchy that we use to make it easier to reference them.          -->
+  <!-- =================================================================== -->
+  <target name="prepare.libs" depends="prepare.dirs">
+    <copy todir="${build.lib.dir}" flatten="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+        <exclude name="**/src.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
   <!-- Builds the main SnuggleTeX Java files                               -->
   <!-- =================================================================== -->
-  <target name="build" depends="prepare.dirs">
+  <target name="build" depends="prepare.libs">
     <!-- Compile Java files -->
     <javac destdir="${build.src.dir}"
         debug="true"
@@ -65,7 +78,6 @@
     </jar>
   </target>
 
-
   <!-- =================================================================== -->
   <!-- Creates the default SnuggleTeX CSS                                  -->
   <!--                                                                     -->
@@ -84,19 +96,6 @@
       <arg value="${dist.dir}/snuggletex.css"/>
       <classpath path="${build.src.dir}"/>
     </java>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Prepares 3rd party libraries, flattening the vendor/version         -->
-  <!-- hierarchy that we use to make it easier to reference them.          -->
-  <!-- =================================================================== -->
-  <target name="prepare.libs" depends="prepare.dirs">
-    <copy todir="${build.lib.dir}" flatten="true">
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-        <exclude name="**/src.jar"/>
-      </fileset>
-    </copy>
   </target>
 
   <!-- =================================================================== -->

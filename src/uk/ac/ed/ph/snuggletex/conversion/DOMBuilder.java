@@ -16,9 +16,9 @@ import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleTeX;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
@@ -27,8 +27,8 @@ import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -48,7 +48,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This takes a {@link List} of (fixed) {@link Token}s and builds a DOM tree branch from them.
+ * This takes a {@link List} of (fixed) {@link Token}s and builds a XHTML + MathML
+ * DOM tree branch from them.
  * 
  * <h2>Usage</h2>
  * 
@@ -107,10 +108,13 @@ public final class DOMBuilder {
     }
     
     //-------------------------------------------
-    // "Public" entry points
+    // External entry point
     
-    public void buildDOMSubtree(final List<FlowToken> fixedTokens)
-            throws DOMException, SnuggleParseException {
+    /**
+     * @throws SnuggleParseException
+     * @throws DOMException
+     */
+    public void buildDOMSubtree(final List<FlowToken> fixedTokens) throws SnuggleParseException {
     	this.outputContext = OutputContext.XHTML;
     	this.mathVariantMapStack.clear();
         handleTokens(buildRootElement, fixedTokens, true);

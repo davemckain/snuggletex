@@ -7,32 +7,23 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
-import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions;
-import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
  * This builds a simple web page representation of the LaTeX input, using the provided
- * {@link WebPageBuilderOptions} to provide a certain amount of control over the results.
+ * {@link MathMLWebPageBuilderOptions} to provide a certain amount of control over the results.
  * <p>
  * This is a convenient way of bashing out working web pages if you're happy with the inherent
  * limitations of doing it this way.
@@ -40,14 +31,10 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public final class WebPageBuilder {
+public final class MathMLWebPageBuilder extends BaseWebPageBuilder<MathMLWebPageBuilderOptions> {
     
-    private final WebPageBuilderOptions options;
-    private final SessionContext sessionContext;
-    
-    public WebPageBuilder(final SessionContext sessionContext, final WebPageBuilderOptions options) {
-        this.sessionContext = sessionContext;
-        this.options = options;
+    public MathMLWebPageBuilder(final SessionContext sessionContext, final MathMLWebPageBuilderOptions options) {
+    	super(sessionContext, options);
     }
     
     private void fixOptions() {
@@ -89,7 +76,8 @@ public final class WebPageBuilder {
      * Computes the appropriate "Content-Type" string to be specified as an HTTP Header. (Note
      * that MathPlayer only sniffs a limited number of Content Types.)
      */
-    public String computeContentTypeHeader() {
+    @Override
+	public String computeContentTypeHeader() {
         /* Check options, making adjustments as required to ensure sanity */
         fixOptions();
 
@@ -114,7 +102,8 @@ public final class WebPageBuilder {
      * 
      * @throws SnuggleParseException
      */
-    public Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+    @Override
+	public Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         
         /* Check options, making adjustments as required to ensure sanity */
@@ -130,8 +119,8 @@ public final class WebPageBuilder {
         }
         
         /* Build <body/> */
-        DOMBuilder domBuilder = new DOMBuilder(sessionContext, body, options);
-        domBuilder.buildDOMSubtree(fixedTokens);
+        DOMBuilderFacade domBuilder = new DOMBuilderFacade(sessionContext, options);
+        domBuilder.buildDOMSubtree(body, fixedTokens);
         
         /* Build <head/> */
         Element head = document.createElementNS(Globals.XHTML_NAMESPACE, "head");
@@ -219,69 +208,17 @@ public final class WebPageBuilder {
         return document;
     }
     
-    /**
-     * Creates a web page representing the given (fixed) Tokens, and writes the results to
-     * the given {@link OutputStream}.
-     * 
-     * @param fixedTokens fixed Tokens from earlier stages of parsing
-     * @param contentTypeSettable optional bean Object that will have its <tt>contentType</tt>
-     *   property set if provided. (This is generally useful as a proxy for the <tt>HttpResponse</tt>
-     *   Object in the servlet API, which I want to avoid a compile-time dependency on.)
-     * @param outputStream Stream to send the resulting page to, which will be closed afterwards.
-     * 
-     * @throws SnuggleParseException
-     * @throws IOException
-     */
-    public void writeWebPage(final List<FlowToken> fixedTokens, final Object contentTypeSettable,
-            final OutputStream outputStream) throws SnuggleParseException, IOException {
-        if (contentTypeSettable!=null) {
-            /* Look for a Method called setContentType() and, if found, call it */
-            try {
-                Method setterMethod = contentTypeSettable.getClass().getMethod("setContentType", new Class<?>[] { String.class });
-                setterMethod.invoke(contentTypeSettable, computeContentTypeHeader());
-            }
-            catch (Exception e) {
-                throw new SnuggleRuntimeException("Could not find and call setContentType() on Object " + contentTypeSettable, e);
-            }
-        }
-        Document webPageDocument = createWebPage(fixedTokens);
-        Transformer serializer = createSerializer();
-        try {
-            serializer.transform(new DOMSource(webPageDocument), new StreamResult(outputStream));
-        }
-        catch (TransformerException e) {
-            throw new SnuggleRuntimeException("Could not serialize web page", e);
-        }
-        finally {
-            outputStream.close();
-        }
-    }
-
-    /**
-     * @throws SnuggleRuntimeException if a serializer cannot be created.
-     */
-    private Transformer createSerializer() {
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
-        Transformer result = options.getStylesheet();
-        if (result==null) {
-            try {
-                result = transformerFactory.newTransformer();
-            }
-            catch (TransformerConfigurationException e) {
-                throw new SnuggleRuntimeException("Could not create serializer", e);
-            }
-        }
-
+    @Override
+	protected void configureSerializer(Transformer serializer) {
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
-        result.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
-        result.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
-        result.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
-        result.setOutputProperty(OutputKeys.METHOD, pageType==WebPageType.MATHPLAYER_HTML ? "html" : "xml");
+        serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
+        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
+        serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
+        serializer.setOutputProperty(OutputKeys.METHOD, pageType==WebPageType.MATHPLAYER_HTML ? "html" : "xml");
         if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
-            result.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
-            result.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
         }
-        return result;
     }
 }

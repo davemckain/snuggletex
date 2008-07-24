@@ -11,9 +11,9 @@ import uk.ac.ed.ph.snuggletex.Snapshot;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
-import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageBuilderOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -201,7 +201,7 @@ public final class SnuggleTeXServlet extends BaseServlet {
         }
         
         /* Generate and serve the resulting web page */
-        WebPageBuilderOptions options = new WebPageBuilderOptions();
+        MathMLWebPageBuilderOptions options = new MathMLWebPageBuilderOptions();
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setPageType(pageType);

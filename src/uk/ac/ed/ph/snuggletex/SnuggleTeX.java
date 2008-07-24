@@ -45,7 +45,7 @@ public final class SnuggleTeX {
         return session.getErrors();
     }
     
-    public static List<InputError> writeWebPage(final WebPageBuilderOptions options,
+    public static List<InputError> writeWebPage(final MathMLWebPageBuilderOptions options,
             final OutputStream outputStream, final SnuggleInput... inputs)
             throws IOException {
         SnuggleTeXSession session = new SnuggleTeXEngine().createSession();
@@ -56,7 +56,7 @@ public final class SnuggleTeX {
         return session.getErrors();
     }
     
-    public static List<InputError> writeWebPage(final WebPageBuilderOptions options,
+    public static List<InputError> writeWebPage(final MathMLWebPageBuilderOptions options,
             final File outputFile, final SnuggleInput... inputs)
             throws IOException {
         return writeWebPage(options, new FileOutputStream(outputFile), inputs);
