@@ -1,4 +1,4 @@
-/* $Id: XMLUtilities.java 2724 2008-03-14 09:43:49Z davemckain $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -28,16 +28,10 @@ import org.w3c.dom.Node;
  * <p>
  * (This is based on similar utility methods in Aardvark.)
  *
- * @author David McKain
- * @version $Revision: 2724 $
+ * @author  David McKain
+ * @version $Revision$
  */
 public final class XMLUtilities {
-
-     /** 
-     * Value of Saxon 8 FeatureKeys#VERSION_WARNING. This has been looked up and
-     * pasted in here to avoid a compile-time dependency on Saxon 8.
-     */ 
-    private static final String SAXON_VERSION_WARNING_FEATURE_KEY = "http://saxon.sf.net/feature/version-warning";
 
     public static TransformerFactory createTransformerFactory() {
         TransformerFactory transformerFactory = null;
@@ -50,16 +44,6 @@ public final class XMLUtilities {
         /* Make sure we have DOM-based features */
         requireFeature(transformerFactory, DOMSource.FEATURE);
         requireFeature(transformerFactory, DOMResult.FEATURE);
-        
-        /* If using Saxon 7+, we'll turn off warnings when running on XSLT 1.0 stylesheets */
-        if (transformerFactory.getClass().getName().equals("net.sf.saxon.TransformerFactoryImpl")) {
-            try {
-                transformerFactory.setAttribute(SAXON_VERSION_WARNING_FEATURE_KEY, Boolean.FALSE);
-            }
-            catch (IllegalArgumentException e) {
-                /* (Safe to ignore this) */
-            }
-        }
         
         /* Must have been OK! */
         return transformerFactory;
@@ -91,7 +75,7 @@ public final class XMLUtilities {
     }
     
     public static String serializeXMLFragment(final Node node) {
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+        TransformerFactory transformerFactory = createTransformerFactory();
         StringWriter resultWriter = new StringWriter();
         try {
             Transformer transformer = transformerFactory.newTransformer();
