@@ -164,13 +164,15 @@ public final class DOMBuilder {
     
     //-------------------------------------------
     // Callbacks Start Below
+    //
+    // Note that all methods may throw the unchecked DOMException !
 
     /**
      * @param trimWhitespace removes leading whitespace from the first resulting Node if it is a Text Node and
      *   removes trailing whitespace from the last Node if it is a Text Node.
      */
     public void handleTokens(Element parentElement, ArgumentContainerToken containerToken, boolean trimWhitespace)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         handleTokens(parentElement, containerToken.getContents(), trimWhitespace);
     }
 
@@ -179,7 +181,7 @@ public final class DOMBuilder {
      *   removes trailing whitespace from the last Node if it is a Text Node.
      */
     public void handleTokens(Element parentElement, List<FlowToken> siblingTokens, boolean trimWhitespace)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         int childCountBefore = parentElement.getChildNodes().getLength();
         for (FlowToken content : siblingTokens) {
             handleToken(parentElement, content);
@@ -213,11 +215,11 @@ public final class DOMBuilder {
      * \msub{1+2}{3-\mrow{4*5}} -> <msup><mrow>...</mrow><mrow>...</mrow></msup>
      * @param parentElement
      * @param token
+     * 
      * @throws DOMException
      * @throws SnuggleParseException
      */
-    public void handleToken(Element parentElement, FlowToken token)
-            throws DOMException, SnuggleParseException {
+    public void handleToken(Element parentElement, FlowToken token) throws SnuggleParseException {
         switch (token.getType()) {
             
             /* Complex Tokens */
@@ -563,12 +565,12 @@ public final class DOMBuilder {
     }
     
     public void handleMathTokensAsSingleElement(Element parentElement, ArgumentContainerToken containerToken)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         handleMathTokensAsSingleElement(parentElement, containerToken.getContents());
     }
     
     public void handleMathTokensAsSingleElement(Element parentElement, List<FlowToken> tokens)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /* We wrap in an <mrow/> */
         Element mrow = appendMathMLElement(parentElement, "mrow");
         handleTokens(mrow, tokens, true);
@@ -587,9 +589,11 @@ public final class DOMBuilder {
      * This "converts" the given token to a String by performing
      * {{@link #handleTokens(Element, ArgumentContainerToken, boolean)}}
      * with a fake root element and then extracting the String value of the resulting Text Node(s).
+     * 
+     * @throws DOMException
+     * @throws {@link SnuggleParseException}
      */
-    public String extractStringValue(ArgumentContainerToken token)
-            throws DOMException, SnuggleParseException {
+    public String extractStringValue(ArgumentContainerToken token) throws SnuggleParseException {
         Element dummyContainer = document.createElement("dummy");
         handleTokens(dummyContainer, token, true);
         
@@ -656,8 +660,6 @@ public final class DOMBuilder {
         return currentInlineCSSProperties;
     }
     
-
-
     //-------------------------------------------
 
     public Element findNearestXHTMLAncestorOrSelf(final Element element) {

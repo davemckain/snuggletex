@@ -9,7 +9,6 @@ import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -31,8 +30,7 @@ public final class CharacterCommandHandler implements CommandHandler {
         this.outputCharacter = outputCharacter;
     }
     
-    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException {
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token) {
         if (token.getLatexMode()==LaTeXMode.MATH) {
             builder.appendMathMLIdentifierElement(parentElement, outputCharacter);
         }

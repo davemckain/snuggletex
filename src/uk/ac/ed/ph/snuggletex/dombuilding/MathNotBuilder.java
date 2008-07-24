@@ -9,7 +9,6 @@ import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -20,8 +19,7 @@ import org.w3c.dom.Element;
  */
 public final class MathNotBuilder implements CommandHandler {
     
-    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken notToken)
-            throws DOMException {
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken notToken) {
         NottableMathOperatorInterpretation combinerRelation = (NottableMathOperatorInterpretation) notToken.getCombinerTarget().getInterpretation();
         builder.appendMathMLOperatorElement(parentElement, combinerRelation.getNotOperator());
     }

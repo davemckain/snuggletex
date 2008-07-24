@@ -10,7 +10,6 @@ import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -23,7 +22,7 @@ import org.w3c.dom.Element;
 public final class MathRootBuilder implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         ArgumentContainerToken optionalArgument = token.getOptionalArgument();
         ArgumentContainerToken requiredArgument = token.getArguments()[0];
         Element result;

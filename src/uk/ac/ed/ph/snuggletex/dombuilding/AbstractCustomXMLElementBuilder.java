@@ -36,14 +36,14 @@ abstract class AbstractCustomXMLElementBuilder implements EnvironmentHandler, Co
     
     public void handleEnvironment(final DOMBuilder builder, final Element parentElement,
             final EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         buildCustomElement(builder, parentElement, token.getOptionalArgument(), token.getArguments()[0],
                 token.getArguments()[1], token.getContent());
     }
     
     public void handleCommand(final DOMBuilder builder, final Element parentElement,
             final CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         buildCustomElement(builder, parentElement, token.getOptionalArgument(), token.getArguments()[0],
                 token.getArguments()[1], token.getArguments()[2]);
     }
@@ -83,7 +83,7 @@ abstract class AbstractCustomXMLElementBuilder implements EnvironmentHandler, Co
     
     private void extractAttributes(final DOMBuilder builder, final Element parentElement,
             final Element resultElement, final ArgumentContainerToken attrsToken)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         CommandToken resolvedAttrToken;
         for (FlowToken rawAttrToken : attrsToken) {
             if (rawAttrToken.isCommand(GlobalBuiltins.CMD_XML_ATTR)) {

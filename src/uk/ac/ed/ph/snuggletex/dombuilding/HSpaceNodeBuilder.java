@@ -15,7 +15,6 @@ import uk.ac.ed.ph.snuggletex.tokens.Token;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -31,7 +30,7 @@ import org.w3c.dom.Element;
 public final class HSpaceNodeBuilder implements CommandHandler {
 
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /*
          * First of all, decode the given length and convert to an appropriate
          * unit for CSS/MathML.

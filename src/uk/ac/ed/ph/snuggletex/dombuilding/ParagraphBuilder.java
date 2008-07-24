@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 public final class ParagraphBuilder implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         buildParagraph(builder, parentElement, token.getArguments()[0].getContents());
     }
     
@@ -40,7 +40,7 @@ public final class ParagraphBuilder implements CommandHandler {
      * @throws SnuggleParseException
      */
     private void buildParagraph(DOMBuilder builder, Element parentElement, List<FlowToken> inlineContent)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         Element resultElement;
         boolean isInline;
         if (builder.isBuildingMathMLIsland()) {

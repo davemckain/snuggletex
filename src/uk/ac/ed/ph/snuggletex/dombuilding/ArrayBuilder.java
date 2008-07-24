@@ -16,7 +16,6 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -32,7 +31,7 @@ import org.w3c.dom.Element;
 public final class ArrayBuilder implements EnvironmentHandler {
 	
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
         int[] geometry = TabularBuilder.computeTableDimensions(token.getContent());
         int numColumns = geometry[1];

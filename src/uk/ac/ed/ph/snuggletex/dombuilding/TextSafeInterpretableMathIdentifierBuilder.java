@@ -5,13 +5,12 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
-
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
+
+import org.w3c.dom.Element;
 
 /**
  * Needed for things like <tt>\ldots</tt>, which works in both Math and Text modes
@@ -21,8 +20,7 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
  */
 public class TextSafeInterpretableMathIdentifierBuilder implements CommandHandler {
     
-    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException {
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token) {
         if (token.getLatexMode()==LaTeXMode.MATH) {
             /* Do normal MathML thing */
             builder.appendSimpleMathElement(parentElement, token);

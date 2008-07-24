@@ -51,7 +51,7 @@ public final class AccentBuilder implements CommandHandler {
     }
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         if (token.getLatexMode()==LaTeXMode.MATH) {
             if (mathMLElementName==null) {
                 throw new SnuggleLogicException("Unexpected logic branch - unexpected accent found in MATH mode");
@@ -73,7 +73,7 @@ public final class AccentBuilder implements CommandHandler {
      * @throws SnuggleParseException
      */
     public void handleCommandMathMode(DOMBuilder builder, Element parentElement, CommandToken token)
-        throws DOMException, SnuggleParseException { 
+        throws SnuggleParseException { 
         /* See if content is a single identifier than can be easily accented. If so, we'll
          * create a custom accented identifier; otherwise we'll build the accent as an operator.
          */
@@ -110,7 +110,7 @@ public final class AccentBuilder implements CommandHandler {
      * since anything else is really a nasty hack and does nothing for the output in LaTeX.
      */
     public void handleCommandTextMode(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /* We'll only allow one single PARAGRAPH_MODE_TEXT token content */
         List<FlowToken> contents = token.getArguments()[0].getContents();
         if (contents.size()==1 && contents.get(0).getType()!=TokenType.TEXT_MODE_TEXT) {

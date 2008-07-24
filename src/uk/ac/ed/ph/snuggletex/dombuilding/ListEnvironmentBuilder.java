@@ -17,7 +17,6 @@ import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.tokens.TokenType;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -32,7 +31,7 @@ public final class ListEnvironmentBuilder implements EnvironmentHandler, Command
      * Builds the actual List environment
      */
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         String listElementName = null;
         BuiltinEnvironment environment = token.getEnvironment();
         if (environment==GlobalBuiltins.ENV_ITEMIZE) {
@@ -70,7 +69,7 @@ public final class ListEnvironmentBuilder implements EnvironmentHandler, Command
      * Builds list items.
      */
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken itemToken)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         if (itemToken.isCommand(GlobalBuiltins.CMD_LIST_ITEM)) {
             /* Right, this is one of the special LIST_ITEM tokens, creating during the fixing
              * stage when they are allowed.

@@ -19,7 +19,6 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -32,7 +31,7 @@ import org.w3c.dom.Element;
 public final class MfenceBuilder implements EnvironmentHandler {
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /* Create <mfenced> element with correct attributes */
         Element mfenced = builder.appendMathMLElement(parentElement, "mfenced");
         MathMLOperator opener = getBracket(token.getArguments()[0]);
@@ -67,7 +66,7 @@ public final class MfenceBuilder implements EnvironmentHandler {
     }
     
     private void makeFenceGroup(DOMBuilder builder, Element mfenced, List<FlowToken> groupContents)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         builder.handleMathTokensAsSingleElement(mfenced, groupContents);
     }
     

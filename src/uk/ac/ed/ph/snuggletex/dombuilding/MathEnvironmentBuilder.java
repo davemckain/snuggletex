@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-
 import uk.ac.ed.ph.snuggletex.SnuggleTeX;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
@@ -16,7 +15,6 @@ import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -29,7 +27,7 @@ import org.w3c.dom.Element;
 public final class MathEnvironmentBuilder implements EnvironmentHandler {
 	
 	public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         BuiltinEnvironment environment = token.getEnvironment();
         if (builder.isBuildingMathMLIsland()) {
             /* We're putting maths inside maths (e.g. \mbox{$ $}) so make a <mrow/> */

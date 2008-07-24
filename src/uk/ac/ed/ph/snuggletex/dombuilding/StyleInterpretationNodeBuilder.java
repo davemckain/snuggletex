@@ -14,7 +14,6 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -37,13 +36,13 @@ import org.w3c.dom.Element;
 public final class StyleInterpretationNodeBuilder implements CommandHandler, EnvironmentHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         StyleDeclarationInterpretation styleInterpretation = (StyleDeclarationInterpretation) token.getCommand().getInterpretation();
         handleContent(builder, parentElement, styleInterpretation, token.getArguments()[0]);
     }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         StyleDeclarationInterpretation styleInterpretation = (StyleDeclarationInterpretation) token.getEnvironment().getInterpretation();
         handleContent(builder, parentElement, styleInterpretation, token.getContent());
     }
@@ -51,7 +50,7 @@ public final class StyleInterpretationNodeBuilder implements CommandHandler, Env
     
     public void handleContent(final DOMBuilder builder, final Element parentElement,
             final StyleDeclarationInterpretation interpretation, final ArgumentContainerToken contentContainerToken)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         Element result = parentElement; /* Default if we can't do any sensible styling */
         if (builder.isBuildingMathMLIsland()) {
             /* We're doing MathML. We create an <mstyle/> element, but only if we can reasonably

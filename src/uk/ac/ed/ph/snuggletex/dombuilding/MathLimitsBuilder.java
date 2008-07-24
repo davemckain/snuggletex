@@ -5,8 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import java.util.List;
-
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
@@ -19,7 +17,8 @@ import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
-import org.w3c.dom.DOMException;
+import java.util.List;
+
 import org.w3c.dom.Element;
 
 /**
@@ -33,7 +32,7 @@ import org.w3c.dom.Element;
 public final class MathLimitsBuilder implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
     	/* Get the token to which the limit is being applied to, which is precisely the
     	 * first argument
     	 */

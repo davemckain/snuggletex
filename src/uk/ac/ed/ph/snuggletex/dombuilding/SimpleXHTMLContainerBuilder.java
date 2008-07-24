@@ -11,7 +11,6 @@ import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -37,17 +36,17 @@ public class SimpleXHTMLContainerBuilder implements CommandHandler, EnvironmentH
     }
 
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         handleContent(builder, parentElement, token.getArguments()[0]);
     }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         handleContent(builder, parentElement, token.getContent());
     }
     
     protected void handleContent(DOMBuilder builder, Element parentElement, ArgumentContainerToken contentToken)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         Element containerElement = builder.appendXHTMLElement(parentElement, xhtmlElementName);
         if (cssClassName!=null) {
             builder.applyCSSStyle(containerElement, cssClassName);

@@ -11,7 +11,6 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -34,6 +33,6 @@ public interface EnvironmentHandler {
 	 * @param token Token representing the environment being processed.
 	 */
     void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
-        throws DOMException, SnuggleParseException;
+        throws SnuggleParseException;
 
 }

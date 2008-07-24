@@ -9,7 +9,6 @@ import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -27,7 +26,7 @@ public final class BoxBuilder implements CommandHandler {
     }
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-            throws DOMException, SnuggleParseException {
+            throws SnuggleParseException {
         /* We just descend into contents - \mbox doesn't actually "do" anything to the output
          * though its children will output different things because of a combination of being
          * in LR mode and the XML application the parent element belongs.
