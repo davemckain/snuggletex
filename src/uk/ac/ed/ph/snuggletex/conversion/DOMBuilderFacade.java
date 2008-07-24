@@ -6,9 +6,14 @@
 package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLDownConverter;
+import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Templates;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,15 +21,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This is the main entry point into the DOM Building process, down-converting the resulting
- * DOM is specified by {@link DOMBuilderOptions}.
+ * This is the main entry point into the DOM Building process, optionally down-converting the
+ * resulting DOM if specified by {@link DOMBuilderOptions}.
  * 
  * FIXME: Yucky name for this!!!
  *
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public class DOMBuilderFacade {
+public final class DOMBuilderFacade {
     
     private final SessionContext sessionContext;
     private final DOMBuilderOptions options;
@@ -47,9 +52,23 @@ public class DOMBuilderFacade {
             DOMBuilder domBuilder = new DOMBuilder(sessionContext, workRoot, options);
             domBuilder.buildDOMSubtree(fixedTokens);
             
-            /* Down-convert our work document */
-            Document downConvertedDocument = new DOMDownConverter(sessionContext, options)
-                .downConvertDOM(workDocument);
+            /* Down-convert our work document, using the session's XSLT cache to reuse
+             * the XSLT for the underlying process
+             */
+            MathMLDownConverter downConverter;
+            Map<String, Templates> stylesheetCache = sessionContext.getXSLTStylesheetCache();
+            Templates templates = stylesheetCache.get(Globals.MATHML_TO_XHTML_XSL_NAME);
+            if (templates!=null) {
+                /* Reuse existing XSLT */
+                downConverter = new MathMLDownConverter(options, templates);
+            }
+            else {
+                /* Create new XSLT and cache it */
+                downConverter = new MathMLDownConverter(options);
+                templates = downConverter.getConversionStylesheet();
+                stylesheetCache.put(Globals.MATHML_TO_XHTML_XSL_NAME, templates);
+            }
+            Document downConvertedDocument = downConverter.downConvertDOM(workDocument);
             
             /* Pull the children of the <root/> in the resulting Document into the targetRoot */
             /* FIXME: This is NOT EFFICIENT AT ALL! */
