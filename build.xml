@@ -14,6 +14,21 @@
   <property file="version.properties"/>
 
   <!-- =================================================================== -->
+  <!-- ClassPaths                                                          -->
+  <!-- =================================================================== -->
+
+  <!-- Compilation ClassPath -->
+  <path id="compile.classpath">
+    <pathelement location="${build.lib.dir}/jeuclid-core-3.1.1.jar"/>
+  </path>
+
+  <!-- Libraries for the Test Suite -->
+  <path id="test.libs.classpath">
+    <pathelement location="${build.lib.dir}/junit-4.4.jar"/>
+    <pathelement location="${build.lib.dir}/easymock.jar"/>
+  </path>
+
+  <!-- =================================================================== -->
   <!-- Usual Ant initialisation target                                     -->
   <!-- =================================================================== -->
   <target name="init">
@@ -56,6 +71,7 @@
         target="1.5"
         deprecation="on">
       <compilerarg value="-Xlint:all"/>
+      <classpath refid="compile.classpath"/>
       <src path="${src.dir}"/>
     </javac>
     <!-- Copy non-Java files -->
@@ -99,14 +115,6 @@
   </target>
 
   <!-- =================================================================== -->
-  <!-- ClassPath for the Test Suite                                        -->
-  <!-- =================================================================== -->
-  <path id="test.libs.classpath">
-    <pathelement location="${build.lib.dir}/junit-4.4.jar"/>
-    <pathelement location="${build.lib.dir}/easymock.jar"/>
-  </path>
-
-  <!-- =================================================================== -->
   <!-- Compiles the Java test code                                         -->
   <!-- =================================================================== -->
   <target name="build.test" depends="prepare.libs, build">
@@ -116,6 +124,7 @@
         target="1.5"
         deprecation="on">
       <compilerarg value="-Xlint:all"/>
+      <classpath refid="compile.classpath"/>
       <classpath refid="test.libs.classpath"/>
       <classpath path="${build.src.dir}"/>
       <src path="${test.dir}"/>
@@ -145,7 +154,9 @@
   <!-- =================================================================== -->
   <target name="javadoc" description="Builds JavaDoc">
     <javadoc sourcepath="${src.dir}" packagenames="uk.ac.ed.ph.snuggletex.*"
-      destdir="${build.javadoc.dir}"/>
+        destdir="${build.javadoc.dir}">
+      <classpath refid="compile.classpath"/>
+    </javadoc>
   </target>
 
   <!-- =================================================================== -->
@@ -260,14 +271,15 @@
   <target name="dist" depends="dist.src, dist.bin" description="Builds distribution ZIPs"/>
 
   <!-- =================================================================== -->
-  <!-- Aardvark Intergration Target (not useful in general)                -->
+  <!-- Integration Target for the Aardvark Project (not useful in general) -->
   <!-- =================================================================== -->
 
-  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (without Aardvark components)">
+  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (for Aardvark)">
     <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
     <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
       <fileset dir="${build.src.dir}">
         <exclude name="uk/ac/ed/ph/aardvark/**"/>
+        <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
       </fileset>
     </jar>
   </target>
