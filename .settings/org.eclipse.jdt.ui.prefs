@@ -1,5 +1,7 @@
-#Fri May 23 16:49:35 BST 2008
+#Thu Jul 24 13:57:57 BST 2008
 eclipse.preferences.version=1
+formatter_profile=_SnuggleTeX
+formatter_settings_version=11
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.gettersetter.use.is=true
 org.eclipse.jdt.ui.ignorelowercasenames=true
