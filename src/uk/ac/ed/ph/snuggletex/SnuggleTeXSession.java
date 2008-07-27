@@ -360,7 +360,6 @@ public final class SnuggleTeXSession implements SessionContext {
      * web pages supporting the given {@link AbstractWebPageBuilderOptions} Object.
      * 
      * @param options
-     * @return
      */
     @SuppressWarnings("unchecked")
 	private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageBuilderOptions options) {

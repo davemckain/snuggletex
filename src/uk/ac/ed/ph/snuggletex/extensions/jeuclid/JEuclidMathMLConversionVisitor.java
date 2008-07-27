@@ -72,7 +72,7 @@ public class JEuclidMathMLConversionVisitor {
         File imageFile = imageSavingCallback.getImageOutputFile(mathmlCounter);
         String contentType = imageSavingCallback.getImageContentType(mathmlCounter);
         MutableLayoutContext layoutContext = imageSavingCallback.getLayoutContext(mathmlCounter);
-        Dimension imageDimension = new Dimension(0, 0);
+        Dimension imageDimension = null;
         try {
             imageDimension = Converter.getInstance().convert(mathMLElement, imageFile, contentType, layoutContext);
             if (imageDimension!=null) {
@@ -80,10 +80,12 @@ public class JEuclidMathMLConversionVisitor {
                 imageSavingCallback.imageSavingSucceeded(imageFile, mathmlCounter, contentType);
             }
             else {
+                imageDimension = new Dimension(0, 0);
                 imageSavingCallback.imageSavingFailed(imageFile, mathmlCounter, contentType, null);
             }
         }
         catch (Exception e) {
+            imageDimension = new Dimension(0, 0);
             imageSavingCallback.imageSavingFailed(imageFile, mathmlCounter, contentType, e);
         }
 

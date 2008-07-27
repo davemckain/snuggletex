@@ -591,7 +591,7 @@ public final class DOMBuilder {
      * with a fake root element and then extracting the String value of the resulting Text Node(s).
      * 
      * @throws DOMException
-     * @throws {@link SnuggleParseException}
+     * @throws SnuggleParseException
      */
     public String extractStringValue(ArgumentContainerToken token) throws SnuggleParseException {
         Element dummyContainer = document.createElement("dummy");

@@ -49,7 +49,7 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
     }
     
     /**
-     * Subclasses should fill in to creates a DOM {@link Document} representing a compleete
+     * Subclasses should fill in to creates a DOM {@link Document} representing a complete
      * web page representing the given (fixed) Tokens.
      * 
      * @param fixedTokens fixed Tokens from earlier stages of parsing
@@ -63,8 +63,6 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
     /**
      * Subclasses should fill in the compute the appropriate HTTP <tt>Content-Type</tt>
      * header to use when using {@link #writeWebPage(List, Object, OutputStream)}.
-     * 
-     * @return
      */
     protected abstract String computeContentTypeHeader();
     
@@ -138,6 +136,4 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
         configureSerializer(serializer);
         return serializer;
     }
-    
-
 }
