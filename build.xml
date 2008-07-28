@@ -23,9 +23,14 @@
   </path>
 
   <!-- Libraries for the Test Suite -->
-  <path id="test.libs.classpath">
+  <path id="test.compile.classpath">
     <pathelement location="${build.lib.dir}/junit-4.4.jar"/>
     <pathelement location="${build.lib.dir}/easymock.jar"/>
+  </path>
+
+  <!-- Libraries for compiling the demonstration webapp -->
+  <path id="webapp.compile.classpath">
+    <pathelement location="${build.lib.dir}/servlet-api.jar"/>
   </path>
 
   <!-- =================================================================== -->
@@ -86,12 +91,48 @@
   </target>
 
   <!-- =================================================================== -->
-  <!-- Builds the SnuggleTeX JAR                                           -->
+  <!-- Compiles the Java test code                                         -->
   <!-- =================================================================== -->
-  <target name="snuggletex.jar" depends="build" description="Builds SnuggleTeX JAR">
-    <jar destfile="${dist.dir}/snuggletex.jar" index="true">
-      <fileset dir="${build.src.dir}"/>
-    </jar>
+  <target name="build.test" depends="prepare.libs, build">
+    <javac destdir="${build.test.dir}"
+        debug="true"
+        source="1.5"
+        target="1.5"
+        deprecation="on">
+      <compilerarg value="-Xlint:all"/>
+      <classpath refid="compile.classpath"/>
+      <classpath refid="test.compile.classpath"/>
+      <classpath path="${build.src.dir}"/>
+      <src path="${test.dir}"/>
+    </javac>
+    <!-- Copy non-Java files -->
+    <copy todir="${build.test.dir}">
+      <fileset dir="${test.dir}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Runs the JUnit Test Suite                                           -->
+  <!-- =================================================================== -->
+  <target name="test" depends="build.test" description="Runs Test Suite">
+    <java classname="org.junit.runner.JUnitCore" fork="yes">
+      <arg value="uk.ac.ed.ph.snuggletex.SnuggleTeXTestSuite"/>
+      <classpath refid="test.compile.classpath"/>
+      <classpath path="${build.test.dir}"/>
+      <classpath path="${build.src.dir}"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Builds the project JavaDoc                                          -->
+  <!-- =================================================================== -->
+  <target name="javadoc" description="Builds JavaDoc">
+    <javadoc sourcepath="${src.dir}" packagenames="uk.ac.ed.ph.snuggletex.*"
+        destdir="${build.javadoc.dir}">
+      <classpath refid="compile.classpath"/>
+    </javadoc>
   </target>
 
   <!-- =================================================================== -->
@@ -115,62 +156,84 @@
   </target>
 
   <!-- =================================================================== -->
-  <!-- Compiles the Java test code                                         -->
+  <!-- Builds the SnuggleTeX JARs                                          -->
   <!-- =================================================================== -->
-  <target name="build.test" depends="prepare.libs, build">
-    <javac destdir="${build.test.dir}"
-        debug="true"
-        source="1.5"
-        target="1.5"
-        deprecation="on">
-      <compilerarg value="-Xlint:all"/>
-      <classpath refid="compile.classpath"/>
-      <classpath refid="test.libs.classpath"/>
-      <classpath path="${build.src.dir}"/>
-      <src path="${test.dir}"/>
-    </javac>
-    <!-- Copy non-Java files -->
-    <copy todir="${build.test.dir}">
-      <fileset dir="${test.dir}">
-        <exclude name="**/*.java"/>
+  <target name="snuggletex.jar" depends="build" description="Builds SnuggleTeX JAR">
+    <jar destfile="${dist.dir}/snuggletex.jar" index="true">
+      <fileset dir="${build.src.dir}"/>
+    </jar>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Builds distributions for depositing to SourceForge.net              -->
+  <!-- =================================================================== -->
+  <target name="dist.src" depends="prepare.dirs" description="Builds source distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
+      <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
+        <include name="build.properties"/>
+        <include name="build.xml"/>
+        <include name=".classpath"/>
+        <include name="LICENSE.txt"/>
+        <include name=".project"/>
+        <include name=".settings"/>
+        <include name="lib/**"/>
+        <include name="src/**"/>
+        <include name="test/**"/>
+        <include name="demowebapp/**"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="src.zip">
+    <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}"/>
+  </target>
+
+  <target name="dist.minimal.bin" depends="snuggletex.jar, snuggletex.css, src.zip, javadoc"
+      description="Builds minimal binary distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" file="LICENSE.txt"/>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" dir="${dist.dir}">
+        <include name="snuggletex.jar"/>
+        <include name="snuggletex.css"/>
+        <include name="src.zip"/>
+      </zipfileset>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/javadoc" dir="${build.javadoc.dir}">
+        <include name="**"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="dist.full.bin" depends="dist.minimal.bin"
+      description="Builds full binary distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-with-extensions-${uk.ac.ed.ph.snuggletex.version}.zip">
+      <zipgroupfileset dir="${dist.dir}" includes="snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip"/>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/lib" dir="${lib.dir}">
+        <include name="jeuclid/**/*.jar"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="dist" depends="dist.src, dist.minimal.bin, dist.full.bin"
+    description="Builds distribution ZIPs"/>
+
+  <!-- =================================================================== -->
+  <!-- Integration Target for the Aardvark Project (not useful in general) -->
+  <!-- =================================================================== -->
+  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (for Aardvark)">
+    <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
+    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
+      <fileset dir="${build.src.dir}">
+        <exclude name="uk/ac/ed/ph/aardvark/**"/>
+        <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
       </fileset>
-    </copy>
+    </jar>
   </target>
-
-  <!-- =================================================================== -->
-  <!-- Runs the JUnit Test Suite                                           -->
-  <!-- =================================================================== -->
-  <target name="test" depends="build.test" description="Runs Test Suite">
-    <java classname="org.junit.runner.JUnitCore" fork="yes">
-      <arg value="uk.ac.ed.ph.snuggletex.SnuggleTeXTestSuite"/>
-      <classpath refid="test.libs.classpath"/>
-      <classpath path="${build.test.dir}"/>
-      <classpath path="${build.src.dir}"/>
-    </java>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Runs the JUnit Test Suite                                           -->
-  <!-- =================================================================== -->
-  <target name="javadoc" description="Builds JavaDoc">
-    <javadoc sourcepath="${src.dir}" packagenames="uk.ac.ed.ph.snuggletex.*"
-        destdir="${build.javadoc.dir}">
-      <classpath refid="compile.classpath"/>
-    </javadoc>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Required libraries for compiling the demo webapp                    -->
-  <!-- =================================================================== -->
-  <path id="webapp.libs.classpath">
-    <pathelement location="${build.lib.dir}/servlet-api.jar"/>
-  </path>
 
   <!-- =================================================================== -->
   <!-- Builds the demo webapp hierarchy                                    -->
   <!-- =================================================================== -->
-  <target name="webapp" depends="prepare.libs, build, snuggletex.jar, snuggletex.css, javadoc"
-      description="Builds demo webapp">
+  <target name="dev.webapp" depends="prepare.libs, build, snuggletex.jar, snuggletex.css"
+      description="Builds demo webapp (without JavaDoc)">
     <mkdir dir="${build.webapp.dir}/WEB-INF"/>
     <mkdir dir="${build.webapp.dir}/WEB-INF/classes"/>
     <!-- Compile webapp -->
@@ -180,7 +243,7 @@
         target="1.5"
         deprecation="on">
       <compilerarg value="-Xlint:all"/>
-      <classpath refid="webapp.libs.classpath"/>
+      <classpath refid="webapp.compile.classpath"/>
       <classpath path="${build.src.dir}"/>
       <src path="${webapp.java.dir}"/>
     </javac>
@@ -215,6 +278,10 @@
     </copy>
     <!-- Merge in CSS -->
     <copy todir="${build.webapp.dir}/includes" file="${dist.dir}/snuggletex.css"/>
+  </target>
+
+  <target name="webapp" depends="dev.webapp, javadoc"
+      description="Builds demo webapp (with JavaDoc)">
     <!-- Copy in JavaDoc -->
     <copy todir="${build.webapp.dir}/javadoc">
       <fileset dir="${build.javadoc.dir}"/>
@@ -227,61 +294,6 @@
   <!-- =================================================================== -->
   <target name="webapp.war" depends="webapp" description="Builds demo webapp WAR">
     <jar destfile="${dist.dir}/snuggletex.war" basedir="${build.webapp.dir}"/>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Builds distributions for depositing to SourceForge.net              -->
-  <!-- =================================================================== -->
-  <target name="dist.src" depends="prepare.dirs" description="Builds source distribution ZIP">
-    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
-      <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
-        <include name="build.properties"/>
-        <include name="build.xml"/>
-        <include name=".classpath"/>
-        <include name="LICENSE.txt"/>
-        <include name=".project"/>
-        <include name=".settings"/>
-        <include name="lib/**"/>
-        <include name="src/**"/>
-        <include name="test/**"/>
-        <include name="demowebapp/**"/>
-      </zipfileset>
-    </zip>
-  </target>
-
-  <target name="src.zip">
-    <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}"/>
-  </target>
-
-  <target name="dist.bin" depends="snuggletex.jar, snuggletex.css, src.zip, javadoc"
-      description="Builds binary distribution ZIP">
-    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" file="LICENSE.txt"/>
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" dir="${dist.dir}">
-        <include name="snuggletex.jar"/>
-        <include name="snuggletex.css"/>
-        <include name="src.zip"/>
-      </zipfileset>
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/javadoc" dir="${build.javadoc.dir}">
-        <include name="**"/>
-      </zipfileset>
-    </zip>
-  </target>
-
-  <target name="dist" depends="dist.src, dist.bin" description="Builds distribution ZIPs"/>
-
-  <!-- =================================================================== -->
-  <!-- Integration Target for the Aardvark Project (not useful in general) -->
-  <!-- =================================================================== -->
-
-  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (for Aardvark)">
-    <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
-    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
-      <fileset dir="${build.src.dir}">
-        <exclude name="uk/ac/ed/ph/aardvark/**"/>
-        <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
-      </fileset>
-    </jar>
   </target>
 
   <!-- =================================================================== -->
