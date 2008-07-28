@@ -131,6 +131,11 @@ public final class DOMBuilder {
         return options;
     }
     
+    /**
+     * Gets at the underlying DOM Document. Use this to do exotic things not covered elsewhere.
+     * To append XHTML and/or MathML elements, you <strong>should</strong> use the alternatives
+     * methods listed here to ensure correct namespace handling.
+     */
     public Document getDocument() {
         return document;
     }
