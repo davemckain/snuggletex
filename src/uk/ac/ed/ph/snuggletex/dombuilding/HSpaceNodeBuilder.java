@@ -49,7 +49,7 @@ public final class HSpaceNodeBuilder implements CommandHandler {
             /* Text mode, we'll cheat with a <span/> and a bit of CSS */
             Element span = builder.appendXHTMLElement(parentElement, "span");
             span.setAttribute("style", "margin-left:" + resultSize + ";font-size:0");
-            span.appendChild(builder.getDocument().createTextNode("\u00a0"));
+            builder.appendTextNode(span, "\u00a0", false);
         }
     }
 
