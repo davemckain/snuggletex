@@ -36,8 +36,11 @@ public final class Globals {
     public static final String GENERAL_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/general-messages";
     public static final String CSS_PROPERTIES_NAME = "uk/ac/ed/ph/snuggletex/css.properties";
     
+    /** Property specifying the location of the XHTML -> HTML used for serialiazing as legacy HTML */
+    public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";
+    
     /** Property specifying the location of the MathML -> XHTML stylesheet to use for down-transforming */
-    public static final String MATHML_TO_XHTML_XSL_NAME = "uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl";
+    public static final String MATHML_TO_XHTML_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl";
     
     /** URN used in MathML -> XHTML to call up XML containing current CSS Properties */
 	public static final String CSS_PROPERTIES_DOCUMENT_URN = "urn:snuggletex-css-properties";

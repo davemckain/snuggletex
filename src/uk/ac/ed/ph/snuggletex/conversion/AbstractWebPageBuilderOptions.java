@@ -34,12 +34,19 @@ import javax.xml.transform.Transformer;
 public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
     
     /**
-     * JAXP {@link Transformer} Object of an optional XSLT stylesheet that will be applied to the 
-     * resulting web page before it is serialised. This can be useful if you need to add in
-     * headers and footers to the resulting XHTML web page. Remember that the XHTML is all in
-     * its correct namespace so you will need to write your stylesheet appropriately!
+     * JAXP {@link Transformer} representing an optional XSLT stylesheet that
+     * will be applied to the resulting web page once it has been built but
+     * before it is serialised. This can be useful if you want to add in headers
+     * and footers to the resulting XHTML web page.
      * <p>
-     * Certain properties will be set on this Object to ensure the correct output type etc.
+     * Remember that the XHTML is all in its correct namespace so you will need
+     * to write your stylesheet appropriately. Ensure that any XHTML you
+     * generate is also in the correct namespace; it will later be converted to
+     * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>NOTE:</strong> Source documents may contain Processing
+     * Instructions (e.g. to invoke MathPlayer) so these must be handled as
+     * appropriate.
      * <p>
      * If null, then no stylesheet is applied.
      */

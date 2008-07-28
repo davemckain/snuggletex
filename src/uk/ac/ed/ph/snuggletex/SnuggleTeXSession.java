@@ -310,6 +310,11 @@ public final class SnuggleTeXSession implements SessionContext {
      * <p>
      * The provided {@link AbstractWebPageBuilderOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
+     * <p>
+     * Any XSLT stylesheet specified by {@link AbstractWebPageBuilderOptions#getStylesheet()}
+     * will have been applied to the result before it is returned. On the other hand, serialisation
+     * options in the {@link AbstractWebPageBuilderOptions} (such as Content Type and encoding) 
+     * will not have been applied when this method returns. 
      */
     public Document createWebPage(final AbstractWebPageBuilderOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");

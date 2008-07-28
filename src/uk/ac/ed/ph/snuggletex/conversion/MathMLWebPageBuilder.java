@@ -38,8 +38,11 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
     }
     
     private void fixOptions() {
-        /* 1. If MathPlayer HTML output is specified, then MathML MUST be prefixed and we won't allow
-         * client-side XSLT either */
+        /* 1. If MathPlayer HTML output is specified, then:
+         * 
+         * a. MathML MUST be prefixed
+         * b. We want to generate plain old HTML in no namespace
+         * c. We won't allow client-side XSLT either */
         if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
             options.setPrefixingMathML(true);
             options.setClientSideXSLTStylesheetURLs(StringUtilities.EMPTY_STRING_ARRAY);
@@ -103,7 +106,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
      * @throws SnuggleParseException
      */
     @Override
-	public Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+	public Document buildWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         
         /* Check options, making adjustments as required to ensure sanity */
