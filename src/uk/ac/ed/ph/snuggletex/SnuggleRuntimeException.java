@@ -20,7 +20,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * <h2>Developer Note</h2>
  * 
  * Throw this Exception for things like unexpected problems with JAXP and such-like. (E.g. not
- * being able to configure a {@link DocumentBuilderFactory}.)
+ * being able to configure a {@link DocumentBuilderFactory}, unable to find or compile one of
+ * the internal XSLT stylesheets...)
  * 
  * @see SnuggleLogicException
  * 
