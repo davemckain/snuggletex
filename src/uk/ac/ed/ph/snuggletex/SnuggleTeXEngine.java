@@ -140,7 +140,9 @@ public final class SnuggleTeXEngine {
     }
 
 	/**
-	 * FIXME: Document this type!
+	 * Default implementation of {@link StylesheetCache} that simply caches all stylesheets
+	 * for the lifetime of the engine. This is reasonable since we currently don't have many
+	 * of these. In future, this behaviour may change.
 	 */
 	public static class DefaultStylesheetCache implements StylesheetCache {
 	    

@@ -5,16 +5,30 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.dombuilding.HrefBuilder;
+
 import java.net.URI;
 
 /**
- * FIXME: Document this type!
+ * This interface allows clients to have control over handling any hypertext links encountered
+ * in commands like {@link HrefBuilder}, making it possible to remap links as required.
+ * <p>
+ * This is entirely optional, though!
  *
  * @author  David McKain
  * @version $Revision: 3 $
  */
 public interface LinkResolver {
     
-    URI resolveLink(URI href, URI baseURI);
+    /**
+     * Called when a link URI has been encountered. Implementors should do whatever they
+     * need to do to the URI and return a revised version to be used in the outgoing DOM and
+     * web pages in its place.
+     * 
+     * @param href raw href as specified by client, which will be been checked to be a valid URI.
+     * @param inputURI URI for the {@link SnuggleInput} containing the link, which may be null.
+     * @return replacement href
+     */
+    URI mapLink(URI href, URI inputURI);
 
 }

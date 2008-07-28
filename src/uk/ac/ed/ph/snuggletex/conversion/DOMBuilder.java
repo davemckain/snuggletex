@@ -724,7 +724,7 @@ public final class DOMBuilder {
         }
         LinkResolver linkResolver = options.getLinkResolver();
         if (linkResolver!=null) {
-            result = linkResolver.resolveLink(result, token.getSlice().getDocument().getInput().getURI());
+            result = linkResolver.mapLink(result, token.getSlice().getDocument().getInput().getURI());
         }
         return result;
     }
