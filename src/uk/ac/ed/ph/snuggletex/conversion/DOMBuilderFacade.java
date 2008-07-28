@@ -11,7 +11,6 @@ import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.transform.Templates;
 
@@ -55,19 +54,8 @@ public final class DOMBuilderFacade {
             /* Down-convert our work document, using the session's XSLT cache to reuse
              * the XSLT for the underlying process
              */
-            MathMLDownConverter downConverter;
-            Map<String, Templates> stylesheetCache = sessionContext.getXSLTStylesheetCache();
-            Templates templates = stylesheetCache.get(Globals.MATHML_TO_XHTML_XSL_NAME);
-            if (templates!=null) {
-                /* Reuse existing XSLT */
-                downConverter = new MathMLDownConverter(options, templates);
-            }
-            else {
-                /* Create new XSLT and cache it */
-                downConverter = new MathMLDownConverter(options);
-                templates = downConverter.getConversionStylesheet();
-                stylesheetCache.put(Globals.MATHML_TO_XHTML_XSL_NAME, templates);
-            }
+            Templates downConverterXSLT = sessionContext.getStylesheet(Globals.MATHML_TO_XHTML_XSL_RESOURCE_NAME);
+            MathMLDownConverter downConverter = new MathMLDownConverter(options, downConverterXSLT);
             Document downConvertedDocument = downConverter.downConvertDOM(workDocument);
             
             /* Pull the children of the <root/> in the resulting Document into the targetRoot */
