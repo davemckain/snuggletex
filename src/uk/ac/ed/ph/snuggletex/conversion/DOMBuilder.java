@@ -11,6 +11,7 @@ import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.LinkResolver;
 import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleTeX;
@@ -38,6 +39,8 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.tokens.SimpleToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
@@ -708,6 +711,24 @@ public final class DOMBuilder {
         return false;
     }
     
+    public URI resolveLink(final Element parentElement, final Token token, final String rawHref)
+            throws SnuggleParseException {
+        URI result;
+        try {
+            result = new URI(rawHref);
+        }
+        catch (URISyntaxException e) {
+            /* Error: not a URI */
+            appendOrThrowError(parentElement, token, ErrorCode.TDEX04, rawHref);
+            return null;
+        }
+        LinkResolver linkResolver = options.getLinkResolver();
+        if (linkResolver!=null) {
+            result = linkResolver.resolveLink(result, token.getSlice().getDocument().getInput().getURI());
+        }
+        return result;
+    }
+    
     //-------------------------------------------
 
     public Element appendOrThrowError(final Element parentElement, final Token token,
@@ -719,7 +740,7 @@ public final class DOMBuilder {
     }
     
     public Element appendErrorElement(final Element parentElement, final ErrorToken errorToken) {
-        ErrorOutputOptions errorOptions = options.getErrorOptions();
+        ErrorOutputOptions errorOptions = options.getErrorOutputOptions();
         Element errorElement;
         switch (errorOptions) {
             case NO_OUTPUT:

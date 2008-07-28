@@ -110,6 +110,8 @@ public class DOMBuilderOptions implements Cloneable {
      */
     private boolean downConverting;
     
+    private LinkResolver linkResolver;
+    
     public DOMBuilderOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
         this.inliningCSS = false;
@@ -120,13 +122,14 @@ public class DOMBuilderOptions implements Cloneable {
         this.prefixingMathML = false;
         this.mathVariantMapping = false;
         this.downConverting = false;
+        this.linkResolver = null;
     }
     
-    public ErrorOutputOptions getErrorOptions() {
+    public ErrorOutputOptions getErrorOutputOptions() {
         return errorOutputOptions;
     }
     
-    public void setErrorOptions(ErrorOutputOptions errorOptions) {
+    public void setErrorOutputOptions(ErrorOutputOptions errorOptions) {
         if (errorOptions==null) {
             throw new IllegalArgumentException("ErrorOutputOptions must not be null");
         }
@@ -212,9 +215,18 @@ public class DOMBuilderOptions implements Cloneable {
 	public void setDownConverting(boolean downConverting) {
 		this.downConverting = downConverting;
 	}
+	
+	
+    public LinkResolver getLinkResolver() {
+        return linkResolver;
+    }
+
+    public void setLinkResolver(LinkResolver linkResolver) {
+        this.linkResolver = linkResolver;
+    }
 
 
-	@Override
+    @Override
     public Object clone() {
         try {
             return super.clone();

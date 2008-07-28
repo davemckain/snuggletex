@@ -10,6 +10,7 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 
 /**
  * Simple container for an input into SnuggleTeX.
@@ -43,6 +44,12 @@ public final class SnuggleInput {
      * can use as they require - e.g. as a kind of System ID, URL or File name.
      */
     private String identifier;
+    
+    /**
+     * An (optional) URI for this input. If provided, this can be used to help resolve links
+     * to other Resources.
+     */
+    private URI uri;
     
     private final String string;
     private final File file;
@@ -103,6 +110,15 @@ public final class SnuggleInput {
     
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+    
+    
+    public URI getURI() {
+        return uri;
+    }
+    
+    public void setURI(URI uri) {
+        this.uri = uri;
     }
 
 

@@ -10,6 +10,8 @@ import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
+import java.net.URI;
+
 import org.w3c.dom.Element;
 
 /**
@@ -22,10 +24,17 @@ public final class HrefBuilder implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
-        /* Create <a> element with correct href attribute */
+        /* Extract required link target and resolve */
         String href = token.getArguments()[0].getSlice().extract().toString();
+        URI resolvedLink = builder.resolveLink(parentElement, token, href);
+        if (resolvedLink==null) {
+            /* Bad link - error will have been appended so do nothing here */
+            return;
+        }
+        
+        /* Create <a> element with correct href attribute */
         Element aElement = builder.appendXHTMLElement(parentElement, "a");
-        aElement.setAttribute("href", href);
+        aElement.setAttribute("href", resolvedLink.toString());
         
         /* Now show link text, which is other provided explicitly via optional argument or
          * will just be the same as the 'href'
