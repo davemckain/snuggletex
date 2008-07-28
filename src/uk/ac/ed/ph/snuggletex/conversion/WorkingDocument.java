@@ -164,6 +164,7 @@ public final class WorkingDocument {
     
     //----------------------------------------------------------------
 
+    private final SnuggleInput input;
     private final StringBuilder buffer;
     private final List<Slice> scoreBoard;
 
@@ -172,7 +173,7 @@ public final class WorkingDocument {
     
     private int freezeIndex;
     
-    public WorkingDocument(final CharSequence initialData, final SourceContext context) {
+    WorkingDocument(final CharSequence initialData, final SnuggleInputReader inputReader) {
         this.scoreBoard = new ArrayList<Slice>();
         this.freezeIndex = 0;
         
@@ -183,10 +184,15 @@ public final class WorkingDocument {
         this.length = buffer.length();
         
         /* Set up scoreboard to contain the initial data only */
-        CharacterSource initialComponent = new CharacterSource(context);
+        this.input = inputReader.getInput();
+        CharacterSource initialComponent = new CharacterSource(inputReader);
         scoreBoard.add(new Slice(0, length, initialComponent, 0));
     }
     
+    public SnuggleInput getInput() {
+        return input;
+    }
+
     public FrozenSlice freezeSlice(final int startIndex, final int endIndex) {
         checkRange(startIndex, endIndex);
         freezeIndex = Math.max(freezeIndex, endIndex);
