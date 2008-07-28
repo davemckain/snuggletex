@@ -24,6 +24,7 @@ import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -407,8 +411,36 @@ public final class SnuggleTeXSession implements SessionContext {
         return userEnvironmentMap;
     }
     
-    public Map<String, Templates> getXSLTStylesheetCache() {
-    	return engine.getXSLTStylesheetCache();
+    public StylesheetCache getStylesheetCache() {
+    	return engine.getStylesheetCache();
+    }
+    
+    /**
+     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, compiling
+     * and storing one if the cache fails to return anything.
+     * 
+     * @param resourceName location of the XSLT stylesheet in the ClassPath.
+     * @return compiled XSLT stylesheet.
+     */
+    public Templates getStylesheet(String resourceName) {
+        StylesheetCache stylesheetCache = getStylesheetCache();
+        Templates result;
+        synchronized (stylesheetCache) {
+            result = stylesheetCache.getStylesheet(resourceName);
+            if (result==null) {
+                TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+                InputStream xslStream = getClass().getClassLoader().getResourceAsStream(resourceName);
+                try {
+                    result = transformerFactory.newTemplates(new StreamSource(xslStream));
+                }
+                catch (TransformerConfigurationException e) {
+                    throw new SnuggleRuntimeException("Could not compile SnuggleTeX XSLT stylesheet at "
+                            + resourceName, e);
+                }
+                stylesheetCache.putStylesheet(resourceName, result);
+            }
+        }
+        return result;
     }
 
     /**

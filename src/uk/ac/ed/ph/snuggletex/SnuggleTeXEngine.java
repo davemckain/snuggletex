@@ -50,7 +50,7 @@ public final class SnuggleTeXEngine {
     private final List<DefinitionMap> definitionMaps;
     
     /** Cache of XSLT Stylesheets to use for certain built-in processes */
-    private final Map<String, Templates> xsltStylesheetCache;
+    private StylesheetCache stylesheetCache;
     
     private SessionConfiguration defaultSessionConfiguration;
     private DOMBuilderOptions defaultDOMBuilderOptions;
@@ -59,7 +59,7 @@ public final class SnuggleTeXEngine {
         this.definitionMaps = new ArrayList<DefinitionMap>();
         this.defaultSessionConfiguration = new SessionConfiguration();
         this.defaultDOMBuilderOptions = new DOMBuilderOptions();
-        this.xsltStylesheetCache = new HashMap<String, Templates>();
+        this.stylesheetCache = new DefaultStylesheetCache();
         
         /* Add in global definitions */
         definitionMaps.add(GlobalBuiltins.getDefinitionMap());
@@ -125,10 +125,37 @@ public final class SnuggleTeXEngine {
     }
     
     public void setDefaultDOMBuilderOptions(DOMBuilderOptions defaultDOMBuilderOptions) {
+        ConstraintUtilities.ensureNotNull(stylesheetCache, "defaultDOMBuilderOptions");
         this.defaultDOMBuilderOptions = defaultDOMBuilderOptions;
     }
+    
+    
+    public StylesheetCache getStylesheetCache() {
+        return stylesheetCache;
+    }
+    
+    public void setStylesheetCache(StylesheetCache stylesheetCache) {
+        ConstraintUtilities.ensureNotNull(stylesheetCache, "stylesheetCache");
+        this.stylesheetCache = stylesheetCache;
+    }
 
-	public Map<String, Templates> getXSLTStylesheetCache() {
-		return xsltStylesheetCache;
+	/**
+	 * FIXME: Document this type!
+	 */
+	public static class DefaultStylesheetCache implements StylesheetCache {
+	    
+	    private final Map<String, Templates> cacheMap;
+	    
+	    public DefaultStylesheetCache() {
+	        this.cacheMap = new HashMap<String, Templates>();
+	    }
+	    
+	    public Templates getStylesheet(String resourceName) {
+	        return cacheMap.get(resourceName);
+	    }
+	    
+	    public void putStylesheet(String resourceName, Templates stylesheet) {
+	        cacheMap.put(resourceName, stylesheet);
+	    }
 	}
 }

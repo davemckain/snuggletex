@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
+import uk.ac.ed.ph.snuggletex.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
@@ -37,7 +38,9 @@ public interface SessionContext {
     
     BuiltinEnvironment getEnvironmentByTeXName(String texName);
     
-    Map<String, Templates> getXSLTStylesheetCache();
+    Templates getStylesheet(String resourceName);
+    
+    StylesheetCache getStylesheetCache();
 
     void registerError(InputError error) throws SnuggleParseException;
 }
