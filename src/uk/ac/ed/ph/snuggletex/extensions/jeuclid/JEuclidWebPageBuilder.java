@@ -42,6 +42,8 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
     	if (options.getImageSavingCallback()==null) {
     		throw new SnuggleRuntimeException("No ImageSaver provided");
     	}
+    	/* We'll always generate plain old HTML here */
+    	options.setContentType("text/html");
     }
 	
     /**
@@ -53,7 +55,7 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
      * @throws SnuggleParseException
      */
     @Override
-	public Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+	public Document buildWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
     	fixOptions();
     	
     	DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
