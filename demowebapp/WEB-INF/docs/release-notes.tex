@@ -1,0 +1,196 @@
+\pageId{releasenotes}
+
+\section*{Release Notes}
+
+\subsection*{Version 1.0.0-beta5 [r???] (??/07/08)}
+
+\begin{itemize}
+
+  \item Fixed rendering issue with the \verb|array| environment that was
+  causing later tokens to be handled wrongly.
+
+  \item Fixed handling of negative numbers, so that \verb|$1-2$| is treated
+  correctly as a subtraction and not the numbers 1 and -2 juxtaposed(!)
+
+  \item Added Java API documentation generation to the build process, which
+  puts it in the demo webapp.
+
+  \item Improved \verb|LaTeXTokeniser| to allow built-in environments
+  containing \verb|VERBATIM| content, which generalises the existing support
+  for the standard LaTeX \verb|verbatim| environment and is now in line with
+  existing support for similar content within command arguments.
+
+  \item Minor changes to web headers and footers ahead of rename of "School of
+  Physics" to "School of Physics and Astronomy".
+
+  \item Simplified the use of "default" configurations and options in
+  \verb|SnuggleTeXEngine| and \verb|SnuggleTeXSession|. Also fixed a bug in the
+  application of such options in \verb|SnuggleTeXSession.buildXMLString()|.
+
+  \item Moved (still experimental) feature for optionally down-transforming
+  simple MathML expressions into plain old XHTML + CSS from Aardvark, where it
+  had been incubating.
+
+  \item Moved (still experimental) extension for creating "legacy" HTML +
+  images web pages, using the JEuclid package to convert MathML to images.
+
+  \item Added \verb|LinkMapper| class and support for associating a URL with a
+  \verb|SnuggleInput|, allowing hypertext links to be intercepted and remapped
+  if necessary.
+
+  \item Updated web page generation so that any supplied XSLT stylesheets are
+  applied before \verb|createWebPage()| returns.
+
+  \item \verb|MathMLWebPageBuilder| now checks whether the serializing XSLT
+  created via TrAX is a version of SAXON supporting XSLT 2.0 and, if so,
+  uses the \verb|xhtml| output method rather than \verb|xml| when appropriate.
+
+  \item Refactored and updated the documentation pages significantly.
+
+  \item Renamed \verb|WebPageType.DEFAULT| as \verb|WebPageType.MOZILLA|.
+
+\end{itemize}
+
+\subsection*{Version 1.0.0-beta4 [r102] (25/06/08)}
+
+\begin{itemize}
+
+  \item Further improvements to the output of the \verb|MessageFormatter| when
+  reporting the results of large substitutions.
+
+  \item Fixed bug in handling edge case inputs like \verb|{\rm}|.
+
+  \item Fixed silly edge case bug when handling trivial \verb|tabular|
+  environments.
+
+  \item Added support for \verb|\aa| and \verb|\AA|.
+
+  \item Improved handling of \verb|\rm| and \verb|\textrm| so that they can be
+  used in MATH mode. The former behaves in the same way as \verb|\mathrm|; the
+  latter behaves like \verb|\mbox{\mathrm{...}}|.
+
+  \item Added support for \verb|||, \verb|<| and \verb|>| as bracket operators
+  compatible with \verb|\left| and \verb|\right|.
+
+  \item Added support for having trailing \verb|\| on lines, behaving as in
+  LaTeX.  (I.e. effectively concatenating the two lines with a '\verb|\ |'
+  command.)
+
+  \item Fixed bug in matching up curly and square brackets when the content
+  contains a LaTeX comment containing close brackets. These were being counted
+  as balancers, rather than being ignored.
+
+  \item Simple commands were being too zealous in absorbing trailing whitespace
+  by also stripping newlines. Now fixed.
+
+  \item Corrected the output of \verb|mtext| in that leading and trailing
+  whitespace is now added as separate \verb|mspace| elements.
+
+  \item Added support for \verb|\stackrel|.
+
+  \item Added support for the \verb|array| environment.
+
+  \item Added convenience method to \verb|SnuggleTeXSession| that can create a
+  standalone \verb|NodeList| inside a fresh \verb|Document|, which can be
+  sometimes be useful.
+
+  \item Fixed bug in the reporting of the start index of a dollar math
+  environment.
+
+  \item The \verb|eqnarray*| environment and friends now generate MathML
+  annotations (if requested).
+
+  \item Added some new static methods to \verb|SnuggleTeX|, such as some
+  convenience methods for driving web page generation and a method for
+  extracting a SnuggleTeX annotation from a created MathML \verb|math| element
+  (providing annotation generating is turned on, of course).
+
+  \item Added support for handling \verb|\mathcal|,
+  \verb|\mathsc|,\verb|\mathbb| and \verb|\mathfrak| by adding a
+  \verb|mathvariant| attribute to resulting MathML identifier elements. This in
+  its own isn't always enough (e.g. default Firefox) so I've also added extra
+  support for mapping (safe) Unicode characters to alternative characters in
+  much the same way as existing tools. This can be turned on in
+  \verb|DOMBuilderOptions|.
+
+  \item Added support for \verb|\ensuremath|.
+
+  \item Added support for the optional argument in \verb|\msqrt|. I had
+  completely forgotten about this before!
+
+  \item Slightly improved sample pages in the documentation.
+
+\end{itemize}
+
+\subsection*{Version 1.0.0-beta3 [r76] (29/05/08)}
+
+\begin{itemize}
+
+  \item Fixed silly bug in the handling of multi-line \verb|verbatim|
+  environments.
+
+  \item Fixed bug in the recording of the slices of compound tokens, introduced
+  by an earlier over-simplification to how this all worked.
+
+  \item Added belated support for \verb|\!|. Need to test browser support for
+  this...
+
+  \item Fixed handling of \verb|\hline| inside tabular environments. I had
+  forgotten that this explicitly starts a new row!
+
+  \item Added support for verbatim-mode arguments in built-in commands and
+  environments.  (We don't support having verbatim-mode content for
+  environments yet, apart from the usual \verb|verbatim| environment.)
+
+  \item Added special \verb|\href| macro to make it easy to create a hypertext
+  link with optional link text. (This may change before 1.0.0)
+
+  \item Added \verb|\xmlName| command which takes a single argument (in
+  verbatim mode) and verifies that it is a proper XML Name.
+
+  \item Improved information provided by \verb|MessageFormatter| class when
+  expanding out error messages.
+
+  \item Added support for \verb|\vert| and \verb|\Vert|, both as standalone
+  operators and as combiners for \verb|\left| and \verb|\right|. Changed the
+  way math bracket operators are represented internally to accommodate this as
+  these are the first examples where the openers and closers are identical,
+  hence can't be inferred.
+
+\end{itemize}
+
+\subsection*{Version 1.0.0-beta2 [r57] (20/05/08)}
+
+\begin{itemize}
+
+  \item Distribution ZIPs now package all files into a single base directory,
+  which is more convenient for users.
+
+  \item Binary ZIP distribution now contains a \verb|src.zip| file containing
+  the SnuggleTeX source code (excluding classes for the test suite and
+  demonstration webapp) as a convenience for users of IDEs such as Eclipse.
+
+  \item MathML annotations are now generated correctly (when requested)
+
+  \item Added support for \verb|\hspace| (and \verb|\hspace*|, though without
+  its proper LaTeX semantics), including all units supported by LaTeX plus the
+  \verb|em| amd \verb|ex| units commonly used on the web.
+
+  \item Fixed an obscure bug when trying to generate XHTML errors for errors
+  occurring within a MathML element that has no parent XHTML element.
+
+  \item Certain math operators (e.g. summation) now generate limits using
+  \verb|munder| and friends rather than \verb|msub| et al when used in
+  displaymath mode.
+
+  \item Added support for \verb|--| and \verb|---|, which result in the
+  appropriate Unicode dash characters.
+
+  \item The \verb|\verb| command now replaces spaces with non-breaking spaces
+  in its output.
+
+\end{itemize}
+
+\subsection*{Version 1.0.0-beta1 [r42] (13/05/08)}
+
+First public beta release.

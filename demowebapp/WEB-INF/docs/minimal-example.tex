@@ -1,0 +1,29 @@
+\pageId{minexample}
+
+\section*{Minimal Example}
+
+Look at the \verb|MinimalExample.java| file in the full binary distribution.
+This demonstrates a very simple example of calling up SnuggleTeX:
+
+\begin{verbatim}
+SnuggleTeXEngine engine = new SnuggleTeXEngine();
+SnuggleTeXSession session = engine.createSession();
+
+SnuggleInput input = new SnuggleInput("$$1+2=3$$");
+session.parseInput(input);
+String xmlString = session.buildXMLString();
+
+System.out.println("Input " + input.getString()
+    + " was converted to:\n" + xmlString);
+\end{verbatim}
+
+This block of code converts the LaTeX String \verb|$$1+2=3$$| to a simple XML
+String fragment, which is printed to the standard output.
+
+For this particular input, the resulting XML fragment consists of a single MathML
+\verb|math| element.
+
+The XML fragment output in the above example is great for showing off the outputs
+from SnuggleTeX but is not usually much use if you want to do anything else with it.
+SnuggleTeX supports a number of alterative \href[outputs]{outputs.xml} that can be
+more useful to programmers.

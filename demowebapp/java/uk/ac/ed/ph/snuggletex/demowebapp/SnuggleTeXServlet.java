@@ -6,20 +6,20 @@
 package uk.ac.ed.ph.snuggletex.demowebapp;
 
 import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
+import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.Snapshot;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -30,13 +30,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 
 /**
- * Trivial servlet used to serve up the sample SnuggleTeX pages within the documentation
- * webapp.
- * <p>
- * This handles URLs of the form: <tt>/contextPath/content/pageName/file.ext</tt>
- * <p>
- * The <tt>pageName</tt> is mapped to a file <tt>pageName.tex</tt> under {@link #MACROS_RESOURCE_PATH}
- * and the <tt>type.ext</tt> is used to determine which type of web page to produce.
+ * FIXME: Document this type!
  *
  * @author  David McKain
  * @version $Revision$
@@ -46,16 +40,13 @@ public final class SnuggleTeXServlet extends BaseServlet {
     private static final long serialVersionUID = 7013613625143346274L;
     
     /** Directory in which SnuggleTeX pages will be loaded from (relative to webapp)*/
-    public static final String CONTENT_BASE_DIRECTORY =  "/WEB-INF/content/";
+    public static final String CONTENT_BASE_DIRECTORY = "/WEB-INF/docs";
     
     /** Location of the global LaTeX macros file (relative to webapp) */
     public static final String MACROS_RESOURCE_PATH = "/WEB-INF/macros.tex";
     
-    /** Location of the list of content pages (which maps each name to its title) */
-    public static final String PAGES_RESOURCE_PATH = "/WEB-INF/pages.properties";
-    
     /** Location of XSLT applied to resulting page to add in headers and footers */
-    public static final String WEBPAGE_XSLT_RESOURCE_PATH = "/WEB-INF/webpage.xsl";
+    public static final String WEBPAGE_XSLT_RESOURCE_PATH = "/WEB-INF/format-output.xsl";
     
     /** 
      * The XSLT {@link Templates} Object created from {@link #WEBPAGE_XSLT_RESOURCE_PATH}
@@ -63,20 +54,10 @@ public final class SnuggleTeXServlet extends BaseServlet {
      */
     public static final String WEBPAGE_XSLT_ATTRIBUTE_NAME = "webpageXslt";
     
-    /**
-     * Special <tt>file.ext</tt> used to request the original LaTeX source of a page, rather
-     * than a finished web page.
-     */
-    public static final String SOURCE_TYPE_EXT = "source.txt";
-    
-    /** Maps <tt>file.ext</tt> to a {@link WebPageType} (set up in {@link #init()}) */
-    private Map<String, WebPageType> webPageTypeMap = new HashMap<String, WebPageType>();
-    
-    /** "Map" of all supported content pages (name -> title) */
-    private Properties pagesProperties;
-    
     private Snapshot snapshot;
-    private Templates webPageTemplates;
+    
+    /** Flag to denote whether to cache XSLT or not (set via <init-param/>) */
+    boolean cachingXSLT;
     
     /**
      * Initialises certain things that won't change over the lifetime of the web application, such
@@ -89,30 +70,32 @@ public final class SnuggleTeXServlet extends BaseServlet {
     public void init() throws ServletException {
         super.init();
         
-        /* Make up list of "filenames" to match */
-        webPageTypeMap = new HashMap<String, WebPageType>();
-        webPageTypeMap.put("default.xml", WebPageType.DEFAULT);
-        webPageTypeMap.put("crossbrowser.xml", WebPageType.CROSS_BROWSER_XHTML);
-        webPageTypeMap.put("mathplayer.html", WebPageType.MATHPLAYER_HTML);
+        /* Read in <init-params/> */
+        ServletContext servletContext = getServletContext();
+        cachingXSLT = Boolean.valueOf(servletContext.getInitParameter("cachingXSLT"));
         
-        /* Read in list of "content pages" */
-        InputStream propertiesStream = ensureReadResource(PAGES_RESOURCE_PATH);
-        pagesProperties = new Properties();
-        try {
-            pagesProperties.load(propertiesStream);
-        }
-        catch (IOException e) {
-            throw new ServletException("IOException occurred when reading in " + PAGES_RESOURCE_PATH, e);
-        }
-
         /* Parse common macros and create a snapshot to reuse on each request */
         snapshot = createPostMacrosSnapshot();
-        
-        /* Read in the XSLT stylesheet that will be used to make the resulting web page pretty.
-         * We also save this into the ServletContext as the Static XSLT Servlet will use it as well.
-         */
-        webPageTemplates = compileStylesheet(WEBPAGE_XSLT_RESOURCE_PATH);
-        getServletContext().setAttribute(WEBPAGE_XSLT_ATTRIBUTE_NAME, webPageTemplates);
+
+        /* If caching, compile XSLT now */
+        if (cachingXSLT) {
+            getStylesheet(WEBPAGE_XSLT_ATTRIBUTE_NAME, WEBPAGE_XSLT_RESOURCE_PATH);
+        }
+    }
+    
+    private Templates getStylesheet(final String attributeName, final String resourcePath)
+            throws ServletException {
+        Templates result = null;
+        if (cachingXSLT) {
+            result = (Templates) getServletContext().getAttribute(attributeName);
+        }
+        if (result==null) {
+            result = compileStylesheet(resourcePath);
+            if (cachingXSLT) {
+                getServletContext().setAttribute(attributeName, result);
+            }
+        }
+        return result;
     }
     
     /**
@@ -136,7 +119,8 @@ public final class SnuggleTeXServlet extends BaseServlet {
             session.parseInput(new SnuggleInput(macrosStream));
         }
         catch (IOException e) {
-            throw new ServletException("IOException whilst reading in macros file at " + MACROS_RESOURCE_PATH, e);
+            throw new ServletException("IOException whilst reading in macros file at "
+                    + MACROS_RESOURCE_PATH, e);
         }
         return session.createSnapshot();
     }
@@ -144,76 +128,78 @@ public final class SnuggleTeXServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String pathInfo = request.getPathInfo(); /* This is "/pageName/type.ext" */
-        String[] bits = pathInfo.substring(1).split("/", 2); /* Should give { "pathName", "type.ext" } */
-        if (bits.length!=2) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "PathInfo not of required form");
+        String pathInfo = request.getPathInfo(); /* This is "/path/page.ext" */
+        int dotPos = pathInfo.lastIndexOf(".");
+        if (dotPos==-1) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not extract file extension below path info");
             return;
         }
-        String pageName = bits[0];
-        String typeExt = bits[1];
-        
-        /* Check that the page requested is listed */
-        String pageTitle = pagesProperties.getProperty(pageName);
-        if (pageTitle==null) {
-            getServletContext().log("Page " + pageName + " is not listed in " + PAGES_RESOURCE_PATH);
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
+        String pathName = pathInfo.substring(0, dotPos);
+        String extension = pathInfo.substring(dotPos+1);
         
         /* Work out where the source TeX is coming from and read it in, if found */
-        String contentResourceName = CONTENT_BASE_DIRECTORY + pageName + ".tex";
+        String contentResourceName = CONTENT_BASE_DIRECTORY + pathName + ".tex";
         InputStream contentStream = getServletContext().getResourceAsStream(contentResourceName);
         if (contentStream==null) {
-            getServletContext().log("Could not read in content stream " + contentResourceName);
+            getServletContext().log("Could not read in LaTeX source content stream " + contentResourceName);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         
         /* Handle request for page source now, if appropriate */
-        if (typeExt.equals(SOURCE_TYPE_EXT)) {
+        if (extension.equals("tex")) {
             response.setContentType("text/plain");
             IOUtilities.transfer(contentStream, response.getOutputStream());
             return;
         }
 
-        /* Decide what type of page we're making */
-        WebPageType pageType = webPageTypeMap.get(typeExt);
-        if (pageType==null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not deduce type of resulting page");
-            return;
-        }
-        
         /* Parse the TeX */
         SnuggleTeXSession session = snapshot.createSession();
-        
         SnuggleInput input = new SnuggleInput(contentStream, contentResourceName);
         session.parseInput(input);
+        
+        /* Log any errors as they are caused by bad documentation and need fixed! */
+        List<InputError> errors = session.getErrors();
+        if (!errors.isEmpty()) {
+            for (InputError error : errors) {
+                getServletContext().log(MessageFormatter.formatErrorAsString(error));
+            }
+        }
         
         /* Create stylesheet to format the resulting web page */
         Transformer stylesheet;
         try {
-            stylesheet = webPageTemplates.newTransformer();
+            stylesheet = getStylesheet(WEBPAGE_XSLT_ATTRIBUTE_NAME, WEBPAGE_XSLT_RESOURCE_PATH).newTransformer();
             stylesheet.setParameter("context-path", request.getContextPath());
         }
         catch (TransformerConfigurationException e) {
             throw new ServletException("Could not create stylesheet from Templates", e);
         }
         
+        /* Decide what type of page to generate from the file extension */
+        WebPageType webPageType = null;
+        if (extension.equals("xhtml")) {
+            webPageType = WebPageType.MOZILLA;
+        }
+        else if (extension.equals("xml")) {
+            webPageType = WebPageType.CROSS_BROWSER_XHTML;
+        }
+        else if (extension.equals("html")) {
+            webPageType = WebPageType.MATHPLAYER_HTML;
+        }
+        else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unexpected file extension " + extension);
+            return;
+        }
+        
         /* Generate and serve the resulting web page */
         MathMLWebPageBuilderOptions options = new MathMLWebPageBuilderOptions();
+        options.setPageType(webPageType);
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
-        options.setPageType(pageType);
         options.setStylesheet(stylesheet);
-        options.setErrorOptions(ErrorOutputOptions.XHTML);
-        options.setTitle(pageTitle);
-        options.setAddingTitleHeading(true);
+        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setIndenting(true);
-        options.setCSSStylesheetURLs(
-                request.getContextPath() + "/includes/physics.css",
-                request.getContextPath() + "/includes/snuggletex.css"
-        );
         try {
             session.writeWebPage(options, response, response.getOutputStream());
         }

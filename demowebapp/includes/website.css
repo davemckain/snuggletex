@@ -1,0 +1,167 @@
+/************************************************************/
+/* Main stylesheet for SnuggleTeX                           */
+/*                                                          */
+/* (This is just a slightly tweaked version of the one we   */
+/* use for the e-Learning microsite.)                       */
+/************************************************************/
+
+#content {
+  padding: 0;
+  margin: 0;
+  background-color: #f2d7da;
+  font-family: Arial, Helvetica, Sans-Serif;
+}
+
+#skipnavigation {
+  display: none;
+}
+
+/************************************************************/
+
+#navigation {
+  float: right;
+  width: 27%;
+  font-size: small;
+  background-color: #f2d7da;
+}
+
+#navinner {
+  padding: 20px 16px 0 16px;
+}
+
+#navinner h2 {
+  color: #f25c69;
+  padding: 0;
+  border-bottom: 1px solid #f25c69;
+  margin: 0 0 0.5em 0;
+  font: normal bold 130% Verdana,Sans-Serif;
+}
+
+#navinner h2 a:link, #navinner h2 a:visited {
+  color: inherit;
+}
+
+#navinner ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin-bottom: 33px;
+}
+
+#navinner li {
+  margin: 0;
+  padding: 0;
+  font-size: 95%;
+}
+
+#navinner a:link, #navinner a:visited {
+  color: #736667;
+  text-decoration: none;
+}
+
+#navinner a:active {
+  color: #f25c69;
+  text-decoration: none;
+}
+
+#navinner a:hover {
+  color: #f25c69;
+  text-decoration: none;
+}
+
+/************************************************************/
+
+/* The next style makes the "current" page active. This is a
+   common CSS technique whereby we give the body an id corresponding
+   to a page, which is then matched to each style. This is quite
+   handy for static content */
+
+body#overview a.overview,
+body#features a.features,
+body#usecases a.usecases,
+body#releasenotes a.releasenotes,
+body#samples a.samples,
+body#requirements a.requirements,
+body#gettingstarted a.gettingstarted,
+body#minexample a.minexample,
+body#usageoverview a.usageoverview,
+body#inputs a.inputs,
+body#outputs a.outputs,
+body#configuration a.configuration,
+body#errors a.errors,
+body#demo a.demo {
+  color: #f25c69;
+  font-weight: bold;
+}
+
+/************************************************************/
+
+#maincontent {
+  margin: 0 27% 0 0;
+  border-right: 1px dotted #f2d7da;
+  border-bottom: 1px dotted #f2d7da;
+  font-size: normal;
+  background-color: white;
+  text-align: justify;
+}
+
+#maininner {
+  padding: 20px 16px 40px 16px;
+}
+
+#maininner p {
+  text-align: justify;
+}
+
+#maininner h2 {
+  color: #232b5a;
+  margin-top: 0;
+  padding-top: 0;
+  font: normal bold 130% Sans-Serif;
+}
+
+#maininner h3 {
+  color: #232b5a;
+}
+
+#maininner h4 {
+  color: #0066cc;
+}
+
+#maininner a:link {
+  color: #f25c69;
+}
+
+#maininner a:visited {
+  color: #736667;
+}
+
+/************************************************************/
+
+pre.verbatim {
+  background-color: #f2d7da;
+  padding: 0.5em;
+}
+
+address {
+  font-style: normal;
+}
+
+blockquote {
+  font-style: italic;
+}
+
+/************************************************************/
+
+/* Override setting in main stylesheet */
+#copyright {
+  background-color: white;
+  border: none;
+  margin-top: 0;
+  padding-top: 1em;
+  font-size: smaller;
+}
+
+#maincontent li {
+  margin-bottom: 1em;
+}

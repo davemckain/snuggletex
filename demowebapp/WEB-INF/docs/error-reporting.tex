@@ -1,0 +1,60 @@
+\pageId{errors}
+
+\section*{Error Reporting}
+
+There are three classes of Errors that can be encountered when using SnuggleTeX:
+
+\begin{itemize}
+
+\item \textbf{Input LaTeX Errors}: Any errors detected in the input LaTeX can
+  be detected and recorded in a number of ways, as described below.
+
+\item \textbf{Runtime Errors}: Any problems detected due to a mis-configuration
+  or mis-deployment (e.g. if SnuggleTeX can't locate an extension Class or can't
+  find one of its XSLT stylesheets or properties files) fall into this category.
+  They are raised as (unchecked) \verb|SnuggleRuntimeException|s. Your application
+  normally won't want (or indeed be able) to deal with these --- they normally
+  indicate you need to fix your ClassPath or something similar.
+
+\item \textbf{Logic Errors}: If SnuggleTeX detects something unexpected in its
+  internal logic, then it will throw an (unchecked) \verb|SnuggleLogicException|.
+  You should not normally see one of these in the wild --- please file a bug report
+  if you do. SnuggleTeX has a test suite that aims to prevent these types of errors
+  from happening.
+\end{itemize}
+
+\subsection*{Input LaTeX Errors}
+
+By default, a \verb|SnuggleTeXSession| keeps going whenever it detects bad or
+invalid LaTeX during parsing.
+(Obviously, the final results may or may not be very useful in these cases!)
+
+It is also possible to tell SnuggleTeX to "fail fast" and stop on the first error
+encountered with:
+\begin{verbatim}session.getConfiguration().setFailingFast(true)\end{verbatim}
+In this case, \verb|session.parseInput()| returns false if parsing was
+terminated by an error and true if parsing was completed successfully for
+a given Input.
+
+You can call:
+\begin{verbatim}session.getErrors();\end{verbatim}
+at any time to get a \verb|List| of \verb|InputError| Objects representing each
+LaTeX error detected by the \verb|SnuggleTeXSession| so far.
+
+\textbf{NOTE:} Further errors can be noted during the SnuggleTeX output processes
+so you should check errors \emph{after} generating an output as well!
+
+SnuggleTeX error messages are considerably different from what you might be used to in
+LaTeX. They are encapsulated as \verb|InputError| Objects. Each has an error
+code; these are all enumerated in the \verb|ErrorCode| enumeration class.
+SnuggleTeX is also reasonably good at resolving errors that appear as a result
+of user-defined commands and environments being substituted.
+
+The \verb|MessageFormatter| class has some convenience methods for nicely formatting
+these error messages in various ways.
+
+It is also possible to "inline" errors into the resulting XML outputs by
+calling:
+\begin{verbatim}DOMBuilderOptions.setErrorOutputOptions(...)\end{verbatim}
+You can choose between not including errors (the default),
+SnuggleTeX-namespaced XML error elements or pre-formatted XHTML elements.

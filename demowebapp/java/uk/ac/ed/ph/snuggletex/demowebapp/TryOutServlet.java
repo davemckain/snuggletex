@@ -96,7 +96,7 @@ public final class TryOutServlet extends BaseServlet {
         options.setAddingMathAnnotations(true);
         options.setPageType(WebPageType.CROSS_BROWSER_XHTML);
         options.setStylesheet(stylesheet);
-        options.setErrorOptions(ErrorOutputOptions.XHTML);
+        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setTitle("SnuggleTeX - Try Out");
         options.setAddingTitleHeading(false); /* We'll put our own title in */
         options.setIndenting(true);

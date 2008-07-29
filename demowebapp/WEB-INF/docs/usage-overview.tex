@@ -1,0 +1,47 @@
+\pageId{usageoverview}
+
+\section*{Usage Overview}
+
+\subsection*{The \verb|SnuggleTeXEngine|}
+
+To use SnuggleTeX, you need to create an instance of \verb|SnuggleTeXEngine|.
+
+\begin{verbatim}SnuggleTeXEngine engine = new SnuggleTeXEngine();\end{verbatim}
+
+An instance of a \verb|SnuggleTeXEngine| is thread-safe and can be used
+to perform as many conversions as you like. It houses a number of defaults,
+options, command and environment definitions that can be set if you want to
+perform a number of very similar conversion processes (which is quite common).
+
+Despite its heavy-weight name, creating and setting up a \verb|SnuggleTeXEngine|
+is not expensive!
+
+\subsection*{The \verb|SnuggleTeXSession|}
+
+A \verb|SnuggleTeXSession| encapsulates a single SnuggleTeX conversion "job",
+which typically consists of the following steps:
+
+\begin{enumerate}
+  \item Parse one (or more) \href[\verb|SnuggleInput|s]{inputs.xml}.
+  \item (Check for any \href[errors]{error-reporting.xml} in the LaTeX\ldots)
+  \item Generate one (or more) \href[Outputs]{outputs.xml}.
+\end{enumerate}
+
+To create a new \verb|SnuggleTeXSession|, you can use:
+
+\begin{verbatim}SnuggleTeXSession session = engine.createSession();\end{verbatim}
+
+This creates a fresh job using the current default settings in your
+\verb|SnuggleTeXSession|. You can then call methods described in
+\href[Inputs]{inputs.xml}, \href[Error Reporting]{error-reporting.xml}
+and \href[Outputs]{outputs.xml} to do whatever it is you need to do.
+
+See the \href[Minimal Example]{minimal-example.xml} for a simple example
+of how everything comes together.
+
+You can discard a \verb|SnuggleTeXSession| once it has done everything
+you need. (It is also possible to create a \verb|Snapshot| of the state
+of a \verb|SnuggleTeXSession|, allowing you to recreate a fresh
+session having the same state later on. This is very useful if you want
+to reuse inputs containing definitions of commands and environments.)
+Note that a \verb|SnuggleTeXSession| is \emph{not} thread safe.

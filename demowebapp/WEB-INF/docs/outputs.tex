@@ -1,0 +1,144 @@
+\pageId{outputs}
+
+\section*{Outputs}
+
+Once you have created a \verb|SnuggleTeXSession| and parsed one or more
+\href[\verb|SnuggleInput|]{inputs.xml}, you can create one (or more) outputs
+using various methods in \verb|SnuggleTeXSession|.
+
+The types of outputs supported by SnuggleTeX fall into 2 basic categories:
+
+\begin{enumerate}
+  \item \textbf{DOM Outputs}: These create standalone branches within a DOM.
+    Use these if you just want to get an XML ``fragment'' or want to import
+    SnuggleTeX output into an existing DOM.
+
+  \item \textbf{Web Page Outputs}: These generate full DOM Documents and/or
+    web pages, with a reasonably amount of control over how the process
+    works.
+\end{enumerate}
+
+\subsection*{DOM Outputs}
+
+There are two main groups of methods supporting this:
+
+\begin{itemize}
+
+  \item The \verb|SnuggleTeXSession.buildXMLString()| methods create an XML fragment (or, more
+    formally, a well-formed external general parsed entity), serialized as a
+    UTF--8-encoded String.
+
+  \item The \verb|buildDOMSubtree()| methods either append DOM Nodes representing
+    your converted content to an existing Element or return a NodeList.
+
+\end{itemize}
+
+The results of these methods can be configured using a \verb|DOMBuilderOptions| Object,
+which is a simple JavaBean that lets you control aspects such as:
+
+\begin{itemize}
+  \item Whether to keep LaTeX comments or not;
+  \item Prefixing of MathML elements;
+  \item Whether to annotate MathML with the LaTeX input;
+  \item Whether and how to report client errors within the XML output;
+  \item How to remap any URLs discovered in documents (e.g. with the \verb|\href| command);
+  \item Whether to inline CSS using \verb|style| attributes. (This can be useful if your XML
+    is going to end up inside some kind of XML application that doesn't support user-specified
+    CSS stylesheets.)
+  \item (\textbf{Experimental!}) Whether to attempt to down-convert simple MathML expressions
+    into XHTML where deemed possible.
+\end{itemize}
+
+Have a look at the API documentation for \verb|DOMBuilderOptions| for more information.
+
+\subsection*{Web Page Outputs}
+
+There are two main groups of methods for generating fully-blown web pages:
+
+\begin{itemize}
+
+  \item The \verb|createWebPage()| methods return a DOM Document representing a
+    web page rendition of your input. You can then serialize this or perform
+    further transforms/manipulations as required.
+
+  \item The \verb|writeWebPage()| methods create and write out a web page
+    rendition of your input to the given output destination.
+
+\end{itemize}
+
+The results of these methods can be configured by passing an "options" Object, the
+exact type of which is used to determine the exact process that is followed:
+
+\begin{itemize}
+  \item Use a \verb|MathMLWebPageBuilderOptions| if you want to generate a web
+    page containing XHTML and MathML.
+
+  \item \textbf{Experimental!} Use a \verb|JEuclidWebPageBuilderOptions| if you
+    want to generate a "legacy" web page consisting of HTML with MathML converted
+    to images using the JEuclid tool.
+\end{itemize}
+
+\subsubsection*{XHTML + MathML Web Pages}
+
+The \verb|MathMLWebPageBuilderOptions| Object extends \verb|DOMBuilderOptions|,
+giving you additional control over the further aspects of the output:
+
+\begin{itemize}
+  \item Which ``page type'' to use for the resulting web page;
+  \item Specify client-side XSLT stylesheets to include via \verb|<?xml-stylesheet?>|;
+  \item Specify client-side CSS stylesheets to link to via \verb|<link/>|;
+  \item Set a language, encoding and title for the resulting page;
+  \item Whether to add an automatic title heading element to the web page body;
+  \item Whether to indent the output;
+  \item Whether to apply your own XSLT Stylesheet (passed as a \verb|Transformer|) to
+    the resulting page before it is serialized. (This is useful if you want to add
+    in custom headers and footers or soup up the otherwise plain outputs you get.)
+\end{itemize}
+
+Because generating and serving MathML can be difficult and error-prone, SnuggleTeX lets
+you choose a \verb|WebPageType| to use as a "template" for your output, which will tweak
+the results to suit your particular clients you are targetting:
+
+\begin{itemize}
+  \item \textbf{MOZILLA}: This generates an XHTML + MathML document suitable for
+    Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml+xml|,
+    has no XML declaration and no DOCTYPE declaration. Do \emph{not} use this if you
+    are targetting Internet Explorer as it will display this as an XML tree.
+
+  \item \textbf{MATHPLAYER\_HTML}: This generates an HTML document that displays well
+    on Internet Explorer 6/7 with the MathPlayer plugin installed. It will not display
+    MathML correctly on Mozilla-based browsers.
+
+  \item \textbf{CROSS\_BROWSER\_XHTML}: This generates an XHTML + MathML document that
+    displays well on both Mozilla-based browsers and Internet Explorer 6/7 (providing that
+    the MathPlayer plug-in has already been installed). It is served as \verb|application/xhtml+xml|,
+    has an XML declaration and a DOCTYPE declaration.
+    \begin{itemize}
+      \item This will not display correctly on Internet Explorer 6/7 if the
+        client has not already installed MathPlayer.
+      \item Internet Explorer 6/7 will download the DTD, which will slow rendering down
+        somewhat.
+    \end{itemize}
+
+  \item \textbf{CLIENT\_SIDE\_XSLT\_STYLESHEET}: This generates a XHTML + MathML document,
+    served as \verb|application/xhtml+xml| with no XML declaration and no DOCTYPE declaration.
+    It is intended to be used with a client-side XSLT to invoke something like the
+    Universal StyleSheet.
+
+\end{itemize}
+
+\subsubsection*{Legacy (HTML + images) Web Pages}
+
+You will need to ensure you have downloaded the full binary distribution of
+SnuggleTeX for this, and add all of the JARs under the \verb|lib/jeuclid| folder
+to your runtime ClassPath. This will allow you to create PNG images safely; to
+create other types of images you will need to add extra JARs as described in
+the JEuclid documentation.
+
+The \verb|JEuclidWebPageBuilderOptions| allows you to control the output you
+get from this. It extends \verb|DOMBuilderOptions|, giving you many of the
+options that \verb|MathMLWebPageBuilderOptions| gives you. Additionally, you will
+need to implement and pass a \verb|MathMLImageSavingCallback| to it to control where
+the resulting images will be saved to.
+
+This feature is still experimental!
