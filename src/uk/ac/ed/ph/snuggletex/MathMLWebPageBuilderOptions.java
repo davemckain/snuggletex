@@ -31,13 +31,13 @@ public final class MathMLWebPageBuilderOptions extends AbstractWebPageBuilderOpt
     public static enum WebPageType {
         
         /** 
-         * "Default" Mozilla-compatible output. XHTML + MathML; no XML declaration; no DOCTYPE.
+         * Mozilla-compatible output. XHTML + MathML; no XML declaration; no DOCTYPE.
          * This is intended to be served as <tt>application/xhtml+xml</tt> with
          * encoding declared via HTTP header and <tt>meta</tt> element.
          * <p>
          * This is the best option for serving content exclusively on Mozilla-based browsers.
          */
-        DEFAULT,
+        MOZILLA,
         
         /**
          * "Cross-browser" XHTML + MathML; has XML declaration and DOCTYPE declaration;
@@ -65,7 +65,7 @@ public final class MathMLWebPageBuilderOptions extends AbstractWebPageBuilderOpt
          * client-side XSLT. Served as <tt>application/xhtml+xml</tt> with no XML declaration
          * and no DOCTYPE.
          * <p>
-         * Combining this with the Universal Maths Stylesheet or something similar can give
+         * Combining this with the Universal Math Stylesheet or something similar can give
          * good cross-browser results.
          */
         CLIENT_SIDE_XSLT_STYLESHEET,
@@ -83,14 +83,14 @@ public final class MathMLWebPageBuilderOptions extends AbstractWebPageBuilderOpt
      * The URLs are used as-is; the caller should have ensured they make sense in advance!
      * <p>
      * This is ignored for {@link WebPageType#MATHPLAYER_HTML}. Also, if nothing is set
-     * here for a {@link WebPageType#CLIENT_SIDE_XSLT_STYLESHEET} then {@link WebPageType#DEFAULT}
+     * here for a {@link WebPageType#CLIENT_SIDE_XSLT_STYLESHEET} then {@link WebPageType#MOZILLA}
      * will be used as a template instead.
      */
     private String[] clientSideXSLTStylesheetURLs;
     
     public MathMLWebPageBuilderOptions() {
         super();
-        this.pageType = WebPageType.DEFAULT;
+        this.pageType = WebPageType.MOZILLA;
         this.clientSideXSLTStylesheetURLs = StringUtilities.EMPTY_STRING_ARRAY;
     }
 

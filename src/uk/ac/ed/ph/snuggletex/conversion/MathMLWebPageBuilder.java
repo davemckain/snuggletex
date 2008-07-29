@@ -51,7 +51,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
          * do default output */
         String[] xsls = options.getClientSideXSLTStylesheetURLs();
         if (options.getPageType()==WebPageType.CLIENT_SIDE_XSLT_STYLESHEET && (xsls==null || xsls.length==0)) {
-            options.setPageType(WebPageType.DEFAULT);
+            options.setPageType(WebPageType.MOZILLA);
         }
         /* 3. Set content type */
         if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
@@ -149,13 +149,14 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
                         "type=\"text/xsl\" href=\"" + url + "\""));
             }
         }
-        
-        /* Add common relevant metadata */
+
+        /* Add content type (this may be redone by the serializer but let's be safe */
         Element meta = document.createElementNS(Globals.XHTML_NAMESPACE, "meta");
         meta.setAttribute("http-equiv", "Content-Type");
         meta.setAttribute("content", computeMetaContentType());
         head.appendChild(meta);
         
+        /* Add common relevant metadata */
         meta = document.createElementNS(Globals.XHTML_NAMESPACE, "meta");
         meta.setAttribute("name", "Generator");
         meta.setAttribute("content", "SnuggleTeX");
@@ -213,13 +214,30 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
     
     @Override
 	protected void configureSerializer(Transformer serializer) {
+        /* See if we support XSLT 2.0. If so, we'll use the "xhtml" output method in certain cases. */
+        boolean isXSLT20 = supportsXSLT20(serializer);
+        
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
         serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
-        serializer.setOutputProperty(OutputKeys.METHOD, pageType==WebPageType.MATHPLAYER_HTML ? "html" : "xml");
         if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
             serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
             serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
         }
+        serializer.setOutputProperty(OutputKeys.MEDIA_TYPE, computeMetaContentType());
+        serializer.setOutputProperty(OutputKeys.METHOD,
+                pageType==WebPageType.MATHPLAYER_HTML ?
+                        "html" : pageType==WebPageType.CLIENT_SIDE_XSLT_STYLESHEET ?
+                                "xml" : isXSLT20 ? "xhtml" : "xml");
+    }
+    
+    /**
+     * Tests whether the given {@link Transformer} is known to support XSLT 2.0.
+     * <p>
+     * Currently, this involves checking for a suitable version of SAXON; this will
+     * change once more processors become available.
+     */
+    private boolean supportsXSLT20(Transformer serializer) {
+        return serializer.getClass().getName().startsWith("net.sf.saxon");
     }
 }
