@@ -188,6 +188,8 @@ public final class GlobalBuiltins {
         map.addComplexCommandOneArg("section*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h2"), START_NEW_XHTML_BLOCK);
         map.addComplexCommandOneArg("subsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
         map.addComplexCommandOneArg("subsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsubsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h4"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsubsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h4"), START_NEW_XHTML_BLOCK);
         
         /* Old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.
