@@ -14,8 +14,8 @@ import java.util.Iterator;
  * @version $Revision: 1.1 $
  */
 public final class StringUtilities {
-	
-	public static final String[] EMPTY_STRING_ARRAY = new String[0];
+    
+    public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
      * Joins the given collection of Objects using the given

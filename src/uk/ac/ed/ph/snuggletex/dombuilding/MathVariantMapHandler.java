@@ -25,21 +25,21 @@ import org.w3c.dom.Element;
  * @version $Revision: 3 $
  */
 public final class MathVariantMapHandler implements CommandHandler {
-	
+    
     /** Resulting {@link MathVariantMap} */
-	private final MathVariantMap characterMap;
-	
-	public MathVariantMapHandler(final MathVariantMap characterMap) {
-		this.characterMap = characterMap;
-	}
-	
-	public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
-			throws SnuggleParseException {
-		ArrayListStack<MathVariantMap> mathVariantMapStack = builder.getMathVariantMapStack();
-		
-		mathVariantMapStack.push(characterMap);
-		builder.handleTokens(parentElement, token.getArguments()[0], true);
-		mathVariantMapStack.pop();
-	}
+    private final MathVariantMap characterMap;
+    
+    public MathVariantMapHandler(final MathVariantMap characterMap) {
+        this.characterMap = characterMap;
+    }
+    
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
+            throws SnuggleParseException {
+        ArrayListStack<MathVariantMap> mathVariantMapStack = builder.getMathVariantMapStack();
+        
+        mathVariantMapStack.push(characterMap);
+        builder.handleTokens(parentElement, token.getArguments()[0], true);
+        mathVariantMapStack.pop();
+    }
 
 }

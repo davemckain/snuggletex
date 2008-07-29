@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
  * @version $Revision: 121 $
  */
 public final class MathMLDownConverter {
-	
+    
     private final DOMBuilderOptions options;
     private final Templates conversionStylesheet;
     
@@ -43,29 +43,29 @@ public final class MathMLDownConverter {
     }
     
     public Document downConvertDOM(Document document) {
-    	/* If inlining CSS, create a document to hold the name/value pairs as described in
-    	 * buildCSSPropertiesDocument(). Otherwise, we'll create an empty one to indicate
-    	 * that nothing should be inlined */
-    	Document cssPropertiesDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-    	if (options.isInliningCSS()) {
-    		buildCSSPropertiesDocument(cssPropertiesDocument);
-    	}
-    	
-    	/* Create URI Resolver to let the XSLT get at this document */
-    	CSSPropertiesURIResolver uriResolver = new CSSPropertiesURIResolver(cssPropertiesDocument);
+        /* If inlining CSS, create a document to hold the name/value pairs as described in
+         * buildCSSPropertiesDocument(). Otherwise, we'll create an empty one to indicate
+         * that nothing should be inlined */
+        Document cssPropertiesDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        if (options.isInliningCSS()) {
+            buildCSSPropertiesDocument(cssPropertiesDocument);
+        }
+        
+        /* Create URI Resolver to let the XSLT get at this document */
+        CSSPropertiesURIResolver uriResolver = new CSSPropertiesURIResolver(cssPropertiesDocument);
 
-    	/* Run the conversion XSLT */
-    	Templates templates = conversionStylesheet;
-		Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-		try {
-			Transformer transformer = templates.newTransformer();
-			transformer.setURIResolver(uriResolver);
-			transformer.transform(new DOMSource(document), new DOMResult(result));
-		}
-		catch (Exception e) {
-			throw new SnuggleRuntimeException("Unexpected Exception down-converting DOM", e);
-		}
-		return result;
+        /* Run the conversion XSLT */
+        Templates templates = conversionStylesheet;
+        Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        try {
+            Transformer transformer = templates.newTransformer();
+            transformer.setURIResolver(uriResolver);
+            transformer.transform(new DOMSource(document), new DOMResult(result));
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Unexpected Exception down-converting DOM", e);
+        }
+        return result;
     }
     
     /**
@@ -100,16 +100,16 @@ public final class MathMLDownConverter {
      * {@link Globals#CSS_PROPERTIES_DOCUMENT_URN} is used.
      */
     protected static class CSSPropertiesURIResolver implements URIResolver {
-    	
-    	private final Source cssPropertiesSource;
-    	
-    	public CSSPropertiesURIResolver(final Document cssPropertiesDocument) {
-    		this.cssPropertiesSource = new DOMSource(cssPropertiesDocument, Globals.CSS_PROPERTIES_DOCUMENT_URN);
-    	}
-    	
-    	public Source resolve(String href, String base) {
-    		return href.equals(Globals.CSS_PROPERTIES_DOCUMENT_URN) ? cssPropertiesSource : null;
-    	}
+        
+        private final Source cssPropertiesSource;
+        
+        public CSSPropertiesURIResolver(final Document cssPropertiesDocument) {
+            this.cssPropertiesSource = new DOMSource(cssPropertiesDocument, Globals.CSS_PROPERTIES_DOCUMENT_URN);
+        }
+        
+        public Source resolve(String href, String base) {
+            return href.equals(Globals.CSS_PROPERTIES_DOCUMENT_URN) ? cssPropertiesSource : null;
+        }
     }
 
 }

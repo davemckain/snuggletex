@@ -39,9 +39,9 @@ import org.w3c.dom.Document;
  * @version $Revision: 3 $
  */
 public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOptions> {
-	
-	protected final SessionContext sessionContext;
-	
+    
+    protected final SessionContext sessionContext;
+    
     protected final P options;
     
     public AbstractWebPageBuilder(final SessionContext sessionContext, final P options) {
@@ -150,7 +150,7 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
      * @throws SnuggleParseException
      */
     protected abstract Document buildWebPage(final List<FlowToken> fixedTokens)
-    		throws SnuggleParseException;
+            throws SnuggleParseException;
     
     /**
      * Subclasses should fill in the compute the appropriate HTTP <tt>Content-Type</tt>

@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
  * @version $Revision: 2712 $
  */
 public class JEuclidMathMLConversionVisitor {
-	
+    
     private final MathMLImageSavingCallback imageSavingCallback;
     private final Document document;
     

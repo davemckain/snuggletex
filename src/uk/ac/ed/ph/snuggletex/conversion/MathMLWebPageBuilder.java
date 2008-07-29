@@ -34,7 +34,7 @@ import org.w3c.dom.Element;
 public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWebPageBuilderOptions> {
     
     public MathMLWebPageBuilder(final SessionContext sessionContext, final MathMLWebPageBuilderOptions options) {
-    	super(sessionContext, options);
+        super(sessionContext, options);
     }
     
     private void fixOptions() {
@@ -80,7 +80,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
      * that MathPlayer only sniffs a limited number of Content Types.)
      */
     @Override
-	public String computeContentTypeHeader() {
+    public String computeContentTypeHeader() {
         /* Check options, making adjustments as required to ensure sanity */
         fixOptions();
 
@@ -106,7 +106,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
      * @throws SnuggleParseException
      */
     @Override
-	public Document buildWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+    public Document buildWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         
         /* Check options, making adjustments as required to ensure sanity */
@@ -213,7 +213,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
     }
     
     @Override
-	protected void configureSerializer(Transformer serializer) {
+    protected void configureSerializer(Transformer serializer) {
         /* See if we support XSLT 2.0. If so, we'll use the "xhtml" output method in certain cases. */
         boolean isXSLT20 = supportsXSLT20(serializer);
         

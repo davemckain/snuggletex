@@ -23,15 +23,15 @@ import org.w3c.dom.Element;
  */
 public interface EnvironmentHandler {
     
-	/**
-	 * Called when a {@link CommandToken} is being handled by the {@link DOMBuilder}.
-	 * 
-	 * @param builder {@link DOMBuilder} running this process, which provides access
-	 *   to convenience method for appending Nodes to the DOM
-	 * @param parentElement parent Element that the resulting Nodes should (can) be
-	 *   added to
-	 * @param token Token representing the environment being processed.
-	 */
+    /**
+     * Called when a {@link CommandToken} is being handled by the {@link DOMBuilder}.
+     * 
+     * @param builder {@link DOMBuilder} running this process, which provides access
+     *   to convenience method for appending Nodes to the DOM
+     * @param parentElement parent Element that the resulting Nodes should (can) be
+     *   added to
+     * @param token Token representing the environment being processed.
+     */
     void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
         throws SnuggleParseException;
 

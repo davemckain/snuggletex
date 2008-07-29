@@ -244,17 +244,17 @@ public final class WorkingDocument {
         while (sliceIndex>=0 && sliceIndex<numSlices) {
             mapping = scoreBoard.get(sliceIndex);
             if (mapping.startIndex>index) {
-            	/* We're too far to the right, so let's go back one place. */
-            	sliceIndex--;
+                /* We're too far to the right, so let's go back one place. */
+                sliceIndex--;
             }
             else if (index<mapping.endIndex || (fallLeftOnBoundaries && index==mapping.endIndex)) {
-            	/* Success! */
+                /* Success! */
                 result = new IndexResolution(sliceIndex, mapping, index + mapping.componentIndexOffset);
                 break;
             }
             else {
-            	/* Move to the right */
-            	sliceIndex++;
+                /* Move to the right */
+                sliceIndex++;
             }
         }
         lastResolvedSliceIndex = result!=null ? sliceIndex : lastResolvedSliceIndex;

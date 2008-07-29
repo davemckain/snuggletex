@@ -28,14 +28,14 @@ import java.util.Map.Entry;
  */
 public class CSSUtilities {
     
-	/**
-	 * Writes out the CSS stylesheet specified via the given {@link DOMBuilderOptions} Object,
-	 * using the default if nothing has been specified, saving the results to the given
-	 * {@link OutputStream}.
-	 * 
-	 * @param options
-	 * @param cssOutputStream
-	 */
+    /**
+     * Writes out the CSS stylesheet specified via the given {@link DOMBuilderOptions} Object,
+     * using the default if nothing has been specified, saving the results to the given
+     * {@link OutputStream}.
+     * 
+     * @param options
+     * @param cssOutputStream
+     */
     public static void writeStylesheet(DOMBuilderOptions options, OutputStream cssOutputStream) {
         /* First of all, see if custom CSS has been specified */
         Properties cssProperties = options.getInlineCSSProperties();

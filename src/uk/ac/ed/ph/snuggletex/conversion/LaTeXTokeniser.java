@@ -761,10 +761,10 @@ public final class LaTeXTokeniser {
      * Reads in a Math environment opened with <tt>$</tt> or <tt>$$</tt>.
      */
     private FlowToken readDollarMath() throws SnuggleParseException {
-    	/* Record current LaTeX mode and position */
+        /* Record current LaTeX mode and position */
         int openDollarPosition = position;
-    	LaTeXMode startLatexMode = currentModeState.latexMode;
-    	
+        LaTeXMode startLatexMode = currentModeState.latexMode;
+        
         /* See if we are doing '$' or '$$' */
         boolean isDisplayMath = workingDocument.matchesAt(position, "$$");
         String delimiter = isDisplayMath ? "$$" : "$";
@@ -785,7 +785,7 @@ public final class LaTeXTokeniser {
         
         /* Better also check that if the delimiter is '$' then we haven't ended up at '$$' */
         if (delimiter.equals("$") && workingDocument.charAt(position)=='$') {
-        	/* Error: $ ended by $$ */
+            /* Error: $ ended by $$ */
             return createError(ErrorCode.TTEM01, position, position+1);
         }
         
@@ -2138,11 +2138,11 @@ public final class LaTeXTokeniser {
         for (index=openSquareBracketIndex; index<workingDocument.length(); index++) {
             c = workingDocument.charAt(index);
             if (inComment) {
-            	/* We're in a comment, so skip this character */
-            	if (c=='\n') {
-            		/* End of line so end of comment */
-            		inComment = false;
-            	}
+                /* We're in a comment, so skip this character */
+                if (c=='\n') {
+                    /* End of line so end of comment */
+                    inComment = false;
+                }
             }
             else if (c==']') {
                 return index;
@@ -2162,8 +2162,8 @@ public final class LaTeXTokeniser {
                 index = findEndCurlyBrackets(index);
             }
             else if (c=='%') {
-            	/* Start of a comment */
-            	inComment = true;
+                /* Start of a comment */
+                inComment = true;
             }
         }
         return -1;
@@ -2191,15 +2191,15 @@ public final class LaTeXTokeniser {
                 inEscape = false;
             }
             else if (inComment) {
-            	/* In a comment, so skip */
-            	if (c=='\n') {
-            		/* End of a comment line */
-            		inComment = false;
-            	}
+                /* In a comment, so skip */
+                if (c=='\n') {
+                    /* End of a comment line */
+                    inComment = false;
+                }
             }
             else if (c=='%') {
-            	/* Start of a comment */
-            	inComment = true;
+                /* Start of a comment */
+                inComment = true;
             }
             else if (c=='{') {
                 /* Found generic opener */

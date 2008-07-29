@@ -70,7 +70,7 @@ import org.w3c.dom.NodeList;
  * @version $Revision$
  */
 public final class DOMBuilder {
-	
+    
     private final SessionContext sessionContext;
     private final DOMBuilderOptions options;
     private final Document document;
@@ -118,8 +118,8 @@ public final class DOMBuilder {
      * @throws DOMException
      */
     public void buildDOMSubtree(final List<FlowToken> fixedTokens) throws SnuggleParseException {
-    	this.outputContext = OutputContext.XHTML;
-    	this.mathVariantMapStack.clear();
+        this.outputContext = OutputContext.XHTML;
+        this.mathVariantMapStack.clear();
         handleTokens(buildRootElement, fixedTokens, true);
     }
     
@@ -285,7 +285,7 @@ public final class DOMBuilder {
             /* Simple Tokens */
                 
             case TEXT_MODE_TEXT:
-            	handleTextToken(parentElement, (SimpleToken) token);
+                handleTextToken(parentElement, (SimpleToken) token);
                 break;
                 
             case LR_MODE_NEW_PARAGRAPH:
@@ -332,92 +332,92 @@ public final class DOMBuilder {
     }
     
     public void handleTextToken(Element parentElement, SimpleToken textToken) {
-    	CharSequence rawText = textToken.getSlice().extract();
-    	StringBuilder resultBuilder = new StringBuilder();
-    	char c;
-    	for (int i=0, length=rawText.length(); i<length; i++) {
-    		c = rawText.charAt(i);
-    		switch (c) {
-    			case '\r':
-    				break;
-    				
-    			case '~':
-    				resultBuilder.append('\u00a0');
-    				break;
-    				
-    			case '<':
-    				resultBuilder.append('\u00a1');
-    				break;
-    				
-    			case '>':
-    				resultBuilder.append('\u00bf');
-    				break;
-    				
-    			case '`':
-    				if (i+1<length && rawText.charAt(i+1)=='`') {
-    					/* Double open quote */
-    					resultBuilder.append('\u201c');
-    					i++;
-    				}
-    				else {
-    					/* Single open quote */
-    					resultBuilder.append('\u2018');
-    				}
-    				break;
-    				
-    			case '\'':
-    				if (i+1<length && rawText.charAt(i+1)=='\'') {
-    					/* Double close quote */
-    					resultBuilder.append('\u201d');
-    					i++;
-    				}
-    				else {
-    					/* Single close quote */
-    					resultBuilder.append('\u2019');
-    				}
-    				break;
-    				
-    			case '-':
-    				if (i+1<length && rawText.charAt(i+1)=='-') {
-        				if (i+2<length && rawText.charAt(i+2)=='-') {
-        					/* --- is a long dash */
-        					resultBuilder.append('\u2014');
-        					i += 2;
-        				}
-        				else {
-        					/* -- is a medium dash */
-        					resultBuilder.append('\u2013');
-        					i++;
-        				}
-    				}
-    				else {
-    					/* Just do a normal hyphen */
-    					resultBuilder.append('-');
-    				}
-    				break;
-    				
-    			default:
-    				resultBuilder.append(c);
-    				break;
-    		}
-    	}
-    	String resultString = resultBuilder.toString();
-	    if (isBuildingMathMLIsland()) {
-	        /* Need to wrap in an <mtext>...</mtext>.
-	         * Note that leading and trailing whitespace is ignored in <mtext/> elements so, if
-	         * whitespace is asked for, it must be added via a <mspace/>
-	         */
-	        if (Character.isWhitespace(resultString.charAt(0))) {
-	            appendMathMLSpace(parentElement, "1ex");
-	        }
-	        appendMathMLTextElement(parentElement, "mtext", resultString, true);
-	        if (Character.isWhitespace(resultString.charAt(resultString.length()-1))) {
+        CharSequence rawText = textToken.getSlice().extract();
+        StringBuilder resultBuilder = new StringBuilder();
+        char c;
+        for (int i=0, length=rawText.length(); i<length; i++) {
+            c = rawText.charAt(i);
+            switch (c) {
+                case '\r':
+                    break;
+                    
+                case '~':
+                    resultBuilder.append('\u00a0');
+                    break;
+                    
+                case '<':
+                    resultBuilder.append('\u00a1');
+                    break;
+                    
+                case '>':
+                    resultBuilder.append('\u00bf');
+                    break;
+                    
+                case '`':
+                    if (i+1<length && rawText.charAt(i+1)=='`') {
+                        /* Double open quote */
+                        resultBuilder.append('\u201c');
+                        i++;
+                    }
+                    else {
+                        /* Single open quote */
+                        resultBuilder.append('\u2018');
+                    }
+                    break;
+                    
+                case '\'':
+                    if (i+1<length && rawText.charAt(i+1)=='\'') {
+                        /* Double close quote */
+                        resultBuilder.append('\u201d');
+                        i++;
+                    }
+                    else {
+                        /* Single close quote */
+                        resultBuilder.append('\u2019');
+                    }
+                    break;
+                    
+                case '-':
+                    if (i+1<length && rawText.charAt(i+1)=='-') {
+                        if (i+2<length && rawText.charAt(i+2)=='-') {
+                            /* --- is a long dash */
+                            resultBuilder.append('\u2014');
+                            i += 2;
+                        }
+                        else {
+                            /* -- is a medium dash */
+                            resultBuilder.append('\u2013');
+                            i++;
+                        }
+                    }
+                    else {
+                        /* Just do a normal hyphen */
+                        resultBuilder.append('-');
+                    }
+                    break;
+                    
+                default:
+                    resultBuilder.append(c);
+                    break;
+            }
+        }
+        String resultString = resultBuilder.toString();
+        if (isBuildingMathMLIsland()) {
+            /* Need to wrap in an <mtext>...</mtext>.
+             * Note that leading and trailing whitespace is ignored in <mtext/> elements so, if
+             * whitespace is asked for, it must be added via a <mspace/>
+             */
+            if (Character.isWhitespace(resultString.charAt(0))) {
+                appendMathMLSpace(parentElement, "1ex");
+            }
+            appendMathMLTextElement(parentElement, "mtext", resultString, true);
+            if (Character.isWhitespace(resultString.charAt(resultString.length()-1))) {
                appendMathMLSpace(parentElement, "1ex");
-	        }
-	    }
-	    else {
-	        appendTextNode(parentElement, resultString, false);
-	    }
+            }
+        }
+        else {
+            appendTextNode(parentElement, resultString, false);
+        }
     }
 
     public void appendSimpleMathElement(Element parentElement, Token token) {
@@ -547,27 +547,27 @@ public final class DOMBuilder {
      * @param name
      */
     public Element appendMathMLIdentifierElement(Element parentElement, String name) {
-    	String mappedIdentifier = name;
-    	String mathVariant = null;
-    	if (name.length()==1 && !mathVariantMapStack.isEmpty()) {
-    	    /* If we have a single character identifier and something like \\mathcal is in force,
-    	     * then we will apply a "mathvariant" attribute.
-    	     */
-    		MathVariantMap currentMathCharacterMap = mathVariantMapStack.peek();
-    		mathVariant = currentMathCharacterMap.getMathVariantName();
-    		if (options.isMathVariantMapping()) {
-    		    /* Client has asked to try to map this character to a suitable target Unicode
-    		     * character, so let's try this.
-    		     */
-	            char mappedChar = currentMathCharacterMap.getAccentedChar(name.charAt(0));
-	            if (mappedChar!=0) {
-	                mappedIdentifier = Character.toString(mappedChar);
-	            }
-    		}
-    	}
+        String mappedIdentifier = name;
+        String mathVariant = null;
+        if (name.length()==1 && !mathVariantMapStack.isEmpty()) {
+            /* If we have a single character identifier and something like \\mathcal is in force,
+             * then we will apply a "mathvariant" attribute.
+             */
+            MathVariantMap currentMathCharacterMap = mathVariantMapStack.peek();
+            mathVariant = currentMathCharacterMap.getMathVariantName();
+            if (options.isMathVariantMapping()) {
+                /* Client has asked to try to map this character to a suitable target Unicode
+                 * character, so let's try this.
+                 */
+                char mappedChar = currentMathCharacterMap.getAccentedChar(name.charAt(0));
+                if (mappedChar!=0) {
+                    mappedIdentifier = Character.toString(mappedChar);
+                }
+            }
+        }
         Element result = appendMathMLTextElement(parentElement, "mi", mappedIdentifier, true);
         if (mathVariant!=null) {
-        	result.setAttribute("mathvariant", mathVariant);
+            result.setAttribute("mathvariant", mathVariant);
         }
         return result;
     }

@@ -28,10 +28,10 @@ import org.w3c.dom.Element;
  */
 abstract class AbstractCustomXMLElementBuilder implements EnvironmentHandler, CommandHandler {
     
-	/**
-	 * Subclasses should fill in to return true if they are building a block element or
-	 * false if they are building an inline element.
-	 */
+    /**
+     * Subclasses should fill in to return true if they are building a block element or
+     * false if they are building an inline element.
+     */
     protected abstract boolean isBlock();
     
     public void handleEnvironment(final DOMBuilder builder, final Element parentElement,

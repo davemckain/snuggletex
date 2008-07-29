@@ -139,25 +139,25 @@ public final class SnuggleTeXEngine {
         this.stylesheetCache = stylesheetCache;
     }
 
-	/**
-	 * Default implementation of {@link StylesheetCache} that simply caches all stylesheets
-	 * for the lifetime of the engine. This is reasonable since we currently don't have many
-	 * of these. In future, this behaviour may change.
-	 */
-	public static class DefaultStylesheetCache implements StylesheetCache {
-	    
-	    private final Map<String, Templates> cacheMap;
-	    
-	    public DefaultStylesheetCache() {
-	        this.cacheMap = new HashMap<String, Templates>();
-	    }
-	    
-	    public Templates getStylesheet(String resourceName) {
-	        return cacheMap.get(resourceName);
-	    }
-	    
-	    public void putStylesheet(String resourceName, Templates stylesheet) {
-	        cacheMap.put(resourceName, stylesheet);
-	    }
-	}
+    /**
+     * Default implementation of {@link StylesheetCache} that simply caches all stylesheets
+     * for the lifetime of the engine. This is reasonable since we currently don't have many
+     * of these. In future, this behaviour may change.
+     */
+    public static class DefaultStylesheetCache implements StylesheetCache {
+        
+        private final Map<String, Templates> cacheMap;
+        
+        public DefaultStylesheetCache() {
+            this.cacheMap = new HashMap<String, Templates>();
+        }
+        
+        public Templates getStylesheet(String resourceName) {
+            return cacheMap.get(resourceName);
+        }
+        
+        public void putStylesheet(String resourceName, Templates stylesheet) {
+            cacheMap.put(resourceName, stylesheet);
+        }
+    }
 }

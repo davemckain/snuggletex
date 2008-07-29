@@ -133,12 +133,12 @@ public final class SnuggleTeXSession implements SessionContext {
         this.tokenFixer = new TokenFixer(this);
         
         /* Copy stuff from the template */
-    	this.engine = snapshot.engine;
-    	this.configuration = (SessionConfiguration) snapshot.configuration.clone();
-    	this.errors = new ArrayList<InputError>(snapshot.errors);
-    	this.userCommandMap = new HashMap<String, UserDefinedCommand>(snapshot.userCommandMap);
-    	this.userEnvironmentMap = new HashMap<String, UserDefinedEnvironment>(snapshot.userEnvironmentMap);
-    	this.parsedTokens = new ArrayList<FlowToken>(snapshot.parsedTokens);
+        this.engine = snapshot.engine;
+        this.configuration = (SessionConfiguration) snapshot.configuration.clone();
+        this.errors = new ArrayList<InputError>(snapshot.errors);
+        this.userCommandMap = new HashMap<String, UserDefinedCommand>(snapshot.userCommandMap);
+        this.userEnvironmentMap = new HashMap<String, UserDefinedEnvironment>(snapshot.userEnvironmentMap);
+        this.parsedTokens = new ArrayList<FlowToken>(snapshot.parsedTokens);
     }
     
     //-------------------------------------------------
@@ -187,12 +187,12 @@ public final class SnuggleTeXSession implements SessionContext {
      * @throws IllegalStateException if the session has been closed.
      */
     public Snapshot createSnapshot() {
-    	return new Snapshot(engine,
-    			(SessionConfiguration) configuration.clone(),
-    			new ArrayList<InputError>(errors), 
-    			new HashMap<String, UserDefinedCommand>(userCommandMap),
-    			new HashMap<String, UserDefinedEnvironment>(userEnvironmentMap),
-    			new ArrayList<FlowToken>(parsedTokens));
+        return new Snapshot(engine,
+                (SessionConfiguration) configuration.clone(),
+                new ArrayList<InputError>(errors), 
+                new HashMap<String, UserDefinedCommand>(userCommandMap),
+                new HashMap<String, UserDefinedEnvironment>(userEnvironmentMap),
+                new ArrayList<FlowToken>(parsedTokens));
     }
     
     //---------------------------------------------
@@ -371,30 +371,30 @@ public final class SnuggleTeXSession implements SessionContext {
      * @param options
      */
     @SuppressWarnings("unchecked")
-	private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageBuilderOptions options) {
-    	AbstractWebPageBuilder<?> result = null;
-    	if (options instanceof MathMLWebPageBuilderOptions) {
-    		result = new MathMLWebPageBuilder(this, (MathMLWebPageBuilderOptions) options);
-    	}
-    	else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions")) {
-    		/* Use reflection to instantiate as this is an "extension" as we don't want to
-    		 * hard-wire a dependency on it just in case it's not being used.
-    		 */
-    		try {
-				Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilder");
-				Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions");
-				Constructor<?> constructor = builderClass.getConstructor(SessionContext.class, optionsClass);
-				result = (AbstractWebPageBuilder<?>) constructor.newInstance(this, options);
-			}
-    		catch (Exception e) {
-    			throw new SnuggleRuntimeException("Could not load SnuggleTeX JEuclid Extensions - please check your ClassPath", e);
-			}
-    	}
-    	else {
-        	throw new SnuggleRuntimeException("SnuggleTeX doesn't know how to build web pages using options of type "
-        			+ options.getClass().getName());
-    	}
-    	return result;
+    private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageBuilderOptions options) {
+        AbstractWebPageBuilder<?> result = null;
+        if (options instanceof MathMLWebPageBuilderOptions) {
+            result = new MathMLWebPageBuilder(this, (MathMLWebPageBuilderOptions) options);
+        }
+        else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions")) {
+            /* Use reflection to instantiate as this is an "extension" as we don't want to
+             * hard-wire a dependency on it just in case it's not being used.
+             */
+            try {
+                Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilder");
+                Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions");
+                Constructor<?> constructor = builderClass.getConstructor(SessionContext.class, optionsClass);
+                result = (AbstractWebPageBuilder<?>) constructor.newInstance(this, options);
+            }
+            catch (Exception e) {
+                throw new SnuggleRuntimeException("Could not load SnuggleTeX JEuclid Extensions - please check your ClassPath", e);
+            }
+        }
+        else {
+            throw new SnuggleRuntimeException("SnuggleTeX doesn't know how to build web pages using options of type "
+                    + options.getClass().getName());
+        }
+        return result;
     }
     
     //---------------------------------------------
@@ -417,7 +417,7 @@ public final class SnuggleTeXSession implements SessionContext {
     }
     
     public StylesheetCache getStylesheetCache() {
-    	return engine.getStylesheetCache();
+        return engine.getStylesheetCache();
     }
     
     /**

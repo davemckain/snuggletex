@@ -22,7 +22,7 @@ public abstract class FlowToken extends Token {
     protected final TextFlowContext textFlowContext;
 
     public FlowToken(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,
-    		final TextFlowContext textFlowContext) {
+            final TextFlowContext textFlowContext) {
         super(slice, type, latexMode);
         this.textFlowContext = textFlowContext;
     }

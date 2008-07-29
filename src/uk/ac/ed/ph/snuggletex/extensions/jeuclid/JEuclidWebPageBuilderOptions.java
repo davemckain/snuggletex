@@ -21,11 +21,11 @@ public final class JEuclidWebPageBuilderOptions extends AbstractWebPageBuilderOp
         super();
     }
     
-	public MathMLImageSavingCallback getImageSavingCallback() {
-		return imageSavingCallback;
-	}
+    public MathMLImageSavingCallback getImageSavingCallback() {
+        return imageSavingCallback;
+    }
 
-	public void setImageSavingCallback(MathMLImageSavingCallback callback) {
-		this.imageSavingCallback = callback;
-	}
+    public void setImageSavingCallback(MathMLImageSavingCallback callback) {
+        this.imageSavingCallback = callback;
+    }
 }

@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
  * @version $Revision: 52 $
  */
 public final class ArrayBuilder implements EnvironmentHandler {
-	
+    
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */

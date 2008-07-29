@@ -188,11 +188,11 @@ public enum MathMLOperator {
     private final boolean limitsUnderOrOver;
 
     private MathMLOperator(final OperatorType operatorType, final String output) {
-    	this(operatorType, output, false);
+        this(operatorType, output, false);
     }
     
     private MathMLOperator(final OperatorType operatorType, final String output,
-    		final boolean limitsUnderOrOver) {
+            final boolean limitsUnderOrOver) {
         this.operatorType = operatorType;
         this.output = output;
         this.limitsUnderOrOver = limitsUnderOrOver;
@@ -206,7 +206,7 @@ public enum MathMLOperator {
         return output;
     }
 
-	public boolean isLimitsUnderOrOver() {
-		return limitsUnderOrOver;
-	}
+    public boolean isLimitsUnderOrOver() {
+        return limitsUnderOrOver;
+    }
 }

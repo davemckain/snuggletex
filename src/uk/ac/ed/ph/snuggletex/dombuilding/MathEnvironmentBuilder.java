@@ -25,8 +25,8 @@ import org.w3c.dom.Element;
  * @version $Revision$
  */
 public final class MathEnvironmentBuilder implements EnvironmentHandler {
-	
-	public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
+    
+    public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
         BuiltinEnvironment environment = token.getEnvironment();
         if (builder.isBuildingMathMLIsland()) {
@@ -35,15 +35,15 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
             builder.handleTokens(mrow, token.getContent(), false);
         }
         else {
-        	boolean isDisplayMath = environment==GlobalBuiltins.ENV_DISPLAYMATH;
-        	buildMathElement(builder, parentElement, token, token.getContent(), isDisplayMath);
+            boolean isDisplayMath = environment==GlobalBuiltins.ENV_DISPLAYMATH;
+            buildMathElement(builder, parentElement, token, token.getContent(), isDisplayMath);
         }
     }
-	
-	public void buildMathElement(final DOMBuilder builder, final Element parentElement,
-	        final Token token, final ArgumentContainerToken contentToken,
-	        final boolean isDisplayMath) throws SnuggleParseException {
-	    /* Set output context appropriately */
+    
+    public void buildMathElement(final DOMBuilder builder, final Element parentElement,
+            final Token token, final ArgumentContainerToken contentToken,
+            final boolean isDisplayMath) throws SnuggleParseException {
+        /* Set output context appropriately */
         builder.setOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
         
         /* Create a proper <math>...</math> element with optional annotation */
@@ -70,5 +70,5 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
         }
         /* Reset output context back to XHTML */
         builder.setOutputContext(OutputContext.XHTML);
-	}
+    }
 }

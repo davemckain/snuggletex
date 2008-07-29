@@ -23,8 +23,8 @@ public final class MathVariantMap {
     private final char[] accentByCodePoint;
     
     public MathVariantMap(final String mathVariantName, final char[] accentData) {
-    	this.mathVariantName = mathVariantName;
-    	this.accentByCodePoint = new char[MAX_CODEPOINT - MIN_CODEPOINT];
+        this.mathVariantName = mathVariantName;
+        this.accentByCodePoint = new char[MAX_CODEPOINT - MIN_CODEPOINT];
         char ascii, accented;
         int index;
         for (int i=0; i<accentData.length; ) {
@@ -37,11 +37,11 @@ public final class MathVariantMap {
         }
     }
     
-	public String getMathVariantName() {
-		return mathVariantName;
-	}
+    public String getMathVariantName() {
+        return mathVariantName;
+    }
 
-	public char getAccentedChar(char c) {
+    public char getAccentedChar(char c) {
         int index = charToIndex(c);
         return index!=-1 ? accentByCodePoint[index] : 0;
     }

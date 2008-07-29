@@ -40,7 +40,7 @@ public interface MathMLImageSavingCallback {
      *   which can be used to ensure unique file names.
      */
     String getImageContentType(int mathmlCounter);
-	
+    
     /**
      * Implement to return the {@link File} that the given image should be saved to. This
      * must be writable.
@@ -48,8 +48,8 @@ public interface MathMLImageSavingCallback {
      * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
      */
-	File getImageOutputFile(int mathmlCounter);
-	
+    File getImageOutputFile(int mathmlCounter);
+    
     /**
      * Implement to return the URL String that will be put into the <tt>img</tt> <tt>src</tt>
      * attribute to refer to the image.
@@ -57,29 +57,29 @@ public interface MathMLImageSavingCallback {
      * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
      */
-	String getImageURL(int mathmlCounter);
+    String getImageURL(int mathmlCounter);
 
-	/**
-	 * Implement to fill in the JEuclid {@link MutableLayoutContext} specifying how you want to
-	 * render this image.
-	 * 
-	 * @param mathmlCounter identifies the position of the image within the document being processed,
+    /**
+     * Implement to fill in the JEuclid {@link MutableLayoutContext} specifying how you want to
+     * render this image.
+     * 
+     * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
-	 */
-	MutableLayoutContext getLayoutContext(int mathmlCounter);
-	
-	/**
-	 * Called back once a MathML image has been saved successfully. Implementors can do anything they
-	 * need to do at this point.
-	 * 
-	 * @param imageFile saved image File
-	 * @param mathmlCounter identifies the position of the image within the document being processed,
+     */
+    MutableLayoutContext getLayoutContext(int mathmlCounter);
+    
+    /**
+     * Called back once a MathML image has been saved successfully. Implementors can do anything they
+     * need to do at this point.
+     * 
+     * @param imageFile saved image File
+     * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
      * @param contentType content type of the saved image File
-	 */
-	void imageSavingSucceeded(File imageFile, int mathmlCounter, String contentType);
-	
-	/**
+     */
+    void imageSavingSucceeded(File imageFile, int mathmlCounter, String contentType);
+    
+    /**
      * Called back if MathML image could not be saved for some reason.
      * 
      * @param imageFile saved image File
@@ -88,5 +88,5 @@ public interface MathMLImageSavingCallback {
      * @param contentType content type of the saved image File
      * @param exception cause of the failure, which may be null
      */
-	void imageSavingFailed(File imageFile, int mathmlCounter, String contentType, Throwable exception);
+    void imageSavingFailed(File imageFile, int mathmlCounter, String contentType, Throwable exception);
 }

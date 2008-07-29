@@ -43,7 +43,7 @@ public final class Globals {
     public static final String MATHML_TO_XHTML_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl";
     
     /** URN used in MathML -> XHTML to call up XML containing current CSS Properties */
-	public static final String CSS_PROPERTIES_DOCUMENT_URN = "urn:snuggletex-css-properties";
+    public static final String CSS_PROPERTIES_DOCUMENT_URN = "urn:snuggletex-css-properties";
     
     public static final EnumSet<LaTeXMode> MATH_MODE_ONLY = EnumSet.of(MATH);
     public static final EnumSet<LaTeXMode> PARA_MODE_ONLY = EnumSet.of(PARAGRAPH);

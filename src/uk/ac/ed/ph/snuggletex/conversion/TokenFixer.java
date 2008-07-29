@@ -583,7 +583,7 @@ public final class TokenFixer {
         /* If it looks like we've got an expression then tidy it up and try to infer semantics */
         if (!isStructural) {
             /* The order below is important in order to establish precedence */
-        	fixLeadingNegativeNumber(tokens);
+            fixLeadingNegativeNumber(tokens);
             groupStyleCommands(parentToken, tokens);
             fencePairedParentheses(parentToken, tokens); /* (Want to get parentheses first) */
             fixOverInstances(parentToken, tokens);
@@ -609,21 +609,21 @@ public final class TokenFixer {
      * @param tokens
      */
     private void fixLeadingNegativeNumber(List<FlowToken> tokens) {
-    	if (tokens.size() < 2) {
-    		return;
-    	}
-    	FlowToken firstToken = tokens.get(0);
-    	FlowToken secondToken = tokens.get(1);
-    	if (firstToken.isInterpretationType(InterpretationType.MATH_OPERATOR) &&
-    			((MathOperatorInterpretation) firstToken.getInterpretation()).getOperator()==MathMLOperator.SUBTRACT
-    			&& secondToken.isInterpretationType(InterpretationType.MATH_NUMBER)) {
-    		CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation()).getNumber();
-    		SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
-    				TokenType.MATH_NUMBER, firstToken.getLatexMode(),
-    				new MathNumberInterpretation(negation), null);
-    		tokens.remove(0);
-    		tokens.set(0, replacementToken);
-    	}
+        if (tokens.size() < 2) {
+            return;
+        }
+        FlowToken firstToken = tokens.get(0);
+        FlowToken secondToken = tokens.get(1);
+        if (firstToken.isInterpretationType(InterpretationType.MATH_OPERATOR) &&
+                ((MathOperatorInterpretation) firstToken.getInterpretation()).getOperator()==MathMLOperator.SUBTRACT
+                && secondToken.isInterpretationType(InterpretationType.MATH_NUMBER)) {
+            CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation()).getNumber();
+            SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
+                    TokenType.MATH_NUMBER, firstToken.getLatexMode(),
+                    new MathNumberInterpretation(negation), null);
+            tokens.remove(0);
+            tokens.set(0, replacementToken);
+        }
     }
     
     /**
@@ -734,15 +734,15 @@ public final class TokenFixer {
                 continue;
             }
             if (i==0) {
-            	/* No token before sub/super, so we'll make a pretend one */
-            	ArgumentContainerToken emptyBeforeContainer = ArgumentContainerToken.createEmptyContainer(parentToken, LaTeXMode.MATH);
-            	t1 = new BraceContainerToken(emptyBeforeContainer.getSlice(), LaTeXMode.MATH, emptyBeforeContainer);
-            	startModifyIndex = i;
+                /* No token before sub/super, so we'll make a pretend one */
+                ArgumentContainerToken emptyBeforeContainer = ArgumentContainerToken.createEmptyContainer(parentToken, LaTeXMode.MATH);
+                t1 = new BraceContainerToken(emptyBeforeContainer.getSlice(), LaTeXMode.MATH, emptyBeforeContainer);
+                startModifyIndex = i;
             }
             else {
-            	/* Found token before sub/super */
-            	t1 = tokens.get(i-1);
-            	startModifyIndex = i-1;
+                /* Found token before sub/super */
+                t1 = tokens.get(i-1);
+                startModifyIndex = i-1;
             }
             t2 = tokens.get(i+1);
             
@@ -1134,7 +1134,7 @@ public final class TokenFixer {
             final BuiltinCommand command, final List<? extends FlowToken> itemBuilder) {
         ArgumentContainerToken contentToken;
         if (itemBuilder.isEmpty()) {
-        	contentToken = ArgumentContainerToken.createEmptyContainer(parentToken, parentToken.getLatexMode());
+            contentToken = ArgumentContainerToken.createEmptyContainer(parentToken, parentToken.getLatexMode());
         }
         else {
             contentToken = ArgumentContainerToken.createFromContiguousTokens(parentToken, itemBuilder.get(0).getLatexMode(), itemBuilder);

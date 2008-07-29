@@ -46,12 +46,12 @@ public final class ArgumentContainerToken extends Token implements Iterable<Flow
     }
     
     public static ArgumentContainerToken createFromContiguousTokens(final Token parentToken,
-    		final LaTeXMode latexMode, final List<? extends FlowToken> contents) {
+            final LaTeXMode latexMode, final List<? extends FlowToken> contents) {
         return createFromContiguousTokens(parentToken, latexMode, contents, 0, contents.size());
     }
     
     public static ArgumentContainerToken createFromContiguousTokens(final Token parentToken,
-    		final LaTeXMode latexMode, final List<? extends FlowToken> contents,
+            final LaTeXMode latexMode, final List<? extends FlowToken> contents,
             final int startIndex, final int endIndex) {
         if (startIndex>endIndex) {
             throw new IllegalArgumentException("startIndex must be <= endIndex");
@@ -66,7 +66,7 @@ public final class ArgumentContainerToken extends Token implements Iterable<Flow
                     new ArrayList<FlowToken>(contents.subList(startIndex, endIndex)));
         }
         else {
-        	result = createEmptyContainer(parentToken, latexMode);
+            result = createEmptyContainer(parentToken, latexMode);
         }
         return result;
     }

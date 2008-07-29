@@ -208,15 +208,15 @@ public class DOMBuilderOptions implements Cloneable {
     }
     
     
-	public boolean isDownConverting() {
-		return downConverting;
-	}
+    public boolean isDownConverting() {
+        return downConverting;
+    }
 
-	public void setDownConverting(boolean downConverting) {
-		this.downConverting = downConverting;
-	}
-	
-	
+    public void setDownConverting(boolean downConverting) {
+        this.downConverting = downConverting;
+    }
+    
+    
     public LinkResolver getLinkResolver() {
         return linkResolver;
     }

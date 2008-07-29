@@ -33,19 +33,19 @@ import org.w3c.dom.Element;
  * @version $Revision: 2712 $
  */
 public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidWebPageBuilderOptions> {
-	
+    
     public JEuclidWebPageBuilder(final SessionContext sessionContext, final JEuclidWebPageBuilderOptions options) {
-    	super(sessionContext, options);
+        super(sessionContext, options);
     }
     
     private void fixOptions() {
-    	if (options.getImageSavingCallback()==null) {
-    		throw new SnuggleRuntimeException("No ImageSaver provided");
-    	}
-    	/* We'll always generate plain old HTML here */
-    	options.setContentType("text/html");
+        if (options.getImageSavingCallback()==null) {
+            throw new SnuggleRuntimeException("No ImageSaver provided");
+        }
+        /* We'll always generate plain old HTML here */
+        options.setContentType("text/html");
     }
-	
+    
     /**
      * Creates a web page representing the given (fixed) Tokens, returning the result as a
      * DOM Document.
@@ -55,10 +55,10 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
      * @throws SnuggleParseException
      */
     @Override
-	public Document buildWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
-    	fixOptions();
-    	
-    	DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
+    public Document buildWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+        fixOptions();
+        
+        DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
         Document document = documentBuilder.newDocument();
 
         /* Create <body/> and maybe add title header */
@@ -132,7 +132,7 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
     }
     
     @Override
-	public String computeContentTypeHeader() {
+    public String computeContentTypeHeader() {
         return computeMetaContentType();
     }
     

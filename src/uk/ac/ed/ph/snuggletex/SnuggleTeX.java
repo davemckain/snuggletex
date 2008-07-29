@@ -72,24 +72,24 @@ public final class SnuggleTeX {
      * @return SnuggleTeX encoding, or null if not present.
      */
     public static String extractSnuggleTeXAnnotation(Element mathmlElement) {
-    	if (MATHML_NAMESPACE.equals(mathmlElement.getNamespaceURI()) && "math".equals(mathmlElement.getLocalName())) {
-    		/* Look for semantics child then annotation child with encoding set appropriately */
-    		Node search = mathmlElement.getFirstChild();
-    		if (!(search.getNodeType()==ELEMENT_NODE && MATHML_NAMESPACE.equals(search.getNamespaceURI())
-    				&& "semantics".equals(search.getLocalName()))) {
-    			/* Didn't get <semantics/> as first and only child */
-    			return null;
-    		}
-    		Element semantics = (Element) search;
-    		NodeList childNodes = semantics.getChildNodes();
-    		for (int i=0, length=childNodes.getLength(); i<length; i++) {
-    			search = childNodes.item(i);
-    			if (search.getNodeType()==ELEMENT_NODE && MATHML_NAMESPACE.equals(search.getNamespaceURI())
-    					&& "annotation".equals(search.getLocalName()) && SNUGGLETEX_MATHML_ANNOTATION_ENCODING.equals(((Element) search).getAttribute("encoding"))) {
-    				return search.getFirstChild().getNodeValue();
-    			}
-    		}
-    	}
-    	return null;
+        if (MATHML_NAMESPACE.equals(mathmlElement.getNamespaceURI()) && "math".equals(mathmlElement.getLocalName())) {
+            /* Look for semantics child then annotation child with encoding set appropriately */
+            Node search = mathmlElement.getFirstChild();
+            if (!(search.getNodeType()==ELEMENT_NODE && MATHML_NAMESPACE.equals(search.getNamespaceURI())
+                    && "semantics".equals(search.getLocalName()))) {
+                /* Didn't get <semantics/> as first and only child */
+                return null;
+            }
+            Element semantics = (Element) search;
+            NodeList childNodes = semantics.getChildNodes();
+            for (int i=0, length=childNodes.getLength(); i<length; i++) {
+                search = childNodes.item(i);
+                if (search.getNodeType()==ELEMENT_NODE && MATHML_NAMESPACE.equals(search.getNamespaceURI())
+                        && "annotation".equals(search.getLocalName()) && SNUGGLETEX_MATHML_ANNOTATION_ENCODING.equals(((Element) search).getAttribute("encoding"))) {
+                    return search.getFirstChild().getNodeValue();
+                }
+            }
+        }
+        return null;
     }
 }

@@ -13,10 +13,10 @@ package uk.ac.ed.ph.snuggletex.definitions;
  */
 public interface CommandOrEnvironment {
     
-	/**
-	 * Returns the TeX name for this command or environment. (In the case of commands, this does
-	 * not include the leading backslash.)
-	 */
+    /**
+     * Returns the TeX name for this command or environment. (In the case of commands, this does
+     * not include the leading backslash.)
+     */
     String getTeXName();
     
     /**
