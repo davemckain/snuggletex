@@ -129,8 +129,23 @@
   <!-- Builds the project JavaDoc                                          -->
   <!-- =================================================================== -->
   <target name="javadoc" description="Builds JavaDoc">
-    <javadoc sourcepath="${src.dir}" packagenames="uk.ac.ed.ph.snuggletex.*"
+    <javadoc sourcepath="${src.dir}"
+        packagenames="uk.ac.ed.ph.snuggletex.*"
+        Header="SnuggleTeX API Documentation"
+        linksource="yes"
+        access="private"
+        author="true"
+        version="true"
+        use="true"
+        docencoding="UTF-8"
+        windowtitle="SnuggleTeX API Documentation"
         destdir="${build.javadoc.dir}">
+      <doctitle>SnuggleTeX API Documentation</doctitle>
+      <bottom><![CDATA[
+        <p><a href="http://www.ph.ed.ac.uk/snuggletex/" target="_top">SnuggleTeX Home Page</a></p>
+        <p>Copyright &#xa9; 2008 The School of Physics and Astronomy, The University of Edinburgh.</p>
+        <p style="font-style:italic">The University of Edinburgh is a charitable body, registered in Scotland, with registration number SC005336.</p>
+      ]]></bottom>
       <classpath refid="compile.classpath"/>
     </javadoc>
   </target>
