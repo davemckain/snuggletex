@@ -17,31 +17,28 @@ $Id$
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
+  <!--
+  Set up Content Types for generated document, which maps to content produced (offline)
+  by SnuggleTeX during the Ant build process
+  -->
+  <mime-mapping>
+    <extension>xml</extension>
+    <mime-type>application/xhtml+xml</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>xhtml</extension>
+    <mime-type>application/xhtml+xml</mime-type>
+  </mime-mapping>
+
   <servlet>
     <description>
-      Converts SnuggleTeX content pages to XHTML + MathML
-    </description>
-    <servlet-name>SnuggleTeXServlet</servlet-name>
-    <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.SnuggleTeXServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
-    <init-param>
-      <param-name>cachingXSLT</param-name>
-      <param-value>false</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <description>
-      Processes and displays user-submitted input
+      Processes and displays user-submitted input for demonstration purposes
     </description>
     <servlet-name>TryOutServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.TryOutServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <load-on-startup>0</load-on-startup>
   </servlet>
 
-  <servlet-mapping>
-    <servlet-name>SnuggleTeXServlet</servlet-name>
-    <url-pattern>/docs/*</url-pattern>
-  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>TryOutServlet</servlet-name>
     <url-pattern>/tryout.xml</url-pattern>

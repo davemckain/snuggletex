@@ -22,15 +22,39 @@
     <pathelement location="${build.lib.dir}/jeuclid-core-3.1.1.jar"/>
   </path>
 
-  <!-- Libraries for the Test Suite -->
+  <!-- ClassPath for compiling the Test Suite -->
   <path id="test.compile.classpath">
     <pathelement location="${build.lib.dir}/junit-4.4.jar"/>
     <pathelement location="${build.lib.dir}/easymock.jar"/>
   </path>
 
-  <!-- Libraries for compiling the demonstration webapp -->
+  <!-- ClassPath for compiling the demonstration webapp -->
   <path id="webapp.compile.classpath">
     <pathelement location="${build.lib.dir}/servlet-api.jar"/>
+  </path>
+
+  <!-- ClassPath for running the Test Suite -->
+  <path id="test.run.classpath">
+    <pathelement location="${build.test.dir}"/>
+    <pathelement location="${build.src.dir}"/>
+    <path refid="test.compile.classpath"/>
+    <fileset dir="${build.lib.dir}">
+      <include name="saxon9*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- ClassPath for running standalone apps (+ extensions) -->
+  <path id="run.classpath">
+    <pathelement location="${build.src.dir}"/>
+    <pathelement location="${build.webapp.dir}/WEB-INF/classes"/>
+    <path refid="compile.classpath"/>
+    <fileset dir="${build.lib.dir}">
+      <include name="batik-*.jar"/>
+      <include name="commons-*.jar"/>
+      <include name="saxon9*.jar"/>
+      <include name="xml*.jar"/>
+      <include name="jeuclid*.jar"/>
+    </fileset>
   </path>
 
   <!-- =================================================================== -->
@@ -119,9 +143,7 @@
   <target name="test" depends="build.test" description="Runs Test Suite">
     <java classname="org.junit.runner.JUnitCore" fork="yes">
       <arg value="uk.ac.ed.ph.snuggletex.SnuggleTeXTestSuite"/>
-      <classpath refid="test.compile.classpath"/>
-      <classpath path="${build.test.dir}"/>
-      <classpath path="${build.src.dir}"/>
+      <classpath refid="test.run.classpath"/>
     </java>
   </target>
 
@@ -295,7 +317,21 @@
     <copy todir="${build.webapp.dir}/includes" file="${dist.dir}/snuggletex.css"/>
   </target>
 
-  <target name="webapp" depends="dev.webapp, javadoc"
+  <target name="webapp.docs" depends="dev.webapp, build"
+      description="Builds demo webapp documentation">
+    <java classname="uk.ac.ed.ph.snuggletex.demowebapp.DocumentationBuilder" fork="yes">
+      <arg value="${build.webapp.dir}/docs"/>
+      <arg value="${build.webapp.dir}/WEB-INF/macros.tex"/>
+      <arg value="${build.webapp.dir}/WEB-INF/format-output.xsl"/>
+      <arg value=".."/>
+      <arg value="maths"/>
+      <classpath>
+        <path refid="run.classpath"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="webapp" depends="dev.webapp, webapp.docs, javadoc"
       description="Builds demo webapp (with JavaDoc)">
     <!-- Copy in JavaDoc -->
     <copy todir="${build.webapp.dir}/javadoc">
@@ -315,8 +351,10 @@
   <!-- Cleans up the build directories                                     -->
   <!-- =================================================================== -->
   <target name="clean" description="Cleans out build directories">
-    <delete dir="${build.dir}"/>
-    <delete dir="${dist.dir}"/>
+    <delete includeemptydirs="true">
+      <fileset dir="${build.dir}" includes="**/*"/>
+      <fileset dir="${dist.dir}" includes="**/*"/>
+    </delete>
   </target>
 
 </project>

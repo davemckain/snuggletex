@@ -11,10 +11,10 @@ SnuggleTeXSession session = engine.createSession();
 
 SnuggleInput input = new SnuggleInput("$$1+2=3$$");
 session.parseInput(input);
-String xmlString = session.buildXMLString();
+String.htmlString = session.buildXMLString();
 
 System.out.println("Input " + input.getString()
-    + " was converted to:\n" + xmlString);
+    + " was converted to:\n" +.htmlString);
 \end{verbatim}
 
 This block of code converts the LaTeX String \verb|$$1+2=3$$| to a simple XML
@@ -25,5 +25,5 @@ For this particular input, the resulting XML fragment consists of a single MathM
 
 The XML fragment output in the above example is great for showing off the outputs
 from SnuggleTeX but is not usually much use if you want to do anything else with it.
-SnuggleTeX supports a number of alterative \href[outputs]{outputs.xml} that can be
+SnuggleTeX supports a number of alterative \href[outputs]{outputs.html} that can be
 more useful to programmers.

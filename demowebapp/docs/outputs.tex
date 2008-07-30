@@ -3,7 +3,7 @@
 \section*{Outputs}
 
 Once you have created a \verb|SnuggleTeXSession| and parsed one or more
-\href[\verb|SnuggleInput|]{inputs.xml}, you can create one (or more) outputs
+\href[\verb|SnuggleInput|]{inputs.html}, you can create one (or more) outputs
 using various methods in \verb|SnuggleTeXSession|.
 
 The types of outputs supported by SnuggleTeX fall into 2 basic categories:
@@ -85,7 +85,7 @@ giving you additional control over the further aspects of the output:
 
 \begin{itemize}
   \item Which ``page type'' to use for the resulting web page;
-  \item Specify client-side XSLT stylesheets to include via \verb|<?xml-stylesheet?>|;
+  \item Specify client-side XSLT stylesheets to include via \verb|<.html-stylesheet?>|;
   \item Specify client-side CSS stylesheets to link to via \verb|<link/>|;
   \item Set a language, encoding and title for the resulting page;
   \item Whether to add an automatic title heading element to the web page body;
@@ -101,7 +101,7 @@ the results to suit your particular clients you are targetting:
 
 \begin{itemize}
   \item \textbf{MOZILLA}: This generates an XHTML + MathML document suitable for
-    Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml+xml|,
+    Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml.html|,
     has no XML declaration and no DOCTYPE declaration. Do \emph{not} use this if you
     are targetting Internet Explorer as it will display this as an XML tree.
 
@@ -111,7 +111,7 @@ the results to suit your particular clients you are targetting:
 
   \item \textbf{CROSS\_BROWSER\_XHTML}: This generates an XHTML + MathML document that
     displays well on both Mozilla-based browsers and Internet Explorer 6/7 (providing that
-    the MathPlayer plug-in has already been installed). It is served as \verb|application/xhtml+xml|,
+    the MathPlayer plug-in has already been installed). It is served as \verb|application/xhtml.html|,
     has an XML declaration and a DOCTYPE declaration.
     \begin{itemize}
       \item This will not display correctly on Internet Explorer 6/7 if the
@@ -121,7 +121,7 @@ the results to suit your particular clients you are targetting:
     \end{itemize}
 
   \item \textbf{CLIENT\_SIDE\_XSLT\_STYLESHEET}: This generates a XHTML + MathML document,
-    served as \verb|application/xhtml+xml| with no XML declaration and no DOCTYPE declaration.
+    served as \verb|application/xhtml.html| with no XML declaration and no DOCTYPE declaration.
     It is intended to be used with a client-side XSLT to invoke something like the
     Universal StyleSheet.
 

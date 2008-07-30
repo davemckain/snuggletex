@@ -1,10 +1,5 @@
-<%--
-
-Redirect to the top of the documentation
-
---%>
-
+<%-- Redirect to the top of the documentation --%>
 <%
- response.sendRedirect("docs/overview.xml");
+ response.sendRedirect("docs/overview.html");
 %>
 

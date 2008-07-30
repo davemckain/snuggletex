@@ -495,7 +495,8 @@ within MATH mode. It also supports \verb|\textrm| and friends.
   \end{array}
 \right)} & \note{This uses the \texttt{array} environment combined with stretchy brackets to make a matrix.} \\
 
-\bigdminout{\begin{eqnarray*}
+\newcommand{\biginout}[1]{\begin{verbatim}#1\end{verbatim} & #1}
+\biginout{\begin{eqnarray*}
   x & = & y \\
     & = & z
 \end{eqnarray*}} &
@@ -514,12 +515,13 @@ leaving the browser to use an appropriate font. By default, Firefox doesn't do a
 so, like similar conversion tools, SnuggleTeX can also try to remap certain "safe" characters
 to other symbols that users are likely to have installed. The output below demonstrates this.
 
-\newcommand{\vcdemo}[1]{\minout{#1{abcdefghijklmnopqrstuvwxyz}} & \minout{#1{ABCDEFGHIJKLMNOPQRSTUVWXYZ}} \\ }
+\newcommand{\vcdemo}[1]{\minout{#1{abcdefghijklmnopqrstuvwxyz}} \\ }
+\newcommand{\vcudemo}[1]{\minout{#1{ABCDEFGHIJKLMNOPQRSTUVWXYZ}} \\ }
 \newenvironment{vctable}
 {\begin{center}
- \begin{tabular}{|r|l|r|l|}
+ \begin{tabular}{|r|l|}
  \hline \\
- Input (lower case) & Result & Input (upper case) & Result \\
+ Input & Result \\
  \hline \\
 }{\hline
  \end{tabular}
@@ -527,7 +529,12 @@ to other symbols that users are likely to have installed. The output below demon
 }
 \begin{vctable}
 \vcdemo{\mathcal}
+\vcudemo{\mathcal}
 \vcdemo{\mathsc}
+\vcudemo{\mathsc}
 \vcdemo{\mathbb}
+\vcudemo{\mathbb}
 \vcdemo{\mathfrak}
+\vcudemo{\mathfrak}
 \end{vctable}
+
