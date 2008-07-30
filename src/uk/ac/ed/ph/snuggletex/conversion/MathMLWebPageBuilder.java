@@ -61,19 +61,6 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
             options.setContentType("application/xhtml+xml");
         }
     }
-
-    /**
-     * Computes the appropriate "Content-Type" string to be specified 
-     * as an the XHTML <tt>meta</tt> element.
-     * 
-     * @see #computeContentTypeHeader()
-     */
-    public String computeMetaContentType() {
-        /* Check options, making adjustments as required to ensure sanity */
-        fixOptions();
-
-        return options.getContentType() + "; charset=" + options.getEncoding();
-    }
     
     /**
      * Computes the appropriate "Content-Type" string to be specified as an HTTP Header. (Note
@@ -93,6 +80,19 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
             result = options.getContentType() + "; charset=" + options.getEncoding();
         }
         return result;
+    }
+    
+    /**
+     * Computes the appropriate "Content-Type" string to be specified 
+     * as an the XHTML <tt>meta</tt> element.
+     * 
+     * @see #computeContentTypeHeader()
+     */
+    public String computeMetaContentType() {
+        /* Check options, making adjustments as required to ensure sanity */
+        fixOptions();
+
+        return options.getContentType() + "; charset=" + options.getEncoding();
     }
     
     /**
@@ -224,7 +224,8 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
             serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
             serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
         }
-        serializer.setOutputProperty(OutputKeys.MEDIA_TYPE, computeMetaContentType());
+        serializer.setOutputProperty(OutputKeys.MEDIA_TYPE, options.getContentType());
+        serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
         serializer.setOutputProperty(OutputKeys.METHOD,
                 pageType==WebPageType.MATHPLAYER_HTML ?
                         "html" : pageType==WebPageType.CLIENT_SIDE_XSLT_STYLESHEET ?
