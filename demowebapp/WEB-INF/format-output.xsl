@@ -22,15 +22,19 @@ All Rights Reserved
   xmlns:h="http://www.w3.org/1999/xhtml"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  exclude-result-prefixes="h m s">
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  exclude-result-prefixes="h m s xs">
 
   <xsl:output method="xhtml"/>
 
+  <!-- Extract page ID as first <s:pageId/> element -->
+  <xsl:variable name="pageId" select="string(/h:html/h:body/s:pageId[1])" as="xs:string"/>
+
   <!-- Extract page title as first <h2/> heading -->
-  <xsl:variable name="title" select="/h:html/h:body/h:h2[1]/text()"/>
+  <xsl:variable name="title" select="string(/h:html/h:body/h:h2[1])" as="xs:string"/>
 
   <!-- Need to pass webapp context path so as to locate images and stuff -->
-  <xsl:param name="context-path"/>
+  <xsl:param name="context-path" as="xs:string" required="yes"/>
 
   <xsl:template match="h:html">
     <html xml:lang="en" lang="en">
@@ -56,7 +60,7 @@ All Rights Reserved
   </xsl:template>
 
   <xsl:template match="h:body">
-    <body id="{s:pageId[1]}">
+    <body id="{$pageId}">
       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="header">
         <tr>
           <td width="84" align="left" valign="top">
@@ -137,7 +141,7 @@ All Rights Reserved
         <div id="maincontent">
           <div id="maininner">
             <!-- Generate page content -->
-            <xsl:apply-templates/>
+            <xsl:apply-templates select="." mode="make-content"/>
           </div>
         </div>
       </div>
@@ -159,6 +163,10 @@ All Rights Reserved
         </p>
       </div>
     </body>
+  </xsl:template>
+
+  <xsl:template match="h:body" mode="make-content">
+    <xsl:apply-templates/>
   </xsl:template>
 
   <!-- Copy all other HTML and MathML as-is -->

@@ -80,7 +80,6 @@ body#overview a.overview,
 body#features a.features,
 body#usecases a.usecases,
 body#releasenotes a.releasenotes,
-body#samples a.samples,
 body#requirements a.requirements,
 body#gettingstarted a.gettingstarted,
 body#minexample a.minexample,
@@ -89,7 +88,8 @@ body#inputs a.inputs,
 body#outputs a.outputs,
 body#configuration a.configuration,
 body#errors a.errors,
-body#demo a.demo {
+body#samples a.samples,
+body#tryout a.tryout {
   color: #f25c69;
   font-weight: bold;
 }
@@ -138,7 +138,7 @@ body#demo a.demo {
 
 /************************************************************/
 
-pre.verbatim {
+div.tryoutOutput {
   background-color: #f2d7da;
   padding: 0.5em;
 }

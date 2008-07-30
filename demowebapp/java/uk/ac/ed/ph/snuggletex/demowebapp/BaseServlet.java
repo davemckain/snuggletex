@@ -73,11 +73,8 @@ abstract class BaseServlet extends HttpServlet {
      * absolute paths resolved against the base of the webapp.
      * <p>
      * This is quite a poor state of affairs in general but is all we need here!
-     *
-     * @author  David McKain
-     * @version $Revision: 3 $
      */
-    protected class CheapoURIResolver implements URIResolver {
+    protected final class CheapoURIResolver implements URIResolver {
         
         public Source resolve(String href, String base) throws TransformerException {
             InputStream resource = getServletContext().getResourceAsStream(href);
