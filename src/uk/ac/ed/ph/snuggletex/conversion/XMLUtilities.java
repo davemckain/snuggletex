@@ -7,20 +7,13 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 
-import java.io.StringWriter;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Node;
 
 /**
  * Some trivial little helpers for creating suitably-configured {@link TransformerFactory}
@@ -72,19 +65,5 @@ public final class XMLUtilities {
         catch (ParserConfigurationException e) {
             throw new SnuggleRuntimeException("Could not create Namespace-aware DocumentBuilder", e);
         }
-    }
-    
-    public static String serializeXMLFragment(final Node node) {
-        TransformerFactory transformerFactory = createTransformerFactory();
-        StringWriter resultWriter = new StringWriter();
-        try {
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.transform(new DOMSource(node), new StreamResult(resultWriter));
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Could not serialize DOM subtree", e);
-        }
-        return resultWriter.toString();
     }
 }
