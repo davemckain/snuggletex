@@ -15,10 +15,22 @@ import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions;
  */
 public final class JEuclidWebPageBuilderOptions extends AbstractWebPageBuilderOptions {
     
+    /** Callback to use when saving out any images produced by the process. */
     private MathMLImageSavingCallback imageSavingCallback;
+    
+    /**
+     * Flag to set to output (backward-compatible) XHTML in preference to HTML.
+     * <p>
+     * (This only has an effect if you are using an XSLT 2.0 processor since the "xhtml" will
+     * be used in this case; otherwise trying to output properly backward-compatible XHTML
+     * using a XSLT 1.0 is not worth trying.)
+     */
+    private boolean outputtingXHTML;
     
     public JEuclidWebPageBuilderOptions() {
         super();
+        this.imageSavingCallback = null;
+        this.outputtingXHTML = false;
     }
     
     public MathMLImageSavingCallback getImageSavingCallback() {
@@ -27,5 +39,14 @@ public final class JEuclidWebPageBuilderOptions extends AbstractWebPageBuilderOp
 
     public void setImageSavingCallback(MathMLImageSavingCallback callback) {
         this.imageSavingCallback = callback;
+    }
+
+    
+    public boolean isOutputtingXHTML() {
+        return outputtingXHTML;
+    }
+    
+    public void setOutputtingXHTML(boolean outputtingXHTML) {
+        this.outputtingXHTML = outputtingXHTML;
     }
 }

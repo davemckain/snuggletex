@@ -165,6 +165,7 @@ public final class DocumentationBuilder {
         JEuclidWebPageBuilderOptions jeuclidOptions = new JEuclidWebPageBuilderOptions();
         setupWebOptions(jeuclidOptions);
         jeuclidOptions.setDownConverting(true);
+        jeuclidOptions.setOutputtingXHTML(true);
         jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));
         targetFile = new File(sourceDirectory, pageBaseName + ".html");
         session.writeWebPage(jeuclidOptions, new FileOutputStream(targetFile));

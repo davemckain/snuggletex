@@ -12,6 +12,7 @@ import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
 import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -26,8 +27,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Extension of {@link AbstractWebPageBuilder} that uses {@link JEuclidMathMLConversionVisitor} to convert
- * islands of MathML to images.
+ * Extension of {@link AbstractWebPageBuilder} that uses {@link JEuclidMathMLConversionVisitor}
+ * to convert islands of MathML to images.
  * 
  * @author  David McKain
  * @version $Revision: 2712 $
@@ -38,12 +39,18 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
         super(sessionContext, options);
     }
     
-    private void fixOptions() {
+    @Override
+    protected void fixOptions() {
         if (options.getImageSavingCallback()==null) {
             throw new SnuggleRuntimeException("No ImageSaver provided");
         }
-        /* We'll always generate plain old HTML here */
+        /* Content type will always be backward-compatible */
         options.setContentType("text/html");
+        
+        /* Use HTML serialization unless XHTML explicitly requested */
+        if (options.getSerializationMethod()!=SerializationMethod.XHTML) {
+            options.setSerializationMethod(SerializationMethod.HTML);
+        }
     }
     
     /**
@@ -146,6 +153,6 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
     
     @Override
     protected void configureSerializer(Transformer serializer) {
-        serializer.setOutputProperty(OutputKeys.METHOD, "html");
+        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
     }
 }

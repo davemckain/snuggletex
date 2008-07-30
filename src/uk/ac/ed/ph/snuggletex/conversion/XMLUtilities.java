@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
@@ -50,6 +51,16 @@ public final class XMLUtilities {
                     + feature
                     + " in order to be used with SnuggleTeX");
         }   
+    }
+    
+    /**
+     * Tests whether the given {@link Transformer} is known to support XSLT 2.0.
+     * <p>
+     * Currently, this involves checking for a suitable version of SAXON; this will
+     * change once more processors become available.
+     */
+    public static boolean supportsXSLT20(Transformer tranformer) {
+        return tranformer.getClass().getName().startsWith("net.sf.saxon.");
     }
     
     /**

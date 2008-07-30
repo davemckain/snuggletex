@@ -34,6 +34,30 @@ import javax.xml.transform.Transformer;
 public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
     
     /**
+     * Trivial enumeration of the 3 serialization methods we support.
+     * <p>
+     * <strong>NOTE:</strong> XHTML is only supported if you are using an XSLT 2.0
+     * processor. If not supported, you will get XML output.
+     */
+    public static enum SerializationMethod {
+        
+        XML("xml"),
+        XHTML("xhtml"),
+        HTML("html"),
+        ;
+        
+        private final String name;
+        
+        private SerializationMethod(final String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+    
+    /**
      * JAXP {@link Transformer} representing an optional XSLT stylesheet that
      * will be applied to the resulting web page once it has been built but
      * before it is serialised. This can be useful if you want to add in headers
@@ -93,11 +117,20 @@ public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
      */
     private boolean indenting;
     
+    /**
+     * Sets the {@link SerializationMethod} to use when generating the final output.
+     * <p>
+     * Note that {@link SerializationMethod#XHTML} is only supported properly if you are using
+     * an XSLT 2.0 processor; otherwise it reverts to {@link SerializationMethod#XML}
+     */
+    private SerializationMethod serializationMethod;
+    
     public AbstractWebPageBuilderOptions() {
         super();
         this.encoding = "UTF-8";
         this.language = "en";
         this.cssStylesheetURLs = StringUtilities.EMPTY_STRING_ARRAY;
+        this.serializationMethod = SerializationMethod.XML;
     }
 
     
@@ -170,5 +203,14 @@ public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
     
     public void setIndenting(boolean identing) {
         this.indenting = identing;
+    }
+
+
+    public SerializationMethod getSerializationMethod() {
+        return serializationMethod;
+    }
+    
+    public void setSerializationMethod(SerializationMethod serializationMethod) {
+        this.serializationMethod = serializationMethod;
     }
 }

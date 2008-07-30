@@ -8,7 +8,9 @@ package uk.ac.ed.ph.snuggletex.conversion;
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -37,7 +39,8 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
         super(sessionContext, options);
     }
     
-    private void fixOptions() {
+    @Override
+    protected void fixOptions() {
         /* 1. If MathPlayer HTML output is specified, then:
          * 
          * a. MathML MUST be prefixed
@@ -60,6 +63,26 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
         else {
             options.setContentType("application/xhtml+xml");
         }
+        /* 4. Set serialization method */
+        SerializationMethod serializationMethod = null;
+        switch (options.getPageType()) {
+            case MOZILLA:
+            case CROSS_BROWSER_XHTML:
+                serializationMethod = SerializationMethod.XHTML;
+                break;
+                
+            case MATHPLAYER_HTML:
+                serializationMethod = SerializationMethod.HTML;
+                break;
+                
+            case CLIENT_SIDE_XSLT_STYLESHEET:
+                serializationMethod = SerializationMethod.XML;
+                break;
+                
+            default:
+                throw new SnuggleLogicException("Unexpected switch case" + options.getPageType());
+        }
+        options.setSerializationMethod(serializationMethod);
     }
     
     /**
@@ -211,12 +234,9 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
         
         return document;
     }
-    
+
     @Override
     protected void configureSerializer(Transformer serializer) {
-        /* See if we support XSLT 2.0. If so, we'll use the "xhtml" output method in certain cases. */
-        boolean isXSLT20 = supportsXSLT20(serializer);
-        
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
         serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
@@ -224,21 +244,5 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
             serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
             serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
         }
-        serializer.setOutputProperty(OutputKeys.MEDIA_TYPE, options.getContentType());
-        serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
-        serializer.setOutputProperty(OutputKeys.METHOD,
-                pageType==WebPageType.MATHPLAYER_HTML ?
-                        "html" : pageType==WebPageType.CLIENT_SIDE_XSLT_STYLESHEET ?
-                                "xml" : isXSLT20 ? "xhtml" : "xml");
-    }
-    
-    /**
-     * Tests whether the given {@link Transformer} is known to support XSLT 2.0.
-     * <p>
-     * Currently, this involves checking for a suitable version of SAXON; this will
-     * change once more processors become available.
-     */
-    private boolean supportsXSLT20(Transformer serializer) {
-        return serializer.getClass().getName().startsWith("net.sf.saxon");
     }
 }

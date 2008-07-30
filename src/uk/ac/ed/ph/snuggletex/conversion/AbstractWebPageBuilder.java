@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -19,6 +20,7 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -50,6 +52,9 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
     }
     
     public final Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+        /* Fix options */
+        fixOptions();
+        
         /* Get subclass to build resulting document */
         Document result = buildWebPage(fixedTokens);
         
@@ -83,6 +88,9 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
      */
     public final void writeWebPage(final List<FlowToken> fixedTokens, final Object contentTypeSettable,
             final OutputStream outputStream) throws SnuggleParseException, IOException {
+        /* Fix options */
+        fixOptions();
+        
         if (contentTypeSettable!=null) {
             /* Look for a Method called setContentType() and, if found, call it */
             try {
@@ -114,24 +122,36 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
      */
     private final Transformer createSerializer() {
         /* Create either an identity transform (for XHTML) or one which converts XHTML to HTML
-         * (for legacy HTML) output.
+         * for proper no-namespace HTML output.
          */
+        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+        SerializationMethod serializationMethod = options.getSerializationMethod();
         Transformer serializer;
         try {
-            if (options.getContentType().equals("text/html")) {
+            if (options.getSerializationMethod()==SerializationMethod.HTML) {
                 serializer = sessionContext.getStylesheet(Globals.XHTML_TO_HTML_XSL_RESOURCE_NAME).newTransformer();
             }
             else {
-                serializer = XMLUtilities.createTransformerFactory().newTransformer();
+                serializer = transformerFactory.newTransformer();
             }
         }
         catch (TransformerConfigurationException e) {
             throw new SnuggleRuntimeException("Could not create serializer", e);
         }
+        
+        /* Decide on output method, using XSLT 2.0's "xhtml" method if requested and available,
+         * falling back to "xml" otherwise.
+         */
+        String methodName = serializationMethod.getName();
+        if (!XMLUtilities.supportsXSLT20(serializer)) {
+            methodName = SerializationMethod.XML.getName();
+        }
+        serializer.setOutputProperty(OutputKeys.METHOD, methodName);
 
-        /* Set core serialization properties */
+        /* Set other core serialization properties */
         serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
         serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
+        serializer.setOutputProperty(OutputKeys.MEDIA_TYPE, options.getContentType());
         
         /* Let subclass further configure the Serializer as appropriate */
         configureSerializer(serializer);
@@ -139,6 +159,12 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
     }
     
     //------------------------------------------------------------
+    
+    /**
+     * Called to give subclasses a chance to inspect the current options and make any required
+     * changes to ensure sanity.
+     */
+    protected abstract void fixOptions();
     
     /**
      * Subclasses should fill in to creates a DOM {@link Document} representing a complete
