@@ -217,7 +217,7 @@
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="test/**"/>
-        <include name="demowebapp/**"/>
+        <include name="webapp/**"/>
       </zipfileset>
     </zip>
   </target>
@@ -320,7 +320,7 @@
 
   <target name="webapp.docs" depends="dev.webapp, build"
       description="Builds demo webapp documentation">
-    <java classname="uk.ac.ed.ph.snuggletex.demowebapp.DocumentationBuilder" fork="yes">
+    <java classname="uk.ac.ed.ph.snuggletex.webapp.DocumentationBuilder" fork="yes">
       <arg value="${build.webapp.dir}/docs"/>
       <arg value="${build.webapp.dir}/WEB-INF/macros.tex"/>
       <arg value="${build.webapp.dir}/WEB-INF/format-output.xsl"/>

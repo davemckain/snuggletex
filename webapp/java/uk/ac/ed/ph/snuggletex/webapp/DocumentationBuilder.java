@@ -3,7 +3,7 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.demowebapp;
+package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.InputError;

@@ -1,9 +1,9 @@
-/* $Id$
+/* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.demowebapp;
+package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.InputError;
@@ -32,7 +32,7 @@ import javax.xml.transform.TransformerConfigurationException;
  * Trivial servlet to provide the functionality for the "try out" page.
  *
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:158 $
  */
 public final class TryOutServlet extends BaseServlet {
     
