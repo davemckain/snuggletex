@@ -43,6 +43,10 @@ public class JEuclidMathMLConversionVisitor {
         this.document = document;
     }
     
+    public void run() {
+        run(document.getDocumentElement());
+    }
+    
     public void run(Element startElement) {
         this.mathmlCounter = 0;
         visitElement(startElement);
