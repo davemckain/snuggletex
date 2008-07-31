@@ -94,7 +94,7 @@ All Rights Reserved
         </tr>
       </table>
       <h1 id="location">
-        <a href="{$context-path}">SnuggleTeX (v1.0.0-beta5)</a>
+        <a href="{$context-path}">SnuggleTeX (@uk.ac.ed.ph.snuggletex.version@)</a>
       </h1>
       <div id="content">
         <div id="skipnavigation">
@@ -147,7 +147,7 @@ All Rights Reserved
       </div>
       <div id="copyright">
         <p>
-          SnuggleTeX Release 1.0.0-beta5 &#x2014;
+          SnuggleTeX Release @uk.ac.ed.ph.snuggletex.version@ &#x2014;
           <a href="{$context-path}/docs/release-notes.html">Release Notes</a>
           <br />
           Copyright &#xa9; 2008
