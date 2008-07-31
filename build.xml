@@ -270,7 +270,7 @@
   <!-- =================================================================== -->
   <!-- Builds the demo webapp hierarchy                                    -->
   <!-- =================================================================== -->
-  <target name="dev.webapp" depends="prepare.libs, build, snuggletex.jar, snuggletex.css"
+  <target name="webapp.min" depends="prepare.libs, build, snuggletex.jar, snuggletex.css"
       description="Builds demo webapp (without JavaDoc)">
     <mkdir dir="${build.webapp.dir}/WEB-INF"/>
     <mkdir dir="${build.webapp.dir}/WEB-INF/classes"/>
@@ -318,7 +318,7 @@
     <copy todir="${build.webapp.dir}/includes" file="${dist.dir}/snuggletex.css"/>
   </target>
 
-  <target name="webapp.docs" depends="dev.webapp, build"
+  <target name="webapp.docs" depends="webapp.min, build"
       description="Builds demo webapp documentation">
     <java classname="uk.ac.ed.ph.snuggletex.webapp.DocumentationBuilder" fork="yes">
       <arg value="${build.webapp.dir}/docs"/>
@@ -332,7 +332,7 @@
     </java>
   </target>
 
-  <target name="webapp" depends="dev.webapp, webapp.docs, javadoc"
+  <target name="webapp" depends="webapp.min, webapp.docs, javadoc"
       description="Builds demo webapp (with JavaDoc)">
     <!-- Copy in JavaDoc -->
     <copy todir="${build.webapp.dir}/javadoc">
