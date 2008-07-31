@@ -138,6 +138,11 @@ body#tryout a.tryout {
 
 /************************************************************/
 
+pre.verbatim {
+  background-color: #f2d7da;
+  padding: 0.5em;
+}
+
 div.tryoutOutput {
   background-color: #f2d7da;
   padding: 0.5em;
