@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
-import uk.ac.ed.ph.snuggletex.StylesheetCache;
+import uk.ac.ed.ph.snuggletex.StylesheetManager;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
@@ -15,8 +15,6 @@ import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.transform.Templates;
 
 /**
  * Provides access to session-related Objects used during the various parts of the snuggle process.
@@ -38,9 +36,7 @@ public interface SessionContext {
     
     BuiltinEnvironment getEnvironmentByTeXName(String texName);
     
-    Templates getStylesheet(String resourceName);
+    StylesheetManager getStylesheetManager();
     
-    StylesheetCache getStylesheetCache();
-
     void registerError(InputError error) throws SnuggleParseException;
 }

@@ -25,7 +25,6 @@ import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -36,13 +35,9 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,8 +79,13 @@ import org.w3c.dom.NodeList;
  */
 public final class SnuggleTeXSession implements SessionContext {
     
+    /** Engine that created this Session */
     private final SnuggleTeXEngine engine;
+
+    /** {@link LaTeXTokeniser} used to parse inputs */
     private final LaTeXTokeniser tokeniser;
+    
+    /** {@link TokenFixer} used to massage inputs after parsing */
     private final TokenFixer tokenFixer;
     
     //-------------------------------------------------
@@ -304,7 +304,8 @@ public final class SnuggleTeXSession implements SessionContext {
         }
         StringWriter resultWriter = new StringWriter();
         try {
-            Transformer serializer = getStylesheet(Globals.XML_STRING_XSL_RESOURCE_NAME).newTransformer();
+            Transformer serializer = getStylesheetManager()
+                .getStylesheet(Globals.XML_STRING_XSL_RESOURCE_NAME).newTransformer();
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             serializer.transform(new DOMSource(document), new StreamResult(resultWriter));
         }
@@ -428,36 +429,8 @@ public final class SnuggleTeXSession implements SessionContext {
         return userEnvironmentMap;
     }
     
-    public StylesheetCache getStylesheetCache() {
-        return engine.getStylesheetCache();
-    }
-    
-    /**
-     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, compiling
-     * and storing one if the cache fails to return anything.
-     * 
-     * @param resourceName location of the XSLT stylesheet in the ClassPath.
-     * @return compiled XSLT stylesheet.
-     */
-    public Templates getStylesheet(String resourceName) {
-        StylesheetCache stylesheetCache = getStylesheetCache();
-        Templates result;
-        synchronized (stylesheetCache) {
-            result = stylesheetCache.getStylesheet(resourceName);
-            if (result==null) {
-                TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
-                InputStream xslStream = getClass().getClassLoader().getResourceAsStream(resourceName);
-                try {
-                    result = transformerFactory.newTemplates(new StreamSource(xslStream));
-                }
-                catch (TransformerConfigurationException e) {
-                    throw new SnuggleRuntimeException("Could not compile SnuggleTeX XSLT stylesheet at "
-                            + resourceName, e);
-                }
-                stylesheetCache.putStylesheet(resourceName, result);
-            }
-        }
-        return result;
+    public StylesheetManager getStylesheetManager() {
+        return engine.getStylesheetManager();
     }
 
     /**

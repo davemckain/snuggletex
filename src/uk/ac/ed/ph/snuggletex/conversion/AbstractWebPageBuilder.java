@@ -129,7 +129,8 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageBuilderOpt
         Transformer serializer;
         try {
             if (options.getSerializationMethod()==SerializationMethod.HTML) {
-                serializer = sessionContext.getStylesheet(Globals.XHTML_TO_HTML_XSL_RESOURCE_NAME).newTransformer();
+                serializer = sessionContext.getStylesheetManager()
+                    .getStylesheet(Globals.XHTML_TO_HTML_XSL_RESOURCE_NAME).newTransformer();
             }
             else {
                 serializer = transformerFactory.newTransformer();

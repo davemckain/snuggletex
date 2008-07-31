@@ -27,7 +27,8 @@ import org.w3c.dom.Element;
  * <p>
  * More complex MathML expressions are left as-is.
  * <p>
- * This can be used independently of SnuggleTeX if required.
+ * This can be used independently of SnuggleTeX if required; you will need to instantiate
+ * a {@link StylesheetManager} yourself though.
  *
  * @author  David McKain
  * @version $Revision: 121 $
@@ -35,11 +36,11 @@ import org.w3c.dom.Element;
 public final class MathMLDownConverter {
     
     private final DOMBuilderOptions options;
-    private final Templates conversionStylesheet;
+    private final StylesheetManager stylesheetManager;
     
-    public MathMLDownConverter(DOMBuilderOptions options, Templates conversionStylesheet) {
+    public MathMLDownConverter(final StylesheetManager stylesheetManager, final DOMBuilderOptions options) {
+        this.stylesheetManager = stylesheetManager;
         this.options = options;
-        this.conversionStylesheet = conversionStylesheet;
     }
     
     public Document downConvertDOM(Document document) {
@@ -55,7 +56,7 @@ public final class MathMLDownConverter {
         CSSPropertiesURIResolver uriResolver = new CSSPropertiesURIResolver(cssPropertiesDocument);
 
         /* Run the conversion XSLT */
-        Templates templates = conversionStylesheet;
+        Templates templates = stylesheetManager.getStylesheet(Globals.MATHML_TO_XHTML_XSL_RESOURCE_NAME);
         Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             Transformer transformer = templates.newTransformer();

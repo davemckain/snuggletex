@@ -48,18 +48,21 @@ public final class SnuggleTeXEngine {
     
     /** List of all currently registered {@link DefinitionMap}s used by this Engine. */
     private final List<DefinitionMap> definitionMaps;
-    
-    /** Cache of XSLT Stylesheets to use for certain built-in processes */
-    private StylesheetCache stylesheetCache;
-    
+
+    /** Helper class to manage XSLT Stylesheets */
+    private final StylesheetManager stylesheetManager;
+
+    /** Default {@link SessionConfiguration} */
     private SessionConfiguration defaultSessionConfiguration;
+    
+    /** Default {@link DOMBuilderOptions} */
     private DOMBuilderOptions defaultDOMBuilderOptions;
   
     public SnuggleTeXEngine() {
         this.definitionMaps = new ArrayList<DefinitionMap>();
         this.defaultSessionConfiguration = new SessionConfiguration();
         this.defaultDOMBuilderOptions = new DOMBuilderOptions();
-        this.stylesheetCache = new DefaultStylesheetCache();
+        this.stylesheetManager = new StylesheetManager(new DefaultStylesheetCache());
         
         /* Add in global definitions */
         definitionMaps.add(GlobalBuiltins.getDefinitionMap());
@@ -125,20 +128,14 @@ public final class SnuggleTeXEngine {
     }
     
     public void setDefaultDOMBuilderOptions(DOMBuilderOptions defaultDOMBuilderOptions) {
-        ConstraintUtilities.ensureNotNull(stylesheetCache, "defaultDOMBuilderOptions");
+        ConstraintUtilities.ensureNotNull(defaultDOMBuilderOptions, "defaultDOMBuilderOptions");
         this.defaultDOMBuilderOptions = defaultDOMBuilderOptions;
     }
     
-    
-    public StylesheetCache getStylesheetCache() {
-        return stylesheetCache;
+    public StylesheetManager getStylesheetManager() {
+        return stylesheetManager;
     }
     
-    public void setStylesheetCache(StylesheetCache stylesheetCache) {
-        ConstraintUtilities.ensureNotNull(stylesheetCache, "stylesheetCache");
-        this.stylesheetCache = stylesheetCache;
-    }
-
     /**
      * Default implementation of {@link StylesheetCache} that simply caches all stylesheets
      * for the lifetime of the engine. This is reasonable since we currently don't have many

@@ -7,12 +7,9 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
 import uk.ac.ed.ph.snuggletex.MathMLDownConverter;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.util.List;
-
-import javax.xml.transform.Templates;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -54,8 +51,7 @@ public final class DOMBuilderFacade {
             /* Down-convert our work document, using the session's XSLT cache to reuse
              * the XSLT for the underlying process
              */
-            Templates downConverterXSLT = sessionContext.getStylesheet(Globals.MATHML_TO_XHTML_XSL_RESOURCE_NAME);
-            MathMLDownConverter downConverter = new MathMLDownConverter(options, downConverterXSLT);
+            MathMLDownConverter downConverter = new MathMLDownConverter(sessionContext.getStylesheetManager(), options);
             Document downConvertedDocument = downConverter.downConvertDOM(workDocument);
             
             /* Pull the children of the <root/> in the resulting Document into the targetRoot */
