@@ -103,10 +103,11 @@
       <classpath refid="compile.classpath"/>
       <src path="${src.dir}"/>
     </javac>
-    <!-- Copy non-Java files -->
+    <!-- Copy other resources files -->
     <copy todir="${build.src.dir}">
       <fileset dir="${src.dir}">
         <exclude name="**/*.java"/>
+        <exclude name="**/package.html"/>
       </fileset>
       <filterset>
         <filtersfile file="version.properties"/>
