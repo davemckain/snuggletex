@@ -3,7 +3,7 @@
 
 Web Deployment Descriptor for the SnuggleTeX Demo Application
 
-$Id$
+$Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
 
 -->
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4"
@@ -35,7 +35,7 @@ $Id$
       Processes and displays user-submitted input for demonstration purposes
     </description>
     <servlet-name>TryOutServlet</servlet-name>
-    <servlet-class>uk.ac.ed.ph.snuggletex.demowebapp.TryOutServlet</servlet-class>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.TryOutServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
 
