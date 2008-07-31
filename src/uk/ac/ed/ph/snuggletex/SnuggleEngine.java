@@ -44,7 +44,7 @@ import javax.xml.transform.Templates;
  * @author  David McKain
  * @version $Revision$
  */
-public final class SnuggleTeXEngine {
+public final class SnuggleEngine {
     
     /** List of all currently registered {@link DefinitionMap}s used by this Engine. */
     private final List<DefinitionMap> definitionMaps;
@@ -55,13 +55,13 @@ public final class SnuggleTeXEngine {
     /** Default {@link SessionConfiguration} */
     private SessionConfiguration defaultSessionConfiguration;
     
-    /** Default {@link DOMBuilderOptions} */
-    private DOMBuilderOptions defaultDOMBuilderOptions;
+    /** Default {@link DOMOutputOptions} */
+    private DOMOutputOptions defaultDOMOptions;
   
-    public SnuggleTeXEngine() {
+    public SnuggleEngine() {
         this.definitionMaps = new ArrayList<DefinitionMap>();
         this.defaultSessionConfiguration = new SessionConfiguration();
-        this.defaultDOMBuilderOptions = new DOMBuilderOptions();
+        this.defaultDOMOptions = new DOMOutputOptions();
         this.stylesheetManager = new StylesheetManager(new DefaultStylesheetCache());
         
         /* Add in global definitions */
@@ -76,13 +76,13 @@ public final class SnuggleTeXEngine {
     
     //-------------------------------------------------
     
-    public SnuggleTeXSession createSession() {
+    public SnuggleSession createSession() {
         return createSession(defaultSessionConfiguration);
     }
     
-    public SnuggleTeXSession createSession(SessionConfiguration configuration) {
+    public SnuggleSession createSession(SessionConfiguration configuration) {
         ConstraintUtilities.ensureNotNull(configuration, "configuration");
-        return new SnuggleTeXSession(this, configuration);
+        return new SnuggleSession(this, configuration);
     }
 
     //-------------------------------------------------
@@ -123,13 +123,13 @@ public final class SnuggleTeXEngine {
     }
 
     
-    public DOMBuilderOptions getDefaultDOMBuilderOptions() {
-        return defaultDOMBuilderOptions;
+    public DOMOutputOptions getDefaultDOMOptions() {
+        return defaultDOMOptions;
     }
     
-    public void setDefaultDOMBuilderOptions(DOMBuilderOptions defaultDOMBuilderOptions) {
-        ConstraintUtilities.ensureNotNull(defaultDOMBuilderOptions, "defaultDOMBuilderOptions");
-        this.defaultDOMBuilderOptions = defaultDOMBuilderOptions;
+    public void setDefaultDOMOptions(DOMOutputOptions defaultDOMOptions) {
+        ConstraintUtilities.ensureNotNull(defaultDOMOptions, "defaultDOMOptions");
+        this.defaultDOMOptions = defaultDOMOptions;
     }
     
     public StylesheetManager getStylesheetManager() {

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.SnuggleTeX;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
@@ -73,7 +73,7 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
         if (builder.getOptions().isAddingMathAnnotations()) {
             Element annotation = builder.appendMathMLTextElement(mtableParent, "annotation",
                     token.getSlice().extract().toString(), true);
-            annotation.setAttribute("encoding", SnuggleTeX.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+            annotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
         }
         
         /* Reset output context back to XHTML */

@@ -9,12 +9,12 @@ import java.util.Properties;
 
 /**
  * This class is used to specify how you want DOM trees to be built when calling relevant methods
- * in {@link SnuggleTeXSession} (e.g. {@link SnuggleTeXSession#buildDOMSubtree(org.w3c.dom.Element)}
+ * in {@link SnuggleSession} (e.g. {@link SnuggleSession#buildDOMSubtree(org.w3c.dom.Element)}
  *
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public class DOMBuilderOptions implements Cloneable {
+public class DOMOutputOptions implements Cloneable {
     
     /**
      * Enumerates the various options for representing {@link InputError}s in the resulting
@@ -24,7 +24,7 @@ public class DOMBuilderOptions implements Cloneable {
         
         /**
          * No error information is appended to the DOM. (Clients can still get at error information
-         * via {@link SnuggleTeXSession#getErrors()}.)
+         * via {@link SnuggleSession#getErrors()}.)
          */
         NO_OUTPUT,
         
@@ -112,7 +112,7 @@ public class DOMBuilderOptions implements Cloneable {
     
     private LinkResolver linkResolver;
     
-    public DOMBuilderOptions() {
+    public DOMOutputOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
         this.inliningCSS = false;
         this.includingComments = false;

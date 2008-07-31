@@ -7,13 +7,13 @@ package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
-import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,14 +87,14 @@ public final class TryOutServlet extends BaseServlet {
         }
         
         /* Parse the LaTeX */
-        SnuggleTeXEngine engine = new SnuggleTeXEngine();
-        SnuggleTeXSession session = engine.createSession();
+        SnuggleEngine engine = new SnuggleEngine();
+        SnuggleSession session = engine.createSession();
         
         SnuggleInput input = new SnuggleInput(resultingInputLaTeX, "Form Input");
         session.parseInput(input);
         
         /* Set up web output options */
-        MathMLWebPageBuilderOptions options = new MathMLWebPageBuilderOptions();
+        MathMLWebPageOptions options = new MathMLWebPageOptions();
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setPageType(WebPageType.CROSS_BROWSER_XHTML);

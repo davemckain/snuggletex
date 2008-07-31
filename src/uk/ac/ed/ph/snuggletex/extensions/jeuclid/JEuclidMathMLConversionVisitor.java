@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
-import uk.ac.ed.ph.snuggletex.SnuggleTeX;
+import uk.ac.ed.ph.snuggletex.SnuggleUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 
 import java.awt.Dimension;
@@ -96,7 +96,7 @@ public class JEuclidMathMLConversionVisitor {
         /* Next we extract the SnuggleTeX annotation within the MathML element, if applicable, which contains the
          * original LaTeX input for this math region. This is used to create an "alt" attribute.
          */
-        String snuggleTeXEncoding = SnuggleTeX.extractSnuggleTeXAnnotation(mathMLElement);
+        String snuggleTeXEncoding = SnuggleUtilities.extractSnuggleTeXAnnotation(mathMLElement);
         if (snuggleTeXEncoding!=null) {
             snuggleTeXEncoding = snuggleTeXEncoding
                 .replaceAll("%\\s+", "") /* Strip LaTeX comments */

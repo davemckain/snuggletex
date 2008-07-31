@@ -6,12 +6,12 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
 
 /**
- * Builds on {@link DOMBuilderOptions} to add in options for configuring how to build a
- * web page using the relevant methods in {@link SnuggleTeXSession}
- * (e.g. {@link SnuggleTeXSession#createWebPage(AbstractWebPageBuilderOptions)}).
+ * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
+ * web page using the relevant methods in {@link SnuggleSession}
+ * (e.g. {@link SnuggleSession#createWebPage(AbstractWebPageOptions)}).
  * 
  * <h2>Note</h2>
  * 
@@ -23,7 +23,7 @@ import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions;
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public final class MathMLWebPageBuilderOptions extends AbstractWebPageBuilderOptions {
+public final class MathMLWebPageOptions extends AbstractWebPageOptions {
     
     /**
      * Enumerates the different web page "templates" supported.
@@ -88,7 +88,7 @@ public final class MathMLWebPageBuilderOptions extends AbstractWebPageBuilderOpt
      */
     private String[] clientSideXSLTStylesheetURLs;
     
-    public MathMLWebPageBuilderOptions() {
+    public MathMLWebPageOptions() {
         super();
         this.pageType = WebPageType.MOZILLA;
         this.clientSideXSLTStylesheetURLs = StringUtilities.EMPTY_STRING_ARRAY;

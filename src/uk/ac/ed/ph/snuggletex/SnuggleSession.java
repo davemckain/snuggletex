@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.aardvark.commons.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilder;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
 import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.conversion.MathMLWebPageBuilder;
@@ -50,7 +50,7 @@ import org.w3c.dom.NodeList;
  * 
  * <ul>
  *   <li>
- *     Create a session with {@link SnuggleTeXEngine#createSession()}, optionally passing
+ *     Create a session with {@link SnuggleEngine#createSession()}, optionally passing
  *     configuration details for this session.
  *   </li>
  *   <li>
@@ -77,10 +77,10 @@ import org.w3c.dom.NodeList;
  * @author  David McKain
  * @version $Revision$
  */
-public final class SnuggleTeXSession implements SessionContext {
+public final class SnuggleSession implements SessionContext {
     
     /** Engine that created this Session */
-    private final SnuggleTeXEngine engine;
+    private final SnuggleEngine engine;
 
     /** {@link LaTeXTokeniser} used to parse inputs */
     private final LaTeXTokeniser tokeniser;
@@ -107,9 +107,9 @@ public final class SnuggleTeXSession implements SessionContext {
     
     /**
      * (This package-private constructor is used when creating a new session via
-     * {@link SnuggleTeXEngine#createSession()} et al.)
+     * {@link SnuggleEngine#createSession()} et al.)
      */
-    SnuggleTeXSession(final SnuggleTeXEngine engine, final SessionConfiguration configuration) {
+    SnuggleSession(final SnuggleEngine engine, final SessionConfiguration configuration) {
         this.engine = engine;
         
         /* We'll clone the supplied configuration, if supplied, so that
@@ -131,9 +131,9 @@ public final class SnuggleTeXSession implements SessionContext {
     
     /**
      * (This package-private constructor is used when creating a session from an existing
-     * {@link Snapshot} via {@link Snapshot#createSession()}.)
+     * {@link SnuggleSnapshot} via {@link SnuggleSnapshot#createSession()}.)
      */
-    SnuggleTeXSession(final Snapshot snapshot) {
+    SnuggleSession(final SnuggleSnapshot snapshot) {
         /* Set up main worker Objects */
         this.tokeniser = new LaTeXTokeniser(this);
         this.tokenFixer = new TokenFixer(this);
@@ -185,15 +185,15 @@ public final class SnuggleTeXSession implements SessionContext {
     }
     
     /**
-     * Creates a {@link Snapshot} Object holding the current state of this session that can be later
+     * Creates a {@link SnuggleSnapshot} Object holding the current state of this session that can be later
      * used to recreate a session having exactly the same state.
      * <p>
      * This may only be called whilst the session is open.
      * 
      * @throws IllegalStateException if the session has been closed.
      */
-    public Snapshot createSnapshot() {
-        return new Snapshot(engine,
+    public SnuggleSnapshot createSnapshot() {
+        return new SnuggleSnapshot(engine,
                 (SessionConfiguration) configuration.clone(),
                 new ArrayList<InputError>(errors), 
                 new HashMap<String, UserDefinedCommand>(userCommandMap),
@@ -205,16 +205,16 @@ public final class SnuggleTeXSession implements SessionContext {
     
     /**
      * Builds a DOM sub-tree based on the currently parsed tokens, appending the results as
-     * children of the given target root Element. The given {@link DOMBuilderOptions} Object
+     * children of the given target root Element. The given {@link DOMOutputOptions} Object
      * is used to configure the process.
      * <p>
-     * If the {@link DOMBuilderOptions} specifies that MathML should be down-converted to
+     * If the {@link DOMOutputOptions} specifies that MathML should be down-converted to
      * XHTML where possible, then this will also happen.
      * 
      * @param targetRoot
      * @return true if successful, false if a failure caused the process to terminate.
      */
-    public boolean buildDOMSubtree(final Element targetRoot, final DOMBuilderOptions options) {
+    public boolean buildDOMSubtree(final Element targetRoot, final DOMOutputOptions options) {
         ConstraintUtilities.ensureNotNull(targetRoot, "targetRoot");
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
@@ -228,42 +228,42 @@ public final class SnuggleTeXSession implements SessionContext {
     
     /**
      * Builds a DOM sub-tree based on the currently parsed tokens, appending the results as
-     * children of the given target root Element. This uses the default {@link DOMBuilderOptions}
+     * children of the given target root Element. This uses the default {@link DOMOutputOptions}
      * associated with this engine.
      * 
      * @param targetRoot
      * @return true if successful, false if a failure caused the process to terminate.
      */
     public boolean buildDOMSubtree(final Element targetRoot) {
-        return buildDOMSubtree(targetRoot, engine.getDefaultDOMBuilderOptions());
+        return buildDOMSubtree(targetRoot, engine.getDefaultDOMOptions());
     }
     
     /**
      * Convenience method to build a DOM {@link NodeList} representing the converted Tokens.
      * These Nodes will belong to a "fake root" element in the
-     * {@link SnuggleTeX#SNUGGLETEX_NAMESPACE} namespace called "root".
+     * {@link SnuggleConstants#SNUGGLETEX_NAMESPACE} namespace called "root".
      * <p>
-     * The default {@link DOMBuilderOptions} specified in the {@link SnuggleTeXEngine} will be
+     * The default {@link DOMOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
      * 
      * @return resulting {@link NodeList} or null if failure caused the process to terminate
      */
     public NodeList buildDOMSubtree() {
-        return buildDOMSubtree(engine.getDefaultDOMBuilderOptions());
+        return buildDOMSubtree(engine.getDefaultDOMOptions());
     }
     
     /**
      * Convenience method to build a DOM {@link NodeList} representing the converted Tokens.
      * These Nodes will belong to a "fake root" element in the
-     * {@link SnuggleTeX#SNUGGLETEX_NAMESPACE} namespace called "root".
+     * {@link SnuggleConstants#SNUGGLETEX_NAMESPACE} namespace called "root".
      * <p>
-     * The given {@link DOMBuilderOptions} Object is used to configure the process.
+     * The given {@link DOMOutputOptions} Object is used to configure the process.
      * 
      * @return resulting {@link NodeList} or null if failure caused the process to terminate
      */
-    public NodeList buildDOMSubtree(final DOMBuilderOptions options) {
+    public NodeList buildDOMSubtree(final DOMOutputOptions options) {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-        Element temporaryRoot = document.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "root");
+        Element temporaryRoot = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root");
         document.appendChild(temporaryRoot);
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
@@ -277,24 +277,24 @@ public final class SnuggleTeXSession implements SessionContext {
      * Convenience method to create a well-formed external general parsed entity out of the
      * currently parsed tokens.
      * <p>
-     * The default {@link DOMBuilderOptions} specified in the {@link SnuggleTeXEngine} will be
+     * The default {@link DOMOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
      * 
      * @return resulting XML or null if a failure caused the process the terminate
      */
     public String buildXMLString() {
-        return buildXMLString(engine.getDefaultDOMBuilderOptions());
+        return buildXMLString(engine.getDefaultDOMOptions());
     }
     
     /**
      * Convenience method to create a well-formed external general parsed entity out of the
      * currently parsed tokens.
      * <p>
-     * The given {@link DOMBuilderOptions} Object is used to configure the process.
+     * The given {@link DOMOutputOptions} Object is used to configure the process.
      * 
      * @return resulting XML or null if a failure caused the process the terminate
      */
-    public String buildXMLString(final DOMBuilderOptions options) {
+    public String buildXMLString(final DOMOutputOptions options) {
         DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
         Document document = documentBuilder.newDocument();
         Element temporaryRoot = document.createElement("root");
@@ -321,15 +321,15 @@ public final class SnuggleTeXSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, returning a DOM
      * {@link Document} Object.
      * <p>
-     * The provided {@link AbstractWebPageBuilderOptions} Object is
+     * The provided {@link AbstractWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
-     * Any XSLT stylesheet specified by {@link AbstractWebPageBuilderOptions#getStylesheet()}
+     * Any XSLT stylesheet specified by {@link AbstractWebPageOptions#getStylesheet()}
      * will have been applied to the result before it is returned. On the other hand, serialisation
-     * options in the {@link AbstractWebPageBuilderOptions} (such as Content Type and encoding) 
+     * options in the {@link AbstractWebPageOptions} (such as Content Type and encoding) 
      * will not have been applied when this method returns. 
      */
-    public Document createWebPage(final AbstractWebPageBuilderOptions options) {
+    public Document createWebPage(final AbstractWebPageOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
             AbstractWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
@@ -344,10 +344,10 @@ public final class SnuggleTeXSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      * <p>
-     * The provided {@link AbstractWebPageBuilderOptions} Object is
+     * The provided {@link AbstractWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      */
-    public boolean writeWebPage(final AbstractWebPageBuilderOptions options, final OutputStream outputStream)
+    public boolean writeWebPage(final AbstractWebPageOptions options, final OutputStream outputStream)
             throws IOException {
         return writeWebPage(options, null, outputStream);
     }
@@ -356,14 +356,14 @@ public final class SnuggleTeXSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      * <p>
-     * The provided {@link AbstractWebPageBuilderOptions} Object is
+     * The provided {@link AbstractWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
      * If the <tt>contentTypeSettable</tt> Object has a
      * property called <tt>contentType</tt>, then it is set in advance to the appropriate HTTP
      * <tt>Content-Type</tt> header for the resulting page before the web page data is written.
      */
-    public boolean writeWebPage(final AbstractWebPageBuilderOptions options, final Object contentTypeSettable,
+    public boolean writeWebPage(final AbstractWebPageOptions options, final Object contentTypeSettable,
             final OutputStream outputStream) throws IOException {
         ConstraintUtilities.ensureNotNull(options, "options");
         ConstraintUtilities.ensureNotNull(outputStream, "outputStream");
@@ -379,23 +379,23 @@ public final class SnuggleTeXSession implements SessionContext {
     
     /**
      * Creates the appropriate instance of {@link AbstractWebPageBuilder} that will build
-     * web pages supporting the given {@link AbstractWebPageBuilderOptions} Object.
+     * web pages supporting the given {@link AbstractWebPageOptions} Object.
      * 
      * @param options
      */
     @SuppressWarnings("unchecked")
-    private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageBuilderOptions options) {
+    private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageOptions options) {
         AbstractWebPageBuilder<?> result = null;
-        if (options instanceof MathMLWebPageBuilderOptions) {
-            result = new MathMLWebPageBuilder(this, (MathMLWebPageBuilderOptions) options);
+        if (options instanceof MathMLWebPageOptions) {
+            result = new MathMLWebPageBuilder(this, (MathMLWebPageOptions) options);
         }
-        else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions")) {
+        else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions")) {
             /* Use reflection to instantiate as this is an "extension" as we don't want to
              * hard-wire a dependency on it just in case it's not being used.
              */
             try {
                 Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilder");
-                Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions");
+                Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions");
                 Constructor<?> constructor = builderClass.getConstructor(SessionContext.class, optionsClass);
                 result = (AbstractWebPageBuilder<?>) constructor.newInstance(this, options);
             }

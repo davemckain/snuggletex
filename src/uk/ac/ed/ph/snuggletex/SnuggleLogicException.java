@@ -12,11 +12,11 @@ package uk.ac.ed.ph.snuggletex;
  * This is unchecked, since it is not expected to occur in normal circumstances and users of
  * SnuggleTeX can't really do anything useful to alleviate the underlying problem!
  * 
- * <h2>Developer Note</h2>
+ * <h2>SnuggleTeX Developer Note</h2>
  * 
- * Throw this Exception when your code does silly things. (E.g. unexpected switch case, impossible
- * state.) Raise an error using {@link SnuggleTeXSession#registerError(InputError)} if the error
- * is down to bad client input.
+ * Throw this Exception when SnuggleTeX's code does silly things. (E.g. unexpected switch case,
+ * impossible state.) Raise an error using {@link SnuggleSession#registerError(InputError)}
+ * if the error is down to bad client input.
  * <p>
  * Any occurrences of this error "in the wild" indicate a bug with SnuggleTeX that needs to
  * be diagnosed and fixed!

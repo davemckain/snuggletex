@@ -68,7 +68,7 @@ public final class MessageFormatter {
      * @param fullDetails false if you just want the error code, true for full details.
      */
     public static Element formatErrorAsXML(Document ownerDocument, InputError error, boolean fullDetails) {
-        Element result = ownerDocument.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "error");
+        Element result = ownerDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "error");
         result.setAttribute("code", error.getErrorCode().name());
         
         if (fullDetails) {

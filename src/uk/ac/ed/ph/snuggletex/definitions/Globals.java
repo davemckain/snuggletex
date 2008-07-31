@@ -39,7 +39,7 @@ public final class Globals {
     /** Specifies the ClassPath location of the Stylesheet used by buildXMLString() */
     public static final String XML_STRING_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/to-xml-string.xsl";
     
-    /** Specifies the ClassPath location of the XHTML -> HTML used for serialiazing as legacy HTML */
+    /** Specifies the ClassPath location of the XHTML -> HTML used for serializing as legacy HTML */
     public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";
     
     /** Specifies the ClassPath location of the MathML -> XHTML stylesheet to use for down-transforming */

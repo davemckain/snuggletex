@@ -13,10 +13,10 @@ import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 /**
- * A partial result of parsing one or more {@link SnuggleInput}s by a {@link SnuggleTeXSession},
- * created via {@link SnuggleTeXSession#createSnapshot()}.
+ * A partial result of parsing one or more {@link SnuggleInput}s by a {@link SnuggleSession},
+ * created via {@link SnuggleSession#createSnapshot()}.
  * <p>
- * By calling {@link #createSession()}, a new {@link SnuggleTeXSession} with exactly the same state
+ * By calling {@link #createSession()}, a new {@link SnuggleSession} with exactly the same state
  * as this snapshot is created, which can then be used further.
  * <p>
  * Clients might want to use this if they always need to read in some local/configuration {@link SnuggleInput}s
@@ -25,9 +25,9 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
  * @author  David McKain
  * @version $Revision$
  */
-public final class Snapshot {
+public final class SnuggleSnapshot {
     
-    final SnuggleTeXEngine engine;
+    final SnuggleEngine engine;
     
     /** Configuration for this session */
     final SessionConfiguration configuration;
@@ -43,7 +43,7 @@ public final class Snapshot {
     
     final List<FlowToken> parsedTokens;
     
-    Snapshot(final SnuggleTeXEngine engine, final SessionConfiguration configuration,
+    SnuggleSnapshot(final SnuggleEngine engine, final SessionConfiguration configuration,
             final List<InputError> errors, final Map<String, UserDefinedCommand> userCommandMap,
             final Map<String, UserDefinedEnvironment> userEnvironmentMap,
             final List<FlowToken> parsedTokens) {
@@ -56,10 +56,10 @@ public final class Snapshot {
     }
 
     /**
-     * Creates a new (and open) {@link SnuggleTeXSession} with exactly the same state as the
-     * {@link SnuggleTeXSession} that created this {@link Snapshot}.
+     * Creates a new (and open) {@link SnuggleSession} with exactly the same state as the
+     * {@link SnuggleSession} that created this {@link SnuggleSnapshot}.
      */
-    public SnuggleTeXSession createSession() {
-        return new SnuggleTeXSession(this);
+    public SnuggleSession createSession() {
+        return new SnuggleSession(this);
     }
 }

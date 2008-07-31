@@ -6,8 +6,8 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
@@ -36,10 +36,10 @@ public class DefinitionMapTest {
         BuiltinCommand bobCommand = definitionMap.addSimpleCommand("bob", Globals.TEXT_MODE_ONLY,
                 new DoNothingHandler(), TextFlowContext.ALLOW_INLINE);
         
-        SnuggleTeXEngine engine = new SnuggleTeXEngine();
+        SnuggleEngine engine = new SnuggleEngine();
         engine.registerDefinitions(definitionMap);
         
-        SnuggleTeXSession session = engine.createSession();
+        SnuggleSession session = engine.createSession();
         session.parseInput(new SnuggleInput("\\bob"));
 
         /* Verify that we got exactly one command token for '\\bob' */

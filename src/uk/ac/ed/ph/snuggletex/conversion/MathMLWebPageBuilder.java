@@ -7,10 +7,10 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 
 /**
  * This builds a simple web page representation of the LaTeX input, using the provided
- * {@link MathMLWebPageBuilderOptions} to provide a certain amount of control over the results.
+ * {@link MathMLWebPageOptions} to provide a certain amount of control over the results.
  * <p>
  * This is a convenient way of bashing out working web pages if you're happy with the inherent
  * limitations of doing it this way.
@@ -33,9 +33,9 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWebPageBuilderOptions> {
+public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWebPageOptions> {
     
-    public MathMLWebPageBuilder(final SessionContext sessionContext, final MathMLWebPageBuilderOptions options) {
+    public MathMLWebPageBuilder(final SessionContext sessionContext, final MathMLWebPageOptions options) {
         super(sessionContext, options);
     }
     

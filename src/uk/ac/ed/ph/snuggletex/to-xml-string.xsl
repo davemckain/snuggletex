@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-Trivial stylesheet by SnuggleTeXSession.buildXMLString() to remove the temporary fake
+Trivial stylesheet by SnuggleSession.buildXMLString() to remove the temporary fake
 <root/> from the incoming XML, resulting in a well-formed external parsed entity.
 
 $Id: checkpoint.xsl 2712 2008-03-10 17:01:01Z davemckain $

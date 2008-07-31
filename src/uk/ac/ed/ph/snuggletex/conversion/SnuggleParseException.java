@@ -6,10 +6,10 @@
 package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 /**
- * Internal Exception thrown by {@link SnuggleTeXSession#registerError(InputError)} when a parsing
+ * Internal Exception thrown by {@link SnuggleSession#registerError(InputError)} when a parsing
  * error occurs and the client has requested immediate failure in such circumstances.
  *
  * @author  David McKain

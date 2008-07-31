@@ -28,7 +28,7 @@ import org.junit.Test;
  */
 public final class CommandArgumentsTest {
     
-    private SnuggleTeXSession session;
+    private SnuggleSession session;
     
     @Before
     public void setup() {
@@ -39,7 +39,7 @@ public final class CommandArgumentsTest {
         definitionMap.addComplexCommandSameArgMode("bobopt", true, 0,
                 Globals.TEXT_MODE_ONLY, new DoNothingHandler(), TextFlowContext.ALLOW_INLINE);
         
-        SnuggleTeXEngine engine = new SnuggleTeXEngine();
+        SnuggleEngine engine = new SnuggleEngine();
         engine.registerDefinitions(definitionMap);
         
         session = engine.createSession();

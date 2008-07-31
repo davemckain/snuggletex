@@ -35,10 +35,10 @@ import org.w3c.dom.Element;
  */
 public final class MathMLDownConverter {
     
-    private final DOMBuilderOptions options;
+    private final DOMOutputOptions options;
     private final StylesheetManager stylesheetManager;
     
-    public MathMLDownConverter(final StylesheetManager stylesheetManager, final DOMBuilderOptions options) {
+    public MathMLDownConverter(final StylesheetManager stylesheetManager, final DOMOutputOptions options) {
         this.stylesheetManager = stylesheetManager;
         this.options = options;
     }
@@ -70,7 +70,7 @@ public final class MathMLDownConverter {
     }
     
     /**
-     * Converts the CSS Properties specified within the {@link DOMBuilderOptions} into an XML
+     * Converts the CSS Properties specified within the {@link DOMOutputOptions} into an XML
      * document of the form:
      * 
      * <pre><![CDATA[
@@ -83,12 +83,12 @@ public final class MathMLDownConverter {
     public void buildCSSPropertiesDocument(Document result) {
         /* Make Properties XML */
         Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
-        Element root = result.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "properties");
+        Element root = result.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "properties");
         result.appendChild(root);
         
         Element element;
         for (Entry<Object,Object> entry : cssProperties.entrySet()) {
-            element = result.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, "property");
+            element = result.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "property");
             element.setAttribute("name", (String) entry.getKey());
             element.setAttribute("value", (String) entry.getValue());
             root.appendChild(element);

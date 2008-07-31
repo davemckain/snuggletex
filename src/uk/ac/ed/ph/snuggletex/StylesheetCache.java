@@ -12,9 +12,9 @@ import javax.xml.transform.Templates;
  * This can be used if you want SnuggleTeX to integrate with some kind of XSLT caching mechanism
  * (e.g. your own).
  * <p>
- * A {@link SnuggleTeXEngine} creates a default implementation of this that caches stylesheets
- * over the lifetime of the {@link SnuggleTeXEngine} Object, which is reasonable. If you want
- * to change this, create your own implementation and attach it to your {@link SnuggleTeXEngine}.
+ * A {@link SnuggleEngine} creates a default implementation of this that caches stylesheets
+ * over the lifetime of the {@link SnuggleEngine} Object, which is reasonable. If you want
+ * to change this, create your own implementation and attach it to your {@link SnuggleEngine}.
  * <p>
  * An implementation of this interface <strong>MUST</strong> be thread-safe.
  *

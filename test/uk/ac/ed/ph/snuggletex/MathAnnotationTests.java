@@ -42,11 +42,11 @@ public final class MathAnnotationTests {
     }
     
     protected void doTest(final String inputMathLaTeX, final String expectedAnnotation) throws Exception {
-        SnuggleTeXEngine engine = new SnuggleTeXEngine();
-        SnuggleTeXSession session = engine.createSession();
+        SnuggleEngine engine = new SnuggleEngine();
+        SnuggleSession session = engine.createSession();
         session.parseInput(new SnuggleInput(inputMathLaTeX));
         
-        DOMBuilderOptions domOptions = new DOMBuilderOptions();
+        DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setAddingMathAnnotations(true);
         NodeList result = session.buildDOMSubtree(domOptions);
         
@@ -54,7 +54,7 @@ public final class MathAnnotationTests {
         Assert.assertTrue(result.item(0) instanceof Element);
         
         Element mathElement = (Element) result.item(0);
-        String annotation = SnuggleTeX.extractSnuggleTeXAnnotation(mathElement);
+        String annotation = SnuggleUtilities.extractSnuggleTeXAnnotation(mathElement);
         Assert.assertEquals(expectedAnnotation, annotation);
     }
 }

@@ -5,9 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -20,8 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Set of tests defined in <tt>{@link #TEST_RESOURCE_NAME}</tt> that take single line
@@ -56,21 +51,18 @@ public class SimpleErrorTests {
         /* Convert %n in input LaTeX to a newline (cheap hack for simple multi-line inputs!) */
         String inputLaTeXLines = inputLaTeX.replace("%n", "\n");
         
-        List<InputError> errors;
+        /* Parse document and build XML */
+        SnuggleSession session = new SnuggleEngine().createSession();
         try {
-            /* Parse document and build XML */
-            Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-            Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
-            resultDocument.appendChild(rootElement);
-            
-            errors = SnuggleTeX.snuggle(rootElement, new SnuggleInput(inputLaTeXLines));
+            session.parseInput(new SnuggleInput(inputLaTeXLines));
+            session.buildXMLString();
         }
         catch (Exception e) {
             logger.log(Level.WARNING, "Parsing failed unexpectedly on input " + inputLaTeX, e);
             throw e;
         }
-
         /* Extract list of error codes */
+        List<InputError> errors = session.getErrors();
         String[] actualErrorCodes = new String[errors.size()];
         for (int i=0; i<actualErrorCodes.length; i++) {
             actualErrorCodes[i] = errors.get(i).getErrorCode().name();

@@ -2,9 +2,9 @@
 
 \section*{Outputs}
 
-Once you have created a \verb|SnuggleTeXSession| and parsed one or more
+Once you have created a \verb|SnuggleSession| and parsed one or more
 \href[\verb|SnuggleInput|]{inputs.html}, you can create one (or more) outputs
-using various methods in \verb|SnuggleTeXSession|.
+using various methods in \verb|SnuggleSession|.
 
 The types of outputs supported by SnuggleTeX fall into 2 basic categories:
 
@@ -24,7 +24,7 @@ There are two main groups of methods supporting this:
 
 \begin{itemize}
 
-  \item The \verb|SnuggleTeXSession.buildXMLString()| methods create an XML fragment (or, more
+  \item The \verb|SnuggleSession.buildXMLString()| methods create an XML fragment (or, more
     formally, a well-formed external general parsed entity), serialized as a
     UTF--8-encoded String.
 
@@ -33,7 +33,7 @@ There are two main groups of methods supporting this:
 
 \end{itemize}
 
-The results of these methods can be configured using a \verb|DOMBuilderOptions| Object,
+The results of these methods can be configured using a \verb|DOMOutputOptions| Object,
 which is a simple JavaBean that lets you control aspects such as:
 
 \begin{itemize}
@@ -49,7 +49,7 @@ which is a simple JavaBean that lets you control aspects such as:
     into XHTML where deemed possible.
 \end{itemize}
 
-Have a look at the API documentation for \verb|DOMBuilderOptions| for more information.
+Have a look at the API documentation for \verb|DOMOutputOptions| for more information.
 
 \subsection*{Web Page Outputs}
 
@@ -70,17 +70,17 @@ The results of these methods can be configured by passing an "options" Object, t
 exact type of which is used to determine the exact process that is followed:
 
 \begin{itemize}
-  \item Use a \verb|MathMLWebPageBuilderOptions| if you want to generate a web
+  \item Use a \verb|MathMLWebPageOptions| if you want to generate a web
     page containing XHTML and MathML.
 
-  \item \textbf{Experimental!} Use a \verb|JEuclidWebPageBuilderOptions| if you
+  \item \textbf{Experimental!} Use a \verb|JEuclidWebPageOptions| if you
     want to generate a "legacy" web page consisting of HTML with MathML converted
     to images using the JEuclid tool.
 \end{itemize}
 
 \subsubsection*{XHTML + MathML Web Pages}
 
-The \verb|MathMLWebPageBuilderOptions| Object extends \verb|DOMBuilderOptions|,
+The \verb|MathMLWebPageOptions| Object extends \verb|DOMOutputOptions|,
 giving you additional control over the further aspects of the output:
 
 \begin{itemize}
@@ -135,9 +135,9 @@ to your runtime ClassPath. This will allow you to create PNG images safely; to
 create other types of images you will need to add extra JARs as described in
 the JEuclid documentation.
 
-The \verb|JEuclidWebPageBuilderOptions| allows you to control the output you
-get from this. It extends \verb|DOMBuilderOptions|, giving you many of the
-options that \verb|MathMLWebPageBuilderOptions| gives you. Additionally, you will
+The \verb|JEuclidWebPageOptions| allows you to control the output you
+get from this. It extends \verb|DOMOutputOptions|, giving you many of the
+options that \verb|MathMLWebPageOptions| gives you. Additionally, you will
 need to implement and pass a \verb|MathMLImageSavingCallback| to it to control where
 the resulting images will be saved to.
 

@@ -24,8 +24,8 @@
   Physics" to "School of Physics and Astronomy".
 
   \item Simplified the use of "default" configurations and options in
-  \verb|SnuggleTeXEngine| and \verb|SnuggleTeXSession|. Also fixed a bug in the
-  application of such options in \verb|SnuggleTeXSession.buildXMLString()|.
+  \verb|SnuggleEngine| and \verb|SnuggleSession|. Also fixed a bug in the
+  application of such options in \verb|SnuggleSession.buildXMLString()|.
 
   \item Moved (still experimental) feature for optionally down-transforming
   simple MathML expressions into plain old XHTML + CSS from Aardvark, where it
@@ -90,7 +90,7 @@
 
   \item Added support for the \verb|array| environment.
 
-  \item Added convenience method to \verb|SnuggleTeXSession| that can create a
+  \item Added convenience method to \verb|SnuggleSession| that can create a
   standalone \verb|NodeList| inside a fresh \verb|Document|, which can be
   sometimes be useful.
 
@@ -111,7 +111,7 @@
   its own isn't always enough (e.g. default Firefox) so I've also added extra
   support for mapping (safe) Unicode characters to alternative characters in
   much the same way as existing tools. This can be turned on in
-  \verb|DOMBuilderOptions|.
+  \verb|DOMOutputOptions|.
 
   \item Added support for \verb|\ensuremath|.
 

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.SnuggleTeX;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
@@ -63,7 +63,7 @@ public final class MathEnvironmentBuilder implements EnvironmentHandler {
             /* Create annotation */
             Element annotation = builder.appendMathMLTextElement(semantics, "annotation",
                     token.getSlice().extract().toString(), true);
-            annotation.setAttribute("encoding", SnuggleTeX.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+            annotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
         }
         else {
             builder.handleTokens(math, contentToken, false);

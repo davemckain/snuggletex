@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex;
 
 /**
- * Specifies options for how a {@link SnuggleTeXSession} should parse and process
+ * Specifies options for how a {@link SnuggleSession} should parse and process
  * {@link SnuggleInput}s.
  *
  * @author  David McKain

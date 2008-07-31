@@ -12,7 +12,7 @@ import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
 import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -33,9 +33,9 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision: 2712 $
  */
-public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidWebPageBuilderOptions> {
+public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidWebPageOptions> {
     
-    public JEuclidWebPageBuilder(final SessionContext sessionContext, final JEuclidWebPageBuilderOptions options) {
+    public JEuclidWebPageBuilder(final SessionContext sessionContext, final JEuclidWebPageOptions options) {
         super(sessionContext, options);
     }
     

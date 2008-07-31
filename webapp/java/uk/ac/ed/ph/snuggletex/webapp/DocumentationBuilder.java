@@ -7,18 +7,18 @@ package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
-import uk.ac.ed.ph.snuggletex.Snapshot;
+import uk.ac.ed.ph.snuggletex.SnuggleSnapshot;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
-import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions.WebPageType;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
 import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilderOptions;
+import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.SimpleMathMLImageSavingCallback;
 
 import java.io.File;
@@ -49,7 +49,7 @@ import javax.xml.transform.stream.StreamSource;
  *   <li>.xhtml -> {@link WebPageType#MOZILLA}</li>
  *   <li>.xml -> {@link WebPageType#CROSS_BROWSER_XHTML}</li>
  *   <li>.htm -> {@link WebPageType#MATHPLAYER_HTML}</li>
- *   <li>.html -> Legacy XHTML + images outout (created via {@link JEuclidWebPageBuilderOptions})
+ *   <li>.html -> Legacy XHTML + images outout (created via {@link JEuclidWebPageOptions})
  * </ul>
  *
  * @author  David McKain
@@ -82,7 +82,7 @@ public final class DocumentationBuilder {
 
     File imageOutputDirectory;
     private Transformer stylesheet;
-    private Snapshot snapshot;
+    private SnuggleSnapshot snapshot;
     
     public DocumentationBuilder(final File sourceDirectory, final File macrosFile,
             final File formattingStylesheet, final String contextPath,
@@ -131,7 +131,7 @@ public final class DocumentationBuilder {
         log.info("Processing " + sourceFile);
         
         /* Recreate session based on parsed macros and parse input file */
-        SnuggleTeXSession session = snapshot.createSession();
+        SnuggleSession session = snapshot.createSession();
         session.parseInput(new SnuggleInput(sourceFile));
         
         /* Log any errors found as they need fixed by me */
@@ -151,7 +151,7 @@ public final class DocumentationBuilder {
             String fileExtension = entry.getValue();
 
             /* (Create new options each time as they might be altered by the writing process) */
-            MathMLWebPageBuilderOptions mathOptions = new MathMLWebPageBuilderOptions();
+            MathMLWebPageOptions mathOptions = new MathMLWebPageOptions();
             setupWebOptions(mathOptions);
             mathOptions.setPageType(pageType);
 
@@ -162,7 +162,7 @@ public final class DocumentationBuilder {
         }
         
         /* Build compatibility output */
-        JEuclidWebPageBuilderOptions jeuclidOptions = new JEuclidWebPageBuilderOptions();
+        JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
         setupWebOptions(jeuclidOptions);
         jeuclidOptions.setDownConverting(true);
         jeuclidOptions.setOutputtingXHTML(true);
@@ -207,7 +207,7 @@ public final class DocumentationBuilder {
         }
     }
     
-    private void logNewErrors(SnuggleTeXSession session) {
+    private void logNewErrors(SnuggleSession session) {
         List<InputError> errors = session.getErrors();
         if (!errors.isEmpty()) {
             for (InputError error : errors) {
@@ -217,7 +217,7 @@ public final class DocumentationBuilder {
         }
     }
     
-    private void setupWebOptions(AbstractWebPageBuilderOptions options) {
+    private void setupWebOptions(AbstractWebPageOptions options) {
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setStylesheet(stylesheet);
@@ -226,19 +226,19 @@ public final class DocumentationBuilder {
     }
     
     /**
-     * Uses SnuggleTeX to parse the {@link #macrosFile} and create a {@link Snapshot}
+     * Uses SnuggleTeX to parse the {@link #macrosFile} and create a {@link SnuggleSnapshot}
      * of the results. This can be reused for every web request, which saves having to re-parse
      * the macros each time.
      * 
      * @throws IOException 
      */
-    private Snapshot createPostMacrosSnapshot() throws IOException {
+    private SnuggleSnapshot createPostMacrosSnapshot() throws IOException {
         /* Create engine, read in macros and then create a snapshot to reuse for each request */
         SessionConfiguration configuration = new SessionConfiguration();
         configuration.setInferringMathStructure(true);
         
-        SnuggleTeXEngine engine = new SnuggleTeXEngine();
-        SnuggleTeXSession session = engine.createSession(configuration);
+        SnuggleEngine engine = new SnuggleEngine();
+        SnuggleSession session = engine.createSession(configuration);
         session.parseInput(new SnuggleInput(macrosFile));
         return session.createSnapshot();
     }

@@ -6,8 +6,8 @@ Look at the \verb|MinimalExample.java| file in the full binary distribution.
 This demonstrates a very simple example of calling up SnuggleTeX:
 
 \begin{verbatim}
-SnuggleTeXEngine engine = new SnuggleTeXEngine();
-SnuggleTeXSession session = engine.createSession();
+SnuggleEngine engine = new SnuggleEngine();
+SnuggleSession session = engine.createSession();
 
 SnuggleInput input = new SnuggleInput("$$1+2=3$$");
 session.parseInput(input);

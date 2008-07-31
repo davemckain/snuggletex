@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * to fix the situation without some work, so the burden of having to declare these types of
  * Exceptions is avoided.
  *  
- * <h2>Developer Note</h2>
+ * <h2>SnuggleTeX Developer Note</h2>
  * 
  * Throw this Exception for things like unexpected problems with JAXP and such-like. (E.g. not
  * being able to configure a {@link DocumentBuilderFactory}, unable to find or compile one of

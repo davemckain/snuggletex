@@ -29,14 +29,14 @@ import java.util.Map.Entry;
 public class CSSUtilities {
     
     /**
-     * Writes out the CSS stylesheet specified via the given {@link DOMBuilderOptions} Object,
+     * Writes out the CSS stylesheet specified via the given {@link DOMOutputOptions} Object,
      * using the default if nothing has been specified, saving the results to the given
      * {@link OutputStream}.
      * 
      * @param options
      * @param cssOutputStream
      */
-    public static void writeStylesheet(DOMBuilderOptions options, OutputStream cssOutputStream) {
+    public static void writeStylesheet(DOMOutputOptions options, OutputStream cssOutputStream) {
         /* First of all, see if custom CSS has been specified */
         Properties cssProperties = options.getInlineCSSProperties();
         if (cssProperties==null) {
@@ -120,10 +120,10 @@ public class CSSUtilities {
     
     /**
      * Reads in the custom CSS {@link Properties} Object specified by the given
-     * {@link DOMBuilderOptions}. If nothing has been supplied, then it reads in the
+     * {@link DOMOutputOptions}. If nothing has been supplied, then it reads in the
      * default CSS Properties via {@link #readBuiltinInlineCSSProperties()} as a fallback.
      */
-    public static Properties readInlineCSSProperties(DOMBuilderOptions options) {
+    public static Properties readInlineCSSProperties(DOMOutputOptions options) {
         Properties properties = options.getInlineCSSProperties();
         if (properties==null) {
             properties = readBuiltinInlineCSSProperties();

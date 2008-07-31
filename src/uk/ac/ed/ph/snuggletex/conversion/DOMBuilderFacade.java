@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
-import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLDownConverter;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -18,7 +18,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * This is the main entry point into the DOM Building process, optionally down-converting the
- * resulting DOM if specified by {@link DOMBuilderOptions}.
+ * resulting DOM if specified by {@link DOMOutputOptions}.
  * 
  * FIXME: Yucky name for this!!!
  *
@@ -28,9 +28,9 @@ import org.w3c.dom.NodeList;
 public final class DOMBuilderFacade {
     
     private final SessionContext sessionContext;
-    private final DOMBuilderOptions options;
+    private final DOMOutputOptions options;
     
-    public DOMBuilderFacade(final SessionContext sessionContext, final DOMBuilderOptions options) {
+    public DOMBuilderFacade(final SessionContext sessionContext, final DOMOutputOptions options) {
         this.sessionContext = sessionContext;
         this.options = options;
     }

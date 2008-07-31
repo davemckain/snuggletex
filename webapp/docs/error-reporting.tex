@@ -25,7 +25,7 @@ There are three classes of Errors that can be encountered when using SnuggleTeX:
 
 \subsection*{Input LaTeX Errors}
 
-By default, a \verb|SnuggleTeXSession| keeps going whenever it detects bad or
+By default, a \verb|SnuggleSession| keeps going whenever it detects bad or
 invalid LaTeX during parsing.
 (Obviously, the final results may or may not be very useful in these cases!)
 
@@ -39,7 +39,7 @@ a given Input.
 You can call:
 \begin{verbatim}session.getErrors();\end{verbatim}
 at any time to get a \verb|List| of \verb|InputError| Objects representing each
-LaTeX error detected by the \verb|SnuggleTeXSession| so far.
+LaTeX error detected by the \verb|SnuggleSession| so far.
 
 \textbf{NOTE:} Further errors can be noted during the SnuggleTeX output processes
 so you should check errors \emph{after} generating an output as well!
@@ -55,6 +55,6 @@ these error messages in various ways.
 
 It is also possible to "inline" errors into the resulting XML outputs by
 calling:
-\begin{verbatim}DOMBuilderOptions.setErrorOutputOptions(...)\end{verbatim}
+\begin{verbatim}DOMOutputOptions.setErrorOutputOptions(...)\end{verbatim}
 You can choose between not including errors (the default),
 SnuggleTeX-namespaced XML error elements or pre-formatted XHTML elements.

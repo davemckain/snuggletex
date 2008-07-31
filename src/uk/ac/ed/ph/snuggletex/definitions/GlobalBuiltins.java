@@ -63,8 +63,16 @@ import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.Bracke
 import java.util.EnumSet;
 
 /**
- * This defines the default set of {@link BuiltinCommand} and {@link BuiltinEnvironment}
- * supported by SnuggleTeX.
+ * This defines the default {@link DefinitionMap} (containing {@link BuiltinCommand} and
+ * {@link BuiltinEnvironment}) supported by SnuggleTeX.
+ * 
+ * <h2>Notes</h2>
+ * 
+ * <ul>
+ *   <li>This is defined in the static constructor(!)</li>
+ *   <li>A subset of commands and environments are made available as constants.</li>
+ *   <li>If you're looking at the JavaDoc for this, you won't see most of the definitions...</li>
+ * </ul>
  *
  * @author  David McKain
  * @version $Revision$

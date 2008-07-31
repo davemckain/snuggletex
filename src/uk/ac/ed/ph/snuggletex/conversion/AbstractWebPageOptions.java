@@ -6,16 +6,16 @@
 package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageBuilderOptions;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 import javax.xml.transform.Transformer;
 
 /**
- * Builds on {@link DOMBuilderOptions} to add in basic options for configuring how to build a
- * web page using the relevant methods in {@link SnuggleTeXSession}
- * (e.g. {@link SnuggleTeXSession#createWebPage(AbstractWebPageBuilderOptions)}).
+ * Builds on {@link DOMOutputOptions} to add in basic options for configuring how to build a
+ * web page using the relevant methods in {@link SnuggleSession}
+ * (e.g. {@link SnuggleSession#createWebPage(AbstractWebPageOptions)}).
  * <p>
  * Concrete web page building processes will subclass this to add in extra features relevant
  * to the type of pages they support.
@@ -26,12 +26,12 @@ import javax.xml.transform.Transformer;
  * in serving up Mathematical web content. Rather than failing, you may find that properties
  * you set here get changed by SnuggleTeX to make them more sane.
  * 
- * @see MathMLWebPageBuilderOptions
+ * @see MathMLWebPageOptions
  *
  * @author  David McKain
  * @version $Revision: 3 $
  */
-public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
+public abstract class AbstractWebPageOptions extends DOMOutputOptions {
     
     /**
      * Trivial enumeration of the 3 serialization methods we support.
@@ -125,7 +125,7 @@ public abstract class AbstractWebPageBuilderOptions extends DOMBuilderOptions {
      */
     private SerializationMethod serializationMethod;
     
-    public AbstractWebPageBuilderOptions() {
+    public AbstractWebPageOptions() {
         super();
         this.encoding = "UTF-8";
         this.language = "en";

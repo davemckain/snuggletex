@@ -88,10 +88,10 @@ abstract class AbstractGoodXMLTests {
         configuration.setInferringMathStructure(true);
         
         /* DOM options will be fairly vanilla, though we'll turn on mathvariant character mappings */
-        DOMBuilderOptions domOptions = new DOMBuilderOptions();
+        DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
         
-        SessionContext context = new SnuggleTeXEngine().createSession(configuration);
+        SessionContext context = new SnuggleEngine().createSession(configuration);
         SnuggleInputReader inputReader = new SnuggleInputReader(context, new SnuggleInput(inputLaTeX));
         try {
             /* Tokenise */

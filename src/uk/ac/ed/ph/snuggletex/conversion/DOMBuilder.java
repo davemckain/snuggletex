@@ -8,15 +8,15 @@ package uk.ac.ed.ph.snuggletex.conversion;
 import uk.ac.ed.ph.aardvark.commons.util.ArrayListStack;
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.CSSUtilities;
-import uk.ac.ed.ph.snuggletex.DOMBuilderOptions;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.LinkResolver;
 import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.SnuggleTeX;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
-import uk.ac.ed.ph.snuggletex.DOMBuilderOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
@@ -57,7 +57,7 @@ import org.w3c.dom.NodeList;
  * <h2>Usage</h2>
  * 
  * Clients should not normally have to use this class directly -
- * call {@link SnuggleTeXSession#buildDOMSubtree(Element, DOMBuilderOptions)} and friends.
+ * call {@link SnuggleSession#buildDOMSubtree(Element, DOMOutputOptions)} and friends.
  * <p>
  * An instance of this class is intended to be used once and then discarded so can be stateful.
  * <p>
@@ -72,7 +72,7 @@ import org.w3c.dom.NodeList;
 public final class DOMBuilder {
     
     private final SessionContext sessionContext;
-    private final DOMBuilderOptions options;
+    private final DOMOutputOptions options;
     private final Document document;
     private final Element buildRootElement;
     
@@ -99,7 +99,7 @@ public final class DOMBuilder {
     //-------------------------------------------
     
     public DOMBuilder(final SessionContext sessionContext, final Element buildRootElement,
-            final DOMBuilderOptions options) {
+            final DOMOutputOptions options) {
         this.buildRootElement = buildRootElement;
         this.document = buildRootElement.getOwnerDocument();
         this.sessionContext = sessionContext;
@@ -130,7 +130,7 @@ public final class DOMBuilder {
         return sessionContext;
     }
     
-    public DOMBuilderOptions getOptions() {
+    public DOMOutputOptions getOptions() {
         return options;
     }
     
@@ -482,7 +482,7 @@ public final class DOMBuilder {
     }
     
     public Element appendSnuggleElement(Element parentElement, String elementName) {
-        Element element = document.createElementNS(SnuggleTeX.SNUGGLETEX_NAMESPACE, elementName);
+        Element element = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, elementName);
         parentElement.appendChild(element);
         return element;
     }
@@ -541,7 +541,7 @@ public final class DOMBuilder {
      * applying a "mathvariant" in that it may or may not then be mapped into a corresponding
      * target character.
      * 
-     * @see DOMBuilderOptions#isMathVariantMapping()
+     * @see DOMOutputOptions#isMathVariantMapping()
      * 
      * @param parentElement
      * @param name

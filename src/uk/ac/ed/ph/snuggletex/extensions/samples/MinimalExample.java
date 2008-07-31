@@ -6,8 +6,8 @@
 package uk.ac.ed.ph.snuggletex.extensions.samples;
 
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXEngine;
-import uk.ac.ed.ph.snuggletex.SnuggleTeXSession;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 import java.io.IOException;
 
@@ -23,8 +23,8 @@ import java.io.IOException;
 public final class MinimalExample {
     
     public static void main(String[] args) throws IOException {
-        SnuggleTeXEngine engine = new SnuggleTeXEngine();
-        SnuggleTeXSession session = engine.createSession();
+        SnuggleEngine engine = new SnuggleEngine();
+        SnuggleSession session = engine.createSession();
         
         SnuggleInput input = new SnuggleInput("$$1+2=3$$");
         session.parseInput(input);
