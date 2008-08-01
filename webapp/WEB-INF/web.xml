@@ -29,6 +29,10 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <extension>xhtml</extension>
     <mime-type>application/xhtml+xml</mime-type>
   </mime-mapping>
+  <mime-mapping>
+    <extension>tex</extension>
+    <mime-type>application/x-tex</mime-type>
+  </mime-mapping>
 
   <servlet>
     <description>
