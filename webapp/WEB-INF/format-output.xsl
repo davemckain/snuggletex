@@ -128,7 +128,7 @@ All Rights Reserved
             <h2>Demos and Samples</h2>
             <ul>
               <li><a class="samples" href="{$context-path}/docs/latex-samples.html">LaTeX Samples</a></li>
-              <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out</a></li>
+              <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
             </ul>
 
             <h2>External Links</h2>
