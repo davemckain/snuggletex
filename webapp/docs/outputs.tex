@@ -97,7 +97,7 @@ giving you additional control over the further aspects of the output:
 
 Because generating and serving MathML can be difficult and error-prone, SnuggleTeX lets
 you choose a \verb|WebPageType| to use as a "template" for your output, which will tweak
-the results to suit your particular clients you are targetting:
+the results to suit your particular clients you are targeting:
 
 \begin{itemize}
   \item \textbf{MOZILLA}: This generates an XHTML + MathML document suitable for
@@ -120,6 +120,21 @@ the results to suit your particular clients you are targetting:
         somewhat.
     \end{itemize}
 
+  \item \textbf{UNIVERSAL\_STYLESHEET}: This generates an XHTML + MathML document
+    that is served as XML and can be served to both Mozilla-based browsers and
+    Internet Explorer 6/7. It includes an XML processing instruction that tells
+    browsers to apply the Universal MathML StyleSheet to the page before delivering,
+    prompting IE users to download and install MathPlayer if they do not already have it.
+    \begin{itemize}
+      \item IE requires that client-side XSLT stylesheets are loaded from the same server
+        that the document came from, so you must copy the USS bundled with SnuggleTeX to
+        your own server and tell SnuggleTeX where you put it by calling the
+        \verb|setClientSideXSLTStylesheetURLs()| method.
+      \item This can be a very good option for decent portability, though it does slow
+        rendering down somewhat and may also increase the load on your server as some
+        browsers will load static resources both before and after the XSLT is applied.
+    \end{itemize}
+
   \item \textbf{CLIENT\_SIDE\_XSLT\_STYLESHEET}: This generates a XHTML + MathML document,
     served as \verb|application/xhtml.html| with no XML declaration and no DOCTYPE declaration.
     It is intended to be used with a client-side XSLT to invoke something like the
@@ -127,7 +142,7 @@ the results to suit your particular clients you are targetting:
 
 \end{itemize}
 
-\subsubsection*{Legacy (HTML + images) Web Pages}
+\subsubsection*{Legacy (X)HTML + Images Web Pages}
 
 You will need to ensure you have downloaded the full binary distribution of
 SnuggleTeX for this, and add all of the JARs under the \verb|lib/jeuclid| folder
@@ -141,4 +156,5 @@ options that \verb|MathMLWebPageOptions| gives you. Additionally, you will
 need to implement and pass a \verb|MathMLImageSavingCallback| to it to control where
 the resulting images will be saved to.
 
-This feature is still experimental!
+This feature is still experimental\ldots though the pages you are now reading
+are generated using it!

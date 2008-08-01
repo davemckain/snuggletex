@@ -9,10 +9,6 @@ should consider:
 
 \begin{itemize}
 
-  \item SnuggleTeX is 100\% Java with minimal (usually no) dependencies on
-        other libraries so can be easily integrated into a Java software
-        development project as a library for converting LaTeX to XML.
-
   \item SnuggleTeX was originally developed to support
         \href[Aardvark]{http://www.ph.ed.ac.uk/elearning/projects/aardvark/}
         in order to facilitate the conversion of fragments of LaTeX written by
@@ -20,21 +16,31 @@ should consider:
         would be a kind of LaTeX-based Wiki, where SnuggleTeX is used to
         convert the LaTeX and graft it into a final web page.
 
-  \item SnuggleTeX can also be used to generate "legacy" web pages where
-        mathematical forumalae are represented by HTML + CSS (if suitably
-        simple) and/or images. This uses the open-source JEuclid library.
+  \item SnuggleTeX is 100\% Java with minimal (usually no) dependencies on
+        other libraries so can be easily integrated into a Java software
+        development project as a library for converting LaTeX to XML.
 
-  \item SnuggleTeX was \emph{not} intented to be a standalone tool that you
+  \item SnuggleTeX can also be used to generate "legacy" web pages where
+        mathematical formulae are represented by HTML + CSS (if suitably
+        simple) and/or images. (This uses the open-source JEuclid library.)
+
+  \item SnuggleTeX was \emph{not} intended to be a standalone tool that you
         could throw complete LaTeX documents at and have them converted to web
         pages. Other tools do this type of thing very well.
 
-  \item SnuggleTeX supports a usable subset of LaTeX but does not include anything
-        which is particularly paper-- or page--specific. It also currently doesn't
-        do cross-referencing or numbering.
+  \item SnuggleTeX supports a pragmatic subset of LaTeX but does not include anything
+        that is particularly paper- or page-specific. It also currently doesn't
+        do cross-referencing or numbering. Other tools might be a better fit for these
+        types of requirements.
 
   \item SnuggleTeX's parser pretends that TeX never happened and may behave slightly
         differently to what experienced LaTeX users might expect. Novice LaTeX users
         will not notice any difference and might find the error messages provided
         more useful.
+
+  \item SnuggleTeX's web page outputs are highly configurable and make it relatively
+        easy to create MathML-enabled pages that will work across a range of
+        browser platforms. Hooks are available to customise the web page outputs;
+        these require a knowledge of XSLT.
 
 \end{itemize}

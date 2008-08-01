@@ -7,24 +7,50 @@ and the outputs expected. It also demonstrates some of the preset web page outpu
 can be generated.
 
 \emph{Note:} Your browser may not be capable of displaying all of these outputs, though
-all browsers should have no problems with the "Legacy (HTML + Images)" view.
+all browsers should have no problems with the "Legacy" view. See
+below for more details.
 
-\begin{enumerate}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Page & Legacy & Mozilla & IE/MathPlayer & USS & Source \\
+\hline
+Basic Text Mode Commands &
+  \href[.html]{text-mode.html} &
+  \href[.xhtml]{text-mode.xhtml} &
+  \href[.htm]{text-mode.htm} &
+  \href[.xml]{text-mode.xml} &
+  \href[.tex]{text-mode.tex} \\
+\hline
+Basic Math Mode Commands &
+  \href[.html]{math-mode.html} &
+  \href[.xhtml]{math-mode.xhtml} &
+  \href[.htm]{math-mode.htm} &
+  \href[.xml]{math-mode.xml} &
+  \href[.tex]{math-mode.tex} \\
+\hline
+\end{tabular}
 
-\item
-  Simple Text Mode Commands:
-  \href[Firefox]{text-mode.xhtml} |
-  \href[IE/MathPlayer]{text-mode.htm} |
-  \href[Cross--Browswer]{text-mode.xml} |
-  \href[Legacy (HTML + Images)]{text-mode.html} |
-  \href[Source]{text-mode.tex}
+\subsection*{About these Outputs}
 
-\item
-  Simple Math Mode Commands:
-  \href[Firefox]{math-mode.xhtml} |
-  \href[IE/MathPlayer]{math-mode.htm} |
-  \href[Cross--Browswer]{math-mode.xml} |
-  \href[Legacy (HTML + Images)]{math-mode.html} |
-  \href[Source]{math-mode.tex}
+The outputs above illustrate some of the pre-defined web page output
+types described in the \href[Outputs]{outputs.xml} page.
 
-\end{enumerate}
+\begin{itemize}
+  \item \textbf{Legacy}: Legacy output with XHTML with Maths represented
+  by XHTML and/or images. This should display fine on all browsers.
+
+  \item \textbf{Mozilla}: XHTML + MathML for Mozilla/Firefox and friends.
+  This will not display at all on IE; other browsers will mess up the MathML.
+
+  \item \textbf{IE/MathPlayer}: HTML designed to work correctly on Internet
+  Explorer (provided the MathPlayer plugin is installed). This will not
+  display correctly on other browsers.
+
+  \item \textbf{USS}: XHTML designed to work on both Mozilla/Firefox and Internet
+  Explorer 6/7 via the ``Universal StyleSheet''. IE users will be prompted to
+  download and install MathPlayer if they haven't already done so.
+
+  \item \textbf{Source}: LaTeX source (often somewhat cryptic due to the huge number
+  of badly-named commands defined to make the repetitive nature of writing demo pages
+  a bit easier!)
+\end{itemize}
