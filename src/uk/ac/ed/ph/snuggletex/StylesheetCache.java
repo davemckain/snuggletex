@@ -1,4 +1,4 @@
-/* $Id: org.eclipse.jdt.ui.prefs 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -19,7 +19,7 @@ import javax.xml.transform.Templates;
  * An implementation of this interface <strong>MUST</strong> be thread-safe.
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public interface StylesheetCache {
    

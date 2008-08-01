@@ -1,4 +1,4 @@
-/* $Id: SnuggleTeXConfiguration.java 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -12,7 +12,7 @@ import java.util.Properties;
  * in {@link SnuggleSession} (e.g. {@link SnuggleSession#buildDOMSubtree(org.w3c.dom.Element)}
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public class DOMOutputOptions implements Cloneable {
     

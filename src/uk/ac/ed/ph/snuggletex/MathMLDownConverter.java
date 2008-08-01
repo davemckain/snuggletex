@@ -1,4 +1,4 @@
-/* $Id: DOMDownConverter.java 121 2008-07-24 12:52:40Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * a {@link StylesheetManager} yourself though.
  *
  * @author  David McKain
- * @version $Revision: 121 $
+ * @version $Revision$
  */
 public final class MathMLDownConverter {
     

@@ -1,4 +1,4 @@
-/* $Id: MathComplexCommandBuilder.java 12 2008-05-06 21:17:06Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  * {@link GlobalBuiltins#CMD_MSUP_OR_MOVER} and {@link GlobalBuiltins#CMD_MSUBSUP_OR_MUNDEROVER}.
  *
  * @author  David McKain
- * @version $Revision: 12 $
+ * @version $Revision$
  */
 public final class MathLimitsBuilder implements CommandHandler {
     

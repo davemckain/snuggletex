@@ -1,4 +1,4 @@
-/* $Id: EqnArrayBuilder.java 52 2008-05-18 19:12:25Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
  * TODO: Do alignment!
  * 
  * @author  David McKain
- * @version $Revision: 52 $
+ * @version $Revision$
  */
 public final class ArrayBuilder implements EnvironmentHandler {
     

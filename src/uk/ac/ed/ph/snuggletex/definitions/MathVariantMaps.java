@@ -1,4 +1,4 @@
-/* $Id: AccentMaps.java 12 2008-05-06 21:17:06Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -10,7 +10,7 @@ package uk.ac.ed.ph.snuggletex.definitions;
  * we support.
  *
  * @author  David McKain
- * @version $Revision: 12 $
+ * @version $Revision$
  */
 public interface MathVariantMaps {
 

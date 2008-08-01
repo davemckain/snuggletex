@@ -4,7 +4,7 @@ Presentation MathML Stylesheet
 -->
 
 <!--
-$Id: pmathmlcss.xsl,v 1.1 2005-06-29 13:31:44 dmckain Exp $
+$Id$
 
 Copyright David Carlisle 2001, 2002.
 

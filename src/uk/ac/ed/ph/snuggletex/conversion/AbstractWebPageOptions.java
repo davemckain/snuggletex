@@ -1,4 +1,4 @@
-/* $Id: SnuggleTeXConfiguration.java 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -29,7 +29,7 @@ import javax.xml.transform.Transformer;
  * @see MathMLWebPageOptions
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public abstract class AbstractWebPageOptions extends DOMOutputOptions {
     

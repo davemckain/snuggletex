@@ -1,4 +1,4 @@
-/* $Id: MathRelationOperatorInterpretation.java 12 2008-05-06 21:17:06Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -12,7 +12,7 @@ import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
  * token to result in the corresponding inverse operator.
  * 
  * @author  David McKain
- * @version $Revision: 12 $
+ * @version $Revision$
  */
 public final class NottableMathOperatorInterpretation implements MathOperatorInterpretation {
     

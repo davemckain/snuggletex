@@ -1,4 +1,4 @@
-/* $Id: StringUtilities.java,v 1.1 2008/01/14 10:54:06 dmckain Exp $
+/* $Id$
  *
  * Copyright (c) 2003 - 2007 University of Edinburgh.
  * All Rights Reserved
@@ -11,7 +11,7 @@ import java.util.Iterator;
  * (Cut-down version of Aardvark's StringUtilities class.)
  *
  * @author  David McKain
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class StringUtilities {
     

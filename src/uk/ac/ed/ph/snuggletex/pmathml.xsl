@@ -13,7 +13,7 @@
 >
 
 <!--
-$Id: pmathml.xsl,v 1.2 2007-02-20 15:35:21 dmckain Exp $
+$Id$
 
 Copyright David Carlisle 2001, 2002.
 

@@ -1,4 +1,4 @@
-/* $Id: ConstraintUtilities.java 2712 2008-03-10 17:01:01Z davemckain $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -9,7 +9,7 @@ package uk.ac.ed.ph.aardvark.commons.util;
  * Simple utility methods for enforcing various types of data constraints.
  *
  * @author  David McKain
- * @version $Revision: 2712 $
+ * @version $Revision$
  */
 public final class ConstraintUtilities {
 

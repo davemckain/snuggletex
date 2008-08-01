@@ -1,4 +1,4 @@
-/* $Id: SnuggleTeXConfiguration.java 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -11,7 +11,7 @@ import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
  * Options Object for {@link JEuclidWebPageBuilder}.
  * 
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public final class JEuclidWebPageOptions extends AbstractWebPageOptions {
     

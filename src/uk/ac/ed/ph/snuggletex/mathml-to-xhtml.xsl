@@ -5,7 +5,7 @@ This is a slightly experimental attempt at down-converting MathML islands
 to plain old XHTML if it is deemed "safe". Islands which can't be
 converted are left as-is.
 
-$Id: checkpoint.xsl 2712 2008-03-10 17:01:01Z davemckain $
+$Id$
 
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

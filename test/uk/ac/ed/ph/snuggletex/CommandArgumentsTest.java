@@ -1,4 +1,4 @@
-/* $Id: org.eclipse.jdt.ui.prefs 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -24,7 +24,7 @@ import org.junit.Test;
  * or something similar.
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public final class CommandArgumentsTest {
     

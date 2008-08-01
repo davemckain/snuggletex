@@ -1,4 +1,4 @@
-/* $Id: MasterNoMathMLViewStrategy.java 2712 2008-03-10 17:01:01Z davemckain $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -28,7 +28,7 @@ import org.w3c.dom.NodeList;
  * @see MathMLImageSavingCallback
  *
  * @author  David McKain
- * @version $Revision: 2712 $
+ * @version $Revision$
  */
 public class JEuclidMathMLConversionVisitor {
     

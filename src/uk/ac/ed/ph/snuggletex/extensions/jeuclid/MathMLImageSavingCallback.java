@@ -1,4 +1,4 @@
-/* $Id: MasterNoMathMLViewStrategy.java 2712 2008-03-10 17:01:01Z davemckain $
+/* $Id$
  *
  * Copyright (c) 2003 - 2008 University of Edinburgh.
  * All Rights Reserved
@@ -23,7 +23,7 @@ import net.sourceforge.jeuclid.MutableLayoutContext;
  * @see JEuclidMathMLConversionVisitor
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public interface MathMLImageSavingCallback {
     

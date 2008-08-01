@@ -1,4 +1,4 @@
-/* $Id: MathComplexCommandBuilder.java 12 2008-05-06 21:17:06Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
  * Handles the <tt>\\stackrel</tt> command.
  *
  * @author  David McKain
- * @version $Revision: 12 $
+ * @version $Revision$
  */
 public final class MathStackrelBuilder implements CommandHandler {
     

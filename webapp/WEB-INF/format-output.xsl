@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-$Id: header.jspf 2712 2008-03-10 17:01:01Z davemckain $
+$Id$
 
 Stylesheet to soup up the raw output from the SnuggleTeX
 process to make a nice web page.

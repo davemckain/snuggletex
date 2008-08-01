@@ -1,4 +1,4 @@
-/* $Id: org.eclipse.jdt.ui.prefs 3 2008-04-25 12:10:29Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * limitations of doing it this way.
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWebPageOptions> {
     
