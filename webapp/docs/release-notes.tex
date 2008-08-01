@@ -2,7 +2,7 @@
 
 \section*{Release Notes}
 
-\subsection*{Version 1.0.0-beta5 [r???] (??/07/08)}
+\subsection*{Version 1.0.0-beta5 [r181] (01/08/08)}
 
 \begin{itemize}
 
@@ -12,31 +12,44 @@
   \item Fixed handling of negative numbers, so that \verb|$1-2$| is treated
   correctly as a subtraction and not the numbers 1 and -2 juxtaposed(!)
 
-  \item Added Java API documentation generation to the build process, which
-  puts it in the demo webapp.
+  \item Added support for \verb|\subsection| and \verb|\subsection*|.
+
+  \item The \verb|\href| command now checks that the given URI is valid and
+  raises the new \verb|ErrorCode.TDEX04| if not.
 
   \item Improved \verb|LaTeXTokeniser| to allow built-in environments
   containing \verb|VERBATIM| content, which generalises the existing support
   for the standard LaTeX \verb|verbatim| environment and is now in line with
   existing support for similar content within command arguments.
 
-  \item Minor changes to web headers and footers ahead of rename of "School of
-  Physics" to "School of Physics and Astronomy".
-
   \item Simplified the use of "default" configurations and options in
   \verb|SnuggleEngine| and \verb|SnuggleSession|. Also fixed a bug in the
   application of such options in \verb|SnuggleSession.buildXMLString()|.
+
+  \item Added \verb|snuggletex.extensions| package for extras and samples
+  that enhance SnuggleTeX's core functionality. The build process now creates
+  a binaries - one without and one with these extensions. The reason for doing
+  this is that the extensions require a lot of 3rd party libraries. (See the
+  JEuclid item below.)
 
   \item Moved (still experimental) feature for optionally down-transforming
   simple MathML expressions into plain old XHTML + CSS from Aardvark, where it
   had been incubating.
 
-  \item Moved (still experimental) extension for creating "legacy" HTML +
-  images web pages, using the JEuclid package to convert MathML to images.
+  \item Moved (still experimental) extension for creating "legacy" XHTML +
+  images web pages from Aardvark, where it was originally developed. This uses
+  the JEuclid package to convert MathML to images.
+
+  \item Tidied up the handling of internal XSLT stylesheets to make it easier
+  to use standalone SnuggleTeX tools and integrate with external Stylesheet
+  caches.
 
   \item Added \verb|LinkMapper| class and support for associating a URL with a
   \verb|SnuggleInput|, allowing hypertext links to be intercepted and remapped
   if necessary.
+
+  \item Now bundles Saxon 9.1.0.1, which no longer needs to be explicitly told
+  not to warn about running with XSLT 1.0 stylesheets.
 
   \item Updated web page generation so that any supplied XSLT stylesheets are
   applied before \verb|createWebPage()| returns.
@@ -45,9 +58,33 @@
   created via TrAX is a version of SAXON supporting XSLT 2.0 and, if so,
   uses the \verb|xhtml| output method rather than \verb.html| when appropriate.
 
-  \item Refactored and updated the documentation pages significantly.
+  \item Renamed \verb|WebPageType.DEFAULT| as \verb|WebPageType.MOZILLA| and
+  added \verb|WebPageType.UNIVERSAL_STYLESHEET| as an extra convenience.
 
-  \item Renamed \verb|WebPageType.DEFAULT| as \verb|WebPageType.MOZILLA|.
+  \item Added Java API documentation generation to the build process, which
+  puts it in the demo webapp.
+
+  \item Significantly changed the structure of the demonstration webapp;
+  documentation pages are now generated as part of the build process rather
+  than being generated dynamically.
+
+  \item Minor changes to web headers and footers ahead of rename of "School of
+  Physics" to "School of Physics and Astronomy".
+
+  \item Refactored and updated the documentation pages significantly, though
+  they need a lot more work before I'll be happy with them.
+
+  \item Enhanced the "Try Out" page so that it defaults with a less trivial
+  example that users can play around with.
+
+  \item Renamed a lot of the public API classes to be more consistent. In
+  particular, \verb|SnuggleTeXEngine| is now \verb|SnuggleEngine|,
+  \verb|SnuggleTeXSession| is now \verb|SnuggleSession|
+  \verb|Snapshot| is now \verb|SnuggleSnapshot|
+  \verb|DOMBuilderOptions| is now \verb|DOMOutputOptions|
+  \verb|*WebPageBuilderOptions| are now \verb|*WebPageOptions|.
+  The old \verb|SnuggleTeX| class has been split into \verb|SnuggleConstants|
+  and \verb|SnuggleUtilities|.
 
 \end{itemize}
 
