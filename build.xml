@@ -332,7 +332,7 @@
     </java>
   </target>
 
-  <target name="webapp" depends="webapp.min, webapp.docs, javadoc"
+  <target name="webapp" depends="webapp.min, webapp.docs, javadoc, snuggletex.css"
       description="Builds demo webapp (with JavaDoc)">
     <!-- Copy in JavaDoc -->
     <copy todir="${build.webapp.dir}/javadoc">
