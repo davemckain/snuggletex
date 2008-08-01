@@ -107,6 +107,7 @@ body#tryout a.tryout {
 
 #maininner {
   padding: 20px 16px 40px 16px;
+  overflow-x: auto;
 }
 
 #maininner p {
