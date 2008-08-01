@@ -97,6 +97,10 @@ $Id: checkpoint.xsl 2712 2008-03-10 17:01:01Z davemckain $
     </span>
   </xsl:template>
 
+  <xsl:template match="m:mo[.='&#x2062;' or .='&#x2061;']">
+    <!-- Strip out invisible times and apply function operators -->
+  </xsl:template>
+
   <xsl:template match="m:mtext">
     <span>
       <xsl:call-template name="add-css-class">
