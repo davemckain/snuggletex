@@ -47,9 +47,9 @@ import javax.xml.transform.stream.StreamSource;
  * is identified with a different file extension as follows:
  * <ul>
  *   <li>.xhtml -> {@link WebPageType#MOZILLA}</li>
- *   <li>.xml -> {@link WebPageType#CROSS_BROWSER_XHTML}</li>
  *   <li>.htm -> {@link WebPageType#MATHPLAYER_HTML}</li>
- *   <li>.html -> Legacy XHTML + images outout (created via {@link JEuclidWebPageOptions})
+ *   <li>.xml -> {@link WebPageType#UNIVERSAL_STYLESHEET}</li>
+ *   <li>.html -> Legacy XHTML + images outout (created via {@link JEuclidWebPageOptions})</li>
  * </ul>
  *
  * @author  David McKain
@@ -144,7 +144,7 @@ public final class DocumentationBuilder {
         Map<WebPageType, String> typeToExtensionMap = new HashMap<WebPageType, String>();
         typeToExtensionMap.put(WebPageType.MOZILLA, ".xhtml");
         typeToExtensionMap.put(WebPageType.MATHPLAYER_HTML, ".htm");
-        typeToExtensionMap.put(WebPageType.CROSS_BROWSER_XHTML, ".xml");
+        typeToExtensionMap.put(WebPageType.UNIVERSAL_STYLESHEET, ".xml");
         File targetFile;
         for (Entry<WebPageType, String> entry : typeToExtensionMap.entrySet()) {
             WebPageType pageType = entry.getKey();
@@ -154,6 +154,10 @@ public final class DocumentationBuilder {
             MathMLWebPageOptions mathOptions = new MathMLWebPageOptions();
             setupWebOptions(mathOptions);
             mathOptions.setPageType(pageType);
+            if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
+                /* Point to our own version of the USS */
+                mathOptions.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
+            }
 
             targetFile = new File(sourceDirectory, pageBaseName + fileExtension);
             

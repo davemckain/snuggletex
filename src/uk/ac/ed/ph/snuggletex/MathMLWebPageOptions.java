@@ -36,6 +36,8 @@ public final class MathMLWebPageOptions extends AbstractWebPageOptions {
          * encoding declared via HTTP header and <tt>meta</tt> element.
          * <p>
          * This is the best option for serving content exclusively on Mozilla-based browsers.
+         * <p>
+         * This will display as an XML tree on IE, which is not useful.
          */
         MOZILLA,
         
@@ -44,7 +46,8 @@ public final class MathMLWebPageOptions extends AbstractWebPageOptions {
          * served as <tt>application/xhtml+xml</tt> with <tt>charset</tt> declared only
          * in <tt>meta</tt> element in order to appease MathPlayer.
          * <p>
-         * Works on both Mozilla and IE6/7 (provided MathPlayer has been installed).
+         * Works on both Mozilla and IE6/7 (<strong>provided</strong> MathPlayer has been installed).
+         * This will display wrongly on IE6/7 if MathPlayer is not installed.
          * <p>
          * The main issue with this is that IE will want to download the relevant DTD, which
          * hinders performance slightly.
@@ -52,11 +55,36 @@ public final class MathMLWebPageOptions extends AbstractWebPageOptions {
         CROSS_BROWSER_XHTML,
         
         /**
+         * "Cross-browser" XHTML + MathML suitable for Mozilla and Internet Explorer 6/7, using
+         * the client-side Universal StyleSheet XSLT to accommodate the two cases, prompting
+         * for the download of MathPlayer on IE6/7 if it is not already installed.
+         * <p>
+         * This is served with an XML declaration but no DOCTYPE declaration.
+         * <p>
+         * The <strong>pref:renderer</strong> attribute on the <tt>html</tt> element will be set
+         * to <tt>mathplayer-dl</tt>.
+         * <p>
+         * You <strong>MUST</strong> call
+         * {@link MathMLWebPageOptions#setClientSideXSLTStylesheetURLs(String...)}
+         * to indicate where the USS is going to be loaded from - which must be on a server local
+         * to the document you are serving from (as otherwise IE has problems). If you don't do
+         * this, your page will not work on IE.
+         * 
+         * <h2>Notes</h2>
+         * 
+         * SnuggleTeX ships with a slightly fixed version of the USS that works in IE7
+         * that you can use if you like.
+         */
+        UNIVERSAL_STYLESHEET,
+        
+        /**
          * HTML + MathML intended for Internet Explorer 6/7 with the MathPlayer plug-in: served
          * as <tt>text/html</tt>.
          * <p>
-         * This only works on IE + MathPlayer but is a good option if that's your target
-         * audience. 
+         * This only works on IE clients with the MathPlayer plug-in preinstalled,
+         * but is a good option if that's your target audience.
+         * <p>
+         * This will display wrongly on IE6/7 if MathPlayer is not installed.
          */
         MATHPLAYER_HTML,
         

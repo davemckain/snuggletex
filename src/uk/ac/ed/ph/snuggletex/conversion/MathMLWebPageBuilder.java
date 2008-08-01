@@ -50,20 +50,14 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
             options.setPrefixingMathML(true);
             options.setClientSideXSLTStylesheetURLs(StringUtilities.EMPTY_STRING_ARRAY);
         }
-        /* 2. If client-side XSLT asked for then at least one URL must be specified. If not, we'll
-         * do default output */
-        String[] xsls = options.getClientSideXSLTStylesheetURLs();
-        if (options.getPageType()==WebPageType.CLIENT_SIDE_XSLT_STYLESHEET && (xsls==null || xsls.length==0)) {
-            options.setPageType(WebPageType.MOZILLA);
-        }
-        /* 3. Set content type */
+        /* 2. Set content type */
         if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
             options.setContentType("text/html");
         }
         else {
             options.setContentType("application/xhtml+xml");
         }
-        /* 4. Set serialization method */
+        /* 3. Set serialization method */
         SerializationMethod serializationMethod = null;
         switch (options.getPageType()) {
             case MOZILLA:
@@ -76,6 +70,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
                 break;
                 
             case CLIENT_SIDE_XSLT_STYLESHEET:
+            case UNIVERSAL_STYLESHEET:
                 serializationMethod = SerializationMethod.XML;
                 break;
                 
@@ -165,12 +160,11 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
             head.appendChild(document.createProcessingInstruction("import",
                     "namespace=\"" + options.getMathMLPrefix() + "\" implementation=\"#MathPlayer\" ?"));
         }
-        else if (pageType==WebPageType.CLIENT_SIDE_XSLT_STYLESHEET) {
-            for (String url : options.getClientSideXSLTStylesheetURLs()) {
-                /* (These go in at the top of the Document) */
-                document.appendChild(document.createProcessingInstruction("xsl-stylesheet",
-                        "type=\"text/xsl\" href=\"" + url + "\""));
-            }
+        /* Add in any client-side XSLT */
+        for (String url : options.getClientSideXSLTStylesheetURLs()) {
+            /* (These go in at the top of the Document) */
+            document.appendChild(document.createProcessingInstruction("xml-stylesheet",
+                    "type=\"text/xsl\" href=\"" + url + "\""));
         }
 
         /* Add content type (this may be redone by the serializer but let's be safe */
@@ -217,6 +211,11 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
         /* Create finished document */
         Element html = document.createElementNS(Globals.XHTML_NAMESPACE, "html");
         
+        /* Add pref:renderer attribute if doing USS */
+        if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
+            html.setAttributeNS(Globals.MATHML_PREF_NAMESPACE, "pref:renderer", "mathplayer-dl");
+        }
+        
         /* Set language either as 'xml:lang' or plain old 'lang' */
         if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
             html.setAttribute("lang", options.getLanguage());
@@ -239,7 +238,9 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
     protected void configureSerializer(Transformer serializer) {
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getPageType();
-        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, pageType==WebPageType.CROSS_BROWSER_XHTML ? "no" : "yes");
+        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, 
+                pageType==WebPageType.CROSS_BROWSER_XHTML || pageType==WebPageType.UNIVERSAL_STYLESHEET
+                ? "no" : "yes");
         if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
             serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
             serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");

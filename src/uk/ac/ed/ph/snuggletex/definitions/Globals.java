@@ -29,8 +29,9 @@ public final class Globals {
     
     public static final String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
     public static final String XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
-    public static final String MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
     public static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+    public static final String MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
+    public static final String MATHML_PREF_NAMESPACE = "http://www.w3.org/2002/Math/preference";
     
     public static final String ERROR_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/error-messages";
     public static final String GENERAL_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/general-messages";

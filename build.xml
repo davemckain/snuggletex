@@ -314,8 +314,15 @@
         <include name="saxon9-dom.jar"/>
       </fileset>
     </copy>
-    <!-- Merge in CSS -->
-    <copy todir="${build.webapp.dir}/includes" file="${dist.dir}/snuggletex.css"/>
+    <!-- Merge in CSS and client-side XSLT -->
+    <copy todir="${build.webapp.dir}/includes">
+      <fileset dir="${dist.dir}">
+        <include name="snuggletex.css"/>
+      </fileset>
+      <fileset dir="${src.dir}/uk/ac/ed/ph/snuggletex">
+        <include name="pmath*.xsl"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="webapp.docs" depends="webapp.min, build"
