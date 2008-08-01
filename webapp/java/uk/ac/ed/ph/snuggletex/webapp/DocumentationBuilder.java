@@ -18,6 +18,7 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
 import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.SimpleMathMLImageSavingCallback;
 
@@ -154,6 +155,8 @@ public final class DocumentationBuilder {
             MathMLWebPageOptions mathOptions = new MathMLWebPageOptions();
             setupWebOptions(mathOptions);
             mathOptions.setPageType(pageType);
+            
+            /* Do tweaking if necessary */
             if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
                 /* Point to our own version of the USS */
                 mathOptions.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
@@ -169,7 +172,7 @@ public final class DocumentationBuilder {
         JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
         setupWebOptions(jeuclidOptions);
         jeuclidOptions.setDownConverting(true);
-        jeuclidOptions.setOutputtingXHTML(true);
+        jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
         jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));
         targetFile = new File(sourceDirectory, pageBaseName + ".html");
         session.writeWebPage(jeuclidOptions, new FileOutputStream(targetFile));
