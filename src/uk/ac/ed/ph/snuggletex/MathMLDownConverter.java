@@ -27,20 +27,43 @@ import org.w3c.dom.Element;
  * <p>
  * More complex MathML expressions are left as-is.
  * <p>
- * This can be used independently of SnuggleTeX if required; you will need to instantiate
- * a {@link StylesheetManager} yourself though.
+ * This can be used independently of SnuggleTeX if required; you can instantiate and provide
+ * your own {@link StylesheetManager} yourself though.
  *
  * @author  David McKain
  * @version $Revision$
  */
 public final class MathMLDownConverter {
     
-    private final DOMOutputOptions options;
+    private final Properties cssProperties;
     private final StylesheetManager stylesheetManager;
     
+    public MathMLDownConverter() {
+        this(null, (Properties) null);
+    }
+    
+    public MathMLDownConverter(final Properties cssProperties) {
+        this(null, cssProperties);
+    }
+    
+    public MathMLDownConverter(final StylesheetCache stylesheetCache) {
+        this(new StylesheetManager(stylesheetCache), (Properties) null);
+    }
+    
+    /**
+     * Creates a new {@link MathMLDownConverter} which will inline CSS properties if and as specified by
+     * the given {@link DOMOutputOptions}.
+     * 
+     * @param stylesheetManager
+     * @param options
+     */
     public MathMLDownConverter(final StylesheetManager stylesheetManager, final DOMOutputOptions options) {
-        this.stylesheetManager = stylesheetManager;
-        this.options = options;
+        this(stylesheetManager, options!=null && options.isInliningCSS() ? CSSUtilities.readInlineCSSProperties(options) : null);
+    }
+    
+    public MathMLDownConverter(final StylesheetManager stylesheetManager, final Properties cssProperties) {
+        this.stylesheetManager = stylesheetManager!=null ? stylesheetManager : new StylesheetManager();
+        this.cssProperties = cssProperties;
     }
     
     public Document downConvertDOM(Document document) {
@@ -48,8 +71,8 @@ public final class MathMLDownConverter {
          * buildCSSPropertiesDocument(). Otherwise, we'll create an empty one to indicate
          * that nothing should be inlined */
         Document cssPropertiesDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-        if (options.isInliningCSS()) {
-            buildCSSPropertiesDocument(cssPropertiesDocument);
+        if (cssProperties!=null) {
+            buildCSSPropertiesDocument(cssPropertiesDocument, cssProperties);
         }
         
         /* Create URI Resolver to let the XSLT get at this document */
@@ -80,9 +103,7 @@ public final class MathMLDownConverter {
      * </properties>
      * ]]></pre>
      */
-    public void buildCSSPropertiesDocument(Document result) {
-        /* Make Properties XML */
-        Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
+    public void buildCSSPropertiesDocument(Document result, Properties cssProperties) {
         Element root = result.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "properties");
         result.appendChild(root);
         
@@ -100,7 +121,7 @@ public final class MathMLDownConverter {
      * the current session's CSS Properties when the URI
      * {@link Globals#CSS_PROPERTIES_DOCUMENT_URN} is used.
      */
-    protected static class CSSPropertiesURIResolver implements URIResolver {
+    protected static final class CSSPropertiesURIResolver implements URIResolver {
         
         private final Source cssPropertiesSource;
         
@@ -112,5 +133,4 @@ public final class MathMLDownConverter {
             return href.equals(Globals.CSS_PROPERTIES_DOCUMENT_URN) ? cssPropertiesSource : null;
         }
     }
-
 }
