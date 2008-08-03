@@ -2,24 +2,26 @@
 
 \section*{Inputs - the \verb|SnuggleInput| Object}
 
-A \verb|SnuggleInput| Object acts as a place-holder for a source of LaTeX
+A \verb|SnuggleInput| Object acts as a placeholder for a source of LaTeX
 input. There are a number of different constructors that let you pull in LaTeX
-from other types of I/O Objects (currently \verb|String|, \verb|File|,
-\verb|InputStream| and \verb|Reader|).
+from other types of I/O Objects, currently \verb|String|, \verb|File|,
+\verb|InputStream| and \verb|Reader|.
 
 \textbf{NOTE:} SnuggleTeX behaves like traditional LaTeX in that it expects all input
 characters to live in the ASCII subset of Unicode.  Characters outside this
-range will be replaced with (useless) alternatives and reported as an error.
+range will be replaced with (useless) alternatives and reported as a
+\verb|TTEG02| error.
 
 Given a \verb|SnuggleSession| called \verb|session| and a \verb|SnuggleInput|
-called \verb|input|, you can parse it with:
+called \verb|input|, you can instruct SnuggleTeX to parse it with:
 \begin{verbatim}session.parseInput(input);\end{verbatim}
 You can parse as many \verb|SnuggleInput|s as you like; they will be treated like one
-big input. (However, each \verb|SnuggleInput| should be balanced in the sense that any
+big continuous input. However, each \verb|SnuggleInput| should be balanced in the sense that any
 open environments or braces must be closed within the same input, otherwise errors will
-be reported.)
+be reported.
 
-The \verb|parseInput()| method returns \verb|true| if it succeeded without finding
-any errors in the LaTeX input, otherwise it returns \verb|false|. See
-\href[Error Reporting]{error-reporting.html} for more information on managing errors
-and configuring how they are reported.
+The \verb|parseInput()| method returns \verb|false| if parsing was terminated because
+the \verb|SnuggleSession| was configured to stop on the first LaTeX error and a LaTeX
+error was encountered; otherwise it returns \verb|true|.
+See \href[Error Reporting]{error-reporting.html} for more information on
+managing errors and configuring how they are reported.

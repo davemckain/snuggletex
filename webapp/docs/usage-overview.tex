@@ -4,7 +4,7 @@
 
 \subsection*{The \verb|SnuggleEngine|}
 
-To use SnuggleTeX, you need to create an instance of \verb|SnuggleEngine|.
+To use SnuggleTeX, you first need to create a \verb|SnuggleEngine|:
 
 \begin{verbatim}SnuggleEngine engine = new SnuggleEngine();\end{verbatim}
 
@@ -12,36 +12,52 @@ An instance of a \verb|SnuggleEngine| is thread-safe and can be used
 to perform as many conversions as you like. It houses a number of defaults,
 options, command and environment definitions that can be set if you want to
 perform a number of very similar conversion processes (which is quite common).
+See the \href[API Docs]{../javadoc/} for more information.
 
 Despite its heavy-weight name, creating and setting up a \verb|SnuggleEngine|
-is not expensive!
+is not expensive so don't worry about it!
 
 \subsection*{The \verb|SnuggleSession|}
 
-A \verb|SnuggleSession| encapsulates a single SnuggleTeX conversion "job",
+A \verb|SnuggleSession| represents a single SnuggleTeX conversion "job",
 which typically consists of the following steps:
 
 \begin{enumerate}
-  \item Parse one (or more) \href[\verb|SnuggleInput|s]{inputs.html}.
-  \item (Check for any \href[errors]{error-reporting.html} in the LaTeX\ldots)
-  \item Generate one (or more) \href[Outputs]{outputs.html}.
+  \item Parse one or more \href[\verb|SnuggleInput|s]{inputs.html}.
+  \item Generate one or more \href[Outputs]{outputs.html}.
+  \item (Check for any \href[errors]{error-reporting.html} in the LaTeX reported
+        by the above proceses\ldots)
 \end{enumerate}
 
-To create a new \verb|SnuggleSession|, you can use:
+To create a new \verb|SnuggleSession|, you use:
 
 \begin{verbatim}SnuggleSession session = engine.createSession();\end{verbatim}
 
 This creates a fresh job using the current default settings in your
-\verb|SnuggleSession|. You can then call methods described in
+\verb|SnuggleEngine|. You can then call methods described in
 \href[Inputs]{inputs.html}, \href[Error Reporting]{error-reporting.html}
-and \href[Outputs]{outputs.html} to do whatever it is you need to do.
+and \href[Outputs]{outputs.html} to do whatever it is you want to do.
 
-See the \href[Minimal Example]{minimal-example.html} for a simple example
-of how everything comes together.
+See the \href[Minimal Example]{minimal-example.html} for a simple working
+example of how everything comes together.
 
 You can discard a \verb|SnuggleSession| once it has done everything
-you need. (It is also possible to create a \verb|SnuggleSnapshot| of the state
+you need. Note that a \verb|SnuggleSession| is \emph{not} thread safe.
+
+\subsection*{Using \verb|SnugleSnapshot|s}
+
+It is possible to create a ``snaphsot'' of the state
 of a \verb|SnuggleSession|, allowing you to recreate a fresh
 session having the same state later on. This is very useful if you want
-to reuse inputs containing definitions of commands and environments.)
-Note that a \verb|SnuggleSession| is \emph{not} thread safe.
+to reuse inputs containing definitions of commands and environments. You can
+do this with:
+
+\begin{verbatim}SnuggleSnapshot snapshot = session.createSnapshot();
+// ... later on ...
+SnuggleSession refriedSession = snapshot.createSession();
+// refriedSession will have the same parsing state as your
+// sesion did when you took the snapshot
+\end{verbatim}
+
+
+

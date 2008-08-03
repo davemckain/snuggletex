@@ -17,11 +17,22 @@ System.out.println("Input " + input.getString()
     + " was converted to:\n" +.htmlString);
 \end{verbatim}
 
+You can run this on the command line with:
+
+\begin{verbatim}java -classpath dist/snuggletex.jar \
+uk.ac.ed.ph.snuggletex.extensions.samples.MinimalExample\end{verbatim}
+
 This block of code converts the LaTeX String \verb|$$1+2=3$$| to a simple XML
 String fragment, which is printed to the standard output.
-
 For this particular input, the resulting XML fragment consists of a single MathML
 \verb|math| element.
+You should get something like:
+
+\begin{verbatim}
+Input $$1+2=3$$ was converted to:
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mn>1</mn><mo>+</mo><mn>2</mn><mo>=</mo><mn>3</mn></math>
+\end{verbatim}
 
 The XML fragment output in the above example is great for showing off the outputs
 from SnuggleTeX but is not usually much use if you want to do anything else with it.

@@ -7,7 +7,9 @@ There are three classes of Errors that can be encountered when using SnuggleTeX:
 \begin{itemize}
 
 \item \textbf{Input LaTeX Errors}: Any errors detected in the input LaTeX can
-  be detected and recorded in a number of ways, as described below.
+  be detected and recorded in a number of ways, as described below. You will
+  want to act on these errors, usually by passing back to whoever supplies
+  the input LaTeX to help them fix their input.
 
 \item \textbf{Runtime Errors}: Any problems detected due to a mis-configuration
   or mis-deployment (e.g. if SnuggleTeX can't locate an extension Class or can't
@@ -19,15 +21,16 @@ There are three classes of Errors that can be encountered when using SnuggleTeX:
 \item \textbf{Logic Errors}: If SnuggleTeX detects something unexpected in its
   internal logic, then it will throw an (unchecked) \verb|SnuggleLogicException|.
   You should not normally see one of these in the wild --- please file a bug report
-  if you do. SnuggleTeX has a test suite that aims to prevent these types of errors
+  if you do! SnuggleTeX has a test suite that aims to prevent these types of errors
   from happening.
 \end{itemize}
 
 \subsection*{Input LaTeX Errors}
 
 By default, a \verb|SnuggleSession| keeps going whenever it detects bad or
-invalid LaTeX during parsing.
-(Obviously, the final results may or may not be very useful in these cases!)
+invalid LaTeX during parsing, in much the same way that LaTeX can run.
+(Obviously, the results you get from after the point the error occurred
+may not be particularly useful.)
 
 It is also possible to tell SnuggleTeX to "fail fast" and stop on the first error
 encountered with:
@@ -41,14 +44,15 @@ You can call:
 at any time to get a \verb|List| of \verb|InputError| Objects representing each
 LaTeX error detected by the \verb|SnuggleSession| so far.
 
-\textbf{NOTE:} Further errors can be noted during the SnuggleTeX output processes
+\textbf{NOTE:} Further errors can be recorded during the SnuggleTeX output processes
 so you should check errors \emph{after} generating an output as well!
 
 SnuggleTeX error messages are considerably different from what you might be used to in
 LaTeX. They are encapsulated as \verb|InputError| Objects. Each has an error
-code; these are all enumerated in the \verb|ErrorCode| enumeration class.
-SnuggleTeX is also reasonably good at resolving errors that appear as a result
-of user-defined commands and environments being substituted.
+code; these are all enumerated in the \verb|ErrorCode| enumeration class and
+listed on the \href[SnuggleTeX Error Codes]{error-codes.html} page here.
+SnuggleTeX is also reasonably good at resolving errors that manifest themselves
+once user-defined commands and environments have been evaluated.
 
 The \verb|MessageFormatter| class has some convenience methods for nicely formatting
 these error messages in various ways.
