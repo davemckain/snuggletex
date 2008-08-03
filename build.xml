@@ -364,7 +364,6 @@
     <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
     <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
       <fileset dir="${build.src.dir}">
-        <exclude name="uk/ac/ed/ph/aardvark/**"/>
         <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
       </fileset>
     </jar>
