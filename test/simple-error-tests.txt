@@ -189,6 +189,9 @@ TDEX03
 \href{ }
 TDEX04
 ====
+\xmlBlockElement{\literal|%|}{qName}{Content}
+TDEX04
+====
 \item A
 TDEL00
 ====

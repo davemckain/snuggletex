@@ -288,6 +288,10 @@ public final class DOMBuilder {
                 handleTextToken(parentElement, (SimpleToken) token);
                 break;
                 
+            case VERBATIM_MODE_TEXT:
+                appendTextNode(parentElement, token.getSlice().extract().toString(), false);
+                break;
+                
             case LR_MODE_NEW_PARAGRAPH:
                 /* This is a special token to indicate that a "new paragraph" is required in LR mode,
                  * which is not really feasible so we just generate a space instead.
@@ -711,15 +715,31 @@ public final class DOMBuilder {
         return false;
     }
     
-    public URI resolveLink(final Element parentElement, final Token token, final String rawHref)
+    
+    /**
+     * Checks the given raw URI to ensure that it is valid, returning a {@link URI} Object if
+     * valid or null if not. If not valid, the {@link ErrorCode#TDEX04} is recorded.
+     * 
+     * @throws SnuggleParseException
+     */
+    public URI validateURI(final Element parentElement, final Token token, final String rawURI)
             throws SnuggleParseException {
         URI result;
         try {
-            result = new URI(rawHref);
+            result = new URI(rawURI);
         }
         catch (URISyntaxException e) {
             /* Error: not a URI */
-            appendOrThrowError(parentElement, token, ErrorCode.TDEX04, rawHref);
+            appendOrThrowError(parentElement, token, ErrorCode.TDEX04, rawURI);
+            return null;
+        }
+        return result;
+    }
+    
+    public URI resolveLink(final Element parentElement, final Token token, final String rawHref)
+            throws SnuggleParseException {
+        URI result = validateURI(parentElement, token, rawHref);
+        if (result==null) {
             return null;
         }
         LinkResolver linkResolver = options.getLinkResolver();

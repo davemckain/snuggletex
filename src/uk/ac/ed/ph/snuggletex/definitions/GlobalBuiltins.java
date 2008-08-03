@@ -29,6 +29,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.HrefBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.LiteralBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsBuilder;
@@ -163,8 +164,12 @@ public final class GlobalBuiltins {
         map.addSimpleCommand("newline", ALL_MODES, new LineBreakHandler(), null);
         CMD_VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, new VerbatimBuilder(), null);
         CMD_ITEM = map.addSimpleCommand("item", PARA_MODE_ONLY, new ListEnvironmentBuilder(), null);
-        
         map.addComplexCommandOneArg("ensuremath", false, ALL_MODES, MATH, new EnsureMathHandler(), null);
+        
+        /* TODO: Is there an equivalent of the following in LaTeX for doing "literal" input, sort of like \verb
+         * but output using a normal typeface???
+         */
+        map.addComplexCommandOneArg("literal", false, TEXT_MODE_ONLY, VERBATIM, new LiteralBuilder(), null); 
 
         /* Tree version of a paragraph. The {@link TokenFixer} will create these, removing any
          * instances of {@link #PAR} and {@link TokenType#NEW_PARAGRAPH}.

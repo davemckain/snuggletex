@@ -467,6 +467,9 @@ Hello &#x2014; There
 \xmlName{a}
 a
 ====
+\literal{ # %}
+ # %
+====
 ## Regression: Empty style commands were not being handled correctly before. Silly me!
 {\rm }
 <span class="rm"/>

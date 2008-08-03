@@ -52,20 +52,24 @@ abstract class AbstractCustomXMLElementBuilder implements EnvironmentHandler, Co
             final ArgumentContainerToken attrsToken, final ArgumentContainerToken namespaceToken,
             final ArgumentContainerToken qNameToken, final ArgumentContainerToken contentToken)
             throws SnuggleParseException {
-        /* Create and append target element */
-        
+        /* Get namespace URI and make sure that it really is a URI */
         String namespaceUri = builder.extractStringValue(namespaceToken);
+        if (builder.validateURI(parentElement, namespaceToken, namespaceUri)==null) {
+            /* Invalid URI; error will have been recorded already */
+        }
+        
+        /* Extract qName */
         String qName = builder.extractStringValue(qNameToken);
+        
+        /* Now try to build resulting element */
         Element resultElement;
         try {
             resultElement = builder.getDocument().createElementNS(namespaceUri, qName);
         }
         catch (DOMException e) {
             if (e.code==DOMException.INVALID_CHARACTER_ERR || e.code==DOMException.NAMESPACE_ERR) {
-                /* Bad QName or Namespace, but let's put the blame on the QName anyway as it's
-                 * not easy to tell which one was problematic and the QName is most likely! */
-                builder.appendOrThrowError(parentElement, qNameToken, ErrorCode.TDEX01,
-                        qName, namespaceUri);
+                /* Error: Must be a bad QName */
+                builder.appendOrThrowError(parentElement, qNameToken, ErrorCode.TDEX01, qName);
                 return;
             }
             throw e;
