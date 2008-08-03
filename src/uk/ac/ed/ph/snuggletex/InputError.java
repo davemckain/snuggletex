@@ -8,8 +8,6 @@ package uk.ac.ed.ph.snuggletex;
 import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 
-import java.io.Serializable;
-
 /**
  * Encapsulates an error in the LaTeX input, providing information about what the error is and
  * where it occurred.
@@ -17,9 +15,7 @@ import java.io.Serializable;
  * @author  David McKain
  * @version $Revision$
  */
-public final class InputError implements Serializable {
-    
-    private static final long serialVersionUID = 437416586924703932L;
+public final class InputError {
     
     /** Slice the error occurred in. This may be null in certain circumstances */
     private final FrozenSlice slice;
