@@ -33,22 +33,22 @@ import org.w3c.dom.Element;
  */
 public final class MessageFormatter {
     
-    private static final PropertyResourceBundle errorMessageBundle;
-    private static final PropertyResourceBundle generalMessageBundle;
+    public static final PropertyResourceBundle ERROR_MESSAGE_BUNDLE;
+    public static final PropertyResourceBundle GENERAL_MESSAGE_BUNDLE;
     
     static {
         try {
-            errorMessageBundle = (PropertyResourceBundle) ResourceBundle.getBundle(Globals.ERROR_MESSAGES_PROPERTIES_BASENAME);
-            generalMessageBundle = (PropertyResourceBundle) ResourceBundle.getBundle(Globals.GENERAL_MESSAGES_PROPERTIES_BASENAME);
+            ERROR_MESSAGE_BUNDLE = (PropertyResourceBundle) ResourceBundle.getBundle(Globals.ERROR_MESSAGES_PROPERTIES_BASENAME);
+            GENERAL_MESSAGE_BUNDLE = (PropertyResourceBundle) ResourceBundle.getBundle(Globals.GENERAL_MESSAGES_PROPERTIES_BASENAME);
         }
         catch (MissingResourceException e) {
-            throw new SnuggleLogicException(e);
+            throw new SnuggleRuntimeException(e);
         }
     }
     
     /** Constructs an error message for the given {@link InputError}. */
     public static String getErrorMessage(InputError error) {
-        return MessageFormat.format(errorMessageBundle.getString(error.getErrorCode().toString()),
+        return MessageFormat.format(ERROR_MESSAGE_BUNDLE.getString(error.getErrorCode().toString()),
                 error.getArguments());
     }
     
@@ -112,7 +112,7 @@ public final class MessageFormatter {
     }
     
     public static void appendErrorAsString(StringBuffer messageBuilder, InputError error) {
-        new MessageFormat(generalMessageBundle.getString("error_as_string")).format(new Object[] {
+        new MessageFormat(GENERAL_MESSAGE_BUNDLE.getString("error_as_string")).format(new Object[] {
                 error.getErrorCode().toString(), /* Error code */
                 getErrorMessage(error) /* Error Message */
         }, messageBuilder, null);
@@ -153,7 +153,7 @@ public final class MessageFormatter {
             SnuggleInputReader inputContext = (SnuggleInputReader) context;
             int[] location = inputContext.getLineAndColumn(offsetInSource);
             appendNewlineIfRequired(messageBuilder);
-            new MessageFormat(generalMessageBundle.getString("input_context")).format(new Object[] {
+            new MessageFormat(GENERAL_MESSAGE_BUNDLE.getString("input_context")).format(new Object[] {
                   location[0], /* Line */
                   location[1], /* Column */
                   inputContext.getInput().getIdentifier() /* Input description */
@@ -162,7 +162,7 @@ public final class MessageFormatter {
         else if (context instanceof WorkingDocument.SubstitutionContext) {
             WorkingDocument.SubstitutionContext substitutionContext = (WorkingDocument.SubstitutionContext) context;
             appendNewlineIfRequired(messageBuilder);
-            new MessageFormat(generalMessageBundle.getString("subs_context")).format(new Object[] {
+            new MessageFormat(GENERAL_MESSAGE_BUNDLE.getString("subs_context")).format(new Object[] {
                     offsetInSource, /* Character index */
                     formatText(source.substitutedText), /* Before subs */
                     formatText(substitutionContext.replacement) /* After subs */
