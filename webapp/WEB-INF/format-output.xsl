@@ -115,12 +115,14 @@ All Rights Reserved
             <h2>User Guide</h2>
             <ul>
               <li><a class="requirements" href="{$context-path}/docs/requirements.html">Software Requirements</a></li>
+              <li><a class="browserRequirements" href="{$context-path}/docs/browser-requirements.html">Browser Requirements</a></li>
               <li><a class="gettingstarted" href="{$context-path}/docs/getting-started.html">Getting Started</a></li>
               <li><a class="usageoverview" href="{$context-path}/docs/usage-overview.html">Usage Overview</a></li>
               <li><a class="minexample" href="{$context-path}/docs/minimal-example.html">Minimal Example</a></li>
               <li><a class="inputs" href="{$context-path}/docs/inputs.html">Inputs</a></li>
               <li><a class="outputs" href="{$context-path}/docs/outputs.html">Outputs</a></li>
               <li><a class="errors" href="{$context-path}/docs/error-reporting.html">Error Reporting</a></li>
+              <li><a class="errorCodes" href="{$context-path}/docs/error-codes.html">SnuggleTeX Error Codes</a></li>
               <li><a class="configuration" href="{$context-path}/docs/configuration.html">Configuration</a></li>
               <li><a class="projects" href="{$context-path}/javadoc/">API Documentation</a></li>
             </ul>

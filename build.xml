@@ -203,71 +203,6 @@
   </target>
 
   <!-- =================================================================== -->
-  <!-- Builds distributions for depositing to SourceForge.net              -->
-  <!-- =================================================================== -->
-  <target name="dist.src" depends="prepare.dirs" description="Builds source distribution ZIP">
-    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
-      <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
-        <include name="build.properties"/>
-        <include name="build.xml"/>
-        <include name=".classpath"/>
-        <include name="LICENSE.txt"/>
-        <include name=".project"/>
-        <include name=".settings"/>
-        <include name="lib/**"/>
-        <include name="src/**"/>
-        <include name="test/**"/>
-        <include name="webapp/**"/>
-      </zipfileset>
-    </zip>
-  </target>
-
-  <target name="src.zip">
-    <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}"/>
-  </target>
-
-  <target name="dist.minimal.bin" depends="snuggletex.jar, snuggletex.css, src.zip, javadoc"
-      description="Builds minimal binary distribution ZIP">
-    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" file="LICENSE.txt"/>
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" dir="${dist.dir}">
-        <include name="snuggletex.jar"/>
-        <include name="snuggletex.css"/>
-        <include name="src.zip"/>
-      </zipfileset>
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/javadoc" dir="${build.javadoc.dir}">
-        <include name="**"/>
-      </zipfileset>
-    </zip>
-  </target>
-
-  <target name="dist.full.bin" depends="dist.minimal.bin"
-      description="Builds full binary distribution ZIP">
-    <zip destfile="${dist.dir}/snuggletex-with-extensions-${uk.ac.ed.ph.snuggletex.version}.zip">
-      <zipgroupfileset dir="${dist.dir}" includes="snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip"/>
-      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/lib" dir="${lib.dir}">
-        <include name="jeuclid/**/*.jar"/>
-      </zipfileset>
-    </zip>
-  </target>
-
-  <target name="dist" depends="dist.src, dist.minimal.bin, dist.full.bin"
-    description="Builds distribution ZIPs"/>
-
-  <!-- =================================================================== -->
-  <!-- Integration Target for the Aardvark Project (not useful in general) -->
-  <!-- =================================================================== -->
-  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (for Aardvark)">
-    <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
-    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
-      <fileset dir="${build.src.dir}">
-        <exclude name="uk/ac/ed/ph/aardvark/**"/>
-        <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
-      </fileset>
-    </jar>
-  </target>
-
-  <!-- =================================================================== -->
   <!-- Builds the demo webapp hierarchy                                    -->
   <!-- =================================================================== -->
   <target name="webapp.min" depends="prepare.libs, build, snuggletex.jar, snuggletex.css"
@@ -325,9 +260,18 @@
     </copy>
   </target>
 
-  <target name="webapp.docs" depends="webapp.min, build"
+  <target name="webapp.errorcodes" depends="webapp.min,build">
+    <java classname="uk.ac.ed.ph.snuggletex.webapp.ErrorCodeDocumentBuilder" fork="yes" failonerror="yes">
+      <arg value="${build.webapp.dir}/docs/error-codes.tex"/>
+      <classpath>
+        <path refid="run.classpath"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="webapp.docs" depends="webapp.min, build, webapp.errorcodes"
       description="Builds demo webapp documentation">
-    <java classname="uk.ac.ed.ph.snuggletex.webapp.DocumentationBuilder" fork="yes">
+    <java classname="uk.ac.ed.ph.snuggletex.webapp.DocumentationBuilder" fork="yes" failonerror="yes">
       <arg value="${build.webapp.dir}/docs"/>
       <arg value="${build.webapp.dir}/WEB-INF/macros.tex"/>
       <arg value="${build.webapp.dir}/WEB-INF/format-output.xsl"/>
@@ -353,6 +297,71 @@
   <!-- =================================================================== -->
   <target name="webapp.war" depends="webapp" description="Builds demo webapp WAR">
     <jar destfile="${dist.dir}/snuggletex.war" basedir="${build.webapp.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Builds distributions for depositing to SourceForge.net              -->
+  <!-- =================================================================== -->
+  <target name="dist.src" depends="prepare.dirs" description="Builds source distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}-src.zip">
+      <zipfileset dir="${basedir}" prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}">
+        <include name="build.properties"/>
+        <include name="build.xml"/>
+        <include name=".classpath"/>
+        <include name="LICENSE.txt"/>
+        <include name=".project"/>
+        <include name=".settings"/>
+        <include name="lib/**"/>
+        <include name="src/**"/>
+        <include name="test/**"/>
+        <include name="webapp/**"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="src.zip">
+    <zip destfile="${dist.dir}/src.zip" basedir="${src.dir}"/>
+  </target>
+
+  <target name="dist.minimal.bin" depends="snuggletex.jar, snuggletex.css, src.zip, javadoc"
+      description="Builds minimal binary distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip">
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" file="LICENSE.txt"/>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}" dir="${dist.dir}">
+        <include name="snuggletex.jar"/>
+        <include name="snuggletex.css"/>
+        <include name="src.zip"/>
+      </zipfileset>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/javadoc" dir="${build.javadoc.dir}">
+        <include name="**"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="dist.full.bin" depends="dist.minimal.bin"
+      description="Builds full binary distribution ZIP">
+    <zip destfile="${dist.dir}/snuggletex-with-extensions-${uk.ac.ed.ph.snuggletex.version}.zip">
+      <zipgroupfileset dir="${dist.dir}" includes="snuggletex-${uk.ac.ed.ph.snuggletex.version}.zip"/>
+      <zipfileset prefix="snuggletex-${uk.ac.ed.ph.snuggletex.version}/lib" dir="${lib.dir}">
+        <include name="jeuclid/**/*.jar"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="dist" depends="dist.src, dist.minimal.bin, dist.full.bin, webapp.war"
+    description="Builds distribution ZIPs"/>
+
+  <!-- =================================================================== -->
+  <!-- Integration Target for the Aardvark Project (not useful in general) -->
+  <!-- =================================================================== -->
+  <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (for Aardvark)">
+    <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
+    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
+      <fileset dir="${build.src.dir}">
+        <exclude name="uk/ac/ed/ph/aardvark/**"/>
+        <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
+      </fileset>
+    </jar>
   </target>
 
   <!-- =================================================================== -->
