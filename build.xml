@@ -19,17 +19,21 @@
 
   <!-- Compilation ClassPath -->
   <path id="compile.classpath">
+    <pathelement location="${build.lib.dir}/ph-commons-util.jar"/>
     <pathelement location="${build.lib.dir}/jeuclid-core-3.1.1.jar"/>
   </path>
 
   <!-- ClassPath for compiling the Test Suite -->
   <path id="test.compile.classpath">
+    <path refid="compile.classpath"/>
+    <pathelement location="${build.lib.dir}/ph-commons-testutils.jar"/>
     <pathelement location="${build.lib.dir}/junit-4.4.jar"/>
     <pathelement location="${build.lib.dir}/easymock.jar"/>
   </path>
 
   <!-- ClassPath for compiling the demonstration webapp -->
   <path id="webapp.compile.classpath">
+    <path refid="compile.classpath"/>
     <pathelement location="${build.lib.dir}/servlet-api.jar"/>
   </path>
 
@@ -187,7 +191,7 @@
   <target name="snuggletex.css" depends="build, css.check" unless="css.uptodate"
       description="Builds SnuggleTeX CSS">
     <echo>Building snuggletex.css from css.properties</echo>
-    <java classname="uk.ac.ed.ph.snuggletex.CSSUtilities">
+    <java classname="uk.ac.ed.ph.snuggletex.utilities.CSSUtilities">
       <arg value="${dist.dir}/snuggletex.css"/>
       <classpath path="${build.src.dir}"/>
     </java>
@@ -199,6 +203,8 @@
   <target name="snuggletex.jar" depends="build" description="Builds SnuggleTeX JAR">
     <jar destfile="${dist.dir}/snuggletex.jar" index="true">
       <fileset dir="${build.src.dir}"/>
+      <!-- Merge ph-commons-util.jar into this so as to make things self-contained -->
+      <zipgroupfileset dir="${build.lib.dir}" includes="ph-commons-util.jar"/>
     </jar>
   </target>
 

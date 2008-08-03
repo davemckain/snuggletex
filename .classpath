@@ -8,5 +8,7 @@
 	<classpathentry kind="lib" path="lib/easymock/2.3/easymock.jar" sourcepath="lib/easymock/2.3/src.zip"/>
 	<classpathentry kind="lib" path="lib/servlet-api/2.4/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/jeuclid/3.1.1/jeuclid-core-3.1.1.jar" sourcepath="lib/jeuclid/3.1.1/src.zip"/>
+	<classpathentry kind="lib" path="lib/ph-commons/1.0.0/ph-commons-testutils.jar" sourcepath="lib/ph-commons/1.0.0/src.zip"/>
+	<classpathentry kind="lib" path="lib/ph-commons/1.0.0/ph-commons-util.jar" sourcepath="lib/ph-commons/1.0.0/src.zip"/>
 	<classpathentry kind="output" path="build/src"/>
 </classpath>

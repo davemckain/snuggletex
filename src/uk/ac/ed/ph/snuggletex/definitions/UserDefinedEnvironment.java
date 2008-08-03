@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.definitions;
 
-import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
+import uk.ac.ed.ph.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 
 /**

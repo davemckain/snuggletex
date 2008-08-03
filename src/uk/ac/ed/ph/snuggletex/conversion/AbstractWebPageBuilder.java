@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
-import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
+import uk.ac.ed.ph.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;

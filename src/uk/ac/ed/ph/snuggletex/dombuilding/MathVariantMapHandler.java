@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.aardvark.commons.util.ArrayListStack;
+import uk.ac.ed.ph.commons.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;

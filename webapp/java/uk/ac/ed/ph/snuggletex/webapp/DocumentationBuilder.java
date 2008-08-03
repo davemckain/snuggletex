@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
+import uk.ac.ed.ph.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;

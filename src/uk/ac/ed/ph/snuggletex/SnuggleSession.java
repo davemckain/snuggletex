@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.aardvark.commons.util.ConstraintUtilities;
+import uk.ac.ed.ph.commons.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;

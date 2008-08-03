@@ -5,9 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex.tokens;
 
-import uk.ac.ed.ph.aardvark.commons.util.DumpMode;
-import uk.ac.ed.ph.aardvark.commons.util.ObjectDumperOptions;
-import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
+import uk.ac.ed.ph.commons.util.DumpMode;
+import uk.ac.ed.ph.commons.util.ObjectDumperOptions;
+import uk.ac.ed.ph.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;

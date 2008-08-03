@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
-import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
+import uk.ac.ed.ph.commons.util.ObjectUtilities;
 
 /**
  * Represents a mathematical function like sin, cos, etc. These are considered

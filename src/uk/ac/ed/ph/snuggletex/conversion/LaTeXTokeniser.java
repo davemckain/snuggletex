@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.conversion;
 
-import uk.ac.ed.ph.aardvark.commons.util.ArrayListStack;
+import uk.ac.ed.ph.commons.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;

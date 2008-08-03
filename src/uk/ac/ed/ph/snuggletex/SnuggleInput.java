@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
+import uk.ac.ed.ph.commons.util.ObjectUtilities;
 
 import java.io.File;
 import java.io.InputStream;
