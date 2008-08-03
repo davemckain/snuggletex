@@ -8,17 +8,36 @@ package uk.ac.ed.ph.snuggletex;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static uk.ac.ed.ph.snuggletex.definitions.Globals.MATHML_NAMESPACE;
 
+import java.util.regex.Pattern;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * A collection of occasionally useful SnuggleTeX-related utility methods.
+ * A collection of occasionally useful SnuggleTeX-related utility methods, as well
+ * as some more general LaTeX stuff.
  *
  * @author  David McKain
  * @version $Revision$
  */
 public final class SnuggleUtilities {
+    
+    private static final Pattern charsToVerbPattern = Pattern.compile("([\\\\^]+)");
+    private static final Pattern charsToBackslashPattern = Pattern.compile("([%#_$&\\{\\}])");
+
+    /**
+     * Quotes the given (ASCII) String so that it could be safely input in TEXT Mode in
+     * LaTeX input.
+     * 
+     * @param text text to quote, assumed to be ASCII.
+     * @return quoted text suitable for being input into LaTeX.
+     */
+    public static String quoteTextForInput(String text) {
+        String result = charsToVerbPattern.matcher(text).replaceAll("\\\\verb|$1|");
+        result = charsToBackslashPattern.matcher(result).replaceAll("\\\\$1");
+        return result;
+    }
 
     /**
      * Extracts a SnuggleTeX encoding from a MathML <tt>math</tt> element, if found. This allows
