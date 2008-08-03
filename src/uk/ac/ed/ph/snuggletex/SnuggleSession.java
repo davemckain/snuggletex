@@ -168,7 +168,8 @@ public final class SnuggleSession implements SessionContext {
      * Parses the data contained within the given {@link SnuggleInput}, and performs fixing
      * on the resulting tokens.
      * 
-     * @return true if parsing finished, false if it was terminated by an error.
+     * @return true if parsing finished, false if it was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error.
      */
     public boolean parseInput(SnuggleInput input) throws IOException {
         /* Perform tokenisation, then fix up and store the results */
@@ -211,8 +212,8 @@ public final class SnuggleSession implements SessionContext {
      * If the {@link DOMOutputOptions} specifies that MathML should be down-converted to
      * XHTML where possible, then this will also happen.
      * 
-     * @param targetRoot
-     * @return true if successful, false if a failure caused the process to terminate.
+     * @return true if completed successfully, false if the process was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error. 
      */
     public boolean buildDOMSubtree(final Element targetRoot, final DOMOutputOptions options) {
         ConstraintUtilities.ensureNotNull(targetRoot, "targetRoot");
@@ -231,8 +232,8 @@ public final class SnuggleSession implements SessionContext {
      * children of the given target root Element. This uses the default {@link DOMOutputOptions}
      * associated with this engine.
      * 
-     * @param targetRoot
-     * @return true if successful, false if a failure caused the process to terminate.
+     * @return true if completed successfully, false if the process was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error. 
      */
     public boolean buildDOMSubtree(final Element targetRoot) {
         return buildDOMSubtree(targetRoot, engine.getDefaultDOMOptions());
@@ -246,7 +247,9 @@ public final class SnuggleSession implements SessionContext {
      * The default {@link DOMOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
      * 
-     * @return resulting {@link NodeList} or null if failure caused the process to terminate
+     * @return resulting {@link NodeList} if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
      */
     public NodeList buildDOMSubtree() {
         return buildDOMSubtree(engine.getDefaultDOMOptions());
@@ -259,7 +262,9 @@ public final class SnuggleSession implements SessionContext {
      * <p>
      * The given {@link DOMOutputOptions} Object is used to configure the process.
      * 
-     * @return resulting {@link NodeList} or null if failure caused the process to terminate
+     * @return resulting {@link NodeList} if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
      */
     public NodeList buildDOMSubtree(final DOMOutputOptions options) {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
@@ -279,8 +284,10 @@ public final class SnuggleSession implements SessionContext {
      * <p>
      * The default {@link DOMOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
-     * 
-     * @return resulting XML or null if a failure caused the process the terminate
+     *
+     * @return resulting XML if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error.  
      */
     public String buildXMLString() {
         return buildXMLString(engine.getDefaultDOMOptions());
@@ -292,7 +299,9 @@ public final class SnuggleSession implements SessionContext {
      * <p>
      * The given {@link DOMOutputOptions} Object is used to configure the process.
      * 
-     * @return resulting XML or null if a failure caused the process the terminate
+     * @return resulting XML if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
      */
     public String buildXMLString(final DOMOutputOptions options) {
         DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
@@ -327,7 +336,11 @@ public final class SnuggleSession implements SessionContext {
      * Any XSLT stylesheet specified by {@link AbstractWebPageOptions#getStylesheet()}
      * will have been applied to the result before it is returned. On the other hand, serialisation
      * options in the {@link AbstractWebPageOptions} (such as Content Type and encoding) 
-     * will not have been applied when this method returns. 
+     * will not have been applied when this method returns.
+     * 
+     * @return resulting Document if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
      */
     public Document createWebPage(final AbstractWebPageOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");
@@ -346,6 +359,9 @@ public final class SnuggleSession implements SessionContext {
      * <p>
      * The provided {@link AbstractWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
+     * 
+     * @return true if completed successfully, false if the process was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error. 
      */
     public boolean writeWebPage(final AbstractWebPageOptions options, final OutputStream outputStream)
             throws IOException {
@@ -362,6 +378,13 @@ public final class SnuggleSession implements SessionContext {
      * If the <tt>contentTypeSettable</tt> Object has a
      * property called <tt>contentType</tt>, then it is set in advance to the appropriate HTTP
      * <tt>Content-Type</tt> header for the resulting page before the web page data is written.
+     * 
+     * @return true if completed successfully, false if the process was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error. 
+     * 
+     * @throws IOException if an I/O problem arose whilst writing out the web page data.
+     * @throws SnuggleRuntimeException if calling <tt>setContentType()</tt> on the contentTypeSettable
+     *   Object failed, with the underlying Exception wrapped up.
      */
     public boolean writeWebPage(final AbstractWebPageOptions options, final Object contentTypeSettable,
             final OutputStream outputStream) throws IOException {

@@ -85,6 +85,8 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageOptions> {
      * 
      * @throws SnuggleParseException
      * @throws IOException
+     * @throws SnuggleRuntimeException if calling <tt>setContentType()</tt> on the contentTypeSettable
+     *   Object failed, with the underlying Exception wrapped up.
      */
     public final void writeWebPage(final List<FlowToken> fixedTokens, final Object contentTypeSettable,
             final OutputStream outputStream) throws SnuggleParseException, IOException {
@@ -94,11 +96,13 @@ public abstract class AbstractWebPageBuilder<P extends AbstractWebPageOptions> {
         if (contentTypeSettable!=null) {
             /* Look for a Method called setContentType() and, if found, call it */
             try {
-                Method setterMethod = contentTypeSettable.getClass().getMethod("setContentType", new Class<?>[] { String.class });
+                Method setterMethod = contentTypeSettable.getClass().getMethod("setContentType",
+                        new Class<?>[] { String.class });
                 setterMethod.invoke(contentTypeSettable, computeContentTypeHeader());
             }
             catch (Exception e) {
-                throw new SnuggleRuntimeException("Could not find and call setContentType() on Object " + contentTypeSettable, e);
+                throw new SnuggleRuntimeException("Could not find and call setContentType() on Object "
+                        + contentTypeSettable, e);
             }
         }
         /* Create resulting web page, including any client-specified XSLT */
