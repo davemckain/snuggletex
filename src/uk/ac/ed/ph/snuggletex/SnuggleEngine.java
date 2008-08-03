@@ -10,6 +10,8 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;

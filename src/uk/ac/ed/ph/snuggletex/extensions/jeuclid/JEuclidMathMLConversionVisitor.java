@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
-import uk.ac.ed.ph.snuggletex.SnuggleUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
 import java.awt.Dimension;
 import java.io.File;

@@ -3,10 +3,13 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex;
+package uk.ac.ed.ph.snuggletex.utilities;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static uk.ac.ed.ph.snuggletex.definitions.Globals.MATHML_NAMESPACE;
+
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 
 import java.util.regex.Pattern;
 

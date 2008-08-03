@@ -7,12 +7,10 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.aardvark.commons.util.ArrayListStack;
 import uk.ac.ed.ph.aardvark.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.LinkResolver;
-import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -38,6 +36,8 @@ import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.tokens.SimpleToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
+import uk.ac.ed.ph.snuggletex.utilities.CSSUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.net.URI;
 import java.net.URISyntaxException;

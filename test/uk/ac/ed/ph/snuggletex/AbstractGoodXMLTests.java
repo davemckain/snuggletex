@@ -18,6 +18,7 @@ import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.testutils.EasyMockContentHandler;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.StringReader;
 import java.io.StringWriter;

@@ -6,8 +6,8 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
-import uk.ac.ed.ph.snuggletex.MessageFormatter;
-import uk.ac.ed.ph.snuggletex.SnuggleUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
+import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
 import java.io.File;
 import java.io.IOException;

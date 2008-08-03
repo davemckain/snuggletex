@@ -3,8 +3,10 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex;
+package uk.ac.ed.ph.snuggletex.utilities;
 
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 
 import java.io.BufferedWriter;
@@ -26,7 +28,7 @@ import java.util.Map.Entry;
  * @author  David McKain
  * @version $Revision$
  */
-public class CSSUtilities {
+public final class CSSUtilities {
     
     /**
      * Writes out the CSS stylesheet specified via the given {@link DOMOutputOptions} Object,

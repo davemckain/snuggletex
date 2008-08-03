@@ -6,8 +6,8 @@
 package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLDownConverter;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.utilities.MathMLDownConverter;
 
 import java.util.List;
 

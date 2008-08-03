@@ -23,6 +23,7 @@ import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.IOException;
 import java.io.OutputStream;

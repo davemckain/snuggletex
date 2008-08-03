@@ -3,7 +3,9 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex;
+package uk.ac.ed.ph.snuggletex.utilities;
+
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 
 import javax.xml.transform.Templates;
 

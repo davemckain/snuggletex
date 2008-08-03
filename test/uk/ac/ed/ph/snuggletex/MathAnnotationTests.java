@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
+
 import junit.framework.Assert;
 
 import org.junit.Test;

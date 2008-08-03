@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;

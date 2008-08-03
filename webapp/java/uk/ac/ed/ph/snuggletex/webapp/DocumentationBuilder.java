@@ -8,7 +8,6 @@ package uk.ac.ed.ph.snuggletex.webapp;
 import uk.ac.ed.ph.aardvark.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
-import uk.ac.ed.ph.snuggletex.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.SnuggleSnapshot;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -21,6 +20,7 @@ import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.SimpleMathMLImageSavingCallback;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -7,11 +7,11 @@ package uk.ac.ed.ph.snuggletex.conversion;
 
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
-import uk.ac.ed.ph.snuggletex.StylesheetManager;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.util.List;
 import java.util.Map;

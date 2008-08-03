@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.aardvark.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 /**
  * Encapsulates an error in the LaTeX input, providing information about what the error is and

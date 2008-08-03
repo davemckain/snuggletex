@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
-import uk.ac.ed.ph.snuggletex.CSSUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
@@ -15,6 +14,7 @@ import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.utilities.CSSUtilities;
 
 import java.util.List;
 import java.util.Properties;

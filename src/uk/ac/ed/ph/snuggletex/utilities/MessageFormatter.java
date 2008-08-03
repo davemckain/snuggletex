@@ -3,8 +3,13 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex;
+package uk.ac.ed.ph.snuggletex.utilities;
 
+import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.conversion.WorkingDocument;
