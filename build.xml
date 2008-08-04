@@ -201,7 +201,7 @@
   <!-- Builds the SnuggleTeX JARs                                          -->
   <!-- =================================================================== -->
   <target name="snuggletex.jar" depends="build" description="Builds SnuggleTeX JAR">
-    <jar destfile="${dist.dir}/snuggletex.jar" index="true">
+    <jar destfile="${dist.dir}/snuggletex.jar">
       <fileset dir="${build.src.dir}"/>
       <!-- Merge ph-commons-util.jar into this so as to make things self-contained -->
       <zipgroupfileset dir="${build.lib.dir}" includes="ph-commons-util.jar"/>
@@ -362,7 +362,7 @@
   <!-- =================================================================== -->
   <target name="snuggletex.aardvark.jar" depends="build" description="Builds SnuggleTeX JAR (for Aardvark)">
     <echo>(This target is only useful if you are integrating SnuggleTeX with other Aardvark components)</echo>
-    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar" index="true">
+    <jar destfile="${dist.dir}/snuggletex-for-aardvark.jar">
       <fileset dir="${build.src.dir}">
         <exclude name="uk/ac/ed/ph/snuggletex/extensions/samples/**"/>
       </fileset>
