@@ -103,6 +103,7 @@ public final class GlobalBuiltins {
     public static BuiltinCommand CMD_TABLE_ROW;
     public static BuiltinCommand CMD_TABLE_COLUMN;
     public static BuiltinCommand CMD_VERB;
+    public static BuiltinCommand CMD_VERBSTAR;
     public static BuiltinCommand CMD_HLINE;
     public static BuiltinCommand CMD_XML_ATTR;
 
@@ -162,7 +163,8 @@ public final class GlobalBuiltins {
         /* Traditional LaTeX commands */
         CMD_PAR = map.addSimpleCommand("par", TEXT_MODE_ONLY, null, null); /* (This is substituted during fixing) */
         map.addSimpleCommand("newline", ALL_MODES, new LineBreakHandler(), null);
-        CMD_VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, new VerbatimBuilder(), null);
+        CMD_VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, new VerbatimBuilder(false), null);
+        CMD_VERBSTAR = map.addSimpleCommand("verb*", PARA_MODE_ONLY, new VerbatimBuilder(true), null);
         CMD_ITEM = map.addSimpleCommand("item", PARA_MODE_ONLY, new ListEnvironmentBuilder(), null);
         map.addComplexCommandOneArg("ensuremath", false, ALL_MODES, MATH, new EnsureMathHandler(), null);
         
@@ -618,7 +620,7 @@ public final class GlobalBuiltins {
         
         ENV_MATH = map.addEnvironment("math", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentBuilder(), ALLOW_INLINE);
         ENV_DISPLAYMATH = map.addEnvironment("displaymath", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentBuilder(), ALLOW_INLINE);
-        ENV_VERBATIM = map.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimBuilder(), START_NEW_XHTML_BLOCK);
+        ENV_VERBATIM = map.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimBuilder(false), START_NEW_XHTML_BLOCK);
         ENV_ITEMIZE = map.addEnvironment("itemize", PARA_MODE_ONLY, null, null, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
         ENV_ENUMERATE = map.addEnvironment("enumerate", PARA_MODE_ONLY, null, null, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
         ENV_TABULAR = map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, null, new TabularBuilder(), START_NEW_XHTML_BLOCK);
