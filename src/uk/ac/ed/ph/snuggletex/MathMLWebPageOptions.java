@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
+import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions;
 
 /**
  * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 

@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.utilities;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 
 import java.io.InputStream;
 

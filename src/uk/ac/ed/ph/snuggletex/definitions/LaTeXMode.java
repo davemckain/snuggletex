@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.definitions;
 
-import uk.ac.ed.ph.snuggletex.conversion.LaTeXTokeniser.Terminator;
+import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser.Terminator;
 
 /**
  * Enumerates the various modes of LaTeX input.

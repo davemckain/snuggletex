@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.tokens;
 
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 
 /**
  * Represents a literal braced section the incoming LaTeX document, i.e. something like

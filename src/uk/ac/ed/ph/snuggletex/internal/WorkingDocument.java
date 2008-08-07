@@ -3,7 +3,7 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.conversion;
+package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
@@ -502,39 +502,6 @@ public final class WorkingDocument {
         for (Slice mapping : scoreBoard) {
             System.out.println(mapping);
         }
-    }
-    
-    public static void main(String[] args) {
-        WorkingDocument d = new WorkingDocument("\\mycommand blah blah", null);
-      
-        System.out.println("INITIAL STATE\n");
-//        d.dumpScoreboard();
-//        
-        d.substitute(0, 10, "This expands to \\bob");
-        System.out.println("AFTER FIRST");
-        d.dumpScoreboard();
-//        
-        d.substitute(16, 20, "[Bob expanded]");
-        System.out.println("\nAFTER SECOND");
-        d.dumpScoreboard();
-      
-//        d.substitute(d.length(), d.length(), "You", ctx);
-//      
-//        System.out.println("\nAFTER FIRST SUBS\n");
-//        d.dumpScoreboard();        
-//        
-//        d.substitute(1,1, "INSERTED", ctx);
-//        d.substitute(14,15, "a", ctx);
-//        d.substitute(2,3, "stuff", ctx);
-////        
-//        System.out.println("\nAFTER SECOND SUBS\n");
-//        d.dumpScoreboard();        
-//        System.out.println("STATE IS NOW " + d.extract());
-        
-//        d.freezeSlice(0, 10);
-//        d.substitute(10, 12, "bob", ctx);
-        
-        System.out.println(d.extract());
     }
 }
 

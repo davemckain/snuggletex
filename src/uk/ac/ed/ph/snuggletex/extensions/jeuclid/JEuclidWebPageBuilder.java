@@ -6,13 +6,13 @@
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageBuilder;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilderFacade;
-import uk.ac.ed.ph.snuggletex.conversion.SessionContext;
-import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuilderFacade;
+import uk.ac.ed.ph.snuggletex.internal.SessionContext;
+import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.utilities.CSSUtilities;
 

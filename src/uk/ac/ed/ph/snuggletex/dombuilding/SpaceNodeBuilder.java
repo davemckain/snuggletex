@@ -6,8 +6,8 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
 import org.w3c.dom.Element;

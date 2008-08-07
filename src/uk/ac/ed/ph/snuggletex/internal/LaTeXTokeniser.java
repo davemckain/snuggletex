@@ -3,14 +3,13 @@
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.conversion;
+package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.commons.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.conversion.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
@@ -21,6 +20,7 @@ import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
+import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;

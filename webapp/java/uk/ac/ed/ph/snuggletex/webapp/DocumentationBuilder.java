@@ -15,11 +15,11 @@ import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions;
-import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.SimpleMathMLImageSavingCallback;
+import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions;
+import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.File;

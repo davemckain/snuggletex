@@ -5,10 +5,10 @@
  */
 package uk.ac.ed.ph.snuggletex.tokens;
 
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.CommandType;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 
 /**
  * This token represents a LaTeX {@link BuiltinCommand}.

@@ -6,11 +6,11 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
-import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.conversion.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 
 import java.io.InputStream;
 

@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.definitions;
 
 import uk.ac.ed.ph.commons.util.ObjectUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
+import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 
 /**
  * Represents a user-defined environment, created by clients using the

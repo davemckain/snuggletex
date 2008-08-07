@@ -12,10 +12,10 @@ import java.util.List;
 
 import uk.ac.ed.ph.commons.util.DumpMode;
 import uk.ac.ed.ph.commons.util.ObjectDumperOptions;
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.Environment;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 
 /**
  * This token is used as a container for the arguments specified for a particular

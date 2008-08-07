@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.commons.util.ObjectUtilities;
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
+import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 /**

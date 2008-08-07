@@ -5,9 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex.tokens;
 
-import uk.ac.ed.ph.snuggletex.conversion.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
+import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 
 /**
