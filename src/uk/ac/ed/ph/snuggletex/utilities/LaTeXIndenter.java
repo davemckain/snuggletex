@@ -88,17 +88,14 @@ public final class LaTeXIndenter {
      * 
      * @param outputWriter
      */
-    public LaTeXIndenter(Writer outputWriter) {
+    public LaTeXIndenter(final Writer outputWriter) {
         this.outputWriter = outputWriter;
         this.indentWidth = DEFAULT_INDENT_WIDTH;
         this.maxIndentLevel = DEFAULT_MAX_INDENT_LEVEL;
         this.compactingBlankLines = true;
         
         /* Initialise parsing state */
-        this.indentLevel = 0;
-        this.verbatimMode = false;
-        this.blankLineCount = 0;
-        this.parsingState = ParsingState.DEFAULT;
+        reset();
     }
     
     //--------------------------------------------------------------
@@ -136,12 +133,24 @@ public final class LaTeXIndenter {
     }
     
     //--------------------------------------------------------------
+    
+    public void reset() {
+        this.indentLevel = 0;
+        this.verbatimMode = false;
+        this.blankLineCount = 0;
+        this.parsingState = ParsingState.DEFAULT;
+    }
 
     /**
      * Indents the TeX read from the given inputReader, sending the results to
-     * {@link #outputWriter}. The inputReader will be close()'d afterwards.
+     * {@link #outputWriter}. The inputReader will be closed afterwards; the
+     * {@link #outputWriter} is left open so the caller should arrange to
+     * flush or close it as required.
      */
-    public void indentTeX(Reader inputReader) throws IOException {
+    public void run(Reader inputReader) throws IOException {
+        /* Reset state */
+        reset();
+        
         /* Ensure input is buffered */
         BufferedReader reader;
         if (inputReader instanceof BufferedReader) {
@@ -364,7 +373,7 @@ public final class LaTeXIndenter {
         formatter.setIndentWidth(2);
         formatter.setCompactingBlankLines(true);
         try {
-            formatter.indentTeX(new BufferedReader(new StringReader(input)));
+            formatter.run(new BufferedReader(new StringReader(input)));
         }
         finally {
             System.out.println("----");
