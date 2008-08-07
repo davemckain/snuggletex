@@ -20,7 +20,11 @@
   \item Added support for \verb|\verb*| and a SnuggleTeX-specific \verb|\literal|
   command.
 
-  \item Fixed the output for \verb|\^u|; I had mapped it to the wrong character!
+  \item Fixed the output for \verb|\^u| --- I had mapped it to the wrong character!
+
+  \item Fixed the alignment of columns in the \verb|eqnarray| environments and
+  added test to ensure that no more than 3 columns are used, resulting in a
+  \verb|TDEM01| error otherwise.
 
 \end{itemize}
 

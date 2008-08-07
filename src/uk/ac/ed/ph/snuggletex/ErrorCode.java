@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:ErrorCode.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -22,7 +22,7 @@ package uk.ac.ed.ph.snuggletex;
  * </ul>
  *
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 public enum ErrorCode {
     
@@ -84,6 +84,7 @@ public enum ErrorCode {
     TDEX03(),
     TDEX04(),
     TDEM00(),
+    TDEM01(),
     TDEMA0(),
     TDEMA1(),
     TDEL00(),

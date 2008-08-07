@@ -318,30 +318,27 @@ Hello <p:filter xmlns:p='urn'><p>A</p><p>B</p></p:filter> There
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mtable>
     <mtr>
-      <mtd><mn>1</mn></mtd>
-      <mtd><mn>2</mn></mtd>
+      <mtd columnalign="right"><mn>1</mn></mtd>
+      <mtd columnalign="center"><mn>2</mn></mtd>
     </mtr>
     <mtr>
-      <mtd><mn>3</mn></mtd>
-      <mtd><mn>4</mn></mtd>
+      <mtd columnalign="right"><mn>3</mn></mtd>
+      <mtd columnalign="center"><mn>4</mn></mtd>
     </mtr>
   </mtable>
 </math>
 ====
-\begin{eqnarray} \mbox{Hello} & 1 & & x \end{eqnarray}
+\begin{eqnarray} \mbox{Hello} & & x \end{eqnarray}
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mtable>
     <mtr>
-      <mtd>
+      <mtd columnalign="right">
         <mrow>
           <mtext>Hello</mtext>
         </mrow>
       </mtd>
-      <mtd>
-        <mn>1</mn>
-      </mtd>
-      <mtd/>
-      <mtd>
+      <mtd columnalign="center"/>
+      <mtd columnalign="left">
         <mi>x</mi>
       </mtd>
     </mtr>
@@ -352,12 +349,12 @@ Hello <p:filter xmlns:p='urn'><p>A</p><p>B</p></p:filter> There
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mtable>
     <mtr>
-      <mtd>
+      <mtd columnalign="right">
         <mn>1</mn>
         <mo>+</mo>
         <mi>x</mi>
       </mtd>
-      <mtd>
+      <mtd columnalign="center">
         <mn>2</mn>
       </mtd>
     </mtr>

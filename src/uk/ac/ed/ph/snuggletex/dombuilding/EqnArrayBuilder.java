@@ -1,10 +1,11 @@
-/* $Id$
+/* $Id:EqnArrayBuilder.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
+import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.conversion.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.conversion.SnuggleParseException;
@@ -23,15 +24,26 @@ import org.w3c.dom.Element;
  * @see MathEnvironmentBuilder
  * 
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 public final class EqnArrayBuilder implements EnvironmentHandler {
+    
+    private static final String[] COLUMN_ALIGNMENTS = {
+        "right",
+        "center",
+        "left"
+    };
 
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
         int[] geometry = TabularBuilder.computeTableDimensions(token.getContent());
         int numColumns = geometry[1];
+        if (numColumns>3) {
+            /* Error: eqnarray must have no more than 3 columns */
+            builder.appendOrThrowError(parentElement, token, ErrorCode.TDEM01, numColumns);
+            return;
+        }
         
         /* This is the element we'll append the <mtable/> to. It will be either <math/>
          * (if no annotations) or <semantics/> (if annotations) */
@@ -56,11 +68,14 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
         /* Build <mtable/> */
         Element mtableElement = builder.appendMathMLElement(mtableParent, "mtable");
         Element mtrElement, mtdElement;
+        int columnIndex;
         for (FlowToken rowToken : token.getContent()) {
             mtrElement = builder.appendMathMLElement(mtableElement, "mtr");
             List<FlowToken> columns = ((CommandToken) rowToken).getArguments()[0].getContents();
+            columnIndex = 0;
             for (FlowToken columnToken : columns) {
                 mtdElement = builder.appendMathMLElement(mtrElement, "mtd");
+                mtdElement.setAttribute("columnalign", COLUMN_ALIGNMENTS[columnIndex++]);
                 builder.handleTokens(mtdElement, ((CommandToken) columnToken).getArguments()[0].getContents(), true);
             }
             /* Add empty <td/> for missing columns */
