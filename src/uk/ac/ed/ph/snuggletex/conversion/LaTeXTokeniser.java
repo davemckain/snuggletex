@@ -868,7 +868,7 @@ public final class LaTeXTokeniser {
                     workingDocument.freezeSlice(position, position+2).extract());
         }
         else {
-            /* It's not math, so must be \verb, \command or environment control */
+            /* It's not math, so must be \verb(*), \command or environment control */
             result = readCommandOrEnvironmentOrVerb();
         }
         return result;
@@ -878,13 +878,13 @@ public final class LaTeXTokeniser {
     // Commands and Environments (this is by far the most complicated part of tokenisation!)
     
     /**
-     * Reads in a command, <tt>\\verb</tt> or environment control token.
+     * Reads in a command, <tt>\\verb(*)</tt> or environment control token.
      */
     private FlowToken readCommandOrEnvironmentOrVerb() throws SnuggleParseException {
         /* We are handling either:
          * 
          * 1. \command[opt]{arg}{...}
-         * 2. \verb...
+         * 2. \verb(*)...
          * 3. \begin{env}[opt]{arg}{...}...\end{env}
          * 
          * Get the first character after '\' - which the caller has already checked existence of -
@@ -931,7 +931,11 @@ public final class LaTeXTokeniser {
         }
         else if (commandName.equals(GlobalBuiltins.CMD_VERB.getTeXName())) {
             /* It's \\verb... which needs special parsing */
-            result = finishVerbToken();
+            result = finishVerbToken(GlobalBuiltins.CMD_VERB);
+        }
+        else if (commandName.equals(GlobalBuiltins.CMD_VERBSTAR.getTeXName())) {
+            /* Same with \\verb* */
+            result = finishVerbToken(GlobalBuiltins.CMD_VERBSTAR);
         }
         else {
             /* It's a built-in or user-defined command. */
@@ -990,7 +994,8 @@ public final class LaTeXTokeniser {
     }
     
     /**
-     * This is called once it has become clear that the next token is <tt>\verb</tt>.
+     * This is called once it has become clear that the next token is <tt>\verb</tt>
+     * or <tt>\verb*</tt>.
      * <p>
      * As with LaTeX, this next character is used to delimit the verbatim region, which must
      * end on the same line. No whitespace can occur after \verb.
@@ -999,8 +1004,8 @@ public final class LaTeXTokeniser {
      * 
      * @throws SnuggleParseException 
      */
-    private FlowToken finishVerbToken() throws SnuggleParseException {
-        /* Get the character immediately after the \verb command - whitespace not allowed */
+    private FlowToken finishVerbToken(BuiltinCommand verbCommand) throws SnuggleParseException {
+        /* Get the character immediately after the \verb or \verb* command - whitespace not allowed */
         int startDelimitIndex = position;
         int delimitChar = workingDocument.charAt(startDelimitIndex);
         if (delimitChar==-1) {
@@ -1051,7 +1056,7 @@ public final class LaTeXTokeniser {
         
         /* That's it! */
         FrozenSlice verbatimSlice = workingDocument.freezeSlice(startTokenIndex, position);
-        return new CommandToken(verbatimSlice, currentModeState.latexMode, GlobalBuiltins.CMD_VERB,
+        return new CommandToken(verbatimSlice, currentModeState.latexMode, verbCommand,
                 null,
                 new ArgumentContainerToken[] {
                     new ArgumentContainerToken(contentSlice, LaTeXMode.VERBATIM, contentTokens)

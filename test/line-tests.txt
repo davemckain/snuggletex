@@ -108,6 +108,12 @@ This is <tt class="verb">x</tt> some verbatim
 This is \verb'verbatim!'
 This is <tt class="verb">verbatim!</tt>
 ====
+\verb!Verbatim With Space!
+<tt class="verb">Verbatim&#xa0;With&#xa0;Space</tt>
+====
+\verb*!Verbatim With Space!
+<tt class="verb">Verbatim&#x2423;With&#x2423;Space</tt>
+====
 \begin{verbatim}This is verbatim\end{verbatim}
 <pre class="verbatim">This is verbatim</pre>
 ====
