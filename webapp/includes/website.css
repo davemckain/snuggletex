@@ -91,6 +91,10 @@ body#configuration a.configuration,
 body#errors a.errors,
 body#errorCodes a.errorCodes,
 body#samples a.samples,
+body#textMode a.textMode,
+body#mathMode a.mathMode,
+body#verbatimMode a.verbatimMode,
+body#xmlCommands a.xmlCommands,
 body#tryout a.tryout {
   color: #f25c69;
   font-weight: bold;

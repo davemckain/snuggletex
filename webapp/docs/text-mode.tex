@@ -1,6 +1,6 @@
-\pageId{textmode}
+\pageId{textMode}
 
-\section*{Text Mode Commands}
+\section*{Basic Text Mode Commands}
 
 % Simple input/result table environment
 \newenvironment{demotable}
@@ -54,6 +54,20 @@ special in LaTeX.
 \demo{A\hspace{2em}B}
 \end{demotable}
 
+\section*{Punctuation}
+
+\begin{ndemotable}
+\demo{`Single Quotes'}
+\demo{``Double Quotes''}
+\ndemo{Yes --- but no!}{Dash}
+\ndemo{1--2}{Dash used for numerical ranges}
+\ndemo{Mr.\ Blitherington-Smythe}{Single '-' is a hyphen}
+\ndemo{No~Break}{Non-breaking space}
+\demo{Boring\ldots}
+\demo{<}
+\demo{>}
+\end{ndemotable}
+
 \section*{Lists}
 
 SnuggleTeX supports the {\tt itemize} and {\tt enumerate} environments.
@@ -68,20 +82,6 @@ SnuggleTeX supports the {\tt itemize} and {\tt enumerate} environments.
   \item Second item
 \end{enumerate}}
 \end{demotable}
-
-\section*{Punctuation}
-
-\begin{ndemotable}
-\demo{`Single Quotes'}
-\demo{``Double Quotes''}
-\ndemo{Yes --- but no!}{Dash}
-\ndemo{1--2}{Dash used for numerical ranges}
-\ndemo{Mr.\ Blitherington-Smythe}{Single '-' is a hyphen}
-\ndemo{No~Break}{Non-breaking space}
-\demo{Boring\ldots}
-\demo{<}
-\demo{>}
-\end{ndemotable}
 
 \section*{Text Styling}
 
@@ -139,20 +139,28 @@ end of the current level (i.e. closing curly bracket).
 
 \section*{Text Mode Accents}
 
-SnuggleTeX supports the most basic accented characters. We will add support for
-less common accented characters provided the results work well across all
-target browsers and platforms. (You might be better creating Math-mode accents
-in these cases.)
+Applying accents to characters in XHTML is more difficult to implement than
+you might except as it usually requires remapping Unicode characters to their
+accented equivalents, requiring appropriate fonts to be installed to ensure
+they display correctly. As a result, SnuggleTeX currently only supports a
+subset of the accenting that you would normally expect; it will report
+error \verb|TDETA2| if can't create a particular accent you requested.
+We may add support for less common accented characters provided the results
+work well across all target browsers and platforms. (You might be better
+creating Math-mode accents in these cases.)
 
-\newcommand{\ademo}[1]{\demo{#1{a}}}
+The table below shows the characters that SnuggleTeX currently accents correctly.
+The exception here is \verb|\underline|, which SnuggleTeX implements using CSS
+so can safely be applied to any character (provided of course you ensure that
+the CSS is correctly used).
 
 \begin{demotable}
-\ademo{\'}
-\ademo{\`}
-\ademo{\^}
-\ademo{\~}
-\ademo{\"}
-\ademo{\underline}
+\demo{\'a\'e\'i\'o\'u\'y\'A\'E\'I\'O\'U}
+\demo{\`a\`e\`i\`o\`u\`A\`E\`I\`O\`U}
+\demo{\^a\^e\^i\^o\^u\^A\^E\^I\^O\^U}
+\demo{\~a\~n\~o\~A\~O}
+\demo{\"a\"e\"i\"o\"u\"A\"E\"I\"O\"U}
+\demo{\underline{a} et.\ al.}
 \end{demotable}
 
 \section{Miscellaneous Text-mode Symbols}

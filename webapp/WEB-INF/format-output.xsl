@@ -27,14 +27,17 @@ All Rights Reserved
 
   <xsl:output method="xhtml"/>
 
+  <!-- Need to pass webapp context path so as to locate images and stuff -->
+  <xsl:param name="context-path" as="xs:string" required="yes"/>
+
+  <!-- Optional "page type" text to display within page -->
+  <xsl:param name="page-type" as="xs:string?" required="no"/>
+
   <!-- Extract page ID as first <s:pageId/> element -->
   <xsl:variable name="pageId" select="string(/h:html/h:body/s:pageId[1])" as="xs:string"/>
 
   <!-- Extract page title as first <h2/> heading -->
   <xsl:variable name="title" select="string(/h:html/h:body/h:h2[1])" as="xs:string"/>
-
-  <!-- Need to pass webapp context path so as to locate images and stuff -->
-  <xsl:param name="context-path" as="xs:string" required="yes"/>
 
   <xsl:template match="h:html">
     <html xml:lang="en" lang="en">
@@ -127,9 +130,17 @@ All Rights Reserved
               <li><a class="projects" href="{$context-path}/javadoc/">API Documentation</a></li>
             </ul>
 
+            <h2>LaTeX Guide</h2>
+            <ul>
+              <li><a class="textMode" href="{$context-path}/docs/text-mode.html">Basic Text Mode Commands</a></li>
+              <li><a class="mathMode" href="{$context-path}/docs/math-mode.html">Basic Math Mode Commands</a></li>
+              <li><a class="verbatimMode" href="{$context-path}/docs/verbatim-mode.html">Verbatim Mode</a></li>
+              <li><a class="xmlCommands" href="{$context-path}/docs/xml-commands.html">XML-related Commands</a></li>
+            </ul>
+
             <h2>Demos and Samples</h2>
             <ul>
-              <li><a class="samples" href="{$context-path}/docs/latex-samples.html">LaTeX Samples</a></li>
+              <li><a class="samples" href="{$context-path}/docs/latex-samples.html">Web Output Samples</a></li>
               <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
             </ul>
 
@@ -169,6 +180,16 @@ All Rights Reserved
 
   <xsl:template match="h:body" mode="make-content">
     <xsl:apply-templates/>
+  </xsl:template>
+
+  <!-- Maybe soup up the first heading with information about the page type -->
+  <xsl:template match="h:body/h:h2[1]">
+    <h2>
+      <xsl:apply-templates/>
+      <xsl:if test="$page-type">
+        (<xsl:value-of select="$page-type"/>)
+      </xsl:if>
+    </h2>
   </xsl:template>
 
   <!-- Copy all other HTML and MathML as-is -->

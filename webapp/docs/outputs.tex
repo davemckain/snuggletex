@@ -99,19 +99,22 @@ Because generating and serving MathML can be difficult and error-prone, SnuggleT
 you choose a \verb|WebPageType| to use as a "template" for your output, which will tweak
 the results to suit the particular clients you are targeting. Details are given below;
 it is also worth considering the \href[browser requirements]{browser-requirements.html}
-page which considers them from a client-specific point of view:
+page which considers them from a client-specific point of view.
 
 \begin{itemize}
-  \item \textbf{MOZILLA}: This generates an XHTML + MathML document suitable for
+  \item \textbf{MOZILLA} \href[(example)]{math-mode.xhtml}:
+    This generates an XHTML + MathML document suitable for
     Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml.html|,
     has no XML declaration and no DOCTYPE declaration. Do \emph{not} use this if you
     are targeting Internet Explorer as it will display this as an XML tree.
 
-  \item \textbf{MATHPLAYER\_HTML}: This generates an HTML document that displays well
+  \item \textbf{MATHPLAYER\_HTML} \href[(example)]{math-mode.html}:
+    This generates an HTML document that displays well
     on Internet Explorer 6/7 with the MathPlayer plugin installed. It will not display
     MathML correctly on Mozilla-based browsers.
 
-  \item \textbf{CROSS\_BROWSER\_XHTML}: This generates an XHTML + MathML document that
+  \item \textbf{CROSS\_BROWSER\_XHTML} \href[(example)]{math-mode.cxml}:
+    This generates an XHTML + MathML document that
     displays well on both Mozilla-based browsers and Internet Explorer 6/7 (providing that
     the MathPlayer plug-in has already been installed). It is served as \verb|application/xhtml.html|,
     has an XML declaration and a DOCTYPE declaration.
@@ -122,7 +125,8 @@ page which considers them from a client-specific point of view:
         somewhat.
     \end{itemize}
 
-  \item \textbf{UNIVERSAL\_STYLESHEET}: This generates an XHTML + MathML document
+  \item \textbf{UNIVERSAL\_STYLESHEET} \href[(example)]{math-mode.xml}:
+    This generates an XHTML + MathML document
     that is served as XML and can be served to both Mozilla-based browsers and
     Internet Explorer 6/7. It includes an XML processing instruction that tells
     browsers to apply the Universal MathML StyleSheet to the page before delivering,
@@ -139,8 +143,7 @@ page which considers them from a client-specific point of view:
 
   \item \textbf{CLIENT\_SIDE\_XSLT\_STYLESHEET}: This generates a XHTML + MathML document,
     served as \verb|application/xhtml.html| with no XML declaration and no DOCTYPE declaration.
-    It is intended to be used with a client-side XSLT to invoke something like the
-    Universal StyleSheet.
+    It is intended to be used with a client-side XSLT of your choice.
 
 \end{itemize}
 
@@ -158,5 +161,5 @@ options that \verb|MathMLWebPageOptions| gives you. Additionally, you will
 need to implement and pass a \verb|MathMLImageSavingCallback| to it to control where
 the resulting images will be saved to.
 
-This feature is still experimental\ldots though the pages you are now reading
-are generated using it!
+This feature is still experimental\ldots though the \href[pages you are now
+reading]{latex-samples.xml} are generated using it!

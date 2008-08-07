@@ -50,6 +50,7 @@ import javax.xml.transform.stream.StreamSource;
  *   <li>.xhtml -> {@link WebPageType#MOZILLA}</li>
  *   <li>.htm -> {@link WebPageType#MATHPLAYER_HTML}</li>
  *   <li>.xml -> {@link WebPageType#UNIVERSAL_STYLESHEET}</li>
+ *   <li>.cxml -> {@link WebPageType#CROSS_BROWSER_XHTML}</li>
  *   <li>.html -> Legacy XHTML + images outout (created via {@link JEuclidWebPageOptions})</li>
  * </ul>
  *
@@ -146,6 +147,7 @@ public final class DocumentationBuilder {
         typeToExtensionMap.put(WebPageType.MOZILLA, ".xhtml");
         typeToExtensionMap.put(WebPageType.MATHPLAYER_HTML, ".htm");
         typeToExtensionMap.put(WebPageType.UNIVERSAL_STYLESHEET, ".xml");
+        typeToExtensionMap.put(WebPageType.CROSS_BROWSER_XHTML, ".cxml");
         File targetFile;
         for (Entry<WebPageType, String> entry : typeToExtensionMap.entrySet()) {
             WebPageType pageType = entry.getKey();
@@ -155,6 +157,9 @@ public final class DocumentationBuilder {
             MathMLWebPageOptions mathOptions = new MathMLWebPageOptions();
             setupWebOptions(mathOptions);
             mathOptions.setPageType(pageType);
+            
+            /* Pass parameter to sylesheet providing view information */
+            stylesheet.setParameter("page-type", pageType.name());
             
             /* Do tweaking if necessary */
             if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
@@ -171,6 +176,7 @@ public final class DocumentationBuilder {
         /* Build compatibility output */
         JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
         setupWebOptions(jeuclidOptions);
+        stylesheet.setParameter("page-type", null); /* (Reset as it will have been set earlier) */
         jeuclidOptions.setDownConverting(true);
         jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
         jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));

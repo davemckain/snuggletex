@@ -9,7 +9,7 @@ pages will only be viewable on browsers capable of displaying MathML.
 
 As you will probably know, most browsers in the Mozilla family (e.g.\
 Firefox) support and display MathML natively so are in many ways the best
-options. (However, the quality of MathML rendering has regresssed to some
+options. (However, the quality of MathML rendering has regressed to some
 degree in the recently-released Firefox 3, which is a little disappointing.)
 
 Internet Explorer 6/7 can be targeted very well using the freely available
@@ -40,19 +40,19 @@ option in this case, but will \emph{not} work if your clients do not %
 already have MathPlayer installed. \\
 \hline
 IE only, not sure if MathPlayer is installed &
-If you know that your clients have sufficient privileges to be able to %
+If you know that your clients have sufficient privileges and ability to be able to %
 install MathPlayer, then you could use the \verb|UNIVERSAL_STYLESHEET| option %
 as that will prompt for installation of MathPlayer if required. %
-Otherwise, it might be safer to serve up legacy content. \\
+Otherwise, it might be safer to serve up legacy content, as described below. \\
 \hline
 Firefox and IE with MathPlayer pre-installed &
 The \verb|CROSS_BROWSER_XHTML| page type is your best bet here, though %
-you could also used \verb|UNIVERAL_STYLESHEET|. \\
+you could also use \verb|UNIVERAL_STYLESHEET|. \\
 \hline
 Firefox and IE &
 As above, if your clients can install MathPlayer then use the %
 \verb|UNIVERSAL_STYLESHEET| type. Otherwise, it might be safer %
-to serve up legacy content. \\
+to serve up legacy content, as described below. \\
 \hline
 All browsers &
 Your safest bet in this case is to give up trying MathML and %

@@ -1,63 +1,32 @@
 \pageId{samples}
 
-\section*{LaTeX Samples}
+\section*{Web Output Samples}
 
-The pages linked below show some examples of the LaTeX commands that are supported
-and the outputs expected. It also demonstrates some of the preset web page outputs that
-can be generated.
+For maximum portability --- and to ensure that search engines
+cope with them --- these documentation pages have
+been generated using the
+\href[Legacy XHTML + Images Web Page Output]{outputs.html},
+which do not actually contain any MathML!
 
-\emph{Note:} Your browser may not be capable of displaying all of these outputs, though
-all browsers should have no problems with the "Legacy" view. See
-below for more details.
+To allow you to see the different MathML-based views in
+action, the links below show different versions of the
+``\href[Basic Math Mode Commands]{math-mode.html}'' page
+generated using some of other web output page types
+described in the \href[Outputs]{outputs.xml} page.
 
-\begin{tabular}{|c|c|c|c|c|c|}
-\hline
-Page & Legacy & Mozilla & IE/MathPlayer & USS & Source \\
-\hline
-Basic Text Mode Commands &
-  \href[.html]{text-mode.html} &
-  \href[.xhtml]{text-mode.xhtml} &
-  \href[.htm]{text-mode.htm} &
-  \href[.xml]{text-mode.xml} &
-  \href[.tex]{text-mode.tex} \\
-\hline
-Basic Math Mode Commands &
-  \href[.html]{math-mode.html} &
-  \href[.xhtml]{math-mode.xhtml} &
-  \href[.htm]{math-mode.htm} &
-  \href[.xml]{math-mode.xml} &
-  \href[.tex]{math-mode.tex} \\
-\hline
-XML-related Commands &
-  \href[.html]{xml-commands.html} &
-  \href[.xhtml]{xml-commands.xhtml} &
-  \href[.htm]{xml-commands.htm} &
-  \href[.xml]{xml-commands.xml} &
-  \href[.tex]{xml-commands.tex} \\
-\hline
-\end{tabular}
-
-\subsection*{About these Outputs}
-
-The outputs above illustrate some of the pre-defined web page output
-types described in the \href[Outputs]{outputs.xml} page.
+Of course, not all of these will display in all browsers.
+You should look at the \href[Outputs]{outputs.xml}
+and \href[Browser Requirements]{browser-requirements.xml}
+pages for more information.
 
 \begin{itemize}
-  \item \textbf{Legacy}: Legacy output with XHTML with Maths represented
-  by XHTML and/or images. This should display fine on all browsers.
 
-  \item \textbf{Mozilla}: XHTML + MathML for Mozilla/Firefox and friends.
-  This will not display at all on IE; other browsers will mess up the MathML.
+  \item \href[MOZILLA]{math-mode.xhtml}
 
-  \item \textbf{IE/MathPlayer}: HTML designed to work correctly on Internet
-  Explorer (provided the MathPlayer plugin is installed). This will not
-  display correctly on other browsers.
+  \item \href[UNIVERSAL\_STYLESHEET]{math-mode.xml}
 
-  \item \textbf{USS}: XHTML designed to work on both Mozilla/Firefox and Internet
-  Explorer 6/7 via the ``Universal StyleSheet''. IE users will be prompted to
-  download and install MathPlayer if they haven't already done so.
+  \item \href[MATHPLAYER\_HTML]{math-mode.htm}
 
-  \item \textbf{Source}: LaTeX source (often somewhat cryptic due to the huge number
-  of badly-named commands defined to make the repetitive nature of writing demo pages
-  a bit easier!)
+  \item \href[CROSS\_BROWSER\_XML]{math-mode.cxml}
+
 \end{itemize}
