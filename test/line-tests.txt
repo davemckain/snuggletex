@@ -467,7 +467,17 @@ Hello &#x2014; There
 \href{urn:x%20b}
 <a href="urn:x%20b">urn:x%20b</a>
 ====
+\anchor{susan}
+<a id="susan" name="susan"/>
+====
 \xmlName{a}
+a
+====
+# Demonstrates the starred variants of these parse argument in LR mode
+\newcommand{\a}[1]{X-#1}\xmlName*{\a{1}}
+X-1
+====
+\xmlId{a}
 a
 ====
 \literal{ # %}

@@ -715,6 +715,44 @@ public final class DOMBuilder {
         return false;
     }
     
+    /**
+     * Checks the given raw XML Name to ensure that it confirms to the correct syntax, returning
+     * it unchanged if successful. If not valid, the {@link ErrorCode#TDEX03} is recorded.
+     * 
+     * @throws SnuggleParseException
+     */
+    public String validateXMLName(final Element parentElement, final Token nameToken, final String rawName)
+            throws SnuggleParseException {
+        /* Check name. This is easy since our input is good old ASCII so the XML Name production
+         * simplifies to the regexp below...
+         */
+        if (!rawName.matches("[a-zA-Z_:][a-zA-Z0-9_:.-]*")) {
+            /* Error: Bad XML Name */
+            appendOrThrowError(parentElement, nameToken, ErrorCode.TDEX03, rawName);
+            return null;
+        }
+        return rawName;
+    }
+    
+    /**
+     * Checks the given XML Name as in {@link #validateXMLName(Element, Token, String)}, additionally
+     * checking that an ID of the same name is not already in use in the output DOM. If it is,
+     * {@link ErrorCode#TDEX05} is recorded. Returns non-null on success, null on error.
+     * 
+     * @throws SnuggleParseException
+     */
+    public String validateXMLId(final Element parentElement, final Token nameToken, final String rawName)
+            throws SnuggleParseException {
+        String validatedName = validateXMLName(parentElement, nameToken, rawName);
+        if (validatedName!=null) {
+            if (document.getElementById(validatedName)!=null) {
+                /* Error: ID already in use */
+                appendOrThrowError(parentElement, nameToken, ErrorCode.TDEX05, rawName);
+                return null;
+            }
+        }
+        return validatedName;
+    }
     
     /**
      * Checks the given raw URI to ensure that it is valid, returning a {@link URI} Object if

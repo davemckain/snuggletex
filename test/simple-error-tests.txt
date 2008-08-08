@@ -192,6 +192,9 @@ TDEX04
 \xmlBlockElement{\literal|%|}{qName}{Content}
 TDEX04
 ====
+\anchor{id}\anchor{id}
+TDEX05
+====
 \item A
 TDEL00
 ====

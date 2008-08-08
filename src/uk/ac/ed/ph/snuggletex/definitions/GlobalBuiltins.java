@@ -18,6 +18,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.IGNORE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML_BLOCK;
 
 import uk.ac.ed.ph.snuggletex.dombuilding.AccentBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.BoxBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
@@ -50,7 +51,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.VerbatimBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLAttrHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLBlockElementBuilder;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLInlineElementBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameOrIdHandler;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
@@ -607,14 +608,18 @@ public final class GlobalBuiltins {
         CMD_RENEWENVIRONMENT = map.addComplexCommandSameArgMode("renewenvironment", false, 2, ALL_MODES, doNothingHandler, IGNORE);
         
         /* Special XHTML helpers */
-        map.addComplexCommand("href", true, 1, ALL_MODES, new LaTeXMode[] { LR, VERBATIM },
-                new HrefBuilder(), ALLOW_INLINE);
+        map.addComplexCommand("href", true, 1, TEXT_MODE_ONLY, new LaTeXMode[] { LR, VERBATIM }, new HrefBuilder(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("anchor", false, TEXT_MODE_ONLY, VERBATIM, new AnchorHandler(), ALLOW_INLINE);
+        map.addComplexCommandOneArg("anchor*", false, TEXT_MODE_ONLY, LR, new AnchorHandler(), ALLOW_INLINE);
         
         /* Commands for creating custom XML (also see related environments) */
         CMD_XML_ATTR = map.addComplexCommand("xmlAttr", false, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR }, new XMLAttrHandler(), IGNORE);
         map.addComplexCommand("xmlBlockElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLBlockElementBuilder(), START_NEW_XHTML_BLOCK);
         map.addComplexCommand("xmlInlineElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLInlineElementBuilder(), ALLOW_INLINE);
-        map.addComplexCommandOneArg("xmlName", false, ALL_MODES, VERBATIM, new XMLNameHandler(), IGNORE);
+        map.addComplexCommandOneArg("xmlName", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.NAME), IGNORE);
+        map.addComplexCommandOneArg("xmlName*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.NAME), IGNORE);
+        map.addComplexCommandOneArg("xmlId", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
+        map.addComplexCommandOneArg("xmlId*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
         
         /* =================================== ENVIRONMENTS ================================= */
         
