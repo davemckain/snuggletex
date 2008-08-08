@@ -17,40 +17,40 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.ALLOW_INLINE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.IGNORE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML_BLOCK;
 
-import uk.ac.ed.ph.snuggletex.dombuilding.AccentBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.ArrayBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.BoxBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.BoxHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnsureMathHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.HSpaceNodeBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.HrefBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.HSpaceHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.HrefHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.LiteralBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathNotBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathRootBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.LiteralHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathNotHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathRootHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.MfenceBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.MrowBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.ParagraphBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.SimpleXHTMLContainerBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.SpaceNodeBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.StyleInterpretationNodeBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.TabularBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.TextSafeInterpretableMathIdentifierBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.VerbatimBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathFenceHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MrowHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.ParagraphHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.SimpleXHTMLContainerBuildingHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.SpaceHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.StyleInterpretationHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.TabularHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.TextSafeInterpretableMathIdentifierHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.VerbatimHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLAttrHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.XMLBlockElementBuilder;
-import uk.ac.ed.ph.snuggletex.dombuilding.XMLInlineElementBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.XMLBlockElementHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.XMLInlineElementHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameOrIdHandler;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
@@ -142,37 +142,37 @@ public final class GlobalBuiltins {
         map.addSimpleCommand("_", ALL_MODES, new CharacterCommandHandler("_"), ALLOW_INLINE);
         map.addSimpleCommand("{", ALL_MODES,
                 new MathBracketOperatorInterpretation(MathMLOperator.OPEN_CURLY_BRACKET, MathMLOperator.CLOSE_CURLY_BRACKET, BracketType.OPENER),
-                new ModeDelegatingBuilder(new CharacterCommandHandler("{"), new InterpretableSimpleMathBuilder()), null);
+                new ModeDelegatingHandler(new CharacterCommandHandler("{"), new InterpretableSimpleMathHandler()), null);
         map.addSimpleCommand("}", ALL_MODES,
                 new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_CURLY_BRACKET, MathMLOperator.OPEN_CURLY_BRACKET, BracketType.CLOSER),
-                new ModeDelegatingBuilder(new CharacterCommandHandler("}"), new InterpretableSimpleMathBuilder()), null);
-        map.addSimpleCommand(",", ALL_MODES, new SpaceNodeBuilder("\u2009", "0.167em"), ALLOW_INLINE); /* Thin space, all modes */
-        map.addSimpleCommand(":", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "0.222em"), null); /* Medium space, math only */
-        map.addSimpleCommand(";", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "0.278em"), null); /* Thick space, math only */
-        map.addSimpleCommand("!", MATH_MODE_ONLY, new SpaceNodeBuilder(null, "-0.167em"), null); /* Negative thin space */
+                new ModeDelegatingHandler(new CharacterCommandHandler("}"), new InterpretableSimpleMathHandler()), null);
+        map.addSimpleCommand(",", ALL_MODES, new SpaceHandler("\u2009", "0.167em"), ALLOW_INLINE); /* Thin space, all modes */
+        map.addSimpleCommand(":", MATH_MODE_ONLY, new SpaceHandler(null, "0.222em"), null); /* Medium space, math only */
+        map.addSimpleCommand(";", MATH_MODE_ONLY, new SpaceHandler(null, "0.278em"), null); /* Thick space, math only */
+        map.addSimpleCommand("!", MATH_MODE_ONLY, new SpaceHandler(null, "-0.167em"), null); /* Negative thin space */
         map.addSimpleCommand(" ", ALL_MODES, new CharacterCommandHandler("\u00a0"), ALLOW_INLINE);
         
         /* Accents (non-math, complex) See Table 3.1, p. 38 on LaTeX companion.
          * (See also accents that apply in either MATH mode only or all modes, declared elsewhere!)
          */
-        map.addComplexCommandSameArgMode("'", false, 1, TEXT_MODE_ONLY, new AccentBuilder(AccentMaps.ACCENT), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("`", false, 1, TEXT_MODE_ONLY, new AccentBuilder(AccentMaps.GRAVE), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("^", false, 1, TEXT_MODE_ONLY, new AccentBuilder(AccentMaps.CIRCUMFLEX), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("~", false, 1, TEXT_MODE_ONLY, new AccentBuilder(AccentMaps.TILDE), ALLOW_INLINE);
-        map.addComplexCommandSameArgMode("\"", false, 1, TEXT_MODE_ONLY, new AccentBuilder(AccentMaps.UMLAUT), ALLOW_INLINE);
+        map.addComplexCommandSameArgMode("'", false, 1, TEXT_MODE_ONLY, new AccentHandler(AccentMaps.ACCENT), ALLOW_INLINE);
+        map.addComplexCommandSameArgMode("`", false, 1, TEXT_MODE_ONLY, new AccentHandler(AccentMaps.GRAVE), ALLOW_INLINE);
+        map.addComplexCommandSameArgMode("^", false, 1, TEXT_MODE_ONLY, new AccentHandler(AccentMaps.CIRCUMFLEX), ALLOW_INLINE);
+        map.addComplexCommandSameArgMode("~", false, 1, TEXT_MODE_ONLY, new AccentHandler(AccentMaps.TILDE), ALLOW_INLINE);
+        map.addComplexCommandSameArgMode("\"", false, 1, TEXT_MODE_ONLY, new AccentHandler(AccentMaps.UMLAUT), ALLOW_INLINE);
         
         /* Traditional LaTeX commands */
         CMD_PAR = map.addSimpleCommand("par", TEXT_MODE_ONLY, null, null); /* (This is substituted during fixing) */
         map.addSimpleCommand("newline", ALL_MODES, new LineBreakHandler(), null);
-        CMD_VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, new VerbatimBuilder(false), null);
-        CMD_VERBSTAR = map.addSimpleCommand("verb*", PARA_MODE_ONLY, new VerbatimBuilder(true), null);
-        CMD_ITEM = map.addSimpleCommand("item", PARA_MODE_ONLY, new ListEnvironmentBuilder(), null);
+        CMD_VERB = map.addSimpleCommand("verb", PARA_MODE_ONLY, new VerbatimHandler(false), null);
+        CMD_VERBSTAR = map.addSimpleCommand("verb*", PARA_MODE_ONLY, new VerbatimHandler(true), null);
+        CMD_ITEM = map.addSimpleCommand("item", PARA_MODE_ONLY, new ListEnvironmentHandler(), null);
         map.addComplexCommandOneArg("ensuremath", false, ALL_MODES, MATH, new EnsureMathHandler(), null);
         
         /* TODO: Is there an equivalent of the following in LaTeX for doing "literal" input, sort of like \verb
          * but output using a normal typeface???
          */
-        map.addComplexCommandOneArg("literal", false, TEXT_MODE_ONLY, VERBATIM, new LiteralBuilder(), null); 
+        map.addComplexCommandOneArg("literal", false, TEXT_MODE_ONLY, VERBATIM, new LiteralHandler(), null); 
 
         /* Tree version of a paragraph. The {@link TokenFixer} will create these, removing any
          * instances of {@link #PAR} and {@link TokenType#NEW_PARAGRAPH}.
@@ -180,12 +180,12 @@ public final class GlobalBuiltins {
          * I am not allowing this to be directly input, as this makes processing a bit easier
          * since it avoids the possibility of nested paragraphs.
          */
-        CMD_PARAGRAPH = map.addComplexCommandSameArgMode("<paragraph>", false, 1, TEXT_MODE_ONLY, new ParagraphBuilder(), START_NEW_XHTML_BLOCK);
+        CMD_PARAGRAPH = map.addComplexCommandSameArgMode("<paragraph>", false, 1, TEXT_MODE_ONLY, new ParagraphHandler(), START_NEW_XHTML_BLOCK);
         
         /* Tree version of standard \item. Any \items are converted to these during token fixing.
          * I'm not allowing this to be directly input, which makes list handling a bit easier.
          */
-        CMD_LIST_ITEM = map.addComplexCommandSameArgMode("<list item>", false, 1, PARA_MODE_ONLY, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
+        CMD_LIST_ITEM = map.addComplexCommandSameArgMode("<list item>", false, 1, PARA_MODE_ONLY, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
         
         /* Tree-like placeholders for specifying columns and rows in environments such as 'tabular'.
          * We don't allow to be inputed as the containment requirements can make it awkward to ensure
@@ -200,12 +200,12 @@ public final class GlobalBuiltins {
          * TODO: Decide whether to support traditional LaTeX labelling or not.
          * TODO: Decide whether to support traditional LaTeX numbering or not.
          */
-        map.addComplexCommandOneArg("section", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h2"), START_NEW_XHTML_BLOCK);
-        map.addComplexCommandOneArg("section*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h2"), START_NEW_XHTML_BLOCK);
-        map.addComplexCommandOneArg("subsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
-        map.addComplexCommandOneArg("subsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h3"), START_NEW_XHTML_BLOCK);
-        map.addComplexCommandOneArg("subsubsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h4"), START_NEW_XHTML_BLOCK);
-        map.addComplexCommandOneArg("subsubsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuilder("h4"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("section", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h2"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("section*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h2"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h3"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h3"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsubsection", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h4"), START_NEW_XHTML_BLOCK);
+        map.addComplexCommandOneArg("subsubsection*", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h4"), START_NEW_XHTML_BLOCK);
         
         /* Old-style P/LR mode style change macros, slightly complicated due to the way they
          * apply until the end of the current group, resulting in a lack of tree structure.
@@ -234,7 +234,7 @@ public final class GlobalBuiltins {
          * into PARAGRAPH mode here so that the resulting content will end up inside <mtext/>
          * element(s) wrapped inside a <mstyle/> setting the appropriate style.
          */
-        StyleInterpretationNodeBuilder styleInterpretationNodeBuilder = new StyleInterpretationNodeBuilder(); /* (Stateless so can share) */
+        StyleInterpretationHandler styleInterpretationNodeBuilder = new StyleInterpretationHandler(); /* (Stateless so can share) */
         map.addComplexCommandOneArg("textrm", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
         map.addComplexCommandOneArg("textsf", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SF, styleInterpretationNodeBuilder, ALLOW_INLINE);
         map.addComplexCommandOneArg("textit", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.IT, styleInterpretationNodeBuilder, ALLOW_INLINE);
@@ -266,10 +266,10 @@ public final class GlobalBuiltins {
         map.addSimpleCommand("dag", TEXT_MODE_ONLY, new CharacterCommandHandler("\u2020"), ALLOW_INLINE);
         
         /* Ellipses (All modes) */
-        map.addSimpleCommand("ldots", ALL_MODES, new MathIdentifierInterpretation("\u2026"), new TextSafeInterpretableMathIdentifierBuilder(), ALLOW_INLINE);
+        map.addSimpleCommand("ldots", ALL_MODES, new MathIdentifierInterpretation("\u2026"), new TextSafeInterpretableMathIdentifierHandler(), ALLOW_INLINE);
         
         /* Other symbols valid in all modes */
-        map.addSimpleCommand("pounds", ALL_MODES, new MathIdentifierInterpretation("\u00a3"), new TextSafeInterpretableMathIdentifierBuilder(), ALLOW_INLINE);
+        map.addSimpleCommand("pounds", ALL_MODES, new MathIdentifierInterpretation("\u00a3"), new TextSafeInterpretableMathIdentifierHandler(), ALLOW_INLINE);
         
         //---------------------------------------------------------------
         // Math Mode stuff (see LaTeX Companion pp39-52)
@@ -284,14 +284,14 @@ public final class GlobalBuiltins {
          * Note that subscript/superscripts will either be converted to <msub/> et al or <munder/> et al
          * according to the type of operator being handled.
          */
-        MathLimitsBuilder mathLimitsBuilder = new MathLimitsBuilder();
-        CMD_MROW = map.addComplexCommandSameArgMode("<mrow>", false, 1, MATH_MODE_ONLY, new MrowBuilder(), null);
+        MathLimitsHandler mathLimitsBuilder = new MathLimitsHandler();
+        CMD_MROW = map.addComplexCommandSameArgMode("<mrow>", false, 1, MATH_MODE_ONLY, new MrowHandler(), null);
         CMD_MSUB_OR_MUNDER = map.addComplexCommandSameArgMode("<msubormunder>", false, 2, MATH_MODE_ONLY, mathLimitsBuilder, null);
         CMD_MSUP_OR_MOVER = map.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, mathLimitsBuilder, null);
         CMD_MSUBSUP_OR_MUNDEROVER = map.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, mathLimitsBuilder, null);
         
         /* A related idea to sub/super is \\stackrel */
-        map.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelBuilder(), null);
+        map.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelHandler(), null);
         
         /* Styling (c.f. equivalents in text mode, listed above) */
         map.addComplexCommandSameArgMode("mathrm", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
@@ -562,43 +562,43 @@ public final class GlobalBuiltins {
         /* This is a LaTeX-specific combiner macro that always comes before a
          * {@link MathRelationOperatorInterpretation} command.
          */
-        CMD_NOT = map.addCombinerCommand("not", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_RELATION_OPERATOR), new MathNotBuilder(), null);
+        CMD_NOT = map.addCombinerCommand("not", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_RELATION_OPERATOR), new MathNotHandler(), null);
 
         /* Complex math macros */
-        map.addComplexCommandSameArgMode("sqrt", true, 1, MATH_MODE_ONLY, new MathRootBuilder(), null);
-        CMD_FRAC = map.addComplexCommandSameArgMode("frac", false, 2, MATH_MODE_ONLY, new MathComplexCommandBuilder("mfrac"), null);
+        map.addComplexCommandSameArgMode("sqrt", true, 1, MATH_MODE_ONLY, new MathRootHandler(), null);
+        CMD_FRAC = map.addComplexCommandSameArgMode("frac", false, 2, MATH_MODE_ONLY, new MathComplexCommandHandler("mfrac"), null);
         CMD_OVER = map.addSimpleCommand("over", MATH_MODE_ONLY, null, null); /* TeX style fractions {... \over ...}, replaced during fixing *;
         
         /* Spacing */
-        map.addSimpleCommand("quad", ALL_MODES, new SpaceNodeBuilder("\u00a0", "1em"), null);
-        map.addSimpleCommand("qquad", ALL_MODES, new SpaceNodeBuilder("\u00a0\u00a0", "2em"), null);
-        map.addComplexCommandSameArgMode("hspace", false, 1, ALL_MODES, new HSpaceNodeBuilder(), null);
-        map.addComplexCommandSameArgMode("hspace*", false, 1, ALL_MODES, new HSpaceNodeBuilder(), null);
+        map.addSimpleCommand("quad", ALL_MODES, new SpaceHandler("\u00a0", "1em"), null);
+        map.addSimpleCommand("qquad", ALL_MODES, new SpaceHandler("\u00a0\u00a0", "2em"), null);
+        map.addComplexCommandSameArgMode("hspace", false, 1, ALL_MODES, new HSpaceHandler(), null);
+        map.addComplexCommandSameArgMode("hspace*", false, 1, ALL_MODES, new HSpaceHandler(), null);
 
         /* Math accents */
-        map.addComplexCommandSameArgMode("hat", false, 1, MATH_MODE_ONLY, new AccentBuilder(AccentMaps.CIRCUMFLEX, '\u0302', "mover"), null);
-        map.addComplexCommandSameArgMode("bar", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u0304', "mover"), null);
-        map.addComplexCommandSameArgMode("vec", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u2192', "mover"), null);
-        map.addComplexCommandSameArgMode("dot", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u0307', "mover"), null);
-        map.addComplexCommandSameArgMode("ddot", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u0308', "mover"), null);
-        map.addComplexCommandSameArgMode("tilde", false, 1, MATH_MODE_ONLY, new AccentBuilder(AccentMaps.TILDE, '~', "mover"), null);
-        map.addComplexCommandSameArgMode("widehat", false, 1, MATH_MODE_ONLY, new AccentBuilder(AccentMaps.CIRCUMFLEX, '\u0302', "mover"), null);
-        map.addComplexCommandSameArgMode("widetilde", false, 1, MATH_MODE_ONLY, new AccentBuilder(AccentMaps.TILDE, '\u02dc', "mover"), null);
-        map.addComplexCommandSameArgMode("overline", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u00af', "mover"), null);
-        map.addComplexCommandSameArgMode("overbrace", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\ufe37', "mover"), null);
-        map.addComplexCommandSameArgMode("underbrace", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\ufe38', "munder"), null);
-        map.addComplexCommandSameArgMode("overrightarrow", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u20d7', "mover"), null);
-        map.addComplexCommandSameArgMode("overleftarrow", false, 1, MATH_MODE_ONLY, new AccentBuilder(null, '\u20d6', "mover"), null);
+        map.addComplexCommandSameArgMode("hat", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.CIRCUMFLEX, '\u0302', "mover"), null);
+        map.addComplexCommandSameArgMode("bar", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u0304', "mover"), null);
+        map.addComplexCommandSameArgMode("vec", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u2192', "mover"), null);
+        map.addComplexCommandSameArgMode("dot", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u0307', "mover"), null);
+        map.addComplexCommandSameArgMode("ddot", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u0308', "mover"), null);
+        map.addComplexCommandSameArgMode("tilde", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.TILDE, '~', "mover"), null);
+        map.addComplexCommandSameArgMode("widehat", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.CIRCUMFLEX, '\u0302', "mover"), null);
+        map.addComplexCommandSameArgMode("widetilde", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.TILDE, '\u02dc', "mover"), null);
+        map.addComplexCommandSameArgMode("overline", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u00af', "mover"), null);
+        map.addComplexCommandSameArgMode("overbrace", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\ufe37', "mover"), null);
+        map.addComplexCommandSameArgMode("underbrace", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\ufe38', "munder"), null);
+        map.addComplexCommandSameArgMode("overrightarrow", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u20d7', "mover"), null);
+        map.addComplexCommandSameArgMode("overleftarrow", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u20d6', "mover"), null);
         
         /* Dual-mode accents */
-        map.addComplexCommandSameArgMode("underline", false, 1, ALL_MODES, StyleDeclarationInterpretation.UNDERLINE, new ModeDelegatingBuilder(styleInterpretationNodeBuilder, new AccentBuilder(null, '\u00af', "munder")), null);
+        map.addComplexCommandSameArgMode("underline", false, 1, ALL_MODES, StyleDeclarationInterpretation.UNDERLINE, new ModeDelegatingHandler(styleInterpretationNodeBuilder, new AccentHandler(null, '\u00af', "munder")), null);
         
         /* Complex multi-mode macros */
-        map.addComplexCommandOneArg("mbox", false, ALL_MODES, LR, new BoxBuilder("mbox"), null);
-        map.addComplexCommandOneArg("fbox", false, ALL_MODES, LR, new BoxBuilder("fbox"), null);
+        map.addComplexCommandOneArg("mbox", false, ALL_MODES, LR, new BoxHandler("mbox"), null);
+        map.addComplexCommandOneArg("fbox", false, ALL_MODES, LR, new BoxHandler("fbox"), null);
         
         /* Table stuff */
-        CMD_HLINE = map.addSimpleCommand("hline", ALL_MODES, new TabularBuilder(), IGNORE);
+        CMD_HLINE = map.addSimpleCommand("hline", ALL_MODES, new TabularHandler(), IGNORE);
         
         /* Commands for creating user-defined commands and environments */
         DoNothingHandler doNothingHandler = new DoNothingHandler();
@@ -608,14 +608,14 @@ public final class GlobalBuiltins {
         CMD_RENEWENVIRONMENT = map.addComplexCommandSameArgMode("renewenvironment", false, 2, ALL_MODES, doNothingHandler, IGNORE);
         
         /* Special XHTML helpers */
-        map.addComplexCommand("href", true, 1, TEXT_MODE_ONLY, new LaTeXMode[] { LR, VERBATIM }, new HrefBuilder(), ALLOW_INLINE);
+        map.addComplexCommand("href", true, 1, TEXT_MODE_ONLY, new LaTeXMode[] { LR, VERBATIM }, new HrefHandler(), ALLOW_INLINE);
         map.addComplexCommandOneArg("anchor", false, TEXT_MODE_ONLY, VERBATIM, new AnchorHandler(), ALLOW_INLINE);
         map.addComplexCommandOneArg("anchor*", false, TEXT_MODE_ONLY, LR, new AnchorHandler(), ALLOW_INLINE);
         
         /* Commands for creating custom XML (also see related environments) */
         CMD_XML_ATTR = map.addComplexCommand("xmlAttr", false, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR }, new XMLAttrHandler(), IGNORE);
-        map.addComplexCommand("xmlBlockElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLBlockElementBuilder(), START_NEW_XHTML_BLOCK);
-        map.addComplexCommand("xmlInlineElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLInlineElementBuilder(), ALLOW_INLINE);
+        map.addComplexCommand("xmlBlockElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
+        map.addComplexCommand("xmlInlineElement", true, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR, null }, new XMLInlineElementHandler(), ALLOW_INLINE);
         map.addComplexCommandOneArg("xmlName", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.NAME), IGNORE);
         map.addComplexCommandOneArg("xmlName*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.NAME), IGNORE);
         map.addComplexCommandOneArg("xmlId", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
@@ -623,23 +623,23 @@ public final class GlobalBuiltins {
         
         /* =================================== ENVIRONMENTS ================================= */
         
-        ENV_MATH = map.addEnvironment("math", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentBuilder(), ALLOW_INLINE);
-        ENV_DISPLAYMATH = map.addEnvironment("displaymath", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentBuilder(), ALLOW_INLINE);
-        ENV_VERBATIM = map.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimBuilder(false), START_NEW_XHTML_BLOCK);
-        ENV_ITEMIZE = map.addEnvironment("itemize", PARA_MODE_ONLY, null, null, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
-        ENV_ENUMERATE = map.addEnvironment("enumerate", PARA_MODE_ONLY, null, null, new ListEnvironmentBuilder(), START_NEW_XHTML_BLOCK);
-        ENV_TABULAR = map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, null, new TabularBuilder(), START_NEW_XHTML_BLOCK);
-        ENV_ARRAY = map.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, null, new ArrayBuilder(), null);
-        ENV_EQNARRAY = map.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, null, new EqnArrayBuilder(), START_NEW_XHTML_BLOCK);
-        ENV_EQNARRAYSTAR = map.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, null, new EqnArrayBuilder(), START_NEW_XHTML_BLOCK);
+        ENV_MATH = map.addEnvironment("math", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentHandler(), ALLOW_INLINE);
+        ENV_DISPLAYMATH = map.addEnvironment("displaymath", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentHandler(), ALLOW_INLINE);
+        ENV_VERBATIM = map.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimHandler(false), START_NEW_XHTML_BLOCK);
+        ENV_ITEMIZE = map.addEnvironment("itemize", PARA_MODE_ONLY, null, null, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
+        ENV_ENUMERATE = map.addEnvironment("enumerate", PARA_MODE_ONLY, null, null, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
+        ENV_TABULAR = map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, null, new TabularHandler(), START_NEW_XHTML_BLOCK);
+        ENV_ARRAY = map.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, null, new ArrayHandler(), null);
+        ENV_EQNARRAY = map.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, null, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
+        ENV_EQNARRAYSTAR = map.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, null, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
         
         /* Simple text environments */
-        map.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuilder("blockquote"), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);
         
         /* Text justification environments. (Note that each line is supposed to be delimited by '\\' */
-        map.addEnvironment("center", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuilder("div", "center"), START_NEW_XHTML_BLOCK);
-        map.addEnvironment("flushleft", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuilder("div", "flushleft"), START_NEW_XHTML_BLOCK);
-        map.addEnvironment("flushright", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuilder("div", "flushright"), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("center", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("div", "center"), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("flushleft", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("div", "flushleft"), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("flushright", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("div", "flushright"), START_NEW_XHTML_BLOCK);
         
         /* Alternative versions of \em and friends. These are converted internally to
          * environments as they're easier to deal with like that.
@@ -665,10 +665,10 @@ public final class GlobalBuiltins {
         map.addEnvironment("Huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE_2, styleInterpretationNodeBuilder, ALLOW_INLINE);
         
         /* Special "fence" environment in Math mode */
-        ENV_FENCED = map.addEnvironment("fenced", false, 2, MATH_MODE_ONLY, MATH, null, new MfenceBuilder(), null);
+        ENV_FENCED = map.addEnvironment("fenced", false, 2, MATH_MODE_ONLY, MATH, null, new MathFenceHandler(), null);
 
         /* Environments for generating custom XML islands (see corresponding command versions as well) */
-        map.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, null, new XMLBlockElementBuilder(), START_NEW_XHTML_BLOCK);
-        map.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, null, new XMLInlineElementBuilder(), ALLOW_INLINE);
+        map.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, null, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, null, new XMLInlineElementHandler(), ALLOW_INLINE);
     }
 }

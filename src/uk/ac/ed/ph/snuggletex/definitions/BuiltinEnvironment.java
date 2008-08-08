@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:BuiltinEnvironment.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -17,17 +17,10 @@ import java.util.EnumSet;
  * @see GlobalBuiltins
  * 
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
-public final class BuiltinEnvironment implements Environment {
-    
-    private final String texName;
-    private final boolean allowingOptionalArgument;
-    private final int argumentCount;
-    private final EnumSet<LaTeXMode> allowedModes;
-    private final Interpretation interpretation;
-    private final EnvironmentHandler nodeBuilder;
-    private final TextFlowContext textFlowContext;
+public final class BuiltinEnvironment extends BuiltinCommandOrEnvironment<EnvironmentHandler>
+        implements Environment {
     
     /** 
      * Mode to use when parsing content. If null, will preserve mode that environment
@@ -35,67 +28,21 @@ public final class BuiltinEnvironment implements Environment {
      */
     private final LaTeXMode contentMode;
     
-    public BuiltinEnvironment(final String name, final EnumSet<LaTeXMode> allowedModes,
-            final LaTeXMode contentMode, final Interpretation interpretation,
-            final EnvironmentHandler nodeBuilder, final TextFlowContext context) {
-        this(name, false, 0, allowedModes, contentMode, interpretation, nodeBuilder, context);
-    }
-    
-    public BuiltinEnvironment(final String name, final boolean allowOptionalArgument,
+    public BuiltinEnvironment(final String texName, final boolean allowingOptionalArgument,
             final int argumentCount, final EnumSet<LaTeXMode> allowedModes,
             final LaTeXMode contentMode, final Interpretation interpretation,
-            final EnvironmentHandler nodeBuilder, final TextFlowContext context) {
-        this.texName = name;
-        this.allowingOptionalArgument = allowOptionalArgument;
-        this.argumentCount = argumentCount;
-        this.allowedModes = allowedModes;
+            final EnvironmentHandler domBuildingHandler, final TextFlowContext textFlowContext) {
+        super(texName, allowingOptionalArgument, argumentCount, allowedModes, interpretation,
+                textFlowContext, domBuildingHandler);
         this.contentMode = contentMode;
-        this.interpretation = interpretation;
-        this.nodeBuilder = nodeBuilder;
-        this.textFlowContext = context;
     }
     
-    public String getTeXName() {
-        return texName;
-    }
-    
-    public boolean isAllowingOptionalArgument() {
-        return allowingOptionalArgument;
-    }
-    
-    public int getArgumentCount() {
-        return argumentCount;
-    }
-    
-    /**
-     * TODO: Is this the right thing to do there? Or should we parametrise this?
-     */
+    /** (Currently all built-in environments parse their arguments in {@link LaTeXMode#PARAGRAPH}.) */
     public LaTeXMode getArgumentMode(int argumentIndex) {
         return LaTeXMode.PARAGRAPH;
     }
     
-    public EnumSet<LaTeXMode> getAllowedModes() {
-        return allowedModes;
-    }
-    
     public LaTeXMode getContentMode() {
         return contentMode;
-    }
-    
-    public Interpretation getInterpretation() {
-        return interpretation;
-    }
-    
-    public EnvironmentHandler getNodeBuilder() {
-        return nodeBuilder;
-    }
-
-    public TextFlowContext getTextFlowContext() {
-        return textFlowContext;
-    }
-    
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + texName + ")";
     }
 }

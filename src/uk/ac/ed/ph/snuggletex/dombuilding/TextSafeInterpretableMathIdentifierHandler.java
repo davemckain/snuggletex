@@ -13,12 +13,12 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import org.w3c.dom.Element;
 
 /**
- * Needed for things like <tt>\ldots</tt>, which works in both Math and Text modes
+ * Used for things like <tt>\ldots</tt>, which work in both Math and Text modes
  *
  * @author  David McKain
  * @version $Revision$
  */
-public class TextSafeInterpretableMathIdentifierBuilder implements CommandHandler {
+public class TextSafeInterpretableMathIdentifierHandler implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token) {
         if (token.getLatexMode()==LaTeXMode.MATH) {

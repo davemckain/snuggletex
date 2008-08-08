@@ -17,11 +17,11 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class BoxBuilder implements CommandHandler {
+public final class BoxHandler implements CommandHandler {
     
     private final String xhtmlClassName;
     
-    public BoxBuilder(final String xhtmlClassName) {
+    public BoxHandler(final String xhtmlClassName) {
         this.xhtmlClassName = xhtmlClassName;
     }
     

@@ -20,11 +20,11 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathComplexCommandBuilder implements CommandHandler {
+public final class MathComplexCommandHandler implements CommandHandler {
     
     private final String elementName;
     
-    public MathComplexCommandBuilder(final String elementName) {
+    public MathComplexCommandHandler(final String elementName) {
         this.elementName = elementName;
     }
     

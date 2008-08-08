@@ -21,12 +21,12 @@ import org.w3c.dom.Element;
 /**
  * Handles the <tt>eqnarray*</tt> environment.
  * 
- * @see MathEnvironmentBuilder
+ * @see MathEnvironmentHandler
  * 
  * @author  David McKain
  * @version $Revision:179 $
  */
-public final class EqnArrayBuilder implements EnvironmentHandler {
+public final class EqnArrayHandler implements EnvironmentHandler {
     
     private static final String[] COLUMN_ALIGNMENTS = {
         "right",
@@ -37,7 +37,7 @@ public final class EqnArrayBuilder implements EnvironmentHandler {
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
-        int[] geometry = TabularBuilder.computeTableDimensions(token.getContent());
+        int[] geometry = TabularHandler.computeTableDimensions(token.getContent());
         int numColumns = geometry[1];
         if (numColumns>3) {
             /* Error: eqnarray must have no more than 3 columns */

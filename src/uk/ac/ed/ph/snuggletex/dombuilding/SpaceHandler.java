@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class SpaceNodeBuilder implements CommandHandler {
+public final class SpaceHandler implements CommandHandler {
 
     /** String to use to create space text Node in TEXT mode, null if not supported */
     private final String textString;
@@ -26,7 +26,7 @@ public final class SpaceNodeBuilder implements CommandHandler {
     /** Width attribute for <tt>mspace</tt> Element in MATH mode, null if not supported */
     private final String mathWidth;
 
-    public SpaceNodeBuilder(final String textString, final String mathWidth) {
+    public SpaceHandler(final String textString, final String mathWidth) {
         this.textString = textString;
         this.mathWidth = mathWidth;
     }

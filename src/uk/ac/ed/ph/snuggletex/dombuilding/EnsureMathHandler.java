@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 
 /**
  * This handles the <tt>\\ensuremath</tt> command. This is implemented by simply delegating
- * to {@link MathEnvironmentBuilder} to start a new (inline) MathML element if we're not
+ * to {@link MathEnvironmentHandler} to start a new (inline) MathML element if we're not
  * already inside MathML.
  *
  * @author  David McKain
@@ -22,10 +22,10 @@ import org.w3c.dom.Element;
  */
 public final class EnsureMathHandler implements CommandHandler {
     
-    private final MathEnvironmentBuilder mathEnvironmentBuilder;
+    private final MathEnvironmentHandler mathEnvironmentBuilder;
     
     public EnsureMathHandler() {
-        this.mathEnvironmentBuilder = new MathEnvironmentBuilder();
+        this.mathEnvironmentBuilder = new MathEnvironmentHandler();
     }
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)

@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class AccentBuilder implements CommandHandler {
+public final class AccentHandler implements CommandHandler {
     
     /** AccentMap to use to look up single characters (may be null) */
     private final AccentMap accentMap;
@@ -40,13 +40,13 @@ public final class AccentBuilder implements CommandHandler {
     /** Name of resulting MathML element (null if this builder doesn't support MATH mode) */
     private final String mathMLElementName;
     
-    public AccentBuilder(final AccentMap accentMap, final char combiningCharacter, final String mathMLElementName) {
+    public AccentHandler(final AccentMap accentMap, final char combiningCharacter, final String mathMLElementName) {
         this.accentMap = accentMap;
         this.combiningCharacter = combiningCharacter;
         this.mathMLElementName = mathMLElementName;
     }
     
-    public AccentBuilder(AccentMap accentMap) {
+    public AccentHandler(AccentMap accentMap) {
         this(accentMap, (char) 0, null);
     }
     

@@ -261,21 +261,21 @@ public final class DOMBuilder {
             case COMMAND:
                 /* Each command has its own builder instance to do the work here */
                 CommandToken commandToken = (CommandToken) token;
-                CommandHandler commandNodeBuilder = commandToken.getCommand().getNodeBuilder();
-                if (commandNodeBuilder==null) {
+                CommandHandler commandHandler = commandToken.getCommand().getDOMBuildingHandler();
+                if (commandHandler==null) {
                     throw new SnuggleLogicException("No builder registered for Command " + commandToken.getCommand());
                 }
-                commandNodeBuilder.handleCommand(this, parentElement, commandToken);
+                commandHandler.handleCommand(this, parentElement, commandToken);
                 break;
                 
             case ENVIRONMENT:
                 /* This is essentially the same as COMMAND but I need to verify the details */
                 EnvironmentToken envToken = (EnvironmentToken) token;
-                EnvironmentHandler envNodeBuilder = envToken.getEnvironment().getNodeBuilder();
-                if (envNodeBuilder==null) {
+                EnvironmentHandler envHandler = envToken.getEnvironment().getDOMBuildingHandler();
+                if (envHandler==null) {
                     throw new SnuggleLogicException("No builder registered for Environment " + envToken.getEnvironment());
                 }
-                envNodeBuilder.handleEnvironment(this, parentElement, envToken);
+                envHandler.handleEnvironment(this, parentElement, envToken);
                 break;
                 
             case ERROR:

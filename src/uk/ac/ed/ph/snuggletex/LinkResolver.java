@@ -5,13 +5,13 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.dombuilding.HrefBuilder;
+import uk.ac.ed.ph.snuggletex.dombuilding.HrefHandler;
 
 import java.net.URI;
 
 /**
  * This interface allows clients to have control over handling any hypertext links encountered
- * in commands like {@link HrefBuilder}, making it possible to remap links as required.
+ * in commands like {@link HrefHandler}, making it possible to remap links as required.
  * <p>
  * This is entirely optional, though!
  *

@@ -10,13 +10,15 @@
   package and renamed the internal \verb|snuggletex.conversion| package as
   \verb|snuggletex.internal|.
 
+  \item Tidied up the naming of classes inside \verb|snuggletex.dombuilding|
+  and tidied up the \verb|CommandOrEnvironment| hierarchy, removing redundant
+  constructors from \verb|BuiltinCommand| and \verb|BuiltinEnvironment| as
+  their functionality was replaced by methods in \verb|DefinitionMap|.
+
   \item Migrated simple utility class for indenting LaTeX input from Aardvark,
   and added some new methods to \verb|SnuggleUtilities|.
 
   \item SnuggleTeX JAR is no longer indexed.
-
-  \item Continued to improve the documentation and rearranged the navigation
-  slightly.
 
   \item Added support for \verb|\verb*| and a SnuggleTeX-specific \verb|\literal|
   command.
@@ -30,6 +32,9 @@
   \item Added the \verb|\xmlId| and \verb|\anchor| commands, as well as starred variants
   of these and similar ones. Moved XML Name/ID checking methods into \verb|DOMBuilder|
   to make them more widely usable by handler classes.
+
+  \item Continued to improve the documentation and rearranged the navigation
+  slightly.
 
 \end{itemize}
 

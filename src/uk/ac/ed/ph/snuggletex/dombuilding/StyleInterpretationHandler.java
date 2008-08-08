@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class StyleInterpretationNodeBuilder implements CommandHandler, EnvironmentHandler {
+public final class StyleInterpretationHandler implements CommandHandler, EnvironmentHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {

@@ -21,16 +21,16 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public class SimpleXHTMLContainerBuilder implements CommandHandler, EnvironmentHandler {
+public class SimpleXHTMLContainerBuildingHandler implements CommandHandler, EnvironmentHandler {
     
     private final String xhtmlElementName;
     private final String cssClassName;
     
-    public SimpleXHTMLContainerBuilder(final String xhtmlElementName) {
+    public SimpleXHTMLContainerBuildingHandler(final String xhtmlElementName) {
         this(xhtmlElementName, null);
     }
     
-    public SimpleXHTMLContainerBuilder(final String xhtmlElementName, final String cssClassName) {
+    public SimpleXHTMLContainerBuildingHandler(final String xhtmlElementName, final String cssClassName) {
         this.xhtmlElementName = xhtmlElementName;
         this.cssClassName = cssClassName;
     }

@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathEnvironmentBuilder implements EnvironmentHandler {
+public final class MathEnvironmentHandler implements EnvironmentHandler {
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {

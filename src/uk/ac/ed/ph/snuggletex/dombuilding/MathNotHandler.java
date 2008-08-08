@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathNotBuilder implements CommandHandler {
+public final class MathNotHandler implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken notToken) {
         NottableMathOperatorInterpretation combinerRelation = (NottableMathOperatorInterpretation) notToken.getCombinerTarget().getInterpretation();

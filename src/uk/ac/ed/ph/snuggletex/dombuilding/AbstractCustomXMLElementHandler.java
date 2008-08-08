@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-abstract class AbstractCustomXMLElementBuilder implements EnvironmentHandler, CommandHandler {
+public abstract class AbstractCustomXMLElementHandler implements EnvironmentHandler, CommandHandler {
     
     /**
      * Subclasses should fill in to return true if they are building a block element or

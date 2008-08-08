@@ -21,12 +21,12 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class ModeDelegatingBuilder implements CommandHandler {
+public final class ModeDelegatingHandler implements CommandHandler {
 
     private final CommandHandler textModeBuilder;
     private final CommandHandler mathModeBuilder;
     
-    public ModeDelegatingBuilder(final CommandHandler textModeBuilder, final CommandHandler mathModeBuilder) {
+    public ModeDelegatingHandler(final CommandHandler textModeBuilder, final CommandHandler mathModeBuilder) {
         this.textModeBuilder = textModeBuilder;
         this.mathModeBuilder = mathModeBuilder;
     }

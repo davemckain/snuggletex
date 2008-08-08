@@ -28,12 +28,12 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class ArrayBuilder implements EnvironmentHandler {
+public final class ArrayHandler implements EnvironmentHandler {
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
         /* Compute the geometry of the table and make sure its content model is OK */
-        int[] geometry = TabularBuilder.computeTableDimensions(token.getContent());
+        int[] geometry = TabularHandler.computeTableDimensions(token.getContent());
         int numColumns = geometry[1];
         
         /* Parse the cell alignment properties.

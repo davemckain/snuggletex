@@ -17,12 +17,12 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision:179 $
  */
-public final class VerbatimBuilder implements CommandHandler, EnvironmentHandler {
+public final class VerbatimHandler implements CommandHandler, EnvironmentHandler {
     
     /** Set to handled 'starred' variants, e.g <tt>\\verb*</tt> */
     private final boolean starred;
     
-    public VerbatimBuilder(final boolean starred) {
+    public VerbatimHandler(final boolean starred) {
         this.starred = starred;
     }
     

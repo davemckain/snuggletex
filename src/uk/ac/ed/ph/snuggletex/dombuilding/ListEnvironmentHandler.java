@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class ListEnvironmentBuilder implements EnvironmentHandler, CommandHandler {
+public final class ListEnvironmentHandler implements EnvironmentHandler, CommandHandler {
     
     /**
      * Builds the actual List environment

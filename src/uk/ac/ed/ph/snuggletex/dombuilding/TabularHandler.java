@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class TabularBuilder implements CommandHandler, EnvironmentHandler {
+public final class TabularHandler implements CommandHandler, EnvironmentHandler {
 
     /**
      * The command matched here is <tt>\\hline</tt>.

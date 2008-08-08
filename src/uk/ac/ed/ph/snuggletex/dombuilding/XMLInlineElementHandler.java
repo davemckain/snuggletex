@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:XMLInlineElementBuilder.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -9,9 +9,9 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
  * Builds custom inline XML elements.
  *
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
-public final class XMLInlineElementBuilder extends AbstractCustomXMLElementBuilder {
+public final class XMLInlineElementHandler extends AbstractCustomXMLElementHandler {
     
     @Override
     protected boolean isBlock() {
