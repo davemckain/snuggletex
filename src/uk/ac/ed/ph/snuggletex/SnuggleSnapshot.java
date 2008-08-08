@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:SnuggleSnapshot.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -23,7 +23,7 @@ import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
  * as it allows the results of these configurations to be reused without requiring re-parsing.
  *
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 public final class SnuggleSnapshot {
     

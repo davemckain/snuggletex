@@ -1,4 +1,4 @@
-/* $Id: TeXIndenter.java 2824 2008-08-01 15:46:17Z davemckain $
+/* $Id$
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * experimental for the time being...!
  * 
  * @author  David McKain
- * @version $Revision: 2824 $
+ * @version $Revision$
  */
 public final class LaTeXIndenter {
     

@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:SnuggleTeXTestSuite.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -13,7 +13,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * Entry point for the SnuggleTeX Test Suite
  *
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 @RunWith(Suite.class)
 @SuiteClasses({

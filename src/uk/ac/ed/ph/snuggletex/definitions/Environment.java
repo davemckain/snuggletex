@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:Environment.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -10,7 +10,7 @@ package uk.ac.ed.ph.snuggletex.definitions;
  * <tt>\\begin{environment} ... \\end{environment}</tt>.
  *
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 public interface Environment extends CommandOrEnvironment {
     

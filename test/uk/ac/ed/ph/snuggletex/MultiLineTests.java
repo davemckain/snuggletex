@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:MultiLineTests.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
  * for examples of how it all works.
  * 
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
 public class MultiLineTests extends AbstractGoodXMLTests {

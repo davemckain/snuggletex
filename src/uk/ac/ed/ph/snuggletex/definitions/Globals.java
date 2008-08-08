@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id:Globals.java 179 2008-08-01 13:41:24Z davemckain $
  *
  * Copyright 2008 University of Edinburgh.
  * All Rights Reserved
@@ -23,7 +23,7 @@ import java.util.Map;
  * Lists various useful (but internal) constants and helper methods.
  * 
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision:179 $
  */
 public final class Globals {
     

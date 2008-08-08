@@ -266,7 +266,7 @@
     </copy>
   </target>
 
-  <target name="webapp.errorcodes" depends="webapp.min,build">
+  <target name="webapp.errorcodes" depends="webapp.min, build">
     <java classname="uk.ac.ed.ph.snuggletex.webapp.ErrorCodeDocumentBuilder" fork="yes" failonerror="yes">
       <arg value="${build.webapp.dir}/docs/error-codes.tex"/>
       <classpath>
