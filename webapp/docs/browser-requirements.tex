@@ -2,7 +2,7 @@
 
 \section*{Browser Requirements}
 
-\subsection*{XHTML + MathML Web Page Outputs}
+\subsection*{\href[XHTML + MathML Web Page Outputs]{outputs.html#mathml}}
 
 If you use SnuggleTeX to produce XHTML + MathML web pages, the resulting
 pages will only be viewable on browsers capable of displaying MathML.
@@ -31,27 +31,31 @@ The following table might help:
 Target Audience & Suggestions \\
 \hline
 Firefox only &
-Use the \verb|MOZILLA| page type. This is the most efficient %
-way of displaying MathML on these browsers. \\
+Use the \href[\verb|MOZILLA|]{outputs.html#mozilla} page type. %
+This is the most efficient way of displaying MathML on these browsers. \\
 \hline
 IE only with MathPlayer pre-installed &
-Use the \verb|MATHPLAYER_HTML| page type. This is the most efficient %
-option in this case, but will \emph{not} work if your clients do not %
+Use the \href[\verb|MATHPLAYER_HTML|]{outputs.html#mathplayer} page type. %
+This is the most efficient option in this case, %
+but will \emph{not} work if your clients do not %
 already have MathPlayer installed. \\
 \hline
 IE only, not sure if MathPlayer is installed &
 If you know that your clients have sufficient privileges and ability to be able to %
-install MathPlayer, then you could use the \verb|UNIVERSAL_STYLESHEET| option %
+install MathPlayer, then you could use the %
+\href[\verb|UNIVERSAL_STYLESHEET|]{outputs.html#uss} option %
 as that will prompt for installation of MathPlayer if required. %
 Otherwise, it might be safer to serve up legacy content, as described below. \\
 \hline
 Firefox and IE with MathPlayer pre-installed &
-The \verb|CROSS_BROWSER_XHTML| page type is your best bet here, though %
-you could also use \verb|UNIVERAL_STYLESHEET|. \\
+The \href[\verb|CROSS_BROWSER_XHTML|]{outputs.html#crossbrowser} page type %
+is your best bet here, though %
+you could also use \href[\verb|UNIVERAL_STYLESHEET|]{outputs.html#uss}. \\
 \hline
 Firefox and IE &
 As above, if your clients can install MathPlayer then use the %
-\verb|UNIVERSAL_STYLESHEET| type. Otherwise, it might be safer %
+\href[\verb|UNIVERSAL_STYLESHEET|]{outputs.html#uss} type. %
+Otherwise, it might be safer %
 to serve up legacy content, as described below. \\
 \hline
 All browsers &
@@ -60,9 +64,10 @@ serve legacy content, as described below. \\
 \hline
 \end{tabular}
 
-\subsection*{Legacy XHTML + Images Web Page Outputs}
+\subsection*{\href[Legacy XHTML + Images Web Page Outputs]{outputs.html#legacy}}
 
-These outputs are fairly typical ``XHTML'' traditionaly mis-served as HTML,
-meaning that pretty much all (graphical) browsers will display this perfectly
-well. Any image elements created to represent mathematics have an \verb|alt|
-attribute addded containing the SnuggleTeX input that created the mathematics.
+These outputs are fairly typical ``XHTML'' traditionaly (mis-)served as
+\verb|text/html|, meaning that pretty much all (graphical) browsers will
+display this perfectly well. Any image elements created to represent
+mathematics have an \verb|alt| attribute added containing the SnuggleTeX input
+that created the mathematics.

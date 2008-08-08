@@ -34,15 +34,19 @@ public final class ErrorCodeDocumentBuilder {
         outputWriter.println("\\pageId{errorCodes}");
         outputWriter.println("\n\\section*{SnuggleTeX Error Codes}");
         outputWriter.println("\n(In the table below, \\{0\\} et\\ al\\ are placeholders for details "
-                + "specific to each error instance)");
+                + "specific to each error instance that are substituted in when formatting error messages)");
         outputWriter.println("\n\\begin{tabular}{|c|l|}\n\\hline");
         
         PropertyResourceBundle errorMessageBundle = MessageFormatter.ERROR_MESSAGE_BUNDLE;
+        String codeName;
         for (ErrorCode errorCode : ErrorCode.values()) {
-            outputWriter.println("\\verb|"
-                    + errorCode.name()
+            codeName = errorCode.name();
+            outputWriter.println("\\anchor{"
+                    + codeName
+                    + "}\\verb|"
+                    + codeName
                     + "| & "
-                    + SnuggleUtilities.quoteTextForInput(errorMessageBundle.getString(errorCode.name()))
+                    + SnuggleUtilities.quoteTextForInput(errorMessageBundle.getString(codeName))
                     + " \\\\ \\hline");
         }
         outputWriter.println("\\end{tabular}");

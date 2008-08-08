@@ -136,6 +136,7 @@ All Rights Reserved
               <li><a class="mathMode" href="{$context-path}/docs/math-mode.html">Basic Math Mode Commands</a></li>
               <li><a class="verbatimMode" href="{$context-path}/docs/verbatim-mode.html">Verbatim Mode</a></li>
               <li><a class="commands" href="{$context-path}/docs/commands.html">Defining Commands &amp; Environments</a></li>
+              <li><a class="xhtmlCommands" href="{$context-path}/docs/xhtml-commands.html">XHTML-related Commands</a></li>
               <li><a class="xmlCommands" href="{$context-path}/docs/xml-commands.html">XML-related Commands</a></li>
             </ul>
 

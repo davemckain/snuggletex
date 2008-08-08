@@ -41,21 +41,20 @@ and then outputs one, giving:
 }
 \[ A = \mat{\alpha}{\beta}{\gamma}{\delta}\]
 
-As an example of error reporting, the following input:
+As an example of error reporting, if you paste the above example into the
+\href[Try Out]{../tryout.xml} page and add the following line:
 
 \begin{verbatim}
 \[ A = \mat{\mat{\silly}{2}{3}{4}}{2}{3}{4} \]
 \end{verbatim}
 
-would generate the following error message (if formatted explicitly using
-\verb|MessageFormatter| or if your \href[output options]{outputs.html} have
-been set apppropriately):
+then you will see the following error message:
 
 \begin{verbatim}
 Undefined command \silly
 At character 39 after "\mat{\silly}{2}{3}{4..." was substituted with "   \left(      \begi..."
 At character 39 after "\mat{\mat{\silly}{2}..." was substituted with "   \left(      \begi..."
-At line 11, column 8 of input Form Input
+At line 10, column 8 of input Form Input
 \end{verbatim}
 
 \subsection*{Defining Built-in Commands and Environments}
@@ -76,4 +75,4 @@ by implementing the \verb|CommandHandler| and \verb|EnvironmentHandler| interfac
 as required and calling back on the \verb|DOMBuilder| Object that gets passed
 to you to build XHTML, MathML and other XML structures. There are already a lot
 of handler classes in the \verb|snuggletex.dombuilding| package that you can
-insepect, copy and build on to help here.
+inspect, copy and build on to help here.

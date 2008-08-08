@@ -13,17 +13,21 @@
         any other Java libraries so is easy to integrate into Java projects. The
         standard binary distribution contains the SnuggleTeX core.
 
-  \item For generating web pages, we recommend the excellent SAXON XSLT processor
+  \item For generating web pages, we recommend the excellent
+        \href[SAXON]{http://saxon.sourceforge.net} XSLT processor
         to replace the bundled version of Xalan that comes with the JDK, though
         it is cetainly not essential. A recent binary of SAXON is included in
         the full and source distributions of SnuggleTeX.
 
   \item The extension for generating legacy XHTML + images requires the
-        JEuclid library, which has a number of dependencies on other
-        libraries. A minimal set of those sufficient to generate PNG images is
-        included in the full SnuggleTeX distribution.
+        \href[JEuclid]{http://jeuclid.sourceforge.net}
+        library, which has a number of dependencies on other libraries. A
+        minimal set of those sufficient to generate PNG images is included in
+        the full SnuggleTeX distribution.
 
-  \item The SnuggleTeX source distribution includes JUnit and EasyMock libraries
+  \item The SnuggleTeX source distribution includes
+        \href[JUnit4]{http://www.junit.org} and
+        \href[EasyMock]{http://www.easymock.org} libraries
         for running the SnuggleTeX test suite.
 
 \end{itemize}
@@ -47,7 +51,7 @@ commons-logging-1.1.jar, jeuclid-core-3.1.1.jar, xml-apis.jar (not needed for Ja
 saxon9.jar, saxon9-dom.jar \\
 \hline
 Building SnuggleTeX, running the test suite and building the web application &
-As above, plus: easymock.jar, junit-4.4.jar, servlet-api.jar &
+All of the above, plus: easymock.jar, junit-4.4.jar, servlet-api.jar &
 saxon9.jar, saxon9-dom.jar \\
 \hline
 \end{tabular}

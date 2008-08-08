@@ -2,13 +2,13 @@
 
 \section*{Release Notes}
 
-\subsection*{Version 1.0.0-beta6 [r2??] (??/08/08)}
+\subsection*{Version 1.0.0 [r2??] (08/08/08)}
 
 \begin{itemize}
 
   \item Moved top-level utility classes to new \verb|snuggletex.utilities|
   package and renamed the internal \verb|snuggletex.conversion| package as
-  |\verb|snuggletex.internal|.
+  \verb|snuggletex.internal|.
 
   \item Migrated simple utility class for indenting LaTeX input from Aardvark,
   and added some new methods to \verb|SnuggleUtilities|.
@@ -25,7 +25,11 @@
 
   \item Fixed the alignment of columns in the \verb|eqnarray| environments and
   added test to ensure that no more than 3 columns are used, resulting in a
-  \verb|TDEM01| error otherwise.
+  \href[\verb|TDEM01|]{error-codes.html#TDEM01} error otherwise.
+
+  \item Added the \verb|\xmlId| and \verb|\anchor| commands, as well as starred variants
+  of these and similar ones. Moved XML Name/ID checking methods into \verb|DOMBuilder|
+  to make them more widely usable by handler classes.
 
 \end{itemize}
 

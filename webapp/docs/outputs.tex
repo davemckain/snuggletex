@@ -9,16 +9,16 @@ using various methods in \verb|SnuggleSession|.
 The types of outputs supported by SnuggleTeX fall into 2 basic categories:
 
 \begin{enumerate}
-  \item \textbf{DOM Outputs}: These create standalone branches within a DOM.
+  \item \href[\textbf{DOM Outputs}]{#dom}: These create standalone branches within a DOM.
     Use these if you just want to get an XML ``fragment'' or want to import
     SnuggleTeX output into an existing DOM Docment.
 
-  \item \textbf{Web Page Outputs}: These generate full DOM Documents and/or
-    web pages, providing programmaticf control over how the process
+  \item \href[\textbf{Web Page Outputs}]{#web}: These generate full DOM Documents and/or
+    web pages, providing programmatic control over how the process
     works.
 \end{enumerate}
 
-\subsection*{DOM Outputs}
+\subsection*{\anchor{dom}DOM Outputs}
 
 There are two main groups of methods generating this type of output:
 
@@ -51,7 +51,7 @@ which is a simple JavaBean that lets you control aspects such as:
 
 Have a look at the API documentation for \verb|DOMOutputOptions| for more information.
 
-\subsection*{Web Page Outputs}
+\subsection*{\anchor{web}Web Page Outputs}
 
 There are two main groups of methods for generating fully-blown web pages:
 
@@ -78,7 +78,7 @@ final type of which is used to determine the exact process that is followed:
     to images using the JEuclid tool.
 \end{itemize}
 
-\subsubsection*{XHTML + MathML Web Pages}
+\subsection*{\anchor{mathml}XHTML + MathML Web Pages}
 
 The \verb|MathMLWebPageOptions| Object extends \verb|DOMOutputOptions|,
 giving you additional control over the further aspects of the output:
@@ -102,18 +102,18 @@ it is also worth considering the \href[browser requirements]{browser-requirement
 page which considers them from a client-specific point of view.
 
 \begin{itemize}
-  \item \textbf{MOZILLA} \href[(example)]{math-mode.xhtml}:
+  \item \anchor{mozilla} \textbf{MOZILLA} \href[(example)]{math-mode.xhtml}:
     This generates an XHTML + MathML document suitable for
     Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml.html|,
     has no XML declaration and no DOCTYPE declaration. Do \emph{not} use this if you
     are targeting Internet Explorer as it will display this as an XML tree.
 
-  \item \textbf{MATHPLAYER\_HTML} \href[(example)]{math-mode.html}:
+  \item \anchor{mathplayer} \textbf{MATHPLAYER\_HTML} \href[(example)]{math-mode.html}:
     This generates an HTML document that displays well
     on Internet Explorer 6/7 with the MathPlayer plugin installed. It will not display
     MathML correctly on Mozilla-based browsers.
 
-  \item \textbf{CROSS\_BROWSER\_XHTML} \href[(example)]{math-mode.cxml}:
+  \item \anchor{crossbrowser} \textbf{CROSS\_BROWSER\_XHTML} \href[(example)]{math-mode.cxml}:
     This generates an XHTML + MathML document that
     displays well on both Mozilla-based browsers and Internet Explorer 6/7 (providing that
     the MathPlayer plug-in has already been installed). It is served as \verb|application/xhtml.html|,
@@ -125,7 +125,7 @@ page which considers them from a client-specific point of view.
         somewhat.
     \end{itemize}
 
-  \item \textbf{UNIVERSAL\_STYLESHEET} \href[(example)]{math-mode.xml}:
+  \item \anchor{uss} \textbf{UNIVERSAL\_STYLESHEET} \href[(example)]{math-mode.xml}:
     This generates an XHTML + MathML document
     that is served as XML and can be served to both Mozilla-based browsers and
     Internet Explorer 6/7. It includes an XML processing instruction that tells
@@ -141,16 +141,17 @@ page which considers them from a client-specific point of view.
         browsers will load static resources both before and after the XSLT is applied.
     \end{itemize}
 
-  \item \textbf{CLIENT\_SIDE\_XSLT\_STYLESHEET}: This generates a XHTML + MathML document,
+  \item \anchor{xsl} \textbf{CLIENT\_SIDE\_XSLT\_STYLESHEET}: This generates a XHTML + MathML document,
     served as \verb|application/xhtml.html| with no XML declaration and no DOCTYPE declaration.
     It is intended to be used with a client-side XSLT of your choice.
 
 \end{itemize}
 
-\subsubsection*{Legacy (X)HTML + Images Web Pages}
+\subsection*{\anchor{legacy}Legacy (X)HTML + Images Web Pages}
 
-You will need to ensure you have downloaded the full binary distribution of
-SnuggleTeX for this, and add all of the JARs under the \verb|lib/jeuclid| folder
+You will need to ensure you have downloaded the full binary
+distribution of SnuggleTeX for this, and add all of the JARs under the
+\verb|lib/jeuclid| folder
 to your runtime ClassPath. This will allow you to create PNG images safely; to
 create other types of images you will need to add additional JARs as described in
 the JEuclid documentation.

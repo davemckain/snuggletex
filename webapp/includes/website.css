@@ -96,6 +96,7 @@ body#mathMode a.mathMode,
 body#verbatimMode a.verbatimMode,
 body#commands a.commands,
 body#xmlCommands a.xmlCommands,
+body#xhtmlCommands a.xhtmlCommands,
 body#tryout a.tryout {
   color: #f25c69;
   font-weight: bold;

@@ -4,8 +4,8 @@
 
 SnuggleTeX provides a few custom commands to make it
 easy to do certain XML-related tasks, which can be quite
-useful if you are generating elements outwit the usual
-XHTML and/or MathML.
+useful if you are generating elements outwith the usual
+spectrum of XHTML and/or MathML.
 
 \subsection*{Creating Custom XML Elements}
 
@@ -21,15 +21,16 @@ optional one to allow you to set XML attributes
 
 \begin{enumerate}
   \item Namespace URI. This must be a valid URI, otherwise
-    error \verb|TDEX04| will be recorded. 
-    (Note that this argument is parsed in \verb|LR| mode
+    error \href[\verb|TDEX04|]{error-codes.html#TDEX04} will be recorded.
+    (Note that this argument is parsed in LR mode
     rather than \verb|VERBATIM| mode so as to allow you to
     parametrise it, if required.)
   \item Element qName (qualified name), which will be of
     the form \verb|prefix:localName| or just
     \verb|localName|. An invalid qName will result in
-    error \verb|TDEX01|.
-  \item Element content
+    error \href[\verb|TDEX01|]{error-codes.html#TDEX01}. (This argument is also parsed
+    in LR mode.)
+  \item Element content. (LR mode)
 \end{enumerate}
 
 If you are generating a lot of XML elements belonging
@@ -58,11 +59,20 @@ optional arguments that allow XML attributes to be specified. This is
 done using a number of \verb|\xmlAttr| commands. These take 3 arguments
 --- namespace URI, qName and value --- in the same way as above. Using
 an \verb|\xmlAttr| in any other place in a document will record a
-\verb|TDEX02| error.
+\href[\verb|TDEX02|]{error-codes.html#TDEX02} error.
 
-\subsection*{XML Names}
+\subsection*{XML Names and IDs}
 
 It is sometimes useful to be able to enforce that a particular input
-is a valid XML name. This can be done with the \verb|\xmlName| command.
-It takes a single argument and returns it unchanged, recording a
-\verb|TDEX03| error if the name is invalid.
+is a valid XML name. This can be done with the \verb|\xmlName|
+and \verb|\xmlName*| commands. These both take a single argument and returns it
+unchanged, recording a \href[\verb|TDEX03|]{error-codes.html#TDEX03} error if the name is invalid.
+The \verb|\xmlName| parses its argument in VERBATIM Mode, saving users from
+having to escape the underscore character. However, this also makes it
+impossible to dynamically evaluate the names. For this, you can use
+\verb|\xmlName*|, which parses its argument in LR Mode.
+
+The \verb|\xmlId| and \verb|\xmlId*| commands behave similarly, performing
+an additional check that the name is an ID which is not already in use in the
+resulting DOM Document, recording a \href[\verb|TDEX05|]{error-codes.html#TDEX05} error if this is not the
+case.
