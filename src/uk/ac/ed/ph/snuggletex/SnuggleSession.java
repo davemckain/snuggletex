@@ -407,7 +407,6 @@ public final class SnuggleSession implements SessionContext {
      * 
      * @param options
      */
-    @SuppressWarnings("unchecked")
     private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageOptions options) {
         AbstractWebPageBuilder<?> result = null;
         if (options instanceof MathMLWebPageOptions) {
