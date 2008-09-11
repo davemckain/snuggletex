@@ -27,6 +27,8 @@ import javax.xml.transform.stream.StreamSource;
  */
 abstract class BaseServlet extends HttpServlet {
     
+    private static final long serialVersionUID = -2577813908466694931L;
+
     /**
      * Helper that reads in a resource from the webapp hierarchy, throwing a {@link ServletException}
      * if the resource could not be found.
