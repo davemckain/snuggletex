@@ -22,11 +22,15 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
   by SnuggleTeX during the Ant build process
   -->
   <mime-mapping>
+    <extension>xhtml</extension>
+    <mime-type>application/xhtml+xml</mime-type>
+  </mime-mapping>
+  <mime-mapping>
     <extension>xml</extension>
     <mime-type>application/xhtml+xml</mime-type>
   </mime-mapping>
   <mime-mapping>
-    <extension>xhtml</extension>
+    <extension>cxml</extension>
     <mime-type>application/xhtml+xml</mime-type>
   </mime-mapping>
   <mime-mapping>
