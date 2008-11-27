@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
@@ -21,8 +22,8 @@ import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -1046,6 +1047,13 @@ public final class TokenFixer {
         tokens.addAll(resultBuilder);
     }
     
+    /**
+     * This tries to infer where the "invisible times" and "apply functions" operators may
+     * be usefully added to the outgoing DOM. This is only invoked if
+     * {@link SessionConfiguration#isInferringMathStructure()}
+     * returns true since it involves some heuristic analysis and is only really intended to be
+     * used in "elementary" situations, where it can actually be quite powerful.
+     */
     private void inferApplyFunctionAndInvisibleTimes(List<FlowToken> tokens) {
         boolean justDidFunction = false;
         boolean justDidNonOperator = false;
@@ -1057,14 +1065,34 @@ public final class TokenFixer {
         List<FlowToken> resultBuilder = new ArrayList<FlowToken>(); 
         for (int i=0, size=tokens.size(); i<size; i++) {
             token = tokens.get(i);
+            
+            /* Decide if we are an operator */
             operator = resolveMathMLOperator(token);
             operatorType = operator!=null ? operator.getOperatorType() : null;
             isOperator = operator!=null;
-            isFunction = token.isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER);
-            
             if (token.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR) || operatorType==OperatorType.INFIX) {
                 /* We can't deal with brackets and infix operators. */
                 return;
+            }
+            
+            /* Decide if the current token directly represents a function, which may involve a
+             * certain amount of heuristic guessing...!
+             */
+            isFunction = token.isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER);
+            if (token.isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER)) {
+                /* This is clearly a function */
+                isFunction = true;
+            }
+            else if (token.isCommand(GlobalBuiltins.CMD_MSUB_OR_MUNDER)
+                    || token.isCommand(GlobalBuiltins.CMD_MSUP_OR_MOVER)
+                    || token.isCommand(GlobalBuiltins.CMD_MSUBSUP_OR_MUNDEROVER)) {
+                /* See if this is something like \log_a x or \sin^{-1} x, which we will interpret
+                 * as being a function. This is not necessarily the correct thing to do!
+                 */
+                List<FlowToken> firstArgumentTokens = ((CommandToken) token).getArguments()[0].getContents();
+                if (firstArgumentTokens.size()==1) {
+                    isFunction = firstArgumentTokens.get(0).isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER);
+                }
             }
             
             /* If we did a function last time round and this token isn't an "ApplyFunction", add one now */

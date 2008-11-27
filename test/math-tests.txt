@@ -523,3 +523,11 @@ _2^3
 1-2
 <mn>1</mn><mo>-</mo><mn>2</mn>
 ====
+## New feature. Inference of apply function can now detect inverses.
+\sin^{-1} x
+<msup><mi>sin</mi><mn>-1</mn></msup><mo>&#x2061;</mo><mi>x</mi>
+====
+## Similarly we can let apply function work over subscripts, though this is maybe heavy-handed.
+\log_a x
+<msub><mi>log</mi><mi>a</mi></msub><mo>&#x2061;</mo><mi>x</mi>
+====
