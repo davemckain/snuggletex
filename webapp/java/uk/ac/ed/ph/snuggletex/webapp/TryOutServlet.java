@@ -41,11 +41,10 @@ public final class TryOutServlet extends BaseServlet {
     /** Logger so that we can log what users are trying out to allow us to improve things */
     private Logger log = Logger.getLogger(TryOutServlet.class.getSimpleName());
     
-    
     /** Location of XSLT controlling page layout */
     public static final String TRYOUT_XSLT_LOCATION = "/WEB-INF/tryout.xsl";
     
-    /** Locaiton of default input to use when visiting the page for the first time */
+    /** Location of default input to use when visiting the page for the first time */
     public static final String DEFAULT_INPUT_LOCATION = "/WEB-INF/tryout-default.tex";
     
     /** Compiled XSLT */
