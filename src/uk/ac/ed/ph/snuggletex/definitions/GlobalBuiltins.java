@@ -387,6 +387,20 @@ public final class GlobalBuiltins {
         map.addSimpleMathCommand("tan", new MathFunctionIdentifierInterpretation("tan"));
         map.addSimpleMathCommand("tanh", new MathFunctionIdentifierInterpretation("tanh"));
         
+        /* Extra Math functions (added for consistency with standard Content MathML operators) */
+        map.addSimpleMathCommand("sech", new MathFunctionIdentifierInterpretation("sech"));
+        map.addSimpleMathCommand("csch", new MathFunctionIdentifierInterpretation("csch"));
+        map.addSimpleMathCommand("coth", new MathFunctionIdentifierInterpretation("coth"));
+        map.addSimpleMathCommand("arcsec", new MathFunctionIdentifierInterpretation("arcsec"));
+        map.addSimpleMathCommand("arccsc", new MathFunctionIdentifierInterpretation("arccsc"));
+        map.addSimpleMathCommand("arccot", new MathFunctionIdentifierInterpretation("arccot"));
+        map.addSimpleMathCommand("arccosh", new MathFunctionIdentifierInterpretation("arccosh"));
+        map.addSimpleMathCommand("arcsinh", new MathFunctionIdentifierInterpretation("arcsinh"));
+        map.addSimpleMathCommand("arctanh", new MathFunctionIdentifierInterpretation("arctanh"));
+        map.addSimpleMathCommand("arcsech", new MathFunctionIdentifierInterpretation("arcsech"));
+        map.addSimpleMathCommand("arccsch", new MathFunctionIdentifierInterpretation("arccsch"));
+        map.addSimpleMathCommand("arccoth", new MathFunctionIdentifierInterpretation("arccoth"));
+
         /* Variable-sized symbols */
         map.addSimpleMathCommand("sum", new SimpleMathOperatorInterpretation(MathMLOperator.SUM));
         map.addSimpleMathCommand("prod", new SimpleMathOperatorInterpretation(MathMLOperator.PROD));
