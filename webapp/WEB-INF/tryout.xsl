@@ -6,7 +6,7 @@ $Id$
 Overrides format-output.xsl to add in functionality for
 the "try out" page.
 
-Copyright (c) 2008 University of Edinburgh.
+Copyright (c) 2009 University of Edinburgh.
 All Rights Reserved
 
 -->

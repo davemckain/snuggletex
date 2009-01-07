@@ -1,6 +1,6 @@
 /* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
- * Copyright 2008 University of Edinburgh.
+ * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
