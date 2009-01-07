@@ -23,8 +23,6 @@ import org.w3c.dom.Element;
  * <p>
  * This can only be used in MATH mode and generates a <tt>mtable</tt> as a result.
  * 
- * TODO: Do alignment!
- * 
  * @author  David McKain
  * @version $Revision$
  */
@@ -67,11 +65,12 @@ public final class ArrayHandler implements EnvironmentHandler {
                     break;
             }
         }
+        int maxColumns = alignments.size();
         
         /* Make sure number of columns specified is at least as much as what was calculated */
-        if (alignSpecData.length() < numColumns) {
+        if (maxColumns < numColumns) {
             /* Error: More columns than expected */
-            builder.appendOrThrowError(parentElement, alignSpecToken, ErrorCode.TDETB0,
+            builder.appendOrThrowError(parentElement, alignSpecToken, ErrorCode.TDEMA2,
                     Integer.valueOf(alignSpecData.length()), Integer.valueOf(numColumns));
         }
 
@@ -79,17 +78,19 @@ public final class ArrayHandler implements EnvironmentHandler {
         Element mtableElement = builder.appendMathMLElement(parentElement, "mtable");
         Element mtrElement, mtdElement;
         FlowToken columnToken;
+        int rowColumns;
         for (FlowToken rowToken : token.getContent()) {
             mtrElement = builder.appendMathMLElement(mtableElement, "mtr");
             List<FlowToken> columns = ((CommandToken) rowToken).getArguments()[0].getContents();
-            for (int i=0; i<columns.size(); i++) {
+            rowColumns = columns.size();
+            for (int i=0; i<maxColumns && i<rowColumns; i++) {
                 columnToken = columns.get(i);
                 mtdElement = builder.appendMathMLElement(mtrElement, "mtd");
                 mtdElement.setAttribute("columnalign", alignments.get(i));
                 builder.handleTokens(mtdElement, ((CommandToken) columnToken).getArguments()[0].getContents(), true);
             }
             /* Add empty <td/> for missing columns */
-            for (int i=0; i<numColumns-columns.size(); i++) {
+            for (int i=0; i<maxColumns-rowColumns; i++) {
                 builder.appendMathMLElement(mtrElement, "mtd");
             }
         }

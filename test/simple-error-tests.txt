@@ -210,6 +210,9 @@ TDEMA0
 $\begin{array}{} \end{array}$
 TDEMA1
 ====
+$\begin{array}{c} 1&2 \end{array}$
+TDEMA2
+====
 \'{\mbox{a}}
 TDETA0
 ====
