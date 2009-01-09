@@ -531,3 +531,12 @@ _2^3
 \log_a x
 <msub><mi>log</mi><mi>a</mi></msub><mo>&#x2061;</mo><mi>x</mi>
 ====
+5!
+<mn>5</mn><mo>!</mo>
+====
+x/2
+<mi>x</mi><mo>/</mo><mn>2</mn>
+====
+3*5
+<mn>3</mn><mo>*</mo><mn>5</mn>
+====

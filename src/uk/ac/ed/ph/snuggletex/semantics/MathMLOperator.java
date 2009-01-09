@@ -19,8 +19,11 @@ public enum MathMLOperator {
 
     ADD(INFIX, "+"),
     SUBTRACT(INFIX, "-"),
+    ASTERISK(INFIX, "*"),
+    SLASH(INFIX, "/"),
     COMMA(INFIX, ","),
     EQUALS(INFIX, "="),
+    FACTORIAL(POSTFIX, "!"),
     
     SUM(PREFIX, "\u2211", true),
     INTEGRAL(PREFIX, "\u222b"),
