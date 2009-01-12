@@ -57,8 +57,8 @@ public final class MathFenceHandler implements EnvironmentHandler {
             throws SnuggleParseException {
         /* Create <mfenced/> operator */
         Element mfenced = builder.appendMathMLElement(parentElement, "mfenced");
-        mfenced.setAttribute("open", StringUtilities.blankIfNull(opener));
-        mfenced.setAttribute("close", StringUtilities.blankIfNull(closer));
+        mfenced.setAttribute("open", StringUtilities.emptyIfNull(opener));
+        mfenced.setAttribute("close", StringUtilities.emptyIfNull(closer));
         
         /* Now add contents, grouping on comma operators */
         List<FlowToken> groupBuilder = new ArrayList<FlowToken>();
