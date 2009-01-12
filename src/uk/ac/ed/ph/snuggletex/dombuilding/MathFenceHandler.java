@@ -5,9 +5,12 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
@@ -22,8 +25,9 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 /**
- * Handles fenced MathML operators, specified via <tt>\\left</tt> and <tt>\\right</tt> or
- * via inferred fencing of brackets.
+ * Handles matched parentheses encapsulated within {@link GlobalBuiltins#ENV_BRACKETED}
+ * environments. These have either been explicitly specified with <tt>\\left</tt> and
+ * <tt>\\right</tt> or have been inferred by the {@link TokenFixer}.
  *
  * @author  David McKain
  * @version $Revision$
@@ -33,20 +37,31 @@ public final class MathFenceHandler implements EnvironmentHandler {
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
         /* Create <mfenced> element with correct attributes */
-        Element mfenced = builder.appendMathMLElement(parentElement, "mfenced");
-        MathMLOperator opener = getBracket(token.getArguments()[0]);
-        MathMLOperator closer = getBracket(token.getArguments()[1]);
-        if (opener==null || closer==null) {
-            /* Fence endpoints must be single bracket operators */
-            builder.appendOrThrowError(parentElement, token, ErrorCode.TDEM00);
-            return;
+        ArgumentContainerToken contentContainer = token.getContent();
+        String opener = getBracket(token.getArguments()[0]);
+        String closer = getBracket(token.getArguments()[1]);
+        if (opener!=null && closer!=null) {
+            /* Have explicit opener and closer so can make a proper <mfenced/> */
+            makeMfenced(builder, parentElement, contentContainer, opener, closer);
         }
-        mfenced.setAttribute("open", opener.getOutput());
-        mfenced.setAttribute("close", closer.getOutput());
+        else {
+            /* Spec says we've not to do <mfenced/> if missing an opener or closer so we
+             * revert to long form here.
+             */
+            makeBracketed(builder, parentElement, contentContainer, opener, closer);
+        }
+    }
+    
+    private void makeMfenced(DOMBuilder builder, Element parentElement,
+            ArgumentContainerToken contentContainer, String opener, String closer)
+            throws SnuggleParseException {
+        /* Create <mfenced/> operator */
+        Element mfenced = builder.appendMathMLElement(parentElement, "mfenced");
+        mfenced.setAttribute("open", StringUtilities.blankIfNull(opener));
+        mfenced.setAttribute("close", StringUtilities.blankIfNull(closer));
         
         /* Now add contents, grouping on comma operators */
         List<FlowToken> groupBuilder = new ArrayList<FlowToken>();
-        ArgumentContainerToken contentContainer = token.getContent();
         for (FlowToken contentToken : contentContainer) {
             if (contentToken.isInterpretationType(InterpretationType.MATH_OPERATOR)
                     && ((SimpleMathOperatorInterpretation) contentToken.getInterpretation()).getOperator()==MathMLOperator.COMMA) {
@@ -65,18 +80,43 @@ public final class MathFenceHandler implements EnvironmentHandler {
         }
     }
     
+    private void makeBracketed(DOMBuilder builder, Element parentElement,
+            ArgumentContainerToken contentContainer, String opener, String closer)
+            throws SnuggleParseException {
+        /* We'll be putting everything in an <mrow/> here */
+        Element mrow = builder.appendMathMLElement(parentElement, "mrow");
+        
+        /* Maybe do an open bracket */
+        if (opener!=null) {
+            builder.appendMathMLOperatorElement(mrow, opener);
+        }
+        /* Then add contents as-is */
+        for (FlowToken contentToken : contentContainer) {
+            builder.handleToken(mrow, contentToken);
+        }
+        /* Finally, maybe do a close bracket */
+        if (closer!=null) {
+            builder.appendMathMLOperatorElement(mrow, closer);
+        }
+    }
+    
     private void makeFenceGroup(DOMBuilder builder, Element mfenced, List<FlowToken> groupContents)
             throws SnuggleParseException {
         builder.handleMathTokensAsSingleElement(mfenced, groupContents);
     }
     
-    private MathMLOperator getBracket(ArgumentContainerToken argumentContainerToken) {
+    private String getBracket(ArgumentContainerToken argumentContainerToken) {
+        /* Ensure fence endpoint is either nothing or a single bracket */
         List<FlowToken> contents = argumentContainerToken.getContents();
-        if (contents.size()==1) {
+        if (!contents.isEmpty()) {
             FlowToken bracketToken = contents.get(0);
             if (bracketToken.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
-                return ((MathBracketOperatorInterpretation) bracketToken.getInterpretation()).getOperator();
+                return ((MathBracketOperatorInterpretation) bracketToken.getInterpretation()).getOperator().getOutput();
             }
+            /* (Since this token is created only during token fixing, the following is a logic
+             * failure rather than a client error.)
+             */
+            throw new SnuggleLogicException("Expected to find a single bracket operator, or empty container");
         }
         return null;
     }

@@ -124,17 +124,25 @@ public final class TokenFixer {
             fixTabularEnvironmentContent(environmentToken);
         }
         
-        /* Visit arguments and content */
-        ArgumentContainerToken optArgument = environmentToken.getOptionalArgument();
-        if (optArgument!=null) {
-            visitContainerContent(optArgument);
-        }
-        ArgumentContainerToken[] arguments = environmentToken.getArguments();
-        if (arguments!=null) {
-            for (ArgumentContainerToken argument : arguments) {
-                visitContainerContent(argument);
+        /* Visit arguments (usually)...
+         * 
+         * We don't drill into the arguments of ENV_BRACKETED as that will end up with an infinite
+         * loop of parenthesis nesting!
+         */
+        if (environment!=GlobalBuiltins.ENV_BRACKETED) {
+            ArgumentContainerToken optArgument = environmentToken.getOptionalArgument();
+            if (optArgument!=null) {
+                visitContainerContent(optArgument);
+            }
+            ArgumentContainerToken[] arguments = environmentToken.getArguments();
+            if (arguments!=null) {
+                for (ArgumentContainerToken argument : arguments) {
+                    visitContainerContent(argument);
+                }
             }
         }
+        
+        /* Visit content */
         visitContainerContent(environmentToken.getContent());
     }
     
@@ -588,10 +596,10 @@ public final class TokenFixer {
             groupStyleCommands(parentToken, tokens);
             fencePairedParentheses(parentToken, tokens); /* (Want to get parentheses first) */
             fixOverInstances(parentToken, tokens);
+            inferParenthesisFences(parentToken, tokens);
             fixSubscriptAndSuperscripts(parentToken, tokens);
             fixPrimes(tokens);
             if (sessionContext.getConfiguration().isInferringMathStructure()) {
-                inferParenthesisFences(parentToken, tokens);
                 groupOverInfixOperators(parentToken, tokens);
                 inferApplyFunctionAndInvisibleTimes(tokens);
             }
@@ -815,6 +823,8 @@ public final class TokenFixer {
      * <p>
      * Mismatched pairs will cause an error, as they do in LaTeX.
      * 
+     * @see #inferParenthesisFences(Token, List)
+     * 
      * @param tokens
      * @throws SnuggleParseException
      */
@@ -828,7 +838,7 @@ public final class TokenFixer {
              * \right before a left!
              */
             if (token.isCommand(GlobalBuiltins.CMD_RIGHT)) {
-                /* \right had not preceding \left */
+                /* Error: \right had not preceding \left */
                 tokens.set(i, createError(token, ErrorCode.TFEM03));
                 continue LEFT_SEARCH;
             }
@@ -857,16 +867,16 @@ public final class TokenFixer {
                     innerTokens.add(innerToken);
                 }
                 if (matchingCloseBracketToken==null) {
-                    /* We never found a match for \\left so we'll kill the whole expression off */
+                    /* Error: We never found a match for \\left so we'll kill the whole expression off */
                     tokens.set(i, createError(token, ErrorCode.TFEM04));
-                    tokens.subList(i, tokens.size()).clear();
+                    tokens.subList(i+1, tokens.size()).clear();
                     break LEFT_SEARCH;
                 }
                 /* Now replace this bracket with a fence */
                 FrozenSlice replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
                 EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
                         LaTeXMode.MATH,
-                        GlobalBuiltins.ENV_FENCED,
+                        GlobalBuiltins.ENV_BRACKETED,
                         null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken.getCombinerTarget()),
@@ -882,19 +892,19 @@ public final class TokenFixer {
     }
     
     /**
-     * This attempts to group balanced pairs of open and close brackets which normally are considered
-     * matching into a corresponding fence token.
+     * This attempts to group (not necessarily matching) pairs of open and close brackets into a
+     * corresponding {@link GlobalBuiltins#ENV_BRACKETED} environment that's easier to handle.
      * <p>
-     * In order for this to work, the pair and all "inner" pairs must all be naturally balanced.
+     * It also handles brackets which are not correctly nested, using fake empty opener/closer
+     * delimiters at the start/end of the group as required.
      * <p>
-     * Note that this means $[1,2[$ and $[1,2)$ will *not* be considered matching, even
-     * though both are common in subjects like Mathematical Analysis.
-     * <p>
-     * To get semantics here, you must use
+     * Note that this means that while $[1,2)$ will successfully be matched, the notation
+     * $[1,2[$ will *not* be considered matched, even though it is common in subjects like
+     * Mathematical Analysis. To get the correct semantics here, you must use
+     * <tt>$\left[1,2\right[$ and let {@link #fencePairedParentheses(Token, List)}
+     * take care of this for you.
      * 
-     * <tt>$\left[1,2\right[$ and $\left[1,2\right)$</tt>
-     * 
-     * and let {@link #fencePairedParentheses(Token, List)} take care of this for you.
+     * @see #fencePairedParentheses(Token, List)
      */
     private void inferParenthesisFences(Token parentToken, List<FlowToken> tokens) {
         /* The algorithm used here is similar to groupPairedParentheses() */
@@ -907,8 +917,23 @@ public final class TokenFixer {
             MathBracketOperatorInterpretation interpretation = (MathBracketOperatorInterpretation) token.getInterpretation();
             BracketType bracketType = interpretation.getBracketType();
             if (bracketType==BracketType.CLOSER) {
-                /* Give up completely - we started with a close! */
-                return;
+                /* First thing found is a closer, so make a fence with an empty opener closing at this point */
+                FrozenSlice replacementSlice = tokens.get(0).getSlice().rightOuterSpan(token.getSlice());
+                List<FlowToken> innerTokens = new ArrayList<FlowToken>(tokens.subList(0, i));
+                EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
+                        LaTeXMode.MATH,
+                        GlobalBuiltins.ENV_BRACKETED,
+                        null,
+                        new ArgumentContainerToken[] {
+                            ArgumentContainerToken.createEmptyContainer(parentToken, LaTeXMode.MATH),
+                            ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, token)
+                        },
+                        ArgumentContainerToken.createFromContiguousTokens(parentToken, LaTeXMode.MATH, innerTokens)
+                );
+                tokens.set(0, replacementToken);
+                tokens.subList(1, i+1).clear();
+                i = 0; /* (Rewind back to this new fence) */
+                continue LEFT_SEARCH;
             }
             else if (bracketType==BracketType.OPENER_OR_CLOSER) {
                 /* Brackets like |...| can't be inferred so ignore but continue */
@@ -939,11 +964,10 @@ public final class TokenFixer {
                             break;
                             
                         case CLOSER:
-                            /* Make sure the close matches the last open */
-                            MathBracketOperatorInterpretation lastOpen = openerStack.pop(); /* (This will always succeed here) */
-                            if (!afterInterpretation.getOperator().equals(lastOpen.getPartnerOperator())) {
-                                return;
-                            }
+                            /* Pop the last opener. (Note that we no longer check that it matches
+                             * the closer we've just found.)
+                             */
+                            openerStack.pop(); /* (This will always succeed here) */
                             if (openerStack.isEmpty()) {
                                 /* Yay! We've found a balance */
                                 matchingCloseBracketToken = afterToken;
@@ -955,24 +979,39 @@ public final class TokenFixer {
                 }
                 innerTokens.add(afterToken);
             }
-            if (matchingCloseBracketToken==null) {
-                /* We never found a match */
-                return;
+            /* Now replace this bracket (if found) or whole expression to the end with a fence */
+            EnvironmentToken replacementToken;
+            FrozenSlice replacementSlice;
+            if (matchingCloseBracketToken!=null) {
+                replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
+                replacementToken = new EnvironmentToken(replacementSlice,
+                        LaTeXMode.MATH,
+                        GlobalBuiltins.ENV_BRACKETED,
+                        null,
+                        new ArgumentContainerToken[] {
+                            ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken),
+                            ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, matchingCloseBracketToken)
+                        },
+                        ArgumentContainerToken.createFromContiguousTokens(parentToken, LaTeXMode.MATH, innerTokens)
+                );
+                tokens.set(i, replacementToken);
+                tokens.subList(i+1, matchingCloseBracketIndex+1).clear();
             }
-            /* Now replace this bracket with a fence */
-            FrozenSlice replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
-            EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
-                    LaTeXMode.MATH,
-                    GlobalBuiltins.ENV_FENCED,
-                    null,
-                    new ArgumentContainerToken[] {
-                        ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken),
-                        ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, matchingCloseBracketToken)
-                    },
-                    ArgumentContainerToken.createFromContiguousTokens(parentToken, LaTeXMode.MATH, innerTokens)
-            );
-            tokens.set(i, replacementToken);
-            tokens.subList(i+1, matchingCloseBracketIndex+1).clear();
+            else {
+                replacementSlice = openBracketToken.getSlice().rightOuterSpan(tokens.get(tokens.size()-1).getSlice());
+                replacementToken = new EnvironmentToken(replacementSlice,
+                        LaTeXMode.MATH,
+                        GlobalBuiltins.ENV_BRACKETED,
+                        null,
+                        new ArgumentContainerToken[] {
+                            ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken),
+                            ArgumentContainerToken.createEmptyContainer(parentToken, LaTeXMode.MATH),
+                        },
+                        ArgumentContainerToken.createFromContiguousTokens(parentToken, LaTeXMode.MATH, innerTokens)
+                );
+                tokens.set(i, replacementToken);
+                tokens.subList(i+1, tokens.size()).clear();
+            }
             continue LEFT_SEARCH;
         }
     }

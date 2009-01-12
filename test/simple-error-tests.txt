@@ -198,9 +198,6 @@ TDEX05
 \item A
 TDEL00
 ====
-$\begin{fenced}{Hello}{End} a+b \end{fenced}$
-TDEM00
-====
 \begin{eqnarray*} 1 & 2 & 3 & 4 \end{eqnarray*}
 TDEM01
 ====

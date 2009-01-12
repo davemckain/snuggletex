@@ -189,14 +189,28 @@ a\not \in A
 <mo>&#x2209;</mo>
 <mi>A</mi>
 ====
+# Tests of fence inference. This has changed significantly in SnuggleTeX 1.1
+# and now does a generally better job.
+(1)
+<mfenced open='(' close=')'><mn>1</mn></mfenced>
+====
+# Missing closer
+(1
+<mrow><mo>(</mo><mn>1</mn></mrow>
+====
+# Missing opener
+1)
+<mrow><mn>1</mn><mo>)</mo></mrow>
+====
+[1)
+<mfenced open='[' close=')'><mn>1</mn></mfenced>
+====
 (1,2,3]
-<mo>(</mo>
-<mn>1</mn>
-<mo>,</mo>
-<mn>2</mn>
-<mo>,</mo>
-<mn>3</mn>
-<mo>]</mo>
+<mfenced open='(' close=']'>
+  <mn>1</mn>
+  <mn>2</mn>
+  <mn>3</mn>
+</mfenced>
 ====
 (1,2,3)
 <mfenced open='(' close=')'>
@@ -237,8 +251,29 @@ a\not \in A
   </mfenced>
 </mfenced>
 ====
-\left( 1,2 \right]
+([1,2],[3,4,5])
+<mfenced open='(' close=')'>
+  <mfenced open='[' close=']'>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mfenced>
+  <mfenced open='[' close=']'>
+    <mn>3</mn>
+    <mn>4</mn>
+    <mn>5</mn>
+  </mfenced>
+</mfenced>
+====
+(1,2,3]
 <mfenced open='(' close=']'>
+  <mn>1</mn>
+  <mn>2</mn>
+  <mn>3</mn>
+</mfenced>
+====
+# Explicit fencing
+\left( 1,2 \right(
+<mfenced open='(' close='('>
   <mn>1</mn>
   <mn>2</mn>
 </mfenced>

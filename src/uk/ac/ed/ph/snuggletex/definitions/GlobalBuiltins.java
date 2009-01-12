@@ -114,7 +114,7 @@ public final class GlobalBuiltins {
     public static BuiltinEnvironment ENV_TABULAR;
     public static BuiltinEnvironment ENV_MATH;
     public static BuiltinEnvironment ENV_DISPLAYMATH;
-    public static BuiltinEnvironment ENV_FENCED;
+    public static BuiltinEnvironment ENV_BRACKETED;
     public static BuiltinEnvironment ENV_ARRAY;
     public static BuiltinEnvironment ENV_EQNARRAY;
     public static BuiltinEnvironment ENV_EQNARRAYSTAR;
@@ -678,8 +678,14 @@ public final class GlobalBuiltins {
         map.addEnvironment("huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE, styleInterpretationNodeBuilder, ALLOW_INLINE);
         map.addEnvironment("Huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE_2, styleInterpretationNodeBuilder, ALLOW_INLINE);
         
-        /* Special "fence" environment in Math mode */
-        ENV_FENCED = map.addEnvironment("fenced", false, 2, MATH_MODE_ONLY, MATH, null, new MathFenceHandler(), null);
+        /* Special internal environment for enclosing content within two brackets. These are
+         * inferred during token fixing, also handling the case where an opener or closer is missing.
+         * When both an opener and closer is provided, this generates a MathML <mfenced/> element;
+         * otherwise we degrade nicely.
+         * 
+         * NOTE: The arguments for this actually end up being in MATH mode.
+         */
+        ENV_BRACKETED = map.addEnvironment("<mfenced>", false, 2, MATH_MODE_ONLY, MATH, null, new MathFenceHandler(), null);
 
         /* Environments for generating custom XML islands (see corresponding command versions as well) */
         map.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, null, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
