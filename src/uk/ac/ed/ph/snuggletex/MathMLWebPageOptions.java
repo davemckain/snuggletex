@@ -10,7 +10,7 @@ import uk.ac.ed.ph.commons.util.StringUtilities;
 /**
  * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleSession}
- * (e.g. {@link SnuggleSession#createWebPage(AbstractWebPageOptions)}).
+ * (e.g. {@link SnuggleSession#createWebPage(BaseWebPageOptions)}).
  * 
  * <h2>Note</h2>
  * 
@@ -22,7 +22,7 @@ import uk.ac.ed.ph.commons.util.StringUtilities;
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathMLWebPageOptions extends AbstractWebPageOptions {
+public final class MathMLWebPageOptions extends BaseWebPageOptions {
     
     /**
      * Enumerates the different web page "templates" supported.

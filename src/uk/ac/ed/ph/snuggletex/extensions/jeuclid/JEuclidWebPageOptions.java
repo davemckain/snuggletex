@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
-import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions;
+import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
 
 /**
  * Options Object for {@link JEuclidWebPageBuilder}.
@@ -13,7 +13,7 @@ import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions;
  * @author  David McKain
  * @version $Revision$
  */
-public final class JEuclidWebPageOptions extends AbstractWebPageOptions {
+public final class JEuclidWebPageOptions extends BaseWebPageOptions {
     
     /** Callback to use when saving out any images produced by the process. */
     private MathMLImageSavingCallback imageSavingCallback;

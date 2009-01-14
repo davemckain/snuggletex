@@ -6,9 +6,9 @@
 package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions;
+import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -36,12 +36,12 @@ import org.w3c.dom.Document;
  * SnuggleTeX comes optionally bundled with an extension that can create "legacy" HTML 4.0
  * pages with MathML converted to images.
  * 
- * @param <P> type of {@link AbstractWebPageOptions} supported by this builder
+ * @param <P> type of {@link BaseWebPageOptions} supported by this builder
  *
  * @author  David McKain
  * @version $Revision$
  */
-public abstract class AbstractWebPageBuilder<P extends AbstractWebPageOptions> {
+public abstract class AbstractWebPageBuilder<P extends BaseWebPageOptions> {
     
     protected final SessionContext sessionContext;
     

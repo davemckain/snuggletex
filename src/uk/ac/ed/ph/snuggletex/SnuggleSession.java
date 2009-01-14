@@ -365,19 +365,19 @@ public final class SnuggleSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, returning a DOM
      * {@link Document} Object.
      * <p>
-     * The provided {@link AbstractWebPageOptions} Object is
+     * The provided {@link BaseWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
-     * Any XSLT stylesheet specified by {@link AbstractWebPageOptions#getStylesheet()}
+     * Any XSLT stylesheet specified by {@link BaseWebPageOptions#getStylesheet()}
      * will have been applied to the result before it is returned. On the other hand, serialisation
-     * options in the {@link AbstractWebPageOptions} (such as Content Type and encoding) 
+     * options in the {@link BaseWebPageOptions} (such as Content Type and encoding) 
      * will not have been applied when this method returns.
      * 
      * @return resulting Document if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error. 
      */
-    public Document createWebPage(final AbstractWebPageOptions options) {
+    public Document createWebPage(final BaseWebPageOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
             AbstractWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
@@ -392,13 +392,13 @@ public final class SnuggleSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      * <p>
-     * The provided {@link AbstractWebPageOptions} Object is
+     * The provided {@link BaseWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * 
      * @return true if completed successfully, false if the process was terminated by an error in the
      *   input LaTeX and if the session was configured to fail on the first error. 
      */
-    public boolean writeWebPage(final AbstractWebPageOptions options, final OutputStream outputStream)
+    public boolean writeWebPage(final BaseWebPageOptions options, final OutputStream outputStream)
             throws IOException {
         return writeWebPage(options, null, outputStream);
     }
@@ -407,7 +407,7 @@ public final class SnuggleSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      * <p>
-     * The provided {@link AbstractWebPageOptions} Object is
+     * The provided {@link BaseWebPageOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
      * If the <tt>contentTypeSettable</tt> Object has a
@@ -421,7 +421,7 @@ public final class SnuggleSession implements SessionContext {
      * @throws SnuggleRuntimeException if calling <tt>setContentType()</tt> on the contentTypeSettable
      *   Object failed, with the underlying Exception wrapped up.
      */
-    public boolean writeWebPage(final AbstractWebPageOptions options, final Object contentTypeSettable,
+    public boolean writeWebPage(final BaseWebPageOptions options, final Object contentTypeSettable,
             final OutputStream outputStream) throws IOException {
         ConstraintUtilities.ensureNotNull(options, "options");
         ConstraintUtilities.ensureNotNull(outputStream, "outputStream");
@@ -437,11 +437,11 @@ public final class SnuggleSession implements SessionContext {
     
     /**
      * Creates the appropriate instance of {@link AbstractWebPageBuilder} that will build
-     * web pages supporting the given {@link AbstractWebPageOptions} Object.
+     * web pages supporting the given {@link BaseWebPageOptions} Object.
      * 
      * @param options
      */
-    private AbstractWebPageBuilder<?> createWebPageBuilder(AbstractWebPageOptions options) {
+    private AbstractWebPageBuilder<?> createWebPageBuilder(BaseWebPageOptions options) {
         AbstractWebPageBuilder<?> result = null;
         if (options instanceof MathMLWebPageOptions) {
             result = new MathMLWebPageBuilder(this, (MathMLWebPageOptions) options);

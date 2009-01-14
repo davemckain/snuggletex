@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.commons.util.IOUtilities;
-import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions;
+import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
@@ -15,7 +15,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleSnapshot;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
@@ -231,7 +231,7 @@ public final class DocumentationBuilder {
         }
     }
     
-    private void setupWebOptions(AbstractWebPageOptions options) {
+    private void setupWebOptions(BaseWebPageOptions options) {
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setStylesheet(stylesheet);

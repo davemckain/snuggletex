@@ -12,7 +12,7 @@ import javax.xml.transform.Transformer;
 /**
  * Builds on {@link DOMOutputOptions} to add in basic options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleSession}
- * (e.g. {@link SnuggleSession#createWebPage(AbstractWebPageOptions)}).
+ * (e.g. {@link SnuggleSession#createWebPage(BaseWebPageOptions)}).
  * <p>
  * Concrete web page building processes will subclass this to add in extra features relevant
  * to the type of pages they support.
@@ -28,7 +28,7 @@ import javax.xml.transform.Transformer;
  * @author  David McKain
  * @version $Revision$
  */
-public abstract class AbstractWebPageOptions extends DOMOutputOptions {
+public abstract class BaseWebPageOptions extends DOMOutputOptions {
     
     /**
      * Trivial enumeration of the 3 serialization methods we support.
@@ -122,7 +122,7 @@ public abstract class AbstractWebPageOptions extends DOMOutputOptions {
      */
     private SerializationMethod serializationMethod;
     
-    public AbstractWebPageOptions() {
+    public BaseWebPageOptions() {
         super();
         this.encoding = "UTF-8";
         this.language = "en";

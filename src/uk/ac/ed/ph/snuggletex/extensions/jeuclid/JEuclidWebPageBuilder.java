@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
