@@ -8,18 +8,14 @@ package uk.ac.ed.ph.snuggletex.extensions.upconversion;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 
 import java.io.IOException;
 
-import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -56,6 +52,8 @@ public class MathMLUpConverter {
         return resultDocument;
     }
     
+    //---------------------------------------------------------------------
+    
     private TransformerFactory createSaxonTransformerFactory() {
         try {
             return (TransformerFactory) Class.forName("net.sf.saxon.TransformerFactoryImpl").newInstance();
@@ -84,19 +82,7 @@ public class MathMLUpConverter {
     
     private Templates compileStylesheet(String location) {
         TransformerFactory transformerFactory = createSaxonTransformerFactory();
-        ClassPathURIResolver uriResolver = ClassPathURIResolver.getInstance();
-        transformerFactory.setURIResolver(uriResolver);
-        Source resolved;
-        try {
-            resolved = uriResolver.resolve(location, "");
-            return transformerFactory.newTemplates(resolved);
-        }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleLogicException("Could not compile stylesheet at " + location, e);
-        }
-        catch (TransformerException e) {
-            throw new SnuggleLogicException("Could not resolve stylesheet location " + location, e);
-        }
+        return XMLUtilities.compileInternalStylesheet(transformerFactory, location);
     }
     
     public static void main(String[] args) throws IOException {

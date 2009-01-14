@@ -5,22 +5,17 @@
  */
 package uk.ac.ed.ph.snuggletex.utilities;
 
-import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 
-import java.io.InputStream;
-
 import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  * Trivial helper class to manage the loading of SnuggleTeX's internal stylesheets, using
  * the optional {@link StylesheetCache} to cache stylesheets for performance.
  * <p>
  * This has been made "public" as it is used by certain standalone tools, like the
- * {@link MathMLDownConverter}.
+ * {@link MathMLDownConverter}, but its use outside SnuggleTeX is somewhat limited.
  * <p>
  * This class is thread-safe.
  *
@@ -55,35 +50,31 @@ public final class StylesheetManager {
      * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, compiling
      * and storing one if the cache fails to return anything.
      * 
-     * @param resourceName location of the XSLT stylesheet in the ClassPath.
+     * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
+     *   URI scheme in {@link ClassPathURIResolver}.
+     *   
      * @return compiled XSLT stylesheet.
      */
-    public Templates getStylesheet(String resourceName) {
+    public Templates getStylesheet(String classPathUri) {
         Templates result;
         if (stylesheetCache==null) {
-            result = compileStylesheet(resourceName);
+            result = compileStylesheet(classPathUri);
         }
         else {
             synchronized(stylesheetCache) {
-                result = stylesheetCache.getStylesheet(resourceName);
+                result = stylesheetCache.getStylesheet(classPathUri);
                 if (result==null) {
-                    result = compileStylesheet(resourceName);
-                    stylesheetCache.putStylesheet(resourceName, result);
+                    result = compileStylesheet(classPathUri);
+                    stylesheetCache.putStylesheet(classPathUri, result);
                 }
             }
         }
         return result;
     }
     
-    private Templates compileStylesheet(String resourceName) {
+    private Templates compileStylesheet(String classPathUri) {
+        /* (Can use JAXP default here) */
         TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
-        InputStream xslStream = getClass().getClassLoader().getResourceAsStream(resourceName);
-        try {
-            return transformerFactory.newTemplates(new StreamSource(xslStream));
-        }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not compile SnuggleTeX XSLT stylesheet at "
-                    + resourceName, e);
-        }
+        return XMLUtilities.compileInternalStylesheet(transformerFactory, classPathUri);
     }
 }

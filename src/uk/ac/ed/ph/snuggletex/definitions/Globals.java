@@ -38,13 +38,13 @@ public final class Globals {
     public static final String CSS_PROPERTIES_NAME = "uk/ac/ed/ph/snuggletex/css.properties";
     
     /** Specifies the ClassPath location of the Stylesheet used by buildXMLString() */
-    public static final String XML_STRING_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/to-xml-string.xsl";
+    public static final String XML_STRING_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/to-xml-string.xsl";
     
     /** Specifies the ClassPath location of the XHTML -> HTML used for serializing as legacy HTML */
-    public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";
+    public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";
     
     /** Specifies the ClassPath location of the MathML -> XHTML stylesheet to use for down-transforming */
-    public static final String MATHML_TO_XHTML_XSL_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl";
+    public static final String MATHML_TO_XHTML_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl";
     
     /** URN used in MathML -> XHTML to call up XML containing current CSS Properties */
     public static final String CSS_PROPERTIES_DOCUMENT_URN = "urn:snuggletex-css-properties";
