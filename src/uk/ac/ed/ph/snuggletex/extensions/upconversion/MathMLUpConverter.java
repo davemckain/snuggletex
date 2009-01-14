@@ -39,7 +39,7 @@ public class MathMLUpConverter {
     private final StylesheetCache stylesheetCache;
     
     public static final String UPCONVERTER_BASE_LOCATION = "classpath:/uk/ac/ed/ph/snuggletex/extensions/upconversion";
-    public static final String ASCIIMATH_FIXER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/asciimath-fixer.xsl";
+    public static final String ASCIIMATH_FIXER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/asciimathml-fixer.xsl";
     public static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
     
     public MathMLUpConverter(final StylesheetCache stylesheetCache) {
