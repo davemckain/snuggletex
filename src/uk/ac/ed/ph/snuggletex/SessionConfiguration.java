@@ -34,10 +34,12 @@ public final class SessionConfiguration implements Cloneable {
     }
 
 
+    @Deprecated
     public boolean isInferringMathStructure() {
         return inferringMathStructure;
     }
     
+    @Deprecated
     public void setInferringMathStructure(boolean inferringMathStructure) {
         this.inferringMathStructure = inferringMathStructure;
     }
