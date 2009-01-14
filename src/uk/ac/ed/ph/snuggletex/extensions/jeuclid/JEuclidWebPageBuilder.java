@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
-import uk.ac.ed.ph.snuggletex.internal.DOMBuilderFacade;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
@@ -78,8 +78,8 @@ public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidW
         }
         
         /* Build <body/> with XHTML + MathML */
-        DOMBuilderFacade domBuilder = new DOMBuilderFacade(sessionContext, options);
-        domBuilder.buildDOMSubtree(body, fixedTokens);
+        DOMBuildingController domBuildingController = new DOMBuildingController(sessionContext, options);
+        domBuildingController.buildDOMSubtree(body, fixedTokens);
         
         /* Convert each MathML element to an image */
         JEuclidMathMLConversionVisitor visitor = new JEuclidMathMLConversionVisitor(options.getImageSavingCallback(), document);

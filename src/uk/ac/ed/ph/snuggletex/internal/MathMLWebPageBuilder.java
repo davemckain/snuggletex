@@ -140,8 +140,8 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
         }
         
         /* Build <body/> */
-        DOMBuilderFacade domBuilder = new DOMBuilderFacade(sessionContext, options);
-        domBuilder.buildDOMSubtree(body, fixedTokens);
+        DOMBuildingController domBuildingController = new DOMBuildingController(sessionContext, options);
+        domBuildingController.buildDOMSubtree(body, fixedTokens);
         
         /* Build <head/> */
         Element head = document.createElementNS(Globals.XHTML_NAMESPACE, "head");

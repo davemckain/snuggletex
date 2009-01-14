@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.commons.util.ConstraintUtilities;
+import uk.ac.ed.ph.commons.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
@@ -13,7 +14,7 @@ import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions;
-import uk.ac.ed.ph.snuggletex.internal.DOMBuilderFacade;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.internal.MathMLWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
@@ -220,7 +221,7 @@ public final class SnuggleSession implements SessionContext {
         ConstraintUtilities.ensureNotNull(targetRoot, "targetRoot");
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
-            new DOMBuilderFacade(this, options).buildDOMSubtree(targetRoot, parsedTokens);
+            new DOMBuildingController(this, options).buildDOMSubtree(targetRoot, parsedTokens);
             return true;
         }
         catch (SnuggleParseException e) {
@@ -291,7 +292,24 @@ public final class SnuggleSession implements SessionContext {
      *   the first error.  
      */
     public String buildXMLString() {
-        return buildXMLString(engine.getDefaultDOMOptions());
+        return buildXMLString(engine.getDefaultDOMOptions(), false);
+    }
+    
+    /**
+     * Convenience method to create a well-formed external general parsed entity out of the
+     * currently parsed tokens.
+     * <p>
+     * The default {@link DOMOutputOptions} specified in the {@link SnuggleEngine} will be
+     * used.
+     * 
+     * @param indent whether to indent the resulting XML or not
+     *
+     * @return resulting XML if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error.  
+     */
+    public String buildXMLString(boolean indent) {
+        return buildXMLString(engine.getDefaultDOMOptions(), indent);
     }
     
     /**
@@ -305,6 +323,22 @@ public final class SnuggleSession implements SessionContext {
      *   the first error. 
      */
     public String buildXMLString(final DOMOutputOptions options) {
+        return buildXMLString(options, false);
+    }
+    
+    /**
+     * Convenience method to create a well-formed external general parsed entity out of the
+     * currently parsed tokens.
+     * <p>
+     * The given {@link DOMOutputOptions} Object is used to configure the process.
+     * 
+     * @param indent whether to indent the resulting XML or not
+     * 
+     * @return resulting XML if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
+     */
+    public String buildXMLString(final DOMOutputOptions options, final boolean indent) {
         DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
         Document document = documentBuilder.newDocument();
         Element temporaryRoot = document.createElement("root");
@@ -317,6 +351,7 @@ public final class SnuggleSession implements SessionContext {
             Transformer serializer = getStylesheetManager()
                 .getStylesheet(Globals.XML_STRING_XSL_RESOURCE_NAME).newTransformer();
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
             serializer.transform(new DOMSource(document), new StreamResult(resultWriter));
         }
         catch (Exception e) {

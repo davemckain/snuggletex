@@ -6,8 +6,9 @@
 package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
-import uk.ac.ed.ph.snuggletex.utilities.MathMLDownConverter;
 
 import java.util.List;
 
@@ -17,46 +18,43 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This is the main entry point into the DOM Building process, optionally down-converting the
- * resulting DOM if specified by {@link DOMOutputOptions}.
- * 
- * FIXME: Yucky name for this!!!
+ * This is the main entry point into the DOM generation process. This uses a {@link DOMBuilder} to
+ * build the raw DOM and then does any further work on the resulting DOM as specified by the
+ * {@link DOMOutputOptions}.
  *
  * @author  David McKain
  * @version $Revision$
  */
-public final class DOMBuilderFacade {
+public final class DOMBuildingController {
     
     private final SessionContext sessionContext;
     private final DOMOutputOptions options;
     
-    public DOMBuilderFacade(final SessionContext sessionContext, final DOMOutputOptions options) {
+    public DOMBuildingController(final SessionContext sessionContext, final DOMOutputOptions options) {
         this.sessionContext = sessionContext;
         this.options = options;
     }
     
     public void buildDOMSubtree(final Element targetRoot, final List<FlowToken> fixedTokens)
             throws SnuggleParseException {
-        if (options.isDownConverting()) {
-            /* We'll build into a "work" Document first and then adopt all of the final
-             * resulting Nodes as children of the targetRoot
+        DOMPostProcessor domPostProcessor = options.getDomPostProcessor();
+        if (domPostProcessor!=null) {
+            /* We'll build into a "work" Document first, then apply the post-processor and then
+             * finally adopt all of the resulting Nodes as children of the targetRoot
              */
             Document workDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-            Element workRoot = workDocument.createElement("root");
+            Element workRoot = workDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root");
             workDocument.appendChild(workRoot);
             
+            /* Do raw DOM Building */
             DOMBuilder domBuilder = new DOMBuilder(sessionContext, workRoot, options);
             domBuilder.buildDOMSubtree(fixedTokens);
             
-            /* Down-convert our work document, using the session's XSLT cache to reuse
-             * the XSLT for the underlying process
-             */
-            MathMLDownConverter downConverter = new MathMLDownConverter(sessionContext.getStylesheetManager(), options);
-            Document downConvertedDocument = downConverter.downConvertDOM(workDocument);
+            /* Now let post-processor do its thing */
+            Document finalDocument = domPostProcessor.postProcessDOM(workDocument, options, sessionContext.getStylesheetManager());
             
-            /* Pull the children of the <root/> in the resulting Document into the targetRoot */
-            /* FIXME: This is NOT EFFICIENT AT ALL! */
-            Element resultRoot = downConvertedDocument.getDocumentElement();
+            /* Pull the children of the root element in the resulting Document into the targetRoot */
+            Element resultRoot = finalDocument.getDocumentElement();
             NodeList childNodes = resultRoot.getChildNodes();
             Node childNode;
             for (int i=0, size=childNodes.getLength(); i<size; i++) {

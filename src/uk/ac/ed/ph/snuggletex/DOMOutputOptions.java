@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
+
 import java.util.Properties;
 
 /**
@@ -100,15 +102,22 @@ public class DOMOutputOptions implements Cloneable {
     private boolean mathVariantMapping;
     
     /**
-     * Set to true to attempt to "down-convert" simple MathML expressions into (X)HTML equivalents.
+     * Set to specify your own {@link DOMPostProcessor} that will fix up the raw DOM produced
+     * by SnuggleTeX immediately after it has been built.
+     * <p>
+     * One use of this is by registering a {@link DownConvertingPostProcessor}, which will
+     * attempt to "down-convert" simple MathML expressions into (X)HTML equivalents.
      * For example, simple linear expressions and simple sub/superscripts can often be converted
      * to acceptable XHTML alternatives.
-     * <p>
      * Any expressions deemed too complex to be down-converted are kept as MathML.
+     * <p>
+     * SnuggleTeX also includes a {@link UpConvertingPostProcessor} as an extension, that may
+     * be useful in certain circumstances.
      * 
-     * <strong>NOTE:</strong> This is an experimental new feature. Feedback welcome!!
+     * @see DownConvertingPostProcessor
+     * @see UpConvertingPostProcessor
      */
-    private boolean downConverting;
+    private DOMPostProcessor domPostProcessor;
     
     private LinkResolver linkResolver;
     
@@ -121,7 +130,7 @@ public class DOMOutputOptions implements Cloneable {
         this.mathMLPrefix = "m";
         this.prefixingMathML = false;
         this.mathVariantMapping = false;
-        this.downConverting = false;
+        this.domPostProcessor = null;
         this.linkResolver = null;
     }
     
@@ -208,15 +217,15 @@ public class DOMOutputOptions implements Cloneable {
     }
     
     
-    public boolean isDownConverting() {
-        return downConverting;
+    public DOMPostProcessor getDomPostProcessor() {
+        return domPostProcessor;
+    }
+    
+    public void setDomPostProcessor(DOMPostProcessor domPostProcessor) {
+        this.domPostProcessor = domPostProcessor;
     }
 
-    public void setDownConverting(boolean downConverting) {
-        this.downConverting = downConverting;
-    }
-    
-    
+
     public LinkResolver getLinkResolver() {
         return linkResolver;
     }

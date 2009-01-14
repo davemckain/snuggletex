@@ -2,6 +2,33 @@
 
 \section*{Release Notes}
 
+\subsection*{Version 1.1 [HEAD] (In Development)}
+
+\begin{itemize}
+
+  \item Migrated to Saxon 9.1.0.5
+
+  \item Renamed internal \verb|DOMBuilderFacade| as \verb|DOMBuildingController|.
+
+  \item Added new \verb|domPostProcessor| property to \verb|DOMOutputOptions| that
+    allows you to hook in a class that will post-process the raw DOM produced
+    by SnuggleTeX.
+
+  \item The \verb|downConverting| property of \verb|DOMOutputOptions| has been removed.
+    The same functionality is now invoked by registering an instance of
+    \verb|DownConvertingPostProcessor| as a \verb|domPostProcessor|, as described
+    above.
+
+  \item SnuggleTeX now does a better job of attempting to pair up parentheses in
+    mathematical expressions. This is now done by default and works even for unbalanced
+    brackets, which are implicitly balanced against the start/end of the current group
+    as appropriate. (Note however that unbalanced brackets are not output using
+    MathML \verb|mfenced| elements.)
+
+  \item Up-conversion functionality is currently being worked on as an extension.
+
+\end{itemize}
+
 \subsection*{Version 1.0.1 [r228] (07/01/09)}
 
 \begin{itemize}

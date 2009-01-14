@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.commons.util.IOUtilities;
+import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
@@ -177,7 +178,7 @@ public final class DocumentationBuilder {
         JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
         setupWebOptions(jeuclidOptions);
         stylesheet.setParameter("page-type", null); /* (Reset as it will have been set earlier) */
-        jeuclidOptions.setDownConverting(true);
+        jeuclidOptions.setDomPostProcessor(new DownConvertingPostProcessor());
         jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
         jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));
         targetFile = new File(sourceDirectory, pageBaseName + ".html");

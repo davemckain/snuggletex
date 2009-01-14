@@ -11,7 +11,7 @@ import uk.ac.ed.ph.commons.testutils.xml.EasyMockContentHandler;
 import uk.ac.ed.ph.commons.util.DumpMode;
 import uk.ac.ed.ph.commons.util.ObjectDumper;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
-import uk.ac.ed.ph.snuggletex.internal.DOMBuilderFacade;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
@@ -116,8 +116,8 @@ abstract class AbstractGoodXMLTests {
             Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
             resultDocument.appendChild(rootElement);
             
-            DOMBuilderFacade domBuilder = new DOMBuilderFacade(context, domOptions);
-            domBuilder.buildDOMSubtree(rootElement, outerToken.getContents());
+            DOMBuildingController domBuildingController = new DOMBuildingController(context, domOptions);
+            domBuildingController.buildDOMSubtree(rootElement, outerToken.getContents());
                
             /* Make sure we have still got no errors */
             checkNoErrors(context);

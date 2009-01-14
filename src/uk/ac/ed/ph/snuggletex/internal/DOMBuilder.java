@@ -51,7 +51,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This takes a {@link List} of (fixed) {@link Token}s and builds a XHTML + MathML
+ * This takes a {@link List} of (fixed) {@link Token}s and builds a (raw) XHTML + MathML
  * DOM tree branch from them.
  * 
  * <h2>Usage</h2>
@@ -65,6 +65,7 @@ import org.w3c.dom.NodeList;
  * can use to do their magic.
  * 
  * @see TokenFixer
+ * @see DOMBuildingController
  * 
  * @author  David McKain
  * @version $Revision$
