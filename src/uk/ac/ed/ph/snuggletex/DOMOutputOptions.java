@@ -217,7 +217,7 @@ public class DOMOutputOptions implements Cloneable {
     }
     
     
-    public DOMPostProcessor getDomPostProcessor() {
+    public DOMPostProcessor getDOMPostProcessor() {
         return domPostProcessor;
     }
     

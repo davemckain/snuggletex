@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.extensions.jeuclid;
 
-import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions;
+import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions;
 
 /**
  * Options Object for {@link JEuclidWebPageBuilder}.

@@ -37,7 +37,7 @@ public final class DOMBuildingController {
     
     public void buildDOMSubtree(final Element targetRoot, final List<FlowToken> fixedTokens)
             throws SnuggleParseException {
-        DOMPostProcessor domPostProcessor = options.getDomPostProcessor();
+        DOMPostProcessor domPostProcessor = options.getDOMPostProcessor();
         if (domPostProcessor!=null) {
             /* We'll build into a "work" Document first, then apply the post-processor and then
              * finally adopt all of the resulting Nodes as children of the targetRoot

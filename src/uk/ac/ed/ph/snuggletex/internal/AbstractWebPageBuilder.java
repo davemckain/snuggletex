@@ -6,9 +6,10 @@
 package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
-import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.io.IOException;

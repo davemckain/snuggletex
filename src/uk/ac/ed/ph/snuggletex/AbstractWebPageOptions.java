@@ -3,12 +3,9 @@
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.internal;
+package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.commons.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
-import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 import javax.xml.transform.Transformer;
 
