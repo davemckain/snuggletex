@@ -17,14 +17,11 @@ public final class SessionConfiguration implements Cloneable {
     /** Set to true to fail immediately on error. Default is to record error but keep going */
     private boolean failingFast;
     
-    /** Set to true to perform limited semantic inferences on MathML elements. */
-    private boolean inferringMathStructure;
-    
     public SessionConfiguration() {
         this.failingFast = false;
-        this.inferringMathStructure = false;
     }
     
+
     public boolean isFailingFast() {
         return failingFast;
     }
@@ -33,17 +30,7 @@ public final class SessionConfiguration implements Cloneable {
         this.failingFast = failingFast;
     }
 
-
-    @Deprecated
-    public boolean isInferringMathStructure() {
-        return inferringMathStructure;
-    }
     
-    @Deprecated
-    public void setInferringMathStructure(boolean inferringMathStructure) {
-        this.inferringMathStructure = inferringMathStructure;
-    }
-
     @Override
     public Object clone() {
         try {

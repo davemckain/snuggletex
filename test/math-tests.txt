@@ -37,37 +37,27 @@ x = 3
 <mi>x</mi><mo>=</mo><mn>3</mn>
 ====
 2x
-<mn>2</mn><mo>&#x2062;</mo><mi>x</mi>
+<mn>2</mn><mi>x</mi>
 ====
 \sin x
-<mi>sin</mi><mo>&#x2061;</mo><mi>x</mi>
+<mi>sin</mi><mi>x</mi>
 ====
 2\alpha
 <mn>2</mn>
-<mo>&#x2062;</mo>
 <mi>&#x3b1;</mi>
 ====
 2x+4
-<mrow>
-  <mn>2</mn>
-  <mo>&#x2062;</mo>
-  <mi>x</mi>
-</mrow>
+<mn>2</mn>
+<mi>x</mi>
 <mo>+</mo>
 <mn>4</mn>
 ====
 2\alpha - \sin y + x
-<mrow>
-  <mn>2</mn>
-  <mo>&#x2062;</mo>
-  <mi>&#x3b1;</mi>
-</mrow>
+<mn>2</mn>
+<mi>&#x3b1;</mi>
 <mo>-</mo>
-<mrow>
-  <mi>sin</mi>
-  <mo>&#x2061;</mo>
-  <mi>y</mi>
-</mrow>
+<mi>sin</mi>
+<mi>y</mi>
 <mo>+</mo>
 <mi>x</mi>
 ====
@@ -116,7 +106,7 @@ x = 3
 <msqrt><mi>x</mi></msqrt>
 ====
 \sqrt x y
-<msqrt><mi>x</mi></msqrt><mo>&#x2062;</mo><mi>y</mi>
+<msqrt><mi>x</mi></msqrt><mi>y</mi>
 ====
 \sqrt[n]{x}
 <mroot><mi>x</mi><mi>n</mi></mroot>
@@ -191,6 +181,9 @@ a\not \in A
 ====
 # Tests of fence inference. This has changed significantly in SnuggleTeX 1.1
 # and now does a generally better job.
+()
+<mfenced open='(' close=')'/>
+====
 (1)
 <mfenced open='(' close=')'><mn>1</mn></mfenced>
 ====
@@ -396,11 +389,9 @@ a\not \in A
   <mspace width="1ex"/>
   <mrow>
     <mi>x</mi>
-    <mo>&#x2062;</mo>
     <mrow>
       <mtext>is</mtext>
     </mrow>
-    <mo>&#x2062;</mo>
     <mn>3</mn>
   </mrow>
 </mrow>
@@ -429,7 +420,7 @@ a\not \in A
 ====
 ### Composite accents are always done as operators
 \hat{ab}
-<mover accent="true"><mrow><mi>a</mi><mo>&#x2062;</mo><mi>b</mi></mrow><mo>&#x302;</mo></mover>
+<mover accent="true"><mrow><mi>a</mi><mi>b</mi></mrow><mo>&#x302;</mo></mover>
 ====
 \stackrel{a}{+}
 <mover><mo>+</mo><mi>a</mi></mover>
@@ -438,14 +429,13 @@ x'
 <msup><mi>x</mi><mi>'</mi></msup>
 ====
 x'y'
-<msup><mi>x</mi><mi>'</mi></msup><mo>&#x2062;</mo><msup><mi>y</mi><mi>'</mi></msup>
+<msup><mi>x</mi><mi>'</mi></msup><msup><mi>y</mi><mi>'</mi></msup>
 ====
 v_{\mbox{\rm av}}
 <msub><mi>v</mi><mrow><mstyle mathvariant="normal"><mtext>av</mtext></mstyle></mrow></msub>
 ====
-## The result here is probably not ideal, but I don't think it is worth worrying too much about
 1 \\ 2
-<mn>1</mn><mo>&#x2062;</mo><mtext>&#x0a;</mtext><mo>&#x2062;</mo><mn>2</mn>
+<mn>1</mn><mtext>&#x0a;</mtext><mn>2</mn>
 ====
 ## This one tests precedence of bracket groupings over powers.
 \left[x\right]^2
@@ -492,10 +482,6 @@ v_{\mbox{\rm av}}
     <mtd columnalign="center"><mn>4</mn></mtd>
   </mtr>
 </mtable>
-====
-## Regression test: inferring fences on empty expressions caused an Exception before
-()
-<mfenced open="(" close=")"/>
 ====
 ## Regression: can't do small-caps in Math mode so we just ignore this
 \mbox{\sc Hello}
@@ -557,14 +543,6 @@ _2^3
 ## Silly Regression: with the old handling of numbers, this was treated as 1 juxtaposed with -2 !
 1-2
 <mn>1</mn><mo>-</mo><mn>2</mn>
-====
-## New feature. Inference of apply function can now detect inverses.
-\sin^{-1} x
-<msup><mi>sin</mi><mn>-1</mn></msup><mo>&#x2061;</mo><mi>x</mi>
-====
-## Similarly we can let apply function work over subscripts, though this is maybe heavy-handed.
-\log_a x
-<msub><mi>log</mi><mi>a</mi></msub><mo>&#x2061;</mo><mi>x</mi>
 ====
 5!
 <mn>5</mn><mo>!</mo>

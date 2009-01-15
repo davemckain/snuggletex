@@ -28,6 +28,9 @@ All Rights Reserved
 
   <xsl:output method="xml" indent="yes"/>
 
+  <xsl:param name="s:do-content-mathml" as="xs:boolean" select="true()"/>
+  <xsl:param name="s:do-maxima" as="xs:boolean" select="true()"/>
+
   <!-- ************************************************************ -->
 
   <xsl:template match="*">
@@ -45,28 +48,30 @@ All Rights Reserved
     <!-- Extract the actual PMathML content and any existing annotations -->
     <xsl:variable name="presentation-mathml" select="if (semantics) then (if (semantics/mrow) then semantics/mrow/* else semantics/*[1]) else *" as="element()*"/>
     <xsl:variable name="annotations" select="if (semantics) then semantics/*[position() != 1] else ()" as="element()*"/>
-    <!-- Perform enhancement of the Presentation MathML, creating a new Document Node -->
+    <!-- We always perform enhancement of the Presentation MathML, creating a new Document Node -->
     <xsl:variable name="enhanced-pmathml">
       <xsl:call-template name="s:enhance-pmathml">
         <xsl:with-param name="elements" select="$presentation-mathml"/>
       </xsl:call-template>
     </xsl:variable>
-    <!-- Convert Presentation MathML to Content MathML, creating another new Document Node -->
+    <!-- Maybe convert Presentation MathML to Content MathML, creating another new Document Node -->
     <xsl:variable name="cmathml">
-      <xsl:call-template name="s:pmathml-to-cmathml">
-        <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
-      </xsl:call-template>
+      <xsl:if test="$s:do-content-mathml or $s:do-maxima">
+        <xsl:call-template name="s:pmathml-to-cmathml">
+          <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
+        </xsl:call-template>
+      </xsl:if>
     </xsl:variable>
     <!-- Extract any failures in this process -->
     <xsl:variable name="cmathml-failures" as="element(s:fail)*">
       <xsl:copy-of select="$cmathml//s:fail"/>
     </xsl:variable>
-    <!-- Convert Content MathML to Maxima input. (This is normally a sequence of xs:string
-         but might contain failure elements as well so we need to be careful) -->
+    <!-- Maybe convert Content MathML to Maxima input. (This is normally a sequence of
+         xs:string but might contain failure elements as well so we need to be careful) -->
     <xsl:variable name="maxima-raw" as="item()*">
       <xsl:choose>
-        <xsl:when test="exists($cmathml-failures)">
-          <!-- Don't bother converting if we failed earlier on -->
+        <xsl:when test="not($s:do-maxima) or exists($cmathml-failures)">
+          <!-- Don't bother converting if asked not to or if we failed earlier on -->
           <xsl:sequence select="()"/>
         </xsl:when>
         <xsl:otherwise>
@@ -87,46 +92,63 @@ All Rights Reserved
     <!-- Finally build up the resulting MathML -->
     <math>
       <xsl:copy-of select="@*"/>
-      <semantics>
-        <!-- Put in the enhanced Presentation MathML first -->
-        <xsl:call-template name="s:maybe-wrap-in-mrow">
-          <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
-        </xsl:call-template>
-        <!-- Add Content MathML or failure annotation -->
-        <xsl:choose>
-          <xsl:when test="exists($cmathml-failures)">
-            <annotation-xml encoding="MathML-Content-upconversion-failures">
-              <xsl:copy-of select="$cmathml-failures"/>
-            </annotation-xml>
-          </xsl:when>
-          <xsl:otherwise>
-            <annotation-xml encoding="MathML-Content">
-              <xsl:copy-of select="$cmathml/*"/>
-            </annotation-xml>
-          </xsl:otherwise>
-        </xsl:choose>
-        <!-- Copy existing annotations -->
-        <xsl:copy-of select="$annotations"/>
-        <!-- Copy any existing "SnuggleTeX" annotation as a "LaTeX" annotation -->
-        <xsl:if test="$annotations[self::annotation and @encoding='SnuggleTeX']">
-          <annotation encoding="LaTeX">
-            <xsl:value-of select="$annotations[self::annotation and @encoding='SnuggleTeX'][1]"/>
-          </annotation>
-        </xsl:if>
-        <!-- Add Maxima or failure annotation -->
-        <xsl:choose>
-          <xsl:when test="exists($maxima-failures)">
-            <annotation-xml encoding="Maxima-upconversion-failures">
-              <xsl:copy-of select="$maxima-failures"/>
-            </annotation-xml>
-          </xsl:when>
-          <xsl:when test="not(exists($cmathml-failures))">
-            <annotation encoding="Maxima">
-              <xsl:value-of select="$maxima"/>
-            </annotation>
-          </xsl:when>
-        </xsl:choose>
-      </semantics>
+      <xsl:choose>
+        <xsl:when test="$s:do-content-mathml or $s:do-maxima or exists($annotations)">
+          <!-- We're definitely going to be doing annotations here! -->
+          <semantics>
+            <!-- Put in the enhanced Presentation MathML first -->
+            <xsl:call-template name="s:maybe-wrap-in-mrow">
+              <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
+            </xsl:call-template>
+            <!-- Add Content MathML or failure annotation -->
+            <xsl:choose>
+              <xsl:when test="exists($cmathml-failures)">
+                <annotation-xml encoding="MathML-Content-upconversion-failures">
+                  <xsl:copy-of select="$cmathml-failures"/>
+                </annotation-xml>
+              </xsl:when>
+              <xsl:when test="$s:do-content-mathml">
+                <annotation-xml encoding="MathML-Content">
+                  <xsl:copy-of select="$cmathml/*"/>
+                </annotation-xml>
+              </xsl:when>
+            </xsl:choose>
+            <!-- Copy existing annotations -->
+            <xsl:copy-of select="$annotations"/>
+            <!-- Copy any existing "SnuggleTeX" annotation as a "LaTeX" annotation -->
+            <xsl:if test="$annotations[self::annotation and @encoding='SnuggleTeX']">
+              <annotation encoding="LaTeX">
+                <xsl:value-of select="$annotations[self::annotation and @encoding='SnuggleTeX'][1]"/>
+              </annotation>
+            </xsl:if>
+            <!-- Add Maxima or failure annotation -->
+            <xsl:choose>
+              <xsl:when test="exists($maxima-failures)">
+                <annotation-xml encoding="Maxima-upconversion-failures">
+                  <xsl:copy-of select="$maxima-failures"/>
+                </annotation-xml>
+              </xsl:when>
+              <xsl:when test="$s:do-maxima and not(exists($cmathml-failures))">
+                <annotation encoding="Maxima">
+                  <xsl:value-of select="$maxima"/>
+                </annotation>
+              </xsl:when>
+            </xsl:choose>
+          </semantics>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- All we did was enhance the PMathML and there are no annotations. For niceness,
+          we'll strip off a top-level <mrow/> if it is deemed to be redundant -->
+          <xsl:choose>
+            <xsl:when test="$enhanced-pmathml[count(*)=1 and *[1][self::mrow]]">
+              <xsl:copy-of select="$enhanced-pmathml/mrow/*"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:copy-of select="$enhanced-pmathml/*"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
     </math>
   </xsl:template>
 

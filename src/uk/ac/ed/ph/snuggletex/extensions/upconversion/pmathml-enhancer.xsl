@@ -11,6 +11,7 @@ or Maxima input.
 
 TODO: Think about plus-or-minus operator??
 TODO: Should we specify precedence for other infix operators? (Later... nothing to do with MathAssess)
+TODO: <mstyle/> is essentially being treated as neutering its contents... is this a good idea? It's a hard problem to solve in general.
 
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved
@@ -90,11 +91,12 @@ All Rights Reserved
     <xsl:sequence select="boolean($element[self::mi and $sp:elementary-functions=string(.)])"/>
   </xsl:function>
 
-  <!-- Tests for the equivalent of \sin, \sin^{.}. Result need not make any actual sense! -->
+  <!-- Tests for the equivalent of \sin, \sin^{.} or \log_a. Result need not make any actual sense! -->
   <xsl:function name="sp:is-supported-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="sp:is-elementary-function($element)
-      or ($element[self::msup and sp:is-elementary-function(*[1])])"/>
+      or $element[self::msup and sp:is-elementary-function(*[1])]
+      or $element[self::msub and *[1][self::mi and .='log']]"/>
   </xsl:function>
 
   <!-- ************************************************************ -->
@@ -145,6 +147,12 @@ All Rights Reserved
       <xsl:when test="$elements[sp:is-explicit-multiplication(.)]">
         <!-- Explicit Multiplication, detected in various ways -->
         <xsl:call-template name="local:handle-explicit-multiplication-group">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[self::mspace]">
+        <!-- Any <mspace/> is kept but interpreted as an implicit multiplication as well -->
+        <xsl:call-template name="local:handle-mspace-group">
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
@@ -259,6 +267,32 @@ All Rights Reserved
           <xsl:copy-of select="."/>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:call-template name="s:maybe-wrap-in-mrow">
+            <xsl:with-param name="elements" as="element()*">
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="current-group()"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each-group>
+  </xsl:template>
+
+  <!-- <mspace/> as explicit multiplication -->
+  <xsl:template name="local:handle-mspace-group">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:for-each-group select="$elements" group-adjacent="boolean(self::mspace)">
+      <xsl:choose>
+        <xsl:when test="current-grouping-key()">
+          <xsl:copy-of select="."/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:if test="position()!=1">
+            <!-- Add in InvisibleTimes -->
+            <mo>&#x2062;</mo>
+          </xsl:if>
+          <!-- Then process as normal -->
           <xsl:call-template name="s:maybe-wrap-in-mrow">
             <xsl:with-param name="elements" as="element()*">
               <xsl:call-template name="local:process-group">

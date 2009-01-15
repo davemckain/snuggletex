@@ -13,6 +13,8 @@ package uk.ac.ed.ph.snuggletex.extensions.upconversion;
  */
 public interface UpConversionParameters {
     
+    String DO_CONTENT_MATHML = "do-content-mathml";
+    String DO_MAXIMA = "do-maxima";
     String ASSUME_EXPONENTIAL_E = "assume-exponential-e";
     String ASSUME_IMAGINARY_I = "assume-imaginary-i";
     String ASSUME_CONSTANT_PI = "assume-constant-pi";

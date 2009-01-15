@@ -11,15 +11,16 @@ import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
-import uk.ac.ed.ph.snuggletex.SnuggleSnapshot;
-import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.SnuggleSnapshot;
 import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
 import uk.ac.ed.ph.snuggletex.extensions.jeuclid.SimpleMathMLImageSavingCallback;
+import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -71,6 +72,9 @@ public final class DocumentationBuilder {
     /** Location of the XSLT to generate the final web pages */
     private final File formattingStylesheet;
     
+    /** Post-processor which will up-convert the resulting MathML */
+    private final UpConvertingPostProcessor upconverter;
+    
     /** 
      * Base path for webapp. This can either be hard-coded "context path" (which is not portable)
      * or something relative to the {@link #sourceDirectory}.
@@ -95,6 +99,7 @@ public final class DocumentationBuilder {
         this.formattingStylesheet = formattingStylesheet;
         this.contextPath = contextPath;
         this.mathMLImageDirectoryName = mathMLImageDirectory;
+        this.upconverter = new UpConvertingPostProcessor();
         
         /* These will be set on first use */
         this.stylesheet = null;
@@ -178,7 +183,7 @@ public final class DocumentationBuilder {
         JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
         setupWebOptions(jeuclidOptions);
         stylesheet.setParameter("page-type", null); /* (Reset as it will have been set earlier) */
-        jeuclidOptions.setDomPostProcessor(new DownConvertingPostProcessor());
+        jeuclidOptions.setDOMPostProcessor(new DownConvertingPostProcessor());
         jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
         jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));
         targetFile = new File(sourceDirectory, pageBaseName + ".html");
@@ -237,6 +242,7 @@ public final class DocumentationBuilder {
         options.setStylesheet(stylesheet);
         options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setIndenting(true);
+        options.setDOMPostProcessor(upconverter);
     }
     
     /**
@@ -249,7 +255,6 @@ public final class DocumentationBuilder {
     private SnuggleSnapshot createPostMacrosSnapshot() throws IOException {
         /* Create engine, read in macros and then create a snapshot to reuse for each request */
         SessionConfiguration configuration = new SessionConfiguration();
-        configuration.setInferringMathStructure(true);
         
         SnuggleEngine engine = new SnuggleEngine();
         SnuggleSession session = engine.createSession(configuration);

@@ -63,6 +63,20 @@ abstract class AbstractGoodXMLTests {
     
     protected abstract void fixupDocument(Document document);
     
+    /**
+     * Sets up the {@link DOMOutputOptions} to use for the test.
+     * <p>
+     * The default is a fairly vanilla set of options, but with math variant
+     * mapping turned on.
+     * <p>
+     * Subclasses may override as required.
+     */
+    protected DOMOutputOptions createDOMOutputOptions() {
+        DOMOutputOptions result = new DOMOutputOptions();
+        result.setMathVariantMapping(true);
+        return result;
+    }
+    
     private void checkNoErrors(SessionContext sessionContext) {
         List<InputError> errors = sessionContext.getErrors();
         if (!errors.isEmpty()) {
@@ -86,11 +100,9 @@ abstract class AbstractGoodXMLTests {
          * changed at run-time via LaTeX markup!)
          */
         SessionConfiguration configuration =  new SessionConfiguration();
-        configuration.setInferringMathStructure(true);
-        
-        /* DOM options will be fairly vanilla, though we'll turn on mathvariant character mappings */
-        DOMOutputOptions domOptions = new DOMOutputOptions();
-        domOptions.setMathVariantMapping(true);
+
+        /* Set up DOMOutputOptions */
+        DOMOutputOptions domOptions = createDOMOutputOptions();
         
         SessionContext context = new SnuggleEngine().createSession(configuration);
         SnuggleInputReader inputReader = new SnuggleInputReader(context, new SnuggleInput(inputLaTeX));
@@ -103,7 +115,7 @@ abstract class AbstractGoodXMLTests {
             /* Make sure we got no errors */
             checkNoErrors(context);
             
-            /* Run fixer */
+            /* Run token fixer */
             TokenFixer fixer = new TokenFixer(context);
             fixer.fixTokenTree(outerToken);
             fixedDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);

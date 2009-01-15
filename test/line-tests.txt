@@ -187,7 +187,7 @@ HelloHelloHelloHello
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math>
 ====
 \newcommand{\test}{\sin}$\test x$
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>sin</mi><mo>&#x2061;</mo><mi>x</mi></math>
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>sin</mi><mi>x</mi></math>
 ====
 \newenvironment{test}{Begin}{End}Good
 Good

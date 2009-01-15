@@ -7,7 +7,6 @@ package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
@@ -15,17 +14,14 @@ import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
-import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -589,7 +585,7 @@ public final class TokenFixer {
             }
         }
         
-        /* If it looks like we've got an expression then tidy it up and try to infer semantics */
+        /* If it looks like we've got an expression then tidy it up and perform some basic semantic inference */
         if (!isStructural) {
             /* The order below is important in order to establish precedence */
             fixLeadingNegativeNumber(tokens);
@@ -599,10 +595,6 @@ public final class TokenFixer {
             inferParenthesisFences(parentToken, tokens);
             fixSubscriptAndSuperscripts(parentToken, tokens);
             fixPrimes(tokens);
-            if (sessionContext.getConfiguration().isInferringMathStructure()) {
-                groupOverInfixOperators(parentToken, tokens);
-                inferApplyFunctionAndInvisibleTimes(tokens);
-            }
         }
         
         /* Visit each sub-token */
@@ -1016,172 +1008,6 @@ public final class TokenFixer {
         }
     }
     
-    /**
-     * This attempts to group subexpressions across infix operators, provided that all
-     * tokens are non-brackets. Having bracket tokens indicates deeper complexity that
-     * this grouping algorithm won't be able to cope with!
-     * <p>
-     * (This should be run after attempting to convert matching brackets to fences in order
-     * to be more likely to succeed.)
-     * 
-     * @param tokens
-     */
-    private void groupOverInfixOperators(ArgumentContainerToken parent, List<FlowToken> tokens) {
-        List<FlowToken> resultBuilder = new ArrayList<FlowToken>(); /* (Won't fix in place this time) */
-        List<FlowToken> groupBuilder = new ArrayList<FlowToken>(); /* Builds up subexpression groups */
-        FlowToken token;
-        boolean isInfixOperator;
-        for (int i=0, size=tokens.size(); i<size; i++) {
-            token = tokens.get(i);
-            
-            /* Make sure this isn't a bracket */
-            if (token.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
-                /* Give up trying! */
-                return;
-            }
-            
-            /* Is this an operator? If so, is it infix? */
-            MathMLOperator operator = resolveMathMLOperator(token);
-            isInfixOperator = operator!=null && operator.getOperatorType()==OperatorType.INFIX;
-            
-            /* Decide what to do */
-            if (!isInfixOperator) {
-                /* Not an infix operator so add to current group */
-                groupBuilder.add(token);
-            }
-            else {
-                /* It's an infix operator */
-                if (groupBuilder.isEmpty()) {
-                    if (i==0) {
-                        /* Leading infix operator at start of whole expression */
-                        resultBuilder.add(token);
-                    }
-                    else {
-                        /* Infix was used at the start of a sub-expression, so need to group */
-                        groupBuilder.add(token);
-                    }
-                }
-                else {
-                    /* This operator ends the current group. So group together what's there so far
-                     * (if required) and add to result list.
-                     */
-                    resultBuilder.add(maybeBuildGroupedCommandContainerToken(parent, GlobalBuiltins.CMD_MROW, groupBuilder));
-                    resultBuilder.add(token);
-                }
-            }
-        }
-        /* See if we actually found an infix operator. If we didn't, then no grouping should
-         * be attempted.
-         */
-        if (resultBuilder.isEmpty()) {
-            return;
-        }
-        /* Handle final group in expression */
-        if (!groupBuilder.isEmpty()) {
-            resultBuilder.add(maybeBuildGroupedCommandContainerToken(parent, GlobalBuiltins.CMD_MROW, groupBuilder));
-        }
-        
-        /* Replace original tokens with our result */
-        tokens.clear();
-        tokens.addAll(resultBuilder);
-    }
-    
-    /**
-     * This tries to infer where the "invisible times" and "apply functions" operators may
-     * be usefully added to the outgoing DOM. This is only invoked if
-     * {@link SessionConfiguration#isInferringMathStructure()}
-     * returns true since it involves some heuristic analysis and is only really intended to be
-     * used in "elementary" situations, where it can actually be quite powerful.
-     */
-    private void inferApplyFunctionAndInvisibleTimes(List<FlowToken> tokens) {
-        boolean justDidFunction = false;
-        boolean justDidNonOperator = false;
-        FlowToken token;
-        boolean isFunction;
-        OperatorType operatorType;
-        MathMLOperator operator;
-        boolean isOperator;
-        List<FlowToken> resultBuilder = new ArrayList<FlowToken>(); 
-        for (int i=0, size=tokens.size(); i<size; i++) {
-            token = tokens.get(i);
-            
-            /* Decide if we are an operator */
-            operator = resolveMathMLOperator(token);
-            operatorType = operator!=null ? operator.getOperatorType() : null;
-            isOperator = operator!=null;
-            if (token.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR) || operatorType==OperatorType.INFIX) {
-                /* We can't deal with brackets and infix operators. */
-                return;
-            }
-            
-            /* Decide if the current token directly represents a function, which may involve a
-             * certain amount of heuristic guessing...!
-             */
-            isFunction = token.isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER);
-            if (token.isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER)) {
-                /* This is clearly a function */
-                isFunction = true;
-            }
-            else if (token.isCommand(GlobalBuiltins.CMD_MSUB_OR_MUNDER)
-                    || token.isCommand(GlobalBuiltins.CMD_MSUP_OR_MOVER)
-                    || token.isCommand(GlobalBuiltins.CMD_MSUBSUP_OR_MUNDEROVER)) {
-                /* See if this is something like \log_a x or \sin^{-1} x, which we will interpret
-                 * as being a function. This is not necessarily the correct thing to do!
-                 */
-                List<FlowToken> firstArgumentTokens = ((CommandToken) token).getArguments()[0].getContents();
-                if (firstArgumentTokens.size()==1) {
-                    isFunction = firstArgumentTokens.get(0).isInterpretationType(InterpretationType.MATH_FUNCTION_IDENTIFIER);
-                }
-            }
-            
-            /* If we did a function last time round and this token isn't an "ApplyFunction", add one now */
-            if (justDidFunction && !token.isCommand(GlobalBuiltins.CMD_APPLY_FUNCTION)) {
-                /* We post-increment 'i' so it still points to the current token, which has moved right one place */
-                resultBuilder.add(new CommandToken(token.getSlice(), token.getLatexMode(), GlobalBuiltins.CMD_APPLY_FUNCTION));
-            }
-            /* If we did a non-fn/operator last time round, add "InivisibleTimes" now, but only
-             * if we're not about to output a postfix operator and if the current token is not an explicit InvisibleTimes
-             */
-            if (justDidNonOperator && !token.isCommand(GlobalBuiltins.CMD_INVISIBLE_TIMES) &&
-                    (operatorType==null || operatorType!=OperatorType.POSTFIX)) {
-                resultBuilder.add(new CommandToken(token.getSlice(), token.getLatexMode(), GlobalBuiltins.CMD_INVISIBLE_TIMES));
-            }
-            /* Then add the current token */
-            resultBuilder.add(token);
-            
-            /* If we just did a function, set flag so that we maybe add "ApplyFunction" next time */
-            justDidFunction = isFunction;
-            
-            /* If we did a non-operator or non-function, set flag so that we maybe output "InvisibleTimes" next time */
-            justDidNonOperator = !(isFunction || isOperator);
-        }
-        /* Replace original tokens */
-        tokens.clear();
-        tokens.addAll(resultBuilder);
-    }
-    
-    /**
-     * Helper to resolve the MathML operator behind the given Token, if appropriate. This also
-     * handles the case of resolving the target of a <tt>\not</tt> token.
-     * 
-     * @param token
-     */
-    private MathMLOperator resolveMathMLOperator(FlowToken token) {
-        Interpretation interpretation = token.getInterpretation();
-        if (interpretation instanceof MathOperatorInterpretation) {
-            return ((MathOperatorInterpretation) interpretation).getOperator();
-        }
-        if (token.isCommand(GlobalBuiltins.CMD_NOT)) {
-            CommandToken notToken = (CommandToken) token;
-            FlowToken targetToken = notToken.getCombinerTarget();
-            if (targetToken.isInterpretationType(InterpretationType.MATH_RELATION_OPERATOR)) {
-                return ((NottableMathOperatorInterpretation) targetToken.getInterpretation()).getNotOperator();
-            }
-            throw new SnuggleLogicException("Unexpected logic branch - we should already have ensured that \\not is followed by a relation operator?!");
-        }
-        return null;
-    }
-    
     //-----------------------------------------
     // Helpers
     
@@ -1213,23 +1039,6 @@ public final class TokenFixer {
         );
         itemBuilder.clear();
         return result;
-    }
-
-    /**
-     * Version of {@link #maybeBuildGroupedCommandContainerToken(Token, BuiltinCommand, List)} that only groups
-     * if there are zero or more and 1 items. If 1 item, returns the sole item itself.
-     * 
-     * @param command
-     * @param itemBuilder
-     */
-    private FlowToken maybeBuildGroupedCommandContainerToken(final Token parentToken,
-            final BuiltinCommand command, final List<? extends FlowToken> itemBuilder) {
-        if (itemBuilder.size()==1) {
-            FlowToken result = itemBuilder.get(0);
-            itemBuilder.clear();
-            return result;
-        }
-        return buildGroupedCommandToken(parentToken, command, itemBuilder);
     }
 
     private ErrorToken createError(final FlowToken token, final ErrorCode errorCode,

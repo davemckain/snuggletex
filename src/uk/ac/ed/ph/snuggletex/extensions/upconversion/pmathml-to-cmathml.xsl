@@ -215,6 +215,12 @@ All Rights Reserved
     </apply>
   </xsl:template>
 
+  <!-- <mspace/> can be safely stripped off as earlier parts in the process added any necessary
+  InvisibleTimes operator next door to it -->
+  <xsl:template match="mspace"/>
+
+  <!-- ************************************************************ -->
+
   <!-- Optional Special constants. -->
 
   <xsl:template match="mi[.='e' and $s:assume-exponential-e]" mode="pmathml-to-cmathml">

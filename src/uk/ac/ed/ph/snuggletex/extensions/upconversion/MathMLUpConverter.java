@@ -60,7 +60,6 @@ public class MathMLUpConverter {
                      * namespace, so we need to use {uri}localName format for the parameter name.) */
                     upconverter.setParameter("{" + SnuggleConstants.SNUGGLETEX_NAMESPACE + "}" + entry.getKey(),
                             entry.getValue());
-                    System.out.println("SET " + entry.getKey());
                 }
             }
             
@@ -130,7 +129,7 @@ public class MathMLUpConverter {
         
         DOMOutputOptions options = new DOMOutputOptions();
         options.setAddingMathAnnotations(true);
-        options.setDomPostProcessor(new UpConvertingPostProcessor(upParameters));
+        options.setDOMPostProcessor(new UpConvertingPostProcessor(upParameters));
         
         String string = session.buildXMLString(options, true);
         System.out.println("Got " + string);
