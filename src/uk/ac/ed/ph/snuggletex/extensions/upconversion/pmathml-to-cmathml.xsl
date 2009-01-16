@@ -14,6 +14,7 @@ TODO: /
 TODO: Factorial operator
 TODO: Need to trim whitespace from MathML elements when performing comparisons.
 TODO: Should we convert subscripted variables to special identifiers?
+TODO: Think about handling <mstyle/>...!
 
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved

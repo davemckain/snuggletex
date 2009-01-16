@@ -100,7 +100,7 @@ All Rights Reserved
             <xsl:call-template name="s:maybe-wrap-in-mrow">
               <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
             </xsl:call-template>
-            <!-- Add Content MathML or failure annotation -->
+            <!-- Maybe add Content MathML or failure annotation -->
             <xsl:choose>
               <xsl:when test="exists($cmathml-failures)">
                 <annotation-xml encoding="MathML-Content-upconversion-failures">
@@ -121,7 +121,7 @@ All Rights Reserved
                 <xsl:value-of select="$annotations[self::annotation and @encoding='SnuggleTeX'][1]"/>
               </annotation>
             </xsl:if>
-            <!-- Add Maxima or failure annotation -->
+            <!-- Maybe add Maxima or failure annotation -->
             <xsl:choose>
               <xsl:when test="exists($maxima-failures)">
                 <annotation-xml encoding="Maxima-upconversion-failures">
