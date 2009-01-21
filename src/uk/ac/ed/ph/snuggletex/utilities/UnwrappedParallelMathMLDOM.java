@@ -1,6 +1,6 @@
 /* $Id: org.eclipse.jdt.ui.prefs 3 2008-04-25 12:10:29Z davemckain $
  *
- * Copyright 2008 University of Edinburgh.
+ * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;
@@ -12,7 +12,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Trivial wrapper Object that encapsulates the results of {@link MathMLUtilities#unwrapParallelMathMLDOM(Element)}.
+ * Trivial wrapper Object that encapsulates the results of
+ * {@link MathMLUtilities#unwrapParallelMathMLDOM(Element)}.
  *
  * @author  David McKain
  * @version $Revision: 3 $
