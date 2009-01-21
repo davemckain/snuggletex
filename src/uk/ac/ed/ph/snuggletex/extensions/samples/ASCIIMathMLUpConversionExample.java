@@ -165,7 +165,11 @@ public class ASCIIMathMLUpConversionExample {
         String maximaAnnotation = MathMLUtilities.extractAnnotationString(upconvertedDocument.getDocumentElement(), "Maxima");
         System.out.println("Maxima Annotation was:\n" + maximaAnnotation);
         
-        /* 3. Extracts all annotations into a "convenient" wrapper Object */
+        /* 3. Extracts all annotations into a "convenient" wrapper Object.
+         * 
+         * Use this if you need most/all of the annotations as it saves having to walk the DOM
+         * tree over and over.
+         */
         UnwrappedParallelMathMLDOM unwrappedDOM = MathMLUtilities.unwrapParallelMathMLDOM(upconvertedDocument.getDocumentElement());
         System.out.println("First branch of parallel MathML DOM was " + MathMLUtilities.serializeElement(unwrappedDOM.getFirstBranch()));
         // Etc... 
