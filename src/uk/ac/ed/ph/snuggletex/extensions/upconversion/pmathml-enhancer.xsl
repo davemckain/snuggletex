@@ -102,11 +102,23 @@ All Rights Reserved
   <!-- ************************************************************ -->
 
   <xsl:template match="mrow" mode="enhance-pmathml">
-    <mrow>
+    <!-- Process contents as normal -->
+    <xsl:variable name="processed-contents" as="element()*">
       <xsl:call-template name="local:process-group">
         <xsl:with-param name="elements" select="*"/>
       </xsl:call-template>
-    </mrow>
+    </xsl:variable>
+    <!-- Strip this outer <mrow/> if the processed contents ended up wrapped in another one -->
+    <xsl:choose>
+      <xsl:when test="count($processed-contents)=1 and $processed-contents[1][self::mrow]">
+        <xsl:copy-of select="$processed-contents"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <mrow>
+          <xsl:copy-of select="$processed-contents"/>
+        </mrow>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- Default template for other MathML elements -->

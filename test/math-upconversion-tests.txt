@@ -30,6 +30,9 @@ x = 3
 2x
 <mn>2</mn><mo>&#x2062;</mo><mi>x</mi>
 ====
+(2x)
+<mfenced open='(' close=')'><mrow><mn>2</mn><mo>&#x2062;</mo><mi>x</mi></mrow></mfenced>
+====
 \sin x
 <mi>sin</mi><mo>&#x2061;</mo><mi>x</mi>
 ====
