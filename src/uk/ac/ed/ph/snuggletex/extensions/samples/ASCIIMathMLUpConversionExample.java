@@ -8,12 +8,10 @@ package uk.ac.ed.ph.snuggletex.extensions.samples;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.SnuggleEngine.DefaultStylesheetCache;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionParameters;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
-import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.UnwrappedParallelMathMLDOM;
 
 import java.io.IOException;
@@ -118,20 +116,22 @@ public class ASCIIMathMLUpConversionExample {
         /* Now we use some of the utilities I've put in SnuggleTeX to "up-convert" this. */
         
         /* Note 1: The conversion process is done with XSLT so it makes sense to cache compiled
-         * XSLT stylesheets for performance reasons. Hence, you're expected to create a cache
-         * and pass it to the up-converted. SnuggleTeX contains a default self-contained one
-         * that we'll use here. If you're using XSLT in your own application, you might want to
-         * integrate your own cache in using a suitable adapter. Any cache you make must be
-         * thread-safe.
+         * XSLT stylesheets for performance reasons. Hence, each MathMLUpConverter instance
+         * contains a reference to a StylesheetCache that will be used to cache compiled
+         * XSLT during its life.
          * 
-         * In a servlet environment, you'd want the cache to be shared across the application.
-         * Exactly how you do that depends on how much of a framework you've got in place. At the
-         * lowest level, you can do it via the ServletContext.
+         * There are 2 constructors to MathMLUpConverter. One takes an explicit cache, which
+         * is useful if you use XSLT in your application and want to integrated caching.
+         * 
+         * The default no-argument constructor constructs a simple cache and stores it within
+         * your MathMLUpConverter. Use this if you don't use XSLT in your own application.
+         * In this case, you should seriously consider creating a single instance of this
+         * class and ensuring it has a long life to maximise the performance gains of using
+         * compiled stylesheets. E.g. In a servlet environment, you'd want your instance to be
+         * shared across the application. Exactly how you do that depends on how much of a 
+         * framework you've got in place. At the lowest level, you can do it via the ServletContext.
          */
-        StylesheetCache stylesheetCache = new DefaultStylesheetCache();
-        
-        /* Up-conversion is done by this utility class. It's thread-safe */
-        MathMLUpConverter upConverter = new MathMLUpConverter(stylesheetCache);
+        MathMLUpConverter upConverter = new MathMLUpConverter();
         
         /* You can control aspects of the conversion using a simple Map as follows.
          * (Note: all of the things below are actually defaults but I've put them in for
@@ -165,7 +165,7 @@ public class ASCIIMathMLUpConversionExample {
         String maximaAnnotation = MathMLUtilities.extractAnnotationString(upconvertedDocument.getDocumentElement(), "Maxima");
         System.out.println("Maxima Annotation was:\n" + maximaAnnotation);
         
-        /* 3. Extracts all annotations into a wrapper Object */
+        /* 3. Extracts all annotations into a "convenient" wrapper Object */
         UnwrappedParallelMathMLDOM unwrappedDOM = MathMLUtilities.unwrapParallelMathMLDOM(upconvertedDocument.getDocumentElement());
         System.out.println("First branch of parallel MathML DOM was " + MathMLUtilities.serializeElement(unwrappedDOM.getFirstBranch()));
         // Etc... 

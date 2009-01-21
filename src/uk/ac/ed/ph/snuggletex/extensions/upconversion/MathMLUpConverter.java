@@ -6,16 +6,13 @@
 package uk.ac.ed.ph.snuggletex.extensions.upconversion;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
-import uk.ac.ed.ph.snuggletex.SnuggleEngine;
-import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine.DefaultStylesheetCache;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,19 +26,67 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.Document;
 
 /**
- * FIXME: Document this type!
+ * Standalone utility class for "up-converting" MathML Documents created by either SnuggleTeX
+ * or ASCIIMathML as follows:
+ * <ul>
+ *   <li>Presentation MathML is "enhanced" with extra semantics</li>
+ *   <li>Conversion to Content MathML is optionally attempted (assuming PMathML follows certain conventions)</li>
+ *   <li>Conversion to Maxima input is optionally attempted (assuming PMathML follows certain conventions)</li>
+ * </ul>
+ * This can be invoked within the normal SnuggleTeX parsing process using by passing an
+ * {@link UpConvertingPostProcessor} via {@link DOMOutputOptions#setDOMPostProcessor(DOMPostProcessor)}.
+ * 
+ * <h2>Usage Notes</h2>
+ * 
+ * <ul>
+ *   <li>An implementation of this class is thread-safe</li>
+ *   <li>
+ *     If you use XSLT in your own application, consider using the constructor that
+ *     takes a {@link StylesheetCache} to integrate with your own caching mechanism.
+ *   </li> 
+ *     If you don't use XSLT in your own application, you can use the default constructor
+ *     that creates a cache used by the instance of this class. In this case, you'll want
+ *     to ensure your instance has "application-wide" context to maximise performance.
+ *   </li>
+ * </ul>
  * 
  * @author  David McKain
  * @version $Revision$
  */
 public class MathMLUpConverter {
     
+    /** Explicit name of the SAXON 9.X TransformerFactoryImpl Class */
+    public static final String SAXON_TRANSFORMER_FACTORY_CLASS_NAME = "net.sf.saxon.TransformerFactoryImpl";
+    
+    /** "Base" location for the XSLT stylesheets used here */
+    public static final String UPCONVERTER_BASE_LOCATION = "classpath:/uk/ac/ed/ph/snuggletex/extensions/upconversion";
+    
+    /** Location of the initial XSLT for fixing up ASCIIMathML */
+    public static final String ASCIIMATH_FIXER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/asciimathml-fixer.xsl";
+    
+    /** Location of the main up-converting XSLT */
+    public static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
+
+    /** XSLT cache to use */
     private final StylesheetCache stylesheetCache;
     
-    public static final String UPCONVERTER_BASE_LOCATION = "classpath:/uk/ac/ed/ph/snuggletex/extensions/upconversion";
-    public static final String ASCIIMATH_FIXER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/asciimathml-fixer.xsl";
-    public static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
+    /**
+     * Creates a new up-converter using a simple internal cache.
+     * <p>
+     * Use this constructor if you don't use XSLT yourself. In this case, you'll want your
+     * instance of this class to be reused as much as possible to get the benefits of caching.
+     */
+    public MathMLUpConverter() {
+        this(new DefaultStylesheetCache());
+    }
     
+    /**
+     * Creates a new up-converter using the given {@link StylesheetCache} to cache internal XSLT
+     * stylesheets.
+     * <p>
+     * Use this constructor if you do your own XSLT caching that you want to integrate in, or
+     * if the default doesn't do what you want.
+     */
     public MathMLUpConverter(final StylesheetCache stylesheetCache) {
         this.stylesheetCache = stylesheetCache;
     }
@@ -87,13 +132,17 @@ public class MathMLUpConverter {
     }
     
     //---------------------------------------------------------------------
+    // Internal helpers
     
     private TransformerFactory createSaxonTransformerFactory() {
         try {
-            return (TransformerFactory) Class.forName("net.sf.saxon.TransformerFactoryImpl").newInstance();
+            /* We call up SAXON explcitly without going through the usual factory path */
+            return (TransformerFactory) Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME).newInstance();
         }
         catch (Exception e) {
-            throw new SnuggleRuntimeException("Failed to explicitly instantiate SAXON net.sf.saxon.TransformerFactoryImpl - check your ClassPath!", e);
+            throw new SnuggleRuntimeException("Failed to explicitly instantiate SAXON "
+                    + SAXON_TRANSFORMER_FACTORY_CLASS_NAME
+                    + " class - check your ClassPath!", e);
         }
     }
     
@@ -117,21 +166,5 @@ public class MathMLUpConverter {
     private Templates compileStylesheet(String location) {
         TransformerFactory transformerFactory = createSaxonTransformerFactory();
         return XMLUtilities.compileInternalStylesheet(transformerFactory, location);
-    }
-    
-    public static void main(String[] args) throws IOException {
-        SnuggleEngine engine = new SnuggleEngine();
-        SnuggleSession session = engine.createSession();
-        session.parseInput(new SnuggleInput("$$1+\\frac{e}{y}$$"));
-        
-        Map<String, Object> upParameters = new HashMap<String, Object>();
-        upParameters.put(UpConversionParameters.ASSUME_EXPONENTIAL_E, Boolean.TRUE);
-        
-        DOMOutputOptions options = new DOMOutputOptions();
-        options.setAddingMathAnnotations(true);
-        options.setDOMPostProcessor(new UpConvertingPostProcessor(upParameters));
-        
-        String string = session.buildXMLString(options, true);
-        System.out.println("Got " + string);
     }
 }
