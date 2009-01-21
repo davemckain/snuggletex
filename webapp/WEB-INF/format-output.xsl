@@ -76,24 +76,6 @@ All Rights Reserved
             <h3>THE UNIVERSITY of EDINBURGH</h3>
             <h1>SCHOOL OF PHYSICS AND ASTRONOMY</h1>
           </td>
-          <td align="right">
-            <table border="0" cellpadding="0" cellspacing="0" style="margin-right:20px;">
-              <tr>
-                <td>
-                  <a href="http://www.ed.ac.uk" class="headertext"><img
-                    src="{$context-path}/includes/arrow.gif"
-                    width="16" height="11" border="0"
-                    alt="" />University&#160;Homepage</a>
-                  <br />
-                  <a href="http://www.ph.ed.ac.uk" class="headertext"><img
-                    src="{$context-path}/includes/arrow.gif"
-                    width="16" height="11" border="0"
-                    alt="" />School of Physics and Astronomy Homepage</a>
-                  <br />
-                </td>
-              </tr>
-            </table>
-          </td>
         </tr>
       </table>
       <h1 id="location">
