@@ -32,18 +32,18 @@ import org.xml.sax.SAXException;
  * Simple demonstration of how to use some of the utilities within SnuggleTeX to up-convert
  * some raw MathML extracted from ASCIIMathML.
  * <p>
- * You can do the same with the raw MathML produced by SnuggleTeX as well; you just have to
+ * (You can do the same with the raw MathML produced by SnuggleTeX as well; you just have to
  * call a {@link MathMLUpConverter#upConvertSnuggleTeXMathML(Document, Map)}) instead of the
  * method for SnuggleTeX. When using SnuggleTeX normally, all of this can be invoked during
  * the snuggling process by registering a {@link UpConvertingPostProcessor} with your
- * {@link DOMOutputOptions#setDOMPostProcessor(DOMPostProcessor)}.
+ * {@link DOMOutputOptions#setDOMPostProcessor(DOMPostProcessor)}.)
  * 
  * <h2>Running Notes</h2>
  * 
  * You will need the following in your ClassPath:
  * 
  * <ul>
- *   <li>snuggletex.jar</li>
+ *   <li>snuggletex.jar</li> (Also needed at compile time)
  *   <li>saxon9.jar, saxon9-dom.jar</li> (These are required as the conversion process uses XSLT 2.0)
  * </ul>
  * 
@@ -59,7 +59,7 @@ import org.xml.sax.SAXException;
 public class ASCIIMathMLUpConversionExample {
     
     public static void main(String[] args) {
-        /* This is the MathML String you get from ASCIIMathML when you enter (5x)/(1-x).
+        /* This is the MathML String we pull out from ASCIIMathML when you enter (5x)/(1-x).
          * 
          * NOTE: I'll have to check that we will always get proper UTF-8 from ASCIIMath so that
          * we can store as a Java string without doing any further re-encoding work.
@@ -115,16 +115,18 @@ public class ASCIIMathMLUpConversionExample {
         /* ============================================================================ */
         /* Now we use some of the utilities I've put in SnuggleTeX to "up-convert" this. */
         
-        /* Note 1: The conversion process is done with XSLT so it makes sense to cache compiled
+        /* Note: The conversion process is done with XSLT so it makes sense to cache compiled
          * XSLT stylesheets for performance reasons. Hence, each MathMLUpConverter instance
          * contains a reference to a StylesheetCache that will be used to cache compiled
          * XSLT during its life.
          * 
          * There are 2 constructors to MathMLUpConverter. One takes an explicit cache, which
-         * is useful if you use XSLT in your application and want to integrated caching.
+         * is useful if you use XSLT in your application and want to integrate your own
+         * caching mechanism.
          * 
          * The default no-argument constructor constructs a simple cache and stores it within
-         * your MathMLUpConverter. Use this if you don't use XSLT in your own application.
+         * your MathMLUpConverter. Use this if you don't use XSLT in your own application or
+         * are happy to use the default caching behaviour.
          * In this case, you should seriously consider creating a single instance of this
          * class and ensuring it has a long life to maximise the performance gains of using
          * compiled stylesheets. E.g. In a servlet environment, you'd want your instance to be
@@ -134,8 +136,8 @@ public class ASCIIMathMLUpConversionExample {
         MathMLUpConverter upConverter = new MathMLUpConverter();
         
         /* You can control aspects of the conversion using a simple Map as follows.
-         * (Note: all of the things below are actually defaults but I've put them in for
-         * demo purposes. Have a look at UpConversionParameters for more possibilities.)
+         * (Note: all of the values set below are actually defaults but I've put them in for
+         * demo purposes. Have a look at UpConversionParameters for all of the possibilities.)
          */
         Map<String, Object> upconversionParameters = new HashMap<String, Object>();
         upconversionParameters.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.TRUE);
@@ -162,7 +164,8 @@ public class ASCIIMathMLUpConversionExample {
         System.out.println("Resulting MathML is:\n" + resultingMathMLString);
         
         /* 2. This demonstrates extracting a single annotation */
-        String maximaAnnotation = MathMLUtilities.extractAnnotationString(upconvertedDocument.getDocumentElement(), "Maxima");
+        String maximaAnnotation = MathMLUtilities.extractAnnotationString(upconvertedDocument.getDocumentElement(),
+                MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         System.out.println("Maxima Annotation was:\n" + maximaAnnotation);
         
         /* 3. Extracts all annotations into a "convenient" wrapper Object.
@@ -171,7 +174,8 @@ public class ASCIIMathMLUpConversionExample {
          * tree over and over.
          */
         UnwrappedParallelMathMLDOM unwrappedDOM = MathMLUtilities.unwrapParallelMathMLDOM(upconvertedDocument.getDocumentElement());
-        System.out.println("First branch of parallel MathML DOM was " + MathMLUtilities.serializeElement(unwrappedDOM.getFirstBranch()));
+        System.out.println("First branch of parallel MathML DOM was:\n"
+                + MathMLUtilities.serializeElement(unwrappedDOM.getFirstBranch()));
         // Etc... 
     }
 }

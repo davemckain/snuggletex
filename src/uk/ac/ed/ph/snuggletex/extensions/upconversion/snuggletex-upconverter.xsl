@@ -31,6 +31,13 @@ All Rights Reserved
   <xsl:param name="s:do-content-mathml" as="xs:boolean" select="true()"/>
   <xsl:param name="s:do-maxima" as="xs:boolean" select="true()"/>
 
+  <xsl:variable name="s:snuggletex-annotation" as="xs:string" select="'SnuggleTeX'"/>
+  <xsl:variable name="s:latex-annotation" as="xs:string" select="'LaTeX'"/>
+  <xsl:variable name="s:content-mathml-annotation" as="xs:string" select="'MathML-Content'"/>
+  <xsl:variable name="s:content-failures-annotation" as="xs:string" select="'MathML-Content-upconversion-failures'"/>
+  <xsl:variable name="s:maxima-annotation" as="xs:string" select="'Maxima'"/>
+  <xsl:variable name="s:maxima-failures-annotation" as="xs:string" select="'Maxima-upconversion-failures'"/>
+
   <!-- ************************************************************ -->
 
   <xsl:template match="*">
@@ -103,12 +110,12 @@ All Rights Reserved
             <!-- Maybe add Content MathML or failure annotation -->
             <xsl:choose>
               <xsl:when test="exists($cmathml-failures)">
-                <annotation-xml encoding="MathML-Content-upconversion-failures">
+                <annotation-xml encoding="{$s:content-failures-annotation}">
                   <xsl:copy-of select="$cmathml-failures"/>
                 </annotation-xml>
               </xsl:when>
               <xsl:when test="$s:do-content-mathml">
-                <annotation-xml encoding="MathML-Content">
+                <annotation-xml encoding="{$s:content-mathml-annotation}">
                   <xsl:copy-of select="$cmathml/*"/>
                 </annotation-xml>
               </xsl:when>
@@ -116,20 +123,20 @@ All Rights Reserved
             <!-- Copy existing annotations -->
             <xsl:copy-of select="$annotations"/>
             <!-- Copy any existing "SnuggleTeX" annotation as a "LaTeX" annotation -->
-            <xsl:if test="$annotations[self::annotation and @encoding='SnuggleTeX']">
-              <annotation encoding="LaTeX">
-                <xsl:value-of select="$annotations[self::annotation and @encoding='SnuggleTeX'][1]"/>
+            <xsl:if test="$annotations[self::annotation and @encoding=$s:snuggletex-annotation]">
+              <annotation encoding="{$s:latex-annotation}">
+                <xsl:value-of select="$annotations[self::annotation and @encoding=$s:snuggletex-annotation][1]"/>
               </annotation>
             </xsl:if>
             <!-- Maybe add Maxima or failure annotation -->
             <xsl:choose>
               <xsl:when test="exists($maxima-failures)">
-                <annotation-xml encoding="Maxima-upconversion-failures">
+                <annotation-xml encoding="{$s:maxima-failures-annotation}">
                   <xsl:copy-of select="$maxima-failures"/>
                 </annotation-xml>
               </xsl:when>
               <xsl:when test="$s:do-maxima and not(exists($cmathml-failures))">
-                <annotation encoding="Maxima">
+                <annotation encoding="{$s:maxima-annotation}">
                   <xsl:value-of select="$maxima"/>
                 </annotation>
               </xsl:when>

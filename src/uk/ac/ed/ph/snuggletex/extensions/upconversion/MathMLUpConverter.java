@@ -54,18 +54,30 @@ import org.w3c.dom.Document;
  * @version $Revision$
  */
 public class MathMLUpConverter {
+
+    /* (Names of the various annotations. These are also defined in the XSLT so, if changing, we
+     * must ensure that things are manually kept in sync. I could pass all of these as parameters
+     * but it seems like overkill here!)
+     */
     
+    public static final String SNUGGLETEX_ANNOTATION_NAME = "SnuggleTeX";
+    public static final String LATEX_ANNOTATION_NAME = "LaTeX";
+    public static final String CONTENT_MATHML_ANNOTATION_NAME = "MathML-Content";
+    public static final String CONTENT_FAILURES_ANNOTATION_NAME = "MathML-Content-upconversion-failures";
+    public static final String MAXIMA_ANNOTATION_NAME = "Maxima";
+    public static final String MAXIMA_FAILURES_ANNOTATION_NAME = "Maxima-upconversion-failures";
+
     /** Explicit name of the SAXON 9.X TransformerFactoryImpl Class */
-    public static final String SAXON_TRANSFORMER_FACTORY_CLASS_NAME = "net.sf.saxon.TransformerFactoryImpl";
+    private static final String SAXON_TRANSFORMER_FACTORY_CLASS_NAME = "net.sf.saxon.TransformerFactoryImpl";
     
     /** "Base" location for the XSLT stylesheets used here */
-    public static final String UPCONVERTER_BASE_LOCATION = "classpath:/uk/ac/ed/ph/snuggletex/extensions/upconversion";
+    private static final String UPCONVERTER_BASE_LOCATION = "classpath:/uk/ac/ed/ph/snuggletex/extensions/upconversion";
     
     /** Location of the initial XSLT for fixing up ASCIIMathML */
-    public static final String ASCIIMATH_FIXER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/asciimathml-fixer.xsl";
+    private static final String ASCIIMATH_FIXER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/asciimathml-fixer.xsl";
     
     /** Location of the main up-converting XSLT */
-    public static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
+    private static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
 
     /** XSLT cache to use */
     private final StylesheetCache stylesheetCache;
