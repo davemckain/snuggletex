@@ -148,7 +148,7 @@ public class MathMLUpConverter {
     
     private TransformerFactory createSaxonTransformerFactory() {
         try {
-            /* We call up SAXON explcitly without going through the usual factory path */
+            /* We call up SAXON explicitly without going through the usual factory path */
             return (TransformerFactory) Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME).newInstance();
         }
         catch (Exception e) {
