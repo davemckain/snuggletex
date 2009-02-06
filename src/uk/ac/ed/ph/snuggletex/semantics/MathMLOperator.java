@@ -24,21 +24,8 @@ public enum MathMLOperator {
     COMMA(INFIX, ","),
     EQUALS(INFIX, "="),
     FACTORIAL(POSTFIX, "!"),
-    
-    SUM(PREFIX, "\u2211", true),
-    INTEGRAL(PREFIX, "\u222b"),
-    PROD(PREFIX, "\u220f", true),
-    COPROD(PREFIX, "\u2210", true),
-    OINT(PREFIX, "\u222e"),
-    BIGCAP(PREFIX, "\u22c2", true),
-    BIGCUP(PREFIX, "\u22c3", true),
-    BIGSQCUP(PREFIX, "\u2a06", true),
-    BIGVEE(PREFIX, "\u22c1", true),
-    BIGWEDGE(PREFIX, "\u22c0", true),
-    BIGODOT(PREFIX, "\u2a00", true),
-    BIGOTIMES(PREFIX, "\u2a02", true),
-    BIGOPLUS(PREFIX, "\u2a01", true),
-    BIGUPLUS(PREFIX, "\u2a04", true),
+    BACKSLASH(INFIX, "\\"),    
+    NEG(PREFIX, "\u00ac"),
     
     OPEN_BRACKET(PREFIX, "("),
     CLOSE_BRACKET(POSTFIX, ")"),
@@ -50,7 +37,7 @@ public enum MathMLOperator {
     CLOSE_ANGLE_BRACKET(POSTFIX, ">"),
     VERT_BRACKET(INFIX, "|"), /* This is both an opener and a closer! */
     DOUBLE_VERT_BRACKET(INFIX, "\u2225"), /* This is both an opener and a closer! */
-    
+
     PM(INFIX, "\u00b1"),
     TIMES(INFIX, "\u00d7"),
     DIV(INFIX, "\u00f7"),
@@ -84,11 +71,18 @@ public enum MathMLOperator {
     UC_DOWNARROW(INFIX, "\u21d3"),
     UC_LEFTRIGHTARROW(INFIX, "\u21d4"),
     UC_UPDOWNARROW(INFIX, "\u21d5"),
+    
+    FORALL(PREFIX, "\u2200"),
+    PARTIAL(PREFIX, "\u2202"),
+    EXISTS(PREFIX, "\u2203"),
     IN(INFIX, "\u2208"),
+    NABLA(PREFIX, "\u2207"),
     NOT_IN(INFIX, "\u2209"),
     NI(INFIX, "\u220b"),
     NOT_NI(INFIX, "\u220c"),
-    AMALG(INFIX, "\u2210"),
+    PROD(PREFIX, "\u220f", true),
+    COPROD(PREFIX, "\u2210", true),
+    SUM(PREFIX, "\u2211", true),
     CIRC(INFIX, "\u2218"),
     BULLET(INFIX, "\u2219"),
     MP(INFIX, "\u2213"),
@@ -103,7 +97,12 @@ public enum MathMLOperator {
     VEE(INFIX, "\u2228"),
     CAP(INFIX, "\u2229"),
     CUP(INFIX, "\u222a"),
-
+    SURD(PREFIX, "\u221a"),
+    ANGLE(PREFIX, "\u2220"),
+    INTEGRAL(PREFIX, "\u222b"),
+    OINT(PREFIX, "\u222e"),
+    TOP(INFIX, "\u22a4"),
+    BOT(INFIX, "\u22a5"),
     SIM(INFIX, "\u223c"),
     WR(INFIX, "\u2240"),
     NOT_SIM(INFIX, "\u2241"),
@@ -158,11 +157,15 @@ public enum MathMLOperator {
     NOT_MODELS(INFIX, "\u22ad"),
     TRIANGLELEFT(INFIX, "\u22b2"),
     TRIANGLERIGHT(INFIX, "\u22b3"),
+    BIGWEDGE(PREFIX, "\u22c0", true),
+    BIGVEE(PREFIX, "\u22c1", true),
     CDOT(INFIX, "\u22c5"),
     STAR(INFIX, "\u22c6"),
     BOWTIE(INFIX, "\u22c8"),
     NOT_SQSUBSETEQ(INFIX, "\u22e2"),
     NOT_SQSUPSETEQ(INFIX, "\u22e3"),
+    BIGCAP(PREFIX, "\u22c2", true),
+    BIGCUP(PREFIX, "\u22c3", true),
     
     SMILE(INFIX, "\u2323"),
     FROWN(INFIX, "\u2324"),
@@ -172,6 +175,13 @@ public enum MathMLOperator {
     DIAMOND(INFIX, "\u25c7"),
     BIGCIRC(INFIX, "\u25cb"),
     
+    BIGODOT(PREFIX, "\u2a00", true),
+    BIGOPLUS(PREFIX, "\u2a01", true),
+    BIGOTIMES(PREFIX, "\u2a02", true),
+    BIGUPLUS(PREFIX, "\u2a04", true),
+    BIGSQCUP(PREFIX, "\u2a06", true),
+    AMALG(INFIX, "\u2a3f"),    
+
     /* Placeholder for ^ and _. These are replaced by Commands during fixing */
     SUPER(INFIX, null),
     SUB(INFIX, null)
@@ -212,4 +222,4 @@ public enum MathMLOperator {
     public boolean isLimitsUnderOrOver() {
         return limitsUnderOrOver;
     }
-}
+    }
