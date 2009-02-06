@@ -15,6 +15,7 @@ TODO: Factorial operator
 TODO: Need to trim whitespace from MathML elements when performing comparisons.
 TODO: Should we convert subscripted variables to special identifiers?
 TODO: Think about handling <mstyle/>...!
+TODO: Test template below allowing subscripted identifiers to end up as <ci><msub>...</msub></ci> as in 4.4.1.2.2
 
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved
@@ -214,6 +215,13 @@ All Rights Reserved
         <xsl:with-param name="elements" select="*[2]"/>
       </xsl:call-template>
     </apply>
+  </xsl:template>
+
+  <!-- Subscripts made of identifiers and numbers only are treated as special identifiers -->
+  <xsl:template match="msub[../*[not(self::mi or self::mn or self::msub)]]">
+    <ci>
+      <xsl:copy-of select="."/>
+    </ci>
   </xsl:template>
 
   <!-- <mspace/> can be safely stripped off as earlier parts in the process added any necessary
