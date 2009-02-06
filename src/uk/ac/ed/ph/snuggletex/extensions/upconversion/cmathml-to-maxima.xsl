@@ -239,8 +239,21 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="ci" mode="cmathml-to-maxima">
+  <!-- Map simple identifiers over as-is -->
+  <xsl:template match="ci[count(node())=1 and text()]" mode="cmathml-to-maxima">
     <xsl:value-of select="."/>
+  </xsl:template>
+
+  <!-- Map subscripts in a reasonable way -->
+  <xsl:template match="ci[count(node())=1 and msub]" mode="cmathml-to-maxima">
+    <xsl:value-of select="concat(msub/*[1], '_', msub/*[2])"/>
+  </xsl:template>
+
+  <!-- Don't know what to do in other cases -->
+  <xsl:template match="ci" mode="cmathml-to-maxima">
+    <s:fail message="No support for this type of identifier">
+      <xsl:copy-of select="."/>
+    </s:fail>
   </xsl:template>
 
   <xsl:template match="cn" mode="cmathml-to-maxima">
