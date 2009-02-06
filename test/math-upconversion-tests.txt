@@ -137,3 +137,4 @@ x\,y\,z
 ## Similarly we can let apply function work over subscripted logs, interpreted as bases.
 \log_a x
 <msub><mi>log</mi><mi>a</mi></msub><mo>&#x2061;</mo><mi>x</mi>
+====
