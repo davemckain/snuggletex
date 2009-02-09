@@ -66,6 +66,7 @@ public class MathMLUpConverter {
     public static final String CONTENT_FAILURES_ANNOTATION_NAME = "MathML-Content-upconversion-failures";
     public static final String MAXIMA_ANNOTATION_NAME = "Maxima";
     public static final String MAXIMA_FAILURES_ANNOTATION_NAME = "Maxima-upconversion-failures";
+    public static final String ASCIIMATH_INPUT_ANNOTATION_NAME = "ASCIIMathInput";
 
     /** Explicit name of the SAXON 9.X TransformerFactoryImpl Class */
     private static final String SAXON_TRANSFORMER_FACTORY_CLASS_NAME = "net.sf.saxon.TransformerFactoryImpl";

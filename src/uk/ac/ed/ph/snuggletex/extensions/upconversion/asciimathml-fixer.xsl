@@ -25,6 +25,8 @@ All Rights Reserved
   <xsl:strip-space elements="m:*"/>
 
   <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
+  
+  <xsl:variable name="s:asciimath-input-annotation" as="xs:string" select="'ASCIIMathInput'"/>
 
   <!-- ************************************************************ -->
 
@@ -37,7 +39,7 @@ All Rights Reserved
             <xsl:apply-templates/>
           </xsl:with-param>
         </xsl:call-template>
-        <annotation encoding="ASCIIMathInput">
+        <annotation encoding="{$s:asciimath-input-annotation}">
           <xsl:value-of select="normalize-space(@title)"/>
         </annotation>
       </semantics>
