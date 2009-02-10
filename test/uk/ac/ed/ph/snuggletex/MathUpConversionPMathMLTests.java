@@ -24,15 +24,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Same idea as {@link MathUpConversionTests}, but tests up-conversion of maths.
+ * Same idea as {@link MathTests}, but tests the initial up-conversion to more
+ * semantic Presentation MathML.
  * 
  * @author  David McKain
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionTests extends AbstractGoodXMLTests {
+public class MathUpConversionPMathMLTests extends AbstractGoodXMLTests {
     
-    public static final String TEST_RESOURCE_NAME = "math-upconversion-tests.txt";
+    public static final String TEST_RESOURCE_NAME = "math-upconversion-pmathml-tests.txt";
     
     private final UpConvertingPostProcessor upconverter;
     
@@ -41,7 +42,7 @@ public class MathUpConversionTests extends AbstractGoodXMLTests {
         return TestFileHelper.readAndParseSingleLineInputTestResource(TEST_RESOURCE_NAME);
     }
     
-    public MathUpConversionTests(final String inputLaTeXMaths, final String expectedMathMLContent) {
+    public MathUpConversionPMathMLTests(final String inputLaTeXMaths, final String expectedMathMLContent) {
         super("$" + inputLaTeXMaths + "$",
                 "<math xmlns='" + Globals.MATHML_NAMESPACE + "'>"
                 + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")

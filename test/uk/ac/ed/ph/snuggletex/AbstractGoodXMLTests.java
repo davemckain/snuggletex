@@ -104,35 +104,35 @@ abstract class AbstractGoodXMLTests {
         /* Set up DOMOutputOptions */
         DOMOutputOptions domOptions = createDOMOutputOptions();
         
-        SessionContext context = new SnuggleEngine().createSession(configuration);
-        SnuggleInputReader inputReader = new SnuggleInputReader(context, new SnuggleInput(inputLaTeX));
+        SnuggleSession session = new SnuggleEngine().createSession(configuration);
+        SnuggleInputReader inputReader = new SnuggleInputReader(session, new SnuggleInput(inputLaTeX));
         try {
             /* Tokenise */
-            LaTeXTokeniser tokeniser = new LaTeXTokeniser(context);
+            LaTeXTokeniser tokeniser = new LaTeXTokeniser(session);
             ArgumentContainerToken outerToken = tokeniser.tokenise(inputReader);
             rawDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);
             
             /* Make sure we got no errors */
-            checkNoErrors(context);
+            checkNoErrors(session);
             
             /* Run token fixer */
-            TokenFixer fixer = new TokenFixer(context);
+            TokenFixer fixer = new TokenFixer(session);
             fixer.fixTokenTree(outerToken);
             fixedDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);
                
             /* Make sure we have still got no errors */
-            checkNoErrors(context);
+            checkNoErrors(session);
     
             /* Convert to XML */
             Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
             Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
             resultDocument.appendChild(rootElement);
             
-            DOMBuildingController domBuildingController = new DOMBuildingController(context, domOptions);
+            DOMBuildingController domBuildingController = new DOMBuildingController(session, domOptions);
             domBuildingController.buildDOMSubtree(rootElement, outerToken.getContents());
                
             /* Make sure we have still got no errors */
-            checkNoErrors(context);
+            checkNoErrors(session);
     
             /* Let subclass fudge up the resulting document if required */
             fixupDocument(resultDocument);

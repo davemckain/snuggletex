@@ -22,7 +22,13 @@ All Rights Reserved
   <!-- Entry Point -->
   <xsl:template name="s:cmathml-to-maxima">
     <xsl:param name="elements" as="element()*"/>
-    <xsl:apply-templates select="$elements" mode="cmathml-to-maxima"/>
+    <xsl:variable name="result-sequence" as="xs:string*">
+      <xsl:apply-templates select="$elements" mode="cmathml-to-maxima"/>
+    </xsl:variable>
+    <!-- Strip off outer brackets, if present -->
+    <xsl:variable name="result-raw" as="xs:string" select="string-join($result-sequence, '')"/>
+    <xsl:value-of select="if (starts-with($result-raw, '(') and ends-with($result-raw, ')')) then
+      substring($result-raw, 2, string-length($result-raw)-2) else $result-raw"/>
   </xsl:template>
 
   <xsl:variable name="sc:elementary-functions">
@@ -68,18 +74,20 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
+  <!-- Equals -->
   <xsl:template match="apply[*[1][self::eq]]" mode="cmathml-to-maxima">
-    <!-- Equals -->
+    <xsl:text>(</xsl:text>
     <xsl:for-each select="*[position() != 1]">
       <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
       <xsl:if test="position() != last()">
         <xsl:text> = </xsl:text>
       </xsl:if>
     </xsl:for-each>
+    <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- Sum -->
   <xsl:template match="apply[*[1][self::plus]]" mode="cmathml-to-maxima">
-    <!-- Sum -->
     <xsl:text>(</xsl:text>
     <xsl:for-each select="*[position() != 1]">
       <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
@@ -90,8 +98,8 @@ All Rights Reserved
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- Difference, which is either unary or binary -->
   <xsl:template match="apply[*[1][self::minus]]" mode="cmathml-to-maxima">
-    <!-- Difference, which is either unary or binary -->
     <xsl:text>(</xsl:text>
     <xsl:choose>
       <xsl:when test="count(*)=2">
@@ -109,8 +117,8 @@ All Rights Reserved
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- Product -->
   <xsl:template match="apply[*[1][self::times]]" mode="cmathml-to-maxima">
-    <!-- Product -->
     <xsl:text>(</xsl:text>
     <xsl:for-each select="*[position()!=1]">
       <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
@@ -121,8 +129,8 @@ All Rights Reserved
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- Quotient, which is always binary -->
   <xsl:template match="apply[*[1][self::divide]]" mode="cmathml-to-maxima">
-    <!-- Quotient, which is always binary -->
     <xsl:text>(</xsl:text>
     <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
     <xsl:text> / </xsl:text>
@@ -130,24 +138,24 @@ All Rights Reserved
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- Power, which is always binary -->
   <xsl:template match="apply[*[1][self::power]]" mode="cmathml-to-maxima">
-    <!-- Power, which is always binary -->
     <xsl:text>(</xsl:text>
     <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
-    <xsl:text> ^ </xsl:text>
+    <xsl:text>^</xsl:text>
     <xsl:apply-templates select="*[3]" mode="cmathml-to-maxima"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- Square Root -->
   <xsl:template match="apply[*[1][self::root] and not(degree)]" mode="cmathml-to-maxima">
-    <!-- Square Root -->
     <xsl:text>sqrt(</xsl:text>
     <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!-- nth Root -->
   <xsl:template match="apply[*[1][self::root] and degree]" mode="cmathml-to-maxima">
-    <!-- nth Root -->
     <xsl:text>(</xsl:text>
     <xsl:apply-templates select="*[not(degree) and not(root)]" mode="cmathml-to-maxima"/>
     <xsl:text>)^(1/</xsl:text>

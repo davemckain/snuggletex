@@ -1,0 +1,30 @@
+# Defines single-line tests of the up-conversion process, verifying the Maxima
+# results obtained.
+#
+# Input format is:
+#
+# LaTeX (interpreted inside $...$)
+# Expected Maxima form
+# ==== (divider)
+#
+# Lines starting with '#' are documentation and are stripped out when running tests
+#
+## Normal tests
+1
+1
+====
+-1
+-1
+====
+x
+x
+====
+x^2
+x^2
+====
+1+x
+1 + x
+====
+a+(b-c)d
+a + ((b - c) * d)
+====
