@@ -90,12 +90,17 @@ All Rights Reserved
     </xsl:variable>
     <!-- Extract any failures arising here -->
     <xsl:variable name="maxima-failures" as="element(s:fail)*">
-      <xsl:copy-of select="$maxima-raw/descendant-or-self::s:fail"/>
+      <xsl:copy-of select="$maxima-raw[self::s:fail]"/>
     </xsl:variable>
-    <!-- Formulate the final Maxima string -->
-    <xsl:variable name="maxima" as="xs:string?"
+    <!-- Formulate the final Maxima string, stripping off the outer pair of brackets
+         if present. (This is sane as if they occur then they bracket the entire expression. -->
+    <xsl:variable name="maxima-with-brackets" as="xs:string?"
       select="if (exists($maxima-failures)) then () else string-join($maxima-raw, '')"/>
-
+    <xsl:variable name="maxima" as="xs:string?"
+      select="if (exists($maxima-failures)) then () else
+        if (starts-with($maxima-with-brackets, '(') and ends-with($maxima-with-brackets, ')'))
+        then substring($maxima-with-brackets, 2, string-length($maxima-with-brackets) - 2)
+        else $maxima-with-brackets"/>
     <!-- Finally build up the resulting MathML -->
     <math>
       <xsl:copy-of select="@*"/>

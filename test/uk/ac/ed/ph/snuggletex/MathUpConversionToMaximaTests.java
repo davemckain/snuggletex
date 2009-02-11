@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -51,6 +52,7 @@ public class MathUpConversionToMaximaTests {
     @Test
     public void runTest() throws Throwable {
         String maximaAnnotation = null;
+        Element mathmlElement = null;
 
         /* We'll fail fast as we're not anticipating any errors */
         SessionConfiguration configuration = new SessionConfiguration();
@@ -68,7 +70,8 @@ public class MathUpConversionToMaximaTests {
             
             /* First Node should be MathML element. */
             Assert.assertEquals(1, nodeList.getLength());
-            Element mathmlElement = (Element) nodeList.item(0);
+            Assert.assertEquals(Node.ELEMENT_NODE, nodeList.item(0).getNodeType());
+            mathmlElement = (Element) nodeList.item(0);
             
             /* Extract Maxima annotation */
             maximaAnnotation = MathMLUtilities.extractAnnotationString(mathmlElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
@@ -78,11 +81,10 @@ public class MathUpConversionToMaximaTests {
         }
         catch (Throwable e) {
             log.severe("Input was: " + inputLaTeX);
+            log.severe("Resulting MathML was " + MathMLUtilities.serializeElement(mathmlElement));
             log.severe("Resulting Maxima annotation was: " + maximaAnnotation);
             log.severe("Expected Maxima would have been: " + expectedMaxima);
             throw e;
         }
     }
-
-
 }

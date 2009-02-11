@@ -9,7 +9,6 @@
 #
 # Lines starting with '#' are documentation and are stripped out when running tests
 #
-## Normal tests
 1
 1
 ====
@@ -18,6 +17,12 @@
 ====
 x
 x
+====
+-x
+-x
+====
+2x
+2 * x
 ====
 x^2
 x^2
@@ -27,4 +32,73 @@ x^2
 ====
 a+(b-c)d
 a + ((b - c) * d)
+====
+a=b
+a = b
+====
+x+1 = 1+x
+(x + 1) = (1 + x)
+====
+\frac{a}{b}
+a / b
+====
+a/b
+a / b
+====
+a-b-c
+(a - b) - c
+====
+a/b/c
+(a / b) / c
+====
+(1-a)/(2-b)
+(1 - a) / (2 - b)
+====
+\sin x
+sin(x)
+====
+-\cos x
+-cos(x)
+====
+\sin^2 x
+sin(x)^2
+====
+\sin^{-1} x
+asin(x)
+====
+\sin (x+a)
+sin((x + a))
+====
+\cos x
+cos(x)
+====
+\sqrt x
+sqrt(x)
+====
+x^{1/2}
+x^(1 / 2)
+====
+\frac{-b+\sqrt{b^2-4ac}}{2a}
+((-b) + sqrt(((b^2) - (4 * a * c)))) / (2 * a)
+====
+i
+%i
+====
+e
+%e
+====
+\pi
+%pi
+====
+e^x
+exp(x)
+====
+\ln y
+log(y)
+====
+[1,2]
+[1, 2]
+====
+\{a,b\}
+{a, b}
 ====

@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionParameters;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
 
@@ -13,15 +12,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Same idea as {@link MathTests}, but tests the initial up-conversion to more
@@ -31,22 +25,19 @@ import org.w3c.dom.NodeList;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionPMathMLTests extends AbstractGoodXMLTests {
+public class MathUpConversionPMathMLTests extends AbstractGoodMathTests {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-pmathml-tests.txt";
-    
-    private final UpConvertingPostProcessor upconverter;
     
     @Parameters
     public static Collection<String[]> data() throws Exception {
         return TestFileHelper.readAndParseSingleLineInputTestResource(TEST_RESOURCE_NAME);
     }
     
+    private final UpConvertingPostProcessor upconverter;
+    
     public MathUpConversionPMathMLTests(final String inputLaTeXMaths, final String expectedMathMLContent) {
-        super("$" + inputLaTeXMaths + "$",
-                "<math xmlns='" + Globals.MATHML_NAMESPACE + "'>"
-                + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")
-                + "</math>");
+        super(inputLaTeXMaths, expectedMathMLContent);
         
         /* Set up up-converter so that it only generates fixed up Presentation MathML */
         Map<String, Object> upconversionParameterMap = new HashMap<String, Object>();
@@ -63,20 +54,6 @@ public class MathUpConversionPMathMLTests extends AbstractGoodXMLTests {
         DOMOutputOptions result = super.createDOMOutputOptions();
         result.setDOMPostProcessor(upconverter);
         return result;
-    }
-
-    /**
-     * We'll remove <body> element and make the (single) child become the document Node.
-     */
-    @Override
-    protected void fixupDocument(Document document) {
-        /* Should only have 1 child of <body/> here. We'll make that the new root Node */
-        Node bodyElement = document.getChildNodes().item(0);
-        NodeList childNodes = bodyElement.getChildNodes();
-        Assert.assertEquals(1, childNodes.getLength());
-        Node newRoot = childNodes.item(0);
-        document.removeChild(bodyElement);
-        document.appendChild(newRoot);
     }
     
     @Override

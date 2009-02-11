@@ -21,15 +21,11 @@ All Rights Reserved
 
   <!-- Entry Point -->
   <xsl:template name="s:cmathml-to-maxima">
-    <xsl:param name="elements" as="element()*"/>
-    <xsl:variable name="result-sequence" as="xs:string*">
-      <xsl:apply-templates select="$elements" mode="cmathml-to-maxima"/>
-    </xsl:variable>
-    <!-- Strip off outer brackets, if present -->
-    <xsl:variable name="result-raw" as="xs:string" select="string-join($result-sequence, '')"/>
-    <xsl:value-of select="if (starts-with($result-raw, '(') and ends-with($result-raw, ')')) then
-      substring($result-raw, 2, string-length($result-raw)-2) else $result-raw"/>
+    <xsl:param name="elements" as="item()*"/>
+    <xsl:apply-templates select="$elements" mode="cmathml-to-maxima"/>
   </xsl:template>
+
+  <!-- ************************************************************ -->
 
   <xsl:variable name="sc:elementary-functions">
     <!-- The resulting Maxima function name is encoded within an input Content MathML element -->
@@ -73,105 +69,134 @@ All Rights Reserved
   </xsl:function>
 
   <!-- ************************************************************ -->
+  <!-- "Functional" helpers  -->
+  <!-- (Recall that these may return either xs:string or a failure element) -->
+
+  <xsl:function name="sc:to-maxima" as="node()*">
+    <xsl:param name="element" as="element()"/>
+    <xsl:apply-templates select="$element" mode="cmathml-to-maxima"/>
+  </xsl:function>
+
+  <xsl:function name="sc:to-maxima-map" as="node()*">
+    <xsl:param name="elements" as="element()*"/>
+    <xsl:param name="joiner" as="xs:string"/>
+    <xsl:for-each select="$elements">
+      <xsl:value-of select="sc:to-maxima(.)"/>
+      <xsl:if test="position() != last()">
+        <xsl:value-of select="$joiner"/>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- ************************************************************ -->
 
   <!-- Equals -->
   <xsl:template match="apply[*[1][self::eq]]" mode="cmathml-to-maxima">
+    <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:text>(</xsl:text>
-    <xsl:for-each select="*[position() != 1]">
-      <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
-      <xsl:if test="position() != last()">
-        <xsl:text> = </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
+    <xsl:copy-of select="sc:to-maxima-map($operands, ' = ')"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Sum -->
   <xsl:template match="apply[*[1][self::plus]]" mode="cmathml-to-maxima">
+    <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:text>(</xsl:text>
-    <xsl:for-each select="*[position() != 1]">
-      <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
-      <xsl:if test="position() != last()">
-        <xsl:text> + </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
+    <xsl:copy-of select="sc:to-maxima-map($operands, ' + ')"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Difference, which is either unary or binary -->
-  <xsl:template match="apply[*[1][self::minus]]" mode="cmathml-to-maxima">
-    <xsl:text>(</xsl:text>
+  <xsl:template match="apply[*[1][self::minus] and (count(*)=2 or count(*)=3)]" mode="cmathml-to-maxima">
+    <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
-      <xsl:when test="count(*)=2">
+      <xsl:when test="count($operands)=1">
         <!-- Unary version -->
-        <xsl:text>-</xsl:text>
-        <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
+        <xsl:text>(-</xsl:text>
+        <xsl:copy-of select="sc:to-maxima($operands[1])"/>
+        <xsl:text>)</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <!-- Binary version -->
-        <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
-        <xsl:text> - </xsl:text>
-        <xsl:apply-templates select="*[3]" mode="cmathml-to-maxima"/>
+        <xsl:text>(</xsl:text>
+        <xsl:copy-of select="sc:to-maxima-map($operands, ' - ')"/>
+        <xsl:text>)</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Product -->
   <xsl:template match="apply[*[1][self::times]]" mode="cmathml-to-maxima">
+    <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:text>(</xsl:text>
-    <xsl:for-each select="*[position()!=1]">
-      <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
-      <xsl:if test="position()!=last()">
-        <xsl:text> * </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
+    <xsl:copy-of select="sc:to-maxima-map($operands, ' * ')"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Quotient, which is always binary -->
-  <xsl:template match="apply[*[1][self::divide]]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[*[1][self::divide] and count(*)=3]" mode="cmathml-to-maxima">
+    <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:text>(</xsl:text>
-    <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
-    <xsl:text> / </xsl:text>
-    <xsl:apply-templates select="*[3]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima-map($operands, ' / ')"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Power, which is always binary -->
-  <xsl:template match="apply[*[1][self::power]]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[*[1][self::power] and count(*)=3]" mode="cmathml-to-maxima">
+    <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:text>(</xsl:text>
-    <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($operands[1])"/>
     <xsl:text>^</xsl:text>
-    <xsl:apply-templates select="*[3]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($operands[2])"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- Square Root -->
-  <xsl:template match="apply[*[1][self::root] and not(degree)]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[*[1][self::root] and not(degree) and count(*)=2]" mode="cmathml-to-maxima">
+    <xsl:variable name="operand" as="element()" select="*[2]"/>
     <xsl:text>sqrt(</xsl:text>
-    <xsl:apply-templates select="*[2]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($operand)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
   <!-- nth Root -->
-  <xsl:template match="apply[*[1][self::root] and degree]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[*[1][self::root] and degree and count(*)=3]" mode="cmathml-to-maxima">
+    <xsl:variable name="operand" as="element()" select="*[not(root) and not(degree)]"/>
     <xsl:text>(</xsl:text>
-    <xsl:apply-templates select="*[not(degree) and not(root)]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($operand)"/>
     <xsl:text>)^(1/</xsl:text>
-    <xsl:apply-templates select="degree/*" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima(degree/*)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
-  <!-- Elementary Function -->
-  <xsl:template match="apply[*[1][sc:is-elementary-function(current()/*[1])]]" mode="cmathml-to-maxima">
-    <xsl:value-of select="sc:get-maxima-function(*[1])"/>
+  <!--
+  Elementary Function, such as:
+
+  <apply>
+    <sin/>
+    <ci>x</ci>
+  </apply>
+
+  This must have exactly 1 "argument"
+  -->
+  <xsl:template match="apply[count(*)=2 and *[1][sc:is-elementary-function(.)]]" mode="cmathml-to-maxima">
+    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1])"/>
+    <xsl:variable name="argument" as="element()" select="*[2]"/>
+    <xsl:value-of select="$function"/>
     <xsl:text>(</xsl:text>
-    <xsl:apply-templates select="*[position() != 1]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($argument)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
-  <!-- Power of an Elementary Function. For example:
+  <xsl:template match="apply[count(*)!=2 and *[1][sc:is-elementary-function(.)]]" mode="cmathml-to-maxima">
+    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1])"/>
+    <s:fail message="Elementary function {$function} expected to take one argument">
+      <xsl:copy-of select="."/>
+    </s:fail>
+  </xsl:template>
+
+  <!--
+  Power of an Elementary Function. For example:
 
   <apply>
     <apply>
@@ -181,18 +206,35 @@ All Rights Reserved
     </apply>
     <ci>x</ci>
   </apply>
-
   -->
-  <xsl:template match="apply[*[1][self::apply and *[1][self::power] and sc:is-elementary-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
-    <xsl:value-of select="sc:get-maxima-function(*[1]/*[2])"/>
+  <xsl:template match="apply[count(*)=2 and *[1][self::apply and *[1][self::power] and sc:is-elementary-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
+    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1]/*[2])"/>
+    <xsl:variable name="power" as="element()" select="*[1]/*[3]"/>
+    <xsl:variable name="argument" as="element()" select="*[2]"/>
+    <xsl:value-of select="$function"/>
     <xsl:text>(</xsl:text>
-    <xsl:apply-templates select="*[position() != 1]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($argument)"/>
     <xsl:text>)^</xsl:text>
-    <xsl:apply-templates select="*[1]/*[3]" mode="cmathml-to-maxima"/>
+    <xsl:copy-of select="sc:to-maxima($power)"/>
   </xsl:template>
 
-  <xsl:template match="apply" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*)!=2 and *[1][self::apply and *[1][self::power] and sc:is-elementary-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
+    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1]/*[2])"/>
+    <s:fail message="Power of elementary function {$function} expected to take one argument">
+      <xsl:copy-of select="."/>
+    </s:fail>
+  </xsl:template>
+
+  <!-- ************************************************************ -->
+
+  <xsl:template match="apply[count(*)!=0]" mode="cmathml-to-maxima" priority="-50">
     <s:fail message="Could not handle &lt;apply&gt; with first child '${*[1]/local-name()}'">
+      <xsl:copy-of select="."/>
+    </s:fail>
+  </xsl:template>
+
+  <xsl:template match="apply[count(*)=0]" mode="cmathml-to-maxima" priority="-50">
+    <s:fail message="Could empty &lt;apply&gt;">
       <xsl:copy-of select="."/>
     </s:fail>
   </xsl:template>
@@ -211,23 +253,13 @@ All Rights Reserved
 
   <xsl:template match="set" mode="cmathml-to-maxima">
     <xsl:text>{</xsl:text>
-    <xsl:for-each select="*">
-      <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
-      <xsl:if test="position()!=last()">
-        <xsl:text>, </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
+    <xsl:copy-of select="sc:to-maxima-map(*, ', ')"/>
     <xsl:text>}</xsl:text>
   </xsl:template>
 
   <xsl:template match="list" mode="cmathml-to-maxima">
     <xsl:text>[</xsl:text>
-    <xsl:for-each select="*">
-      <xsl:apply-templates select="." mode="cmathml-to-maxima"/>
-      <xsl:if test="position()!=last()">
-        <xsl:text>, </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
+    <xsl:copy-of select="sc:to-maxima-map(*, ', ')"/>
     <xsl:text>]</xsl:text>
   </xsl:template>
 
@@ -249,7 +281,7 @@ All Rights Reserved
 
   <!-- Map simple identifiers over as-is -->
   <xsl:template match="ci[count(node())=1 and text()]" mode="cmathml-to-maxima">
-    <xsl:value-of select="."/>
+    <xsl:value-of select="string(.)"/>
   </xsl:template>
 
   <!-- Map subscripts in a reasonable way -->
@@ -265,16 +297,9 @@ All Rights Reserved
   </xsl:template>
 
   <xsl:template match="cn" mode="cmathml-to-maxima">
-    <xsl:choose>
-      <xsl:when test="starts-with(., '-')">
-        <xsl:text>(</xsl:text>
-        <xsl:value-of select="."/>
-        <xsl:text>)</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="."/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:value-of select="if (starts-with(., '-'))
+        then concat('(', string(.), ')')
+        else string(.)"/>
   </xsl:template>
 
 </xsl:stylesheet>

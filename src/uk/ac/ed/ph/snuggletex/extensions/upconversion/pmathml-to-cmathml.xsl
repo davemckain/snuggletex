@@ -10,7 +10,6 @@ few other things).
 Some semantic inference is also performed basic on common conventions,
 which can be turned off if required.
 
-TODO: /
 TODO: Factorial operator
 TODO: Need to trim whitespace from MathML elements when performing comparisons.
 TODO: Should we convert subscripted variables to special identifiers?
@@ -263,7 +262,8 @@ All Rights Reserved
   2. +
   3. -
   4. *
-  5. function applications
+  5. /
+  6. function applications
 
   -->
   <xsl:template name="local:process-group">
@@ -290,6 +290,12 @@ All Rights Reserved
       <xsl:when test="$elements[sp:is-multiplication(.)]">
         <!-- Explicit multiplication -->
         <xsl:call-template name="local:handle-multiplication-group">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[sp:is-divide(.)]">
+        <!-- Division -->
+        <xsl:call-template name="local:handle-divide-group">
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
@@ -373,6 +379,30 @@ All Rights Reserved
     </apply>
   </xsl:template>
 
+  <!-- Explicit Multiplicative Expression. This is again easy since it is associative. -->
+  <xsl:template name="local:handle-multiplication-group">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <apply>
+      <times/>
+      <xsl:for-each-group select="$elements" group-adjacent="sp:is-multiplication(.)">
+        <xsl:choose>
+          <xsl:when test="current-grouping-key()">
+            <xsl:if test="not(following-sibling::*[1])">
+              <s:fail message="Nothing followed multiplication operator">
+                <xsl:copy-of select="$elements"/>
+              </s:fail>
+            </xsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="local:process-group">
+              <xsl:with-param name="elements" select="current-group()"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each-group>
+    </apply>
+  </xsl:template>
+
   <!-- Subtraction Expression. Need to be very careful with this as it is not associative! -->
   <xsl:template name="local:handle-minus-group">
     <xsl:param name="elements" as="element()+" required="yes"/>
@@ -400,7 +430,7 @@ All Rights Reserved
         <xsl:variable name="right-operand" select="$elements[. &gt;&gt; $minus]" as="element()*"/>
         <xsl:choose>
           <xsl:when test="empty($right-operand)">
-            <s:fail message="Nothing followed subtraction operator">
+            <s:fail message="Nothing followed '-' operator">
               <xsl:copy-of select="$elements"/>
             </s:fail>
           </xsl:when>
@@ -420,28 +450,51 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <!-- Explicit Multiplicative Expression. This is again easy since it is associative. -->
-  <xsl:template name="local:handle-multiplication-group">
+  <!-- Divide Expression. Like subtraction, this is not associative -->
+  <xsl:template name="local:handle-divide-group">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <apply>
-      <times/>
-      <xsl:for-each-group select="$elements" group-adjacent="sp:is-multiplication(.)">
+    <xsl:variable name="divide-count" select="count($elements[sp:is-divide(.)])" as="xs:integer"/>
+    <xsl:choose>
+      <xsl:when test="$divide-count != 1">
+        <!-- Something like 'a/b/c'. We handle this recursively as '(a/b)/c' -->
+        <xsl:variable name="last-divide" select="$elements[sp:is-divide(.)][position()=last()]" as="element()"/>
+        <xsl:variable name="before-last-divide" select="$elements[. &lt;&lt; $last-divide]" as="element()+"/>
+        <xsl:variable name="after-last-divide" select="$elements[. &gt;&gt; $last-divide]" as="element()*"/>
+        <apply>
+          <divide/>
+          <xsl:call-template name="local:handle-divide-group">
+            <xsl:with-param name="elements" select="$before-last-divide"/>
+          </xsl:call-template>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="$after-last-divide"/>
+          </xsl:call-template>
+        </apply>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Only one divide, so either '-a' or 'a-b' (or more pathologically '-' or 'a-') -->
+        <xsl:variable name="divide" select="$elements[sp:is-divide(.)]" as="element()"/>
+        <xsl:variable name="left-operand" select="$elements[. &lt;&lt; $divide]" as="element()*"/>
+        <xsl:variable name="right-operand" select="$elements[. &gt;&gt; $divide]" as="element()*"/>
         <xsl:choose>
-          <xsl:when test="current-grouping-key()">
-            <xsl:if test="not(following-sibling::*[1])">
-              <s:fail message="Nothing followed multiplication operator">
-                <xsl:copy-of select="$elements"/>
-              </s:fail>
-            </xsl:if>
+          <xsl:when test="empty($right-operand)">
+            <s:fail message="Nothing followed '/' operator">
+              <xsl:copy-of select="$elements"/>
+            </s:fail>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:call-template name="local:process-group">
-              <xsl:with-param name="elements" select="current-group()"/>
-            </xsl:call-template>
+            <apply>
+              <divide/>
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$left-operand"/>
+              </xsl:call-template>
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$right-operand"/>
+              </xsl:call-template>
+            </apply>
           </xsl:otherwise>
         </xsl:choose>
-      </xsl:for-each-group>
-    </apply>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!--
