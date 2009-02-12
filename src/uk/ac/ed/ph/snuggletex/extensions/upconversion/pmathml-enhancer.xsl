@@ -101,24 +101,26 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="mrow" mode="enhance-pmathml">
+  <!-- Container elements with unrestricted content -->
+  <xsl:template match="mrow|msqrt" mode="enhance-pmathml">
     <!-- Process contents as normal -->
     <xsl:variable name="processed-contents" as="element()*">
       <xsl:call-template name="local:process-group">
         <xsl:with-param name="elements" select="*"/>
       </xsl:call-template>
     </xsl:variable>
-    <!-- Strip this outer <mrow/> if the processed contents ended up wrapped in another one -->
-    <xsl:choose>
-      <xsl:when test="count($processed-contents)=1 and $processed-contents[1][self::mrow]">
-        <xsl:copy-of select="$processed-contents"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <mrow>
+    <!-- If contents consists of a single <mrow/>, strip it off and descend down -->
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:choose>
+        <xsl:when test="count($processed-contents)=1 and $processed-contents[1][self::mrow]">
+          <xsl:copy-of select="$processed-contents/*"/>
+        </xsl:when>
+        <xsl:otherwise>
           <xsl:copy-of select="$processed-contents"/>
-        </mrow>
-      </xsl:otherwise>
-    </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:copy>
   </xsl:template>
 
   <!-- Default template for other MathML elements -->

@@ -89,6 +89,9 @@ x = 3
 \sqrt x y
 <msqrt><mi>x</mi></msqrt><mo>&#x2062;</mo><mi>y</mi>
 ====
+\sqrt{b^2-4ac}
+<msqrt><msup><mi>b</mi><mn>2</mn></msup><mo>-</mo><mrow><mn>4</mn><mo>&#x2062;</mo><mi>a</mi><mo>&#x2062;</mo><mi>c</mi></mrow></msqrt>
+====
 x^2 + 1
 <msup>
   <mi>x</mi>

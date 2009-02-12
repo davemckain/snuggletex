@@ -195,7 +195,7 @@ All Rights Reserved
     <apply>
       <root/>
       <xsl:call-template name="local:process-group">
-        <xsl:with-param name="elements" select="*[1]"/>
+        <xsl:with-param name="elements" select="*"/>
       </xsl:call-template>
     </apply>
   </xsl:template>
