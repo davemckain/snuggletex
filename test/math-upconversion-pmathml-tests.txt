@@ -33,6 +33,12 @@ x = 3
 (2x)
 <mfenced open='(' close=')'><mrow><mn>2</mn><mo>&#x2062;</mo><mi>x</mi></mrow></mfenced>
 ====
+a/b
+<mi>a</mi><mo>/</mo><mi>b</mi>
+====
+a/b/c
+<mrow><mi>a</mi><mo>/</mo><mi>b</mi></mrow><mo>/</mo><mi>c</mi>
+====
 \sin x
 <mi>sin</mi><mo>&#x2061;</mo><mi>x</mi>
 ====
@@ -100,16 +106,6 @@ x^2 + 1
 <mo>+</mo>
 <mn>1</mn>
 ====
-a\in A
-<mi>a</mi>
-<mo>&#x2208;</mo>
-<mi>A</mi>
-====
-a\not\in A
-<mi>a</mi>
-<mo>&#x2209;</mo>
-<mi>A</mi>
-====
 # Any kind of space is kept but suppresses an implicit multiplcation before it. Anything following
 # will still get an implicit multiplication, which makes sense I think.
 \,
@@ -141,3 +137,49 @@ x\,y\,z
 \log_a x
 <msub><mi>log</mi><mi>a</mi></msub><mo>&#x2061;</mo><mi>x</mi>
 ====
+#########################
+# New improved prefix/infix/postfix handling
+1+-x
+<mn>1</mn><mo>+</mo><mrow><mo>-</mo><mi>x</mi></mrow>
+====
+1-+x
+<mn>1</mn><mo>-</mo><mrow><mo>+</mo><mi>x</mi></mrow>
+====
+1+++x
+<mn>1</mn><mo>+</mo><mrow><mo>+</mo><mrow><mo>+</mo><mi>x</mi></mrow></mrow>
+====
+1---x
+<mn>1</mn><mo>-</mo><mrow><mo>-</mo><mrow><mo>-</mo><mi>x</mi></mrow></mrow>
+====
+\forall x!
+<mo>&#x2200;</mo><mrow><mi>x</mi><mo>!</mo></mrow>
+====
+x!y!
+<mrow><mi>x</mi><mo>!</mo></mrow><mo>&#x2062;</mo><mrow><mi>y</mi><mo>!</mo></mrow>
+====
+## The ! operator only binds to the preceding item
+2x!
+<mn>2</mn><mo>&#x2062;</mo><mrow><mi>x</mi><mo>!</mo></mrow>
+====
+## As above
+2x!!
+<mn>2</mn><mo>&#x2062;</mo><mrow><mrow><mi>x</mi><mo>!</mo></mrow><mo>!</mo></mrow>
+====
+## Lonely factorial
+!
+<mo>!</mo>
+====
+x^{!}
+<msup><mi>x</mi><mo>!</mo></msup>
+====
+## I'm not sure about these ones yet...
+#a\in A
+#<mi>a</mi>
+#<mo>&#x2208;</mo>
+#<mi>A</mi>
+#====
+#a\not\in A
+#<mi>a</mi>
+#<mo>&#x2209;</mo>
+#<mi>A</mi>
+#====
