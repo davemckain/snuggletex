@@ -10,8 +10,8 @@ This is the first step in any attempts to up-convert to Content MathML
 or Maxima input.
 
 TODO: Think about plus-or-minus operator??
-TODO: Other infix operators such as \in and stuff like that?
-TODO: Should we specify precedence for other infix operators? (Later... nothing to do with MathAssess)
+TODO: Other infix operators from set theory such as \in and stuff like that?
+TODO: Should we specify precedence for other infix operators? (Later... nothing to do with MathAssess... actually maybe not!)
 TODO: <mstyle/> is essentially being treated as neutering its contents... is this a good idea? It's a hard problem to solve in general.
 
 Copyright (c) 2009 The University of Edinburgh
@@ -22,11 +22,12 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
+  xmlns:sho="http://www.ph.ed.ac.uk/snuggletex/higher-order"
   xmlns:sp="http://www.ph.ed.ac.uk/snuggletex/pmathml"
   xmlns:local="http://www.ph.ed.ac.uk/snuggletex/pmathml-enhancer"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs m s sp local"
+  exclude-result-prefixes="xs m s sho sp local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <xsl:strip-space elements="m:*"/>
@@ -64,6 +65,9 @@ All Rights Reserved
   <xsl:variable name="sp:prefix-operators" as="xs:string+"
     select="('&#x2200;')"/>
 
+  <!-- NOTE: Currently, the only postfix operator is factorial, which is handled in a special way.
+       But I'll keep this more general logic for the time being as it gives nicer symmetry with prefix
+       operators. -->
   <xsl:variable name="sp:postfix-operators" as="xs:string+"
     select="('!')"/>
 
@@ -76,11 +80,6 @@ All Rights Reserved
     <xsl:param name="element" as="element()"/>
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
     <xsl:sequence select="sp:is-operator($element) and exists($previous) and not(sp:is-operator($previous))"/>
-  </xsl:function>
-
-  <xsl:function name="sp:is-equals" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and .='='])"/>
   </xsl:function>
 
   <xsl:function name="sp:is-plus-operator" as="xs:boolean">
@@ -142,8 +141,8 @@ All Rights Reserved
     An element starts a "default group" if:
 
     1. It is either the first in a sequence of siblings
-    OR 2. It is a prefix operator and follows a non-prefix operator
-    OR 3. It is neither a prefix operator nor postfix operator and follows a postfix operator
+    OR 2. It is a prefix operator and doesn't immediately follow a prefix operator
+    OR 3. It is neither a prefix nor postfix operator and follows a postfix operator
 
     -->
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
@@ -155,6 +154,7 @@ All Rights Reserved
   </xsl:function>
 
   <!-- ************************************************************ -->
+  <!-- Templates for explicit MathML elements -->
 
   <!-- Container elements with unrestricted content -->
   <xsl:template match="mrow|msqrt" mode="enhance-pmathml">
@@ -191,13 +191,59 @@ All Rights Reserved
   </xsl:template>
 
   <!-- ************************************************************ -->
+  <!-- "Higher-order function" templates to make certain groupings easy -->
+
+  <xsl:function name="local:apply-matcher">
+    <xsl:param name="matcher-reference" as="element()"/>
+    <xsl:param name="element" as="element()"/>
+    <xsl:apply-templates select="$sp:is-equals">
+      <xsl:with-param name="element" select="$element"/>
+    </xsl:apply-templates>
+  </xsl:function>
+
+  <xsl:function name="sp:is-equals" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($element[self::mo and .='='])"/>
+  </xsl:function>
+
+  <xsl:template match="sho:is-equals" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="sp:is-equals($element)"/>
+  </xsl:template>
+
+  <xsl:variable name="sp:is-equals" as="element()">
+    <sho:is-equals/>
+  </xsl:variable>
+
+  <xsl:template name="local:make-associative-group">
+    <xsl:param name="matcher-reference" as="node()" required="yes"/>
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:for-each-group select="$elements" group-adjacent="local:apply-matcher($matcher-reference, .)">
+      <xsl:choose>
+        <xsl:when test="current-grouping-key()">
+          <!-- Copy the matching operator -->
+          <xsl:copy-of select="."/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="s:maybe-wrap-in-mrow">
+            <xsl:with-param name="elements" as="element()*">
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="current-group()"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each-group>
+  </xsl:template>
 
   <xsl:template name="local:process-group">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <xsl:when test="$elements[sp:is-equals(.)]">
         <!-- Equals -->
-        <xsl:call-template name="local:handle-equals-group">
+        <xsl:call-template name="local:make-associative-group">
+          <xsl:with-param name="matcher-reference" select="$sp:is-equals"/>
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>

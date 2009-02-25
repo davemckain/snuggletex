@@ -16,8 +16,9 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
+  xmlns:sho="http://www.ph.ed.ac.uk/snuggletex/higher-order"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s"
+  exclude-result-prefixes="xs s sho"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <!-- ************************************************************ -->
@@ -40,7 +41,8 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="*">
+  <!-- Catch-all template for non-MathML (also non-"higher-order elements" used by PMathML enhancer) -->
+  <xsl:template match="*[not(self::sho:*)]">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
@@ -51,7 +53,7 @@ All Rights Reserved
     <xsl:copy-of select="."/>
   </xsl:template>
 
-  <xsl:template match="math">
+  <xsl:template match="math" priority="10">
     <!-- Extract the actual PMathML content and any existing annotations -->
     <xsl:variable name="presentation-mathml" select="if (semantics) then (if (semantics/mrow) then semantics/mrow/* else semantics/*[1]) else *" as="element()*"/>
     <xsl:variable name="annotations" select="if (semantics) then semantics/*[position() != 1] else ()" as="element()*"/>
