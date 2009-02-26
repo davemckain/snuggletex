@@ -9,6 +9,9 @@ mathematical expressions.
 This is the first step in any attempts to up-convert to Content MathML
 or Maxima input.
 
+See the local:process-group template to see how groupings/precedence
+are established.
+
 TODO: Think about plus-or-minus operator??
 TODO: Other infix operators from set theory such as \in and stuff like that?
 TODO: Should we specify precedence for other infix operators? (Later... nothing to do with MathAssess... actually maybe not!)
@@ -23,11 +26,10 @@ All Rights Reserved
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
   xmlns:sho="http://www.ph.ed.ac.uk/snuggletex/higher-order"
-  xmlns:sp="http://www.ph.ed.ac.uk/snuggletex/pmathml"
   xmlns:local="http://www.ph.ed.ac.uk/snuggletex/pmathml-enhancer"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs m s sho sp local"
+  exclude-result-prefixes="xs m s sho local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <xsl:strip-space elements="m:*"/>
@@ -44,188 +46,198 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:variable name="sp:invertible-elementary-functions" as="xs:string+"
+  <xsl:variable name="local:invertible-elementary-functions" as="xs:string+"
     select="('sin', 'cos', 'tan',
              'sec', 'csc' ,'cot',
              'sinh', 'cosh', 'tanh',
              'sech', 'csch', 'coth')"/>
 
-  <xsl:variable name="sp:elementary-functions" as="xs:string+"
-    select="($sp:invertible-elementary-functions,
+  <xsl:variable name="local:elementary-functions" as="xs:string+"
+    select="($local:invertible-elementary-functions,
             'arcsin', 'arccos', 'arctan',
             'arcsec', 'arccsc', 'arccot',
             'arcsinh', 'arccosh', 'arctanh',
             'arcsech', 'arccsch', 'arccoth',
             'ln', 'log', 'exp')"/>
 
-  <xsl:variable name="sp:explicit-multiplication-characters" as="xs:string+"
+  <xsl:variable name="local:explicit-multiplication-characters" as="xs:string+"
     select="('*', '&#xd7;', '&#x22c5;')"/>
 
-  <!-- TEMP: I'm going to all \forall (U+2200) temporarily until I get all of this working -->
-  <xsl:variable name="sp:prefix-operators" as="xs:string+"
-    select="('&#x2200;')"/>
+  <xsl:variable name="local:explicit-division-characters" as="xs:string+"
+    select="('/', '&#xf7;')"/>
+
+  <xsl:variable name="local:prefix-operators" as="xs:string+"
+    select="('&#xac;')"/>
 
   <!-- NOTE: Currently, the only postfix operator is factorial, which is handled in a special way.
        But I'll keep this more general logic for the time being as it gives nicer symmetry with prefix
        operators. -->
-  <xsl:variable name="sp:postfix-operators" as="xs:string+"
+  <xsl:variable name="local:postfix-operators" as="xs:string+"
     select="('!')"/>
 
-  <xsl:function name="sp:is-operator" as="xs:boolean">
+  <xsl:function name="local:is-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo])"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-infix-operator" as="xs:boolean">
+  <xsl:function name="local:is-infix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
-    <xsl:sequence select="sp:is-operator($element) and exists($previous) and not(sp:is-operator($previous))"/>
+    <xsl:sequence select="local:is-operator($element) and exists($previous) and not(local:is-operator($previous))"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-plus-operator" as="xs:boolean">
+  <xsl:function name="local:is-plus-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo and .='+'])"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-minus-operator" as="xs:boolean">
+  <xsl:function name="local:is-minus-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo and .='-'])"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-divide-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and .='/'])"/>
-  </xsl:function>
-
-  <xsl:function name="sp:is-factorial-operator" as="xs:boolean">
+  <xsl:function name="local:is-factorial-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo and .='!'])"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-explicit-multiplication" as="xs:boolean">
+  <xsl:function name="local:is-elementary-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and $sp:explicit-multiplication-characters=string(.)])"/>
-  </xsl:function>
-
-  <xsl:function name="sp:is-elementary-function" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mi and $sp:elementary-functions=string(.)])"/>
+    <xsl:sequence select="boolean($element[self::mi and $local:elementary-functions=string(.)])"/>
   </xsl:function>
 
   <!-- Tests for the equivalent of \sin, \sin^{.} or \log_a. Result need not make any actual sense! -->
-  <xsl:function name="sp:is-supported-function" as="xs:boolean">
+  <xsl:function name="local:is-supported-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="sp:is-elementary-function($element)
-      or $element[self::msup and sp:is-elementary-function(*[1])]
+    <xsl:sequence select="local:is-elementary-function($element)
+      or $element[self::msup and local:is-elementary-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-prefix-operator" as="xs:boolean">
+  <xsl:function name="local:is-prefix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and $sp:prefix-operators=string(.)])"/>
+    <xsl:sequence select="boolean($element[self::mo and $local:prefix-operators=string(.)])"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-prefix-or-function" as="xs:boolean">
+  <xsl:function name="local:is-prefix-or-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean(sp:is-supported-function($element) or sp:is-prefix-operator($element))"/>
+    <xsl:sequence select="boolean(local:is-supported-function($element) or local:is-prefix-operator($element))"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-postfix-operator" as="xs:boolean">
+  <xsl:function name="local:is-postfix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and $sp:postfix-operators=string(.)])"/>
+    <xsl:sequence select="boolean($element[self::mo and $local:postfix-operators=string(.)])"/>
   </xsl:function>
 
-  <xsl:function name="sp:is-default-group-starter" as="xs:boolean">
+  <!--
+  We'll say that an element starts a "no-infix group" if:
+
+  1. It is either the first in a sequence of siblings
+  OR 2. It is a prefix operator or function and doesn't immediately follow a prefix operator or function
+  OR 3. It is neither a prefix operator/function nor postfix operator and follows a postfix operator
+
+  Such an element will thus consist of:
+
+  prefix-operator-or-function* implicit-multiplication* postfix-opeator*
+
+  -->
+  <xsl:function name="local:is-no-infix-group-starter" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <!--
-    An element starts a "default group" if:
-
-    1. It is either the first in a sequence of siblings
-    OR 2. It is a prefix operator and doesn't immediately follow a prefix operator
-    OR 3. It is neither a prefix nor postfix operator and follows a postfix operator
-
-    -->
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
     <xsl:sequence select="boolean(
       not(exists($previous))
-      or (sp:is-prefix-or-function($element) and not(sp:is-prefix-or-function($previous)))
-      or (not(sp:is-prefix-or-function($element)) and not(sp:is-postfix-operator($element))
-        and sp:is-postfix-operator($previous)))"/>
+      or (local:is-prefix-or-function($element) and not(local:is-prefix-or-function($previous)))
+      or (not(local:is-prefix-or-function($element)) and not(local:is-postfix-operator($element))
+        and local:is-postfix-operator($previous)))"/>
   </xsl:function>
 
   <!-- ************************************************************ -->
-  <!-- Templates for explicit MathML elements -->
+  <!-- Grouping by implied precedence -->
 
-  <!-- Container elements with unrestricted content -->
-  <xsl:template match="mrow|msqrt" mode="enhance-pmathml">
-    <!-- Process contents as normal -->
-    <xsl:variable name="processed-contents" as="element()*">
-      <xsl:call-template name="local:process-group">
-        <xsl:with-param name="elements" select="*"/>
-      </xsl:call-template>
-    </xsl:variable>
-    <!-- If contents consists of a single <mrow/>, strip it off and descend down -->
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:choose>
-        <xsl:when test="count($processed-contents)=1 and $processed-contents[1][self::mrow]">
-          <xsl:copy-of select="$processed-contents/*"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:copy-of select="$processed-contents"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:copy>
+  <xsl:template name="local:process-group">
+    <xsl:param name="elements" as="element()*" required="yes"/>
+    <xsl:choose>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('='))]">
+        <!-- Equals -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('=')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('+'))]">
+        <!-- Infix Addition -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('+')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('-'))]">
+        <!-- Infix Subtraction -->
+        <xsl:call-template name="local:group-left-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('-')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[1][local:is-operator(.) and .=('+', '-')]">
+        <!-- Special case of '+' or '-' Operator used in prefix mode -->
+        <xsl:call-template name="local:apply-prefix-operator">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., $local:explicit-multiplication-characters)]">
+        <!-- Explicit Multiplication, detected in various ways -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="$local:explicit-multiplication-characters"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., $local:explicit-division-characters)]">
+        <!-- Explicit Division -->
+        <xsl:call-template name="local:group-left-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="$local:explicit-division-characters"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[self::mspace]">
+        <!-- Any <mspace/> is kept but interpreted as an implicit multiplication as well -->
+        <xsl:call-template name="local:handle-mspace-group">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="count($elements) &gt; 1">
+        <!-- Need to infer function applications and multiplications, leave other operators as-is -->
+        <xsl:call-template name="local:handle-no-infix-group">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="count($elements)=1">
+        <!-- "Atom" -->
+        <xsl:apply-templates select="$elements[1]" mode="enhance-pmathml"/>
+      </xsl:when>
+      <xsl:when test="empty($elements)">
+        <!-- Empty -> empty -->
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Based on the logic above, this can't actually happen! -->
+        <xsl:message terminate="yes">
+          Unexpected logic branch in local:process-group template
+        </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
-  <!-- Default template for other MathML elements -->
-  <xsl:template match="*" mode="enhance-pmathml">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="enhance-pmathml"/>
-    </xsl:copy>
-  </xsl:template>
-
-  <xsl:template match="text()" mode="enhance-pmathml">
-    <xsl:copy-of select="."/>
-  </xsl:template>
-
-  <!-- ************************************************************ -->
-  <!-- "Higher-order function" templates to make certain groupings easy -->
-
-  <xsl:function name="local:apply-matcher">
-    <xsl:param name="matcher-reference" as="element()"/>
-    <xsl:param name="element" as="element()"/>
-    <xsl:apply-templates select="$sp:is-equals">
-      <xsl:with-param name="element" select="$element"/>
-    </xsl:apply-templates>
-  </xsl:function>
-
-  <xsl:function name="sp:is-equals" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and .='='])"/>
-  </xsl:function>
-
-  <xsl:template match="sho:is-equals" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="sp:is-equals($element)"/>
-  </xsl:template>
-
-  <xsl:variable name="sp:is-equals" as="element()">
-    <sho:is-equals/>
-  </xsl:variable>
-
+  <!-- Tests whether the given element is a <mo/> applied infix -->
   <xsl:function name="local:is-matching-infix-mo" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="mo-matches" as="xs:string+"/>
-    <xsl:sequence select="boolean(sp:is-infix-operator($element) and $element=$mo-matches)"/>
+    <xsl:param name="match" as="xs:string+"/>
+    <xsl:sequence select="boolean(local:is-infix-operator($element) and $element=$match)"/>
   </xsl:function>
 
   <!-- Groups an associative infix <mo/> operator -->
   <xsl:template name="local:group-associative-infix-mo">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="mo-matches" as="xs:string+" required="yes"/>
-    <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-infix-mo(., $mo-matches)">
+    <xsl:param name="match" as="xs:string+" required="yes"/>
+    <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-infix-mo(., $match)">
       <xsl:choose>
         <xsl:when test="current-grouping-key()">
           <!-- Copy the matching operator -->
@@ -247,8 +259,8 @@ All Rights Reserved
   <!-- Groups a left- but not right-associative infix <mo/> operator -->
   <xsl:template name="local:group-left-associative-infix-mo">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="mo-matches" as="xs:string+" required="yes"/>
-    <xsl:variable name="operators" select="$elements[local:is-matching-infix-mo(., $mo-matches)]" as="element()+"/>
+    <xsl:param name="match" as="xs:string+" required="yes"/>
+    <xsl:variable name="operators" select="$elements[local:is-matching-infix-mo(., $match)]" as="element()+"/>
     <xsl:variable name="operator-count" select="count($operators)" as="xs:integer"/>
     <xsl:choose>
       <xsl:when test="$operator-count != 1">
@@ -259,7 +271,7 @@ All Rights Reserved
         <mrow>
           <xsl:call-template name="local:group-left-associative-infix-mo">
             <xsl:with-param name="elements" select="$before-last-operator"/>
-            <xsl:with-param name="mo-matches" select="$mo-matches"/>
+            <xsl:with-param name="match" select="$match"/>
           </xsl:call-template>
         </mrow>
         <xsl:copy-of select="$last-operator"/>
@@ -284,175 +296,8 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template name="local:process-group">
-    <xsl:param name="elements" as="element()*" required="yes"/>
-    <xsl:choose>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('='))]">
-        <!-- Equals -->
-        <xsl:call-template name="local:group-associative-infix-mo">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="mo-matches" select="('=')"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('+'))]">
-        <!-- Infix Addition -->
-        <xsl:call-template name="local:group-associative-infix-mo">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="mo-matches" select="('+')"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('-'))]">
-        <!-- Infix Subtraction -->
-        <xsl:call-template name="local:group-left-associative-infix-mo">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="mo-matches" select="('-')"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[1][sp:is-plus-operator(.) or sp:is-minus-operator(.)]">
-        <!-- Special case of '+' or '-' Operator used in prefix mode -->
-        <xsl:call-template name="local:handle-prefix-group">
-          <xsl:with-param name="elements" select="$elements"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., $sp:explicit-multiplication-characters)]">
-        <!-- Explicit Multiplication, detected in various ways -->
-        <xsl:call-template name="local:group-associative-infix-mo">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="mo-matches" select="$sp:explicit-multiplication-characters"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('/'))]">
-        <!-- Explicit Division -->
-        <xsl:call-template name="local:group-left-associative-infix-mo">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="mo-matches" select="('/')"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[self::mspace]">
-        <!-- Any <mspace/> is kept but interpreted as an implicit multiplication as well -->
-        <xsl:call-template name="local:handle-mspace-group">
-          <xsl:with-param name="elements" select="$elements"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="count($elements) &gt; 1">
-        <!-- Need to infer function applications and multiplications, leave other operators as-is -->
-        <xsl:call-template name="local:handle-default-group">
-          <xsl:with-param name="elements" select="$elements"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="count($elements)=1">
-        <!-- "Atom" -->
-        <xsl:apply-templates select="$elements[1]" mode="enhance-pmathml"/>
-      </xsl:when>
-      <xsl:when test="empty($elements)">
-        <!-- Empty -> empty -->
-      </xsl:when>
-      <xsl:otherwise>
-        <!-- Based on the logic above, this can't actually happen! -->
-        <xsl:message terminate="yes">
-          Unexpected logic branch in local:process-group template
-        </xsl:message>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <!-- Infix Subtraction Expression. Need to be more careful here as it is not associative -->
-  <xsl:template name="local:handle-infix-subtraction-group">
-    <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:variable name="minus-count" select="count($elements[sp:is-infix-operator(.) and sp:is-minus-operator(.)])" as="xs:integer"/>
-    <xsl:choose>
-      <xsl:when test="$minus-count != 1">
-        <!-- Something like 'a-b-c'. We handle this recursively as '(a-b)-c' -->
-        <xsl:variable name="last-minus" select="$elements[sp:is-infix-operator(.) and sp:is-minus-operator(.)][position()=last()]" as="element()"/>
-        <xsl:variable name="before-last-minus" select="$elements[. &lt;&lt; $last-minus]" as="element()+"/>
-        <xsl:variable name="after-last-minus" select="$elements[. &gt;&gt; $last-minus]" as="element()*"/>
-        <mrow>
-          <xsl:call-template name="local:handle-infix-subtraction-group">
-            <xsl:with-param name="elements" select="$before-last-minus"/>
-          </xsl:call-template>
-        </mrow>
-        <xsl:copy-of select="$last-minus"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$after-last-minus"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <!-- Only one minus, so it'll be 'a-b' (or more pathologically 'a-').
-             We will allow the pathological cases here. -->
-        <xsl:variable name="minus" select="$elements[sp:is-infix-operator(.) and sp:is-minus-operator(.)]" as="element()"/>
-        <xsl:variable name="left-operand" select="$elements[. &lt;&lt; $minus]" as="element()+"/>
-        <xsl:variable name="right-operand" select="$elements[. &gt;&gt; $minus]" as="element()*"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$left-operand"/>
-        </xsl:call-template>
-        <xsl:copy-of select="$minus"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$right-operand"/>
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <!-- Explicit multiplication -->
-  <xsl:template name="local:handle-explicit-multiplication-group">
-    <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:for-each-group select="$elements" group-adjacent="sp:is-explicit-multiplication(.)">
-      <xsl:choose>
-        <xsl:when test="current-grouping-key()">
-          <xsl:copy-of select="."/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:call-template name="s:maybe-wrap-in-mrow">
-            <xsl:with-param name="elements" as="element()*">
-              <xsl:call-template name="local:process-group">
-                <xsl:with-param name="elements" select="current-group()"/>
-              </xsl:call-template>
-            </xsl:with-param>
-          </xsl:call-template>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:for-each-group>
-  </xsl:template>
-
-  <!-- Division. This works similarly to subtraction -->
-  <xsl:template name="local:handle-division-group">
-    <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:variable name="minus-count" select="count($elements[sp:is-divide-operator(.)])" as="xs:integer"/>
-    <xsl:choose>
-      <xsl:when test="$minus-count != 1">
-        <!-- Something like 'a/b/c'. We handle this recursively as '(a/b)/c' -->
-        <xsl:variable name="last-divide" select="$elements[sp:is-divide-operator(.)][position()=last()]" as="element()"/>
-        <xsl:variable name="before-last-divide" select="$elements[. &lt;&lt; $last-divide]" as="element()+"/>
-        <xsl:variable name="after-last-divide" select="$elements[. &gt;&gt; $last-divide]" as="element()*"/>
-        <mrow>
-          <xsl:call-template name="local:handle-division-group">
-            <xsl:with-param name="elements" select="$before-last-divide"/>
-          </xsl:call-template>
-        </mrow>
-        <xsl:copy-of select="$last-divide"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$after-last-divide"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <!-- Only one divide, so it'll be 'a/b' (or more pathologically 'a/').
-             We will allow the pathological cases here. -->
-        <xsl:variable name="divide" select="$elements[sp:is-divide-operator(.)]" as="element()"/>
-        <xsl:variable name="left-operand" select="$elements[. &lt;&lt; $divide]" as="element()+"/>
-        <xsl:variable name="right-operand" select="$elements[. &gt;&gt; $divide]" as="element()*"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$left-operand"/>
-        </xsl:call-template>
-        <xsl:copy-of select="$divide"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$right-operand"/>
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <!-- Prefix operator -->
-  <xsl:template name="local:handle-prefix-group">
+  <!-- Groups a Prefix operator -->
+  <xsl:template name="local:apply-prefix-operator">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <mrow>
       <xsl:copy-of select="$elements[1]"/>
@@ -492,9 +337,9 @@ All Rights Reserved
     </xsl:for-each-group>
   </xsl:template>
 
-  <xsl:template name="local:handle-default-group">
+  <xsl:template name="local:handle-no-infix-group">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:for-each-group select="$elements" group-starting-with="*[sp:is-default-group-starter(.)]">
+    <xsl:for-each-group select="$elements" group-starting-with="*[local:is-no-infix-group-starter(.)]">
       <!-- Add an invisible times if we're the second multiplicative group -->
       <xsl:if test="position()!=1">
         <mo>&#x2062;</mo>
@@ -515,7 +360,7 @@ All Rights Reserved
     <xsl:variable name="first-element" as="element()" select="$elements[1]"/>
     <xsl:variable name="after-first-element" as="element()*" select="$elements[position()!=1]"/>
     <xsl:choose>
-      <xsl:when test="sp:is-supported-function($first-element) and exists($after-first-element)">
+      <xsl:when test="local:is-supported-function($first-element) and exists($after-first-element)">
         <!-- This is a (prefix) function application. Copy the operator as-is -->
         <xsl:copy-of select="$first-element"/>
         <!-- Add an "Apply Function" operator -->
@@ -525,7 +370,7 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$after-first-element"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="sp:is-prefix-operator($first-element)">
+      <xsl:when test="local:is-prefix-operator($first-element)">
         <!-- This is a prefix operator. Apply to everything that follows. -->
         <xsl:copy-of select="$first-element"/>
         <xsl:call-template name="local:apply-prefix-functions-and-operators">
@@ -550,7 +395,7 @@ All Rights Reserved
     <xsl:variable name="last-element" as="element()?" select="$elements[position()=last()]"/>
     <xsl:variable name="before-last-element" as="element()*" select="$elements[position()!=last()]"/>
     <xsl:choose>
-      <xsl:when test="$last-element[sp:is-factorial-operator(.)]">
+      <xsl:when test="$last-element[local:is-factorial-operator(.)]">
         <!-- The factorial operator only binds to the last resulting subexpression -->
         <xsl:call-template name="local:apply-factorial">
           <xsl:with-param name="elements" as="element()*">
@@ -560,7 +405,7 @@ All Rights Reserved
           </xsl:with-param>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$last-element[sp:is-postfix-operator(.)]">
+      <xsl:when test="$last-element[local:is-postfix-operator(.)]">
         <!-- General Postfix operator. Bind to everything preceding -->
         <xsl:call-template name="local:apply-postfix-operators">
           <xsl:with-param name="elements" select="$before-last-element"/>
@@ -618,6 +463,44 @@ All Rights Reserved
       </xsl:with-param>
     </xsl:call-template>
   </xsl:template>
+
+  <!-- ************************************************************ -->
+  <!-- Templates for explicit MathML elements -->
+
+  <!-- Container elements with unrestricted content -->
+  <xsl:template match="mrow|msqrt" mode="enhance-pmathml">
+    <!-- Process contents as normal -->
+    <xsl:variable name="processed-contents" as="element()*">
+      <xsl:call-template name="local:process-group">
+        <xsl:with-param name="elements" select="*"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <!-- If contents consists of a single <mrow/>, strip it off and descend down -->
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:choose>
+        <xsl:when test="count($processed-contents)=1 and $processed-contents[1][self::mrow]">
+          <xsl:copy-of select="$processed-contents/*"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:copy-of select="$processed-contents"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- Default template for other MathML elements -->
+  <xsl:template match="*" mode="enhance-pmathml">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="enhance-pmathml"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="text()" mode="enhance-pmathml">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+
 
   <!-- ************************************************************ -->
 

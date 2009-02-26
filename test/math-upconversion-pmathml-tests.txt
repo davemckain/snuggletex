@@ -151,8 +151,8 @@ x\,y\,z
 1---x
 <mn>1</mn><mo>-</mo><mrow><mo>-</mo><mrow><mo>-</mo><mi>x</mi></mrow></mrow>
 ====
-\forall x!
-<mo>&#x2200;</mo><mrow><mi>x</mi><mo>!</mo></mrow>
+\neg A
+<mo>&#xac;</mo><mi>A</mi>
 ====
 x!y!
 <mrow><mi>x</mi><mo>!</mo></mrow><mo>&#x2062;</mo><mrow><mi>y</mi><mo>!</mo></mrow>
