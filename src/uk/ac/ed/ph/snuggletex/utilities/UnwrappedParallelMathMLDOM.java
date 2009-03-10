@@ -18,18 +18,34 @@ import org.w3c.dom.NodeList;
  * @author  David McKain
  * @version $Revision$
  */
-public class UnwrappedParallelMathMLDOM {
+public final class UnwrappedParallelMathMLDOM {
     
+    /** Containing <math/> element */
+    private Element mathElement;
+    
+    /** First branch of the <semantics/> element */
     private Element firstBranch;
+    
+    /** Map of all <annotation/> contents, keyed on encoding attribute */
     private final Map<String, String> textAnnotations;
-    private final Map<String, NodeList> xmlAnnotaions;
+    
+    /** Map of all <annotation-xml/> contents, keyed on encoding attribute */
+    private final Map<String, NodeList> xmlAnnotations;
     
     public UnwrappedParallelMathMLDOM() {
         this.textAnnotations = new HashMap<String, String>();
-        this.xmlAnnotaions = new HashMap<String, NodeList>();
+        this.xmlAnnotations = new HashMap<String, NodeList>();
+    }
+    
+    public Element getMathElement() {
+        return mathElement;
+    }
+    
+    public void setMathElement(Element mathElement) {
+        this.mathElement = mathElement;
     }
 
-    
+
     public Element getFirstBranch() {
         return firstBranch;
     }
@@ -44,7 +60,7 @@ public class UnwrappedParallelMathMLDOM {
     }
 
     
-    public Map<String, NodeList> getXmlAnnotaions() {
-        return xmlAnnotaions;
+    public Map<String, NodeList> getXmlAnnotations() {
+        return xmlAnnotations;
     }
 }

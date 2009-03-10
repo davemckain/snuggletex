@@ -48,7 +48,7 @@ public final class MathMLUtilities {
      * @throws IOException
      * @throws SAXException
      */
-    public static Document parseMathMLDocumentString(String mathmlDocument)
+    public static Document parseMathMLDocumentString(final String mathmlDocument)
             throws IOException, SAXException {
         return XMLUtilities.createNSAwareDocumentBuilder()
             .parse(new InputSource(new StringReader(mathmlDocument)));
@@ -63,7 +63,7 @@ public final class MathMLUtilities {
      *
      * @param document DOM document to serialize
      */
-    public static String serializeDocument(Document document) {
+    public static String serializeDocument(final Document document) {
         return serializeNode(document, true, true);
     }
     
@@ -77,7 +77,8 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
-    public static String serializeDocument(Document document, boolean indent, boolean omitXMLDeclaration) {
+    public static String serializeDocument(final Document document, final boolean indent,
+            final boolean omitXMLDeclaration) {
         return serializeNode(document, indent, omitXMLDeclaration);
     }
     
@@ -88,7 +89,7 @@ public final class MathMLUtilities {
      *
      * @param element DOM element to serialize
      */
-    public static String serializeElement(Element element) {
+    public static String serializeElement(final Element element) {
         return serializeNode(element, true, true);
     }
     
@@ -102,7 +103,8 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
-    public static String serializeElement(Element element, boolean indent, boolean omitXMLDeclaration) {
+    public static String serializeElement(final Element element, final boolean indent,
+            final boolean omitXMLDeclaration) {
         return serializeNode(element, indent, omitXMLDeclaration);
     }
     
@@ -113,7 +115,8 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
-    private static String serializeNode(Node node, boolean indent, boolean omitXMLDeclaration) {
+    private static String serializeNode(final Node node, final boolean indent,
+            final boolean omitXMLDeclaration) {
         StringWriter resultWriter = new StringWriter();
         try {
             Transformer serializer = XMLUtilities.createTransformerFactory().newTransformer();
@@ -138,11 +141,11 @@ public final class MathMLUtilities {
      * If the given element is null or is not a MathML "math" element, then an {@link IllegalArgumentException}
      * is thrown.
      */
-    public static UnwrappedParallelMathMLDOM unwrapParallelMathMLDOM(Element mathmlElement) {
-        ensureMathMLContainer(mathmlElement);
+    public static UnwrappedParallelMathMLDOM unwrapParallelMathMLDOM(final Element mathElement) {
+        ensureMathMLContainer(mathElement);
         
         /* Look for semantics child then annotation child with encoding set appropriately */
-        Node search = mathmlElement.getFirstChild();
+        Node search = mathElement.getFirstChild();
         if (!(search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())
                 && "semantics".equals(search.getLocalName()))) {
             /* Didn't get <semantics/> as first and only child so not parallel markup */
@@ -151,10 +154,11 @@ public final class MathMLUtilities {
         
         /* OK, this looks like parallel markup */
         UnwrappedParallelMathMLDOM result = new UnwrappedParallelMathMLDOM();
-        Element semantics = (Element) search;
-        NodeList childNodes = semantics.getChildNodes();
+        result.setMathElement(mathElement);
         
         /* Pull out the first child */
+        Element semantics = (Element) search;
+        NodeList childNodes = semantics.getChildNodes();
         result.setFirstBranch((Element) childNodes.item(0));
         
         /* Then pull out annotations, which must be the subsequent children */
@@ -167,7 +171,7 @@ public final class MathMLUtilities {
                     result.getTextAnnotations().put(searchElement.getAttribute("encoding"), extractTextElementValue(searchElement));
                 }
                 else if (ANNOTATION_XML_LOCAL_NAME.equals(search.getLocalName())) {
-                    result.getXmlAnnotaions().put(searchElement.getAttribute("encoding"), searchElement.getChildNodes());
+                    result.getXmlAnnotations().put(searchElement.getAttribute("encoding"), searchElement.getChildNodes());
                 }
                 else {
                     /* (Just silently ignore this) */
@@ -176,7 +180,21 @@ public final class MathMLUtilities {
         }
         return result;
     }
-
+    
+    public static Element extractFirstSemanticsBranch(final Element mathElement) {
+        ensureMathMLContainer(mathElement);
+        
+        /* Look for semantics child then annotation child with encoding set appropriately */
+        Node search = mathElement.getFirstChild();
+        if (!(search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())
+                && "semantics".equals(search.getLocalName()))) {
+            /* Didn't get <semantics/> as first and only child so not parallel markup */
+            return null;
+        }
+        Element semantics = (Element) search;
+        NodeList childNodes = semantics.getChildNodes();
+        return ((Element) childNodes.item(0));
+    }
 
     /**
      * Extracts the first textual annotation found having the given encoding attribute from
@@ -192,11 +210,11 @@ public final class MathMLUtilities {
      * </math>
      * ]]></pre>
      * 
-     * @param mathmlElement
+     * @param mathElement
      * @return first matching annotation, or null if not present.
      */
-    public static String extractAnnotationString(Element mathmlElement, String encodingAttribute) {
-        Element annotationElement = extractAnnotationElement(mathmlElement, ANNOTATION_LOCAL_NAME, encodingAttribute);
+    public static String extractAnnotationString(final Element mathElement, final String encodingAttribute) {
+        Element annotationElement = extractAnnotationElement(mathElement, ANNOTATION_LOCAL_NAME, encodingAttribute);
         return annotationElement!=null ? extractTextElementValue(annotationElement) : null;
     }
 
@@ -214,15 +232,15 @@ public final class MathMLUtilities {
      * </math>
      * ]]></pre>
      * 
-     * @param mathmlElement
+     * @param mathElement
      * @return DOM NodeList corresponding to the first matching annotation, or null if no such annotation found.
      */
-    public static NodeList extractAnnotationXML(Element mathmlElement, String encodingAttribute) {
-        Element annotationElement = extractAnnotationElement(mathmlElement, ANNOTATION_XML_LOCAL_NAME, encodingAttribute);
+    public static NodeList extractAnnotationXML(final Element mathElement, final String encodingAttribute) {
+        Element annotationElement = extractAnnotationElement(mathElement, ANNOTATION_XML_LOCAL_NAME, encodingAttribute);
         return annotationElement!=null ? annotationElement.getChildNodes() : null;
     }
 
-    private static Element extractAnnotationElement(Element mathmlElement, String annotationElementLocalName, String encodingAttribute) {
+    private static Element extractAnnotationElement(final Element mathmlElement, final String annotationElementLocalName, String encodingAttribute) {
         ensureMathMLContainer(mathmlElement);
         ConstraintUtilities.ensureNotNull(encodingAttribute, "encoding");
         
@@ -249,14 +267,14 @@ public final class MathMLUtilities {
         return null;
     }
     
-    private static void ensureMathMLContainer(Element mathmlElement) {
-        ConstraintUtilities.ensureNotNull(mathmlElement, "MathML element");
-        if (!(Globals.MATHML_NAMESPACE.equals(mathmlElement.getNamespaceURI()) && "math".equals(mathmlElement.getLocalName()))) {
+    private static void ensureMathMLContainer(final Element mathElement) {
+        ConstraintUtilities.ensureNotNull(mathElement, "MathML element");
+        if (!(Globals.MATHML_NAMESPACE.equals(mathElement.getNamespaceURI()) && "math".equals(mathElement.getLocalName()))) {
             throw new IllegalArgumentException("Not a MathML <math/> element");
         }
     }
     
-    private static String extractTextElementValue(Element textElement) {
+    private static String extractTextElementValue(final Element textElement) {
         NodeList childNodes = textElement.getChildNodes();
         String result;
         if (childNodes.getLength()==1) {
@@ -273,5 +291,125 @@ public final class MathMLUtilities {
         }
         return result;
     }
+    
+    //---------------------------------------------------------------------
 
+    /**
+     * "Isolates" the first <semantics/> branch of an annotation MathML element
+     * by producing a copy of the MathML element with a single child containing
+     * only the first child of the <semantics/> element.
+     * <p>
+     * For example:
+     * <pre><![CDATA[
+     *   <math>
+     *     <semantics>
+     *       <mi>x</mi>
+     *       <annotation-xml encoding='blah'><x/></annotation-xml>
+     *     </semantics>
+     *   </math>
+     * ]]>
+     * results in:
+     * <pre><![CDATA[
+     *   <math>
+     *     <mi>x</mi>
+     *   </math>
+     * ]]>
+     * 
+     * @return new MathML Document with the given structure or null if the given <tt>math</tt>
+     *   element is not annotated.
+     * 
+     * @throws IllegalArgumentException if passed null or the given element is not a
+     *   <tt>math</tt> element.
+     */
+    public static Document isolateFirstBranch(final Element mathElement) {
+        Element firstSemantics = extractFirstSemanticsBranch(mathElement);
+        return firstSemantics!=null ? isolateDescendent(mathElement, firstSemantics) : null;
+    }
+    
+    /**
+     * Version of {@link #isolateFirstBranch(Element)} that works on an
+     * {@link UnwrappedParallelMathMLDOM}.
+     * 
+     * @return new MathML Document with the given structure or null if the given wrapper has
+     *   no first branch.
+     *   
+     * @throws IllegalArgumentException if passed null.
+     */
+    public static Document isolateFirstBranch(final UnwrappedParallelMathMLDOM unwrappedDOM) {
+        ConstraintUtilities.ensureNotNull(unwrappedDOM, "UnwrappedParallelMathMLDOM");
+        Element firstSemantics = unwrappedDOM.getFirstBranch();
+        return firstSemantics!=null ? isolateDescendent(unwrappedDOM.getMathElement(), firstSemantics) : null;
+    }
+    
+    /**
+     * "Isolates" the XML annotation having the given encoding by producing a copy of the MathML
+     * element with only the given annotation contents as children.
+     * <p>
+     * For example:
+     * <pre><![CDATA[
+     *   <math>
+     *     <semantics>
+     *       <mi>x</mi>
+     *       <annotation-xml encoding='blah'><x/></annotation-xml>
+     *     </semantics>
+     *   </math>
+     * ]]>
+     * results in:
+     * <pre><![CDATA[
+     *   <math>
+     *     <x/>
+     *   </math>
+     * ]]>
+     * 
+     * @return new MathML Document with the given structure or null if the given <tt>math</tt>
+     *   element is not annotated or does not have the required annotation.
+     * 
+     * @throws IllegalArgumentException if passed null or the given element is not a
+     *   <tt>math</tt> element.
+     */
+    public static Document isolateAnnotationXML(final Element mathElement, final String encodingAttribute) {
+        NodeList annotationContents = extractAnnotationXML(mathElement, encodingAttribute);
+        return annotationContents!=null ? isolateDescendent(mathElement, annotationContents) : null;
+    }
+    
+    /**
+     * Version of {@link #isolateAnnotationXML(Element, String)} that works on an
+     * {@link UnwrappedParallelMathMLDOM}.
+     * 
+     * @return new MathML Document with the given structure or null if the given wrapper does
+     *   not have the required annotation.
+     *   
+     * @throws IllegalArgumentException if passed null.
+     */
+    public static Document isolateAnnotationXML(final UnwrappedParallelMathMLDOM unwrappedDOM, final String encodingAttribute) {
+        ConstraintUtilities.ensureNotNull(unwrappedDOM, "UnwrappedParallelMathMLDOM");
+        NodeList annotationContents = unwrappedDOM.getXmlAnnotations().get(encodingAttribute);
+        return annotationContents!=null ? isolateDescendent(unwrappedDOM.getMathElement(), annotationContents) : null;
+    }
+    
+    private static Document isolateDescendent(final Element mathElement, final NodeList descendents) {
+        Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        Element resultMathElement = (Element) mathElement.cloneNode(false);
+        result.adoptNode(resultMathElement);
+        result.appendChild(resultMathElement);
+        for (int i=0, size=descendents.getLength(); i<size; i++) {
+            Node annotationNode = descendents.item(i);
+            Node annotationNodeCopy = annotationNode.cloneNode(true);
+            result.adoptNode(annotationNodeCopy);
+            resultMathElement.appendChild(annotationNodeCopy);
+        }
+        return result;
+    }
+    
+    private static Document isolateDescendent(final Element mathElement, final Element descendent) {
+        Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        Element resultMathElement = (Element) mathElement.cloneNode(false);
+        result.adoptNode(resultMathElement);
+        result.appendChild(resultMathElement);
+        
+        Element firstSemanticElementCopy = (Element) descendent.cloneNode(true);
+        result.adoptNode(firstSemanticElementCopy);
+        resultMathElement.appendChild(firstSemanticElementCopy);
+        return result;
+    }
 }
