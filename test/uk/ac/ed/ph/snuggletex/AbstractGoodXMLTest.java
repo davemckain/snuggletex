@@ -49,19 +49,23 @@ import org.xml.sax.XMLReader;
  * @author  David McKain
  * @version $Revision$
  */
-abstract class AbstractGoodXMLTests {
+abstract class AbstractGoodXMLTest {
     
-    private static final Logger log = Logger.getLogger(AbstractGoodXMLTests.class.getName());
+    private static final Logger log = Logger.getLogger(AbstractGoodXMLTest.class.getName());
     
-    private final String inputLaTeX;
-    private final String expectedXML;
+    protected final String inputLaTeX;
+    protected final String expectedXML;
     
-    protected AbstractGoodXMLTests(String inputLaTeX, String expectedXML) {
+    protected AbstractGoodXMLTest(String inputLaTeX, String expectedXML) {
         this.inputLaTeX = inputLaTeX;
         this.expectedXML = expectedXML;
     }
     
     protected abstract void fixupDocument(Document document);
+    
+    protected boolean showTokensOnFailure() {
+        return true;
+    }
     
     /**
      * Sets up the {@link DOMOutputOptions} to use for the test.
@@ -88,8 +92,34 @@ abstract class AbstractGoodXMLTests {
         Assert.assertTrue(errors.isEmpty());
     }
     
+    protected void verifyResultDocument(TransformerFactory transformerFactory, Document resultDocument) throws Throwable {
+        /* Create mock to handle the SAX streams */
+        IMocksControl control = createStrictControl();
+        EasyMockContentHandler saxControl = new EasyMockContentHandler(control);
+        
+        /* Fire expected output at handler */
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setNamespaceAware(true);
+        SAXParser parser = parserFactory.newSAXParser();
+        XMLReader reader = parser.getXMLReader();
+        InputSource inputSource = new InputSource(new StringReader(expectedXML));
+        reader.setContentHandler(saxControl);
+        reader.parse(inputSource);
+        
+        /* Now replay and fire actual resulting XML to mock as SAX stream */
+        control.replay();
+        saxControl.replay();
+        
+        /* Finally verify everything */
+        Transformer serializer = transformerFactory.newTransformer();
+        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        serializer.transform(new DOMSource(resultDocument), new SAXResult(saxControl));
+        control.verify();
+        saxControl.verify();
+    }
+    
     public void runTest() throws Throwable {
-        String rawDump = null, fixedDump = null, output = null;
+        String rawDump = null, fixedDump = null, output=null;
 
         /* We'll drive the process manually as that gives us richer information if something
          * goes wrong.
@@ -137,44 +167,26 @@ abstract class AbstractGoodXMLTests {
             /* Let subclass fudge up the resulting document if required */
             fixupDocument(resultDocument);
             
-            /* Create mock to handle the SAX streams */
-            IMocksControl control = createStrictControl();
-            EasyMockContentHandler saxControl = new EasyMockContentHandler(control);
-            
-            /* Fire expected output at handler */
-            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-            parserFactory.setNamespaceAware(true);
-            SAXParser parser = parserFactory.newSAXParser();
-            XMLReader reader = parser.getXMLReader();
-            InputSource inputSource = new InputSource(new StringReader(expectedXML));
-            reader.setContentHandler(saxControl);
-            reader.parse(inputSource);
-            
-            /* Now replay and fire actual resulting XML to mock as SAX stream */
-            control.replay();
-            saxControl.replay();
-            
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer serializer = transformerFactory.newTransformer();
-            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-
             /* Serialize the output */
             StringWriter outputWriter = new StringWriter();
+            TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+            Transformer serializer = transformerFactory.newTransformer();
+            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             serializer.transform(new DOMSource(resultDocument), new StreamResult(outputWriter));
             output = outputWriter.toString();
             
-            /* Finally verify everything */
-            serializer.transform(new DOMSource(resultDocument), new SAXResult(saxControl));
-            control.verify();
-            saxControl.verify();
+            /* Verify result */
+            verifyResultDocument(transformerFactory, resultDocument);
         }
         catch (Throwable e) {
             log.severe("Input was: " + inputLaTeX);
-            if (rawDump!=null) {
-                log.severe("Raw dump was: " + rawDump);
-            }
-            if (fixedDump!=null) {
-                log.severe("Fixed dump was: " + fixedDump);
+            if (showTokensOnFailure()) {
+                if (rawDump!=null) {
+                    log.severe("Raw dump was: " + rawDump);
+                }
+                if (fixedDump!=null) {
+                    log.severe("Fixed dump was: " + fixedDump);
+                }
             }
             if (output!=null) {
                 log.severe("Expected output: " + expectedXML);

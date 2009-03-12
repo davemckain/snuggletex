@@ -15,6 +15,12 @@
 \alpha
 <mi>&#x3b1;</mi>
 =====
+x = 3
+<mi>x</mi><mo>=</mo><mn>3</mn>
+====
+1+x = 2
+<mrow><mn>1</mn><mo>+</mo><mi>x</mi></mrow><mo>=</mo><mn>2</mn>
+====
 x
 <mi>x</mi>
 ====
@@ -24,8 +30,8 @@ x
 1+x
 <mn>1</mn><mo>+</mo><mi>x</mi>
 ====
-x = 3
-<mi>x</mi><mo>=</mo><mn>3</mn>
+-x+1
+<mrow><mo>-</mo><mi>x</mi></mrow><mo>+</mo><mn>1</mn>
 ====
 2x
 <mn>2</mn><mo>&#x2062;</mo><mi>x</mi>
@@ -98,6 +104,40 @@ a/b/c
 \sqrt{b^2-4ac}
 <msqrt><msup><mi>b</mi><mn>2</mn></msup><mo>-</mo><mrow><mn>4</mn><mo>&#x2062;</mo><mi>a</mi><mo>&#x2062;</mo><mi>c</mi></mrow></msqrt>
 ====
+## The Quadractic Equation (phew!)
+\frac{-b+\sqrt{b^2-4ac}}{2a}
+<mfrac>
+  <mrow>
+    <mrow>
+      <mo>-</mo>
+      <mi>b</mi>
+    </mrow>
+    <mo>+</mo>
+    <msqrt>
+      <msup>
+        <mi>b</mi>
+        <mn>2</mn>
+      </msup>
+      <mo>-</mo>
+      <mrow>
+        <mn>4</mn>
+        <mo>&#x2062;</mo>
+        <mi>a</mi>
+        <mo>&#x2062;</mo>
+        <mi>c</mi>
+      </mrow>
+    </msqrt>
+  </mrow>
+  <mrow>
+    <mn>2</mn>
+    <mo>&#x2062;</mo>
+    <mi>a</mi>
+  </mrow>
+</mfrac>
+====
+\sqrt[3]{x}
+<mroot><mi>x</mi><mn>3</mn></mroot>
+====
 x^2 + 1
 <msup>
   <mi>x</mi>
@@ -137,19 +177,102 @@ x\,y\,z
 \log_a x
 <msub><mi>log</mi><mi>a</mi></msub><mo>&#x2061;</mo><mi>x</mi>
 ====
+## Also do logs over bases with powers and inverses
+\log_a^2 x
+<msubsup><mi>log</mi><mi>a</mi><mn>2</mn></msubsup><mo>&#x2061;</mo><mi>x</mi>
+====
 #########################
-# New improved prefix/infix/postfix handling
+## New improved prefix/infix/postfix handling
+1++x
+<mn>1</mn>
+<mo>+</mo>
+<mrow>
+  <mo>+</mo>
+  <mi>x</mi>
+</mrow>
+====
 1+-x
-<mn>1</mn><mo>+</mo><mrow><mo>-</mo><mi>x</mi></mrow>
+<mn>1</mn>
+<mo>+</mo>
+<mrow>
+  <mo>-</mo>
+  <mi>x</mi>
+</mrow>
 ====
 1-+x
-<mn>1</mn><mo>-</mo><mrow><mo>+</mo><mi>x</mi></mrow>
+<mn>1</mn>
+<mo>-</mo>
+<mrow>
+  <mo>+</mo>
+  <mi>x</mi>
+</mrow>
 ====
 1+++x
-<mn>1</mn><mo>+</mo><mrow><mo>+</mo><mrow><mo>+</mo><mi>x</mi></mrow></mrow>
+<mn>1</mn>
+<mo>+</mo>
+<mrow>
+  <mo>+</mo>
+  <mrow>
+    <mo>+</mo>
+    <mi>x</mi>
+  </mrow>
+</mrow>
 ====
 1---x
-<mn>1</mn><mo>-</mo><mrow><mo>-</mo><mrow><mo>-</mo><mi>x</mi></mrow></mrow>
+<mn>1</mn>
+<mo>-</mo>
+<mrow>
+  <mo>-</mo>
+  <mrow>
+    <mo>-</mo>
+    <mi>x</mi>
+  </mrow>
+</mrow>
+====
+## Bare operators are allowed
++
+<mo>+</mo>
+====
+## Yes, this is pathological but currently allowed
+1+
+<mn>1</mn><mo>+</mo>
+====
+## This is pathological too, = is treated as a prefix operator here
+=1
+<mo>=</mo>
+<mn>1</mn>
+====
+## Even more pathological!
+++
+<mo>+</mo>
+<mo>+</mo>
+====
+++1
+<mo>+</mo>
+<mrow>
+  <mo>+</mo>
+  <mn>1</mn>
+</mrow>
+====
+## Unapplied elementary functions are OK but need specified in an interesting way
+\sin {}
+<mi>sin</mi><mo>&#x2061;</mo><mrow/>
+====
+## c.f. above
+\sin
+<mi>sin</mi>
+====
+\sin^2
+<msup><mi>sin</mi><mn>2</mn></msup>
+====
+\sin^2 {}
+<msup><mi>sin</mi><mn>2</mn></msup><mo>&#x2061;</mo><mrow/>
+====
+\sin^{-1}
+<msup><mi>sin</mi><mn>-1</mn></msup>
+====
+\sin^{-1} {}
+<msup><mi>sin</mi><mn>-1</mn></msup><mo>&#x2061;</mo><mrow/>
 ====
 \neg A
 <mo>&#xac;</mo><mi>A</mi>

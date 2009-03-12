@@ -1,0 +1,561 @@
+# Defines single-line tests of the up-conversion of PMathML to CMathML
+#
+# Input format is:
+#
+# LaTeX (interpreted inside $...$)
+# EITHER CMathML annotation branch OR !ErrorCode
+# ==== (divider)
+#
+# Lines starting with '#' are documentation and are stripped out when running tests
+#
+## Normal tests
+1
+<cn>1</cn>
+====
+\alpha
+<ci>&#x3b1;</ci>
+=====
+x
+<ci>x</ci>
+====
+## Lonely operator should remain unapplied
+=
+<eq/>
+====
+x = 3
+<apply>
+  <eq/>
+  <ci>x</ci>
+  <cn>3</cn>
+</apply>
+====
+a=b=c
+<apply>
+  <eq/>
+  <ci>a</ci>
+  <ci>b</ci>
+  <ci>c</ci>
+</apply>
+====
+3=
+!UCEOP1
+====
+=3
+!UCEOP0
+====
++
+<plus/>
+====
+## Prefix plus
++x
+<apply>
+  <plus/>
+  <ci>x</ci>
+</apply>
+====
+## Postfix plus makes no sense
+x+
+!UCEOP1
+====
+x+y
+<apply>
+  <plus/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+-
+<minus/>
+====
+-x
+<apply>
+  <minus/>
+  <ci>x</ci>
+</apply>
+====
+x-
+!UCEOP1
+====
+x-y
+<apply>
+  <minus/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+-y+x
+<apply>
+  <plus/>
+  <apply>
+    <minus/>
+    <ci>y</ci>
+  </apply>
+  <ci>x</ci>
+</apply>
+====
+x-y-z
+<apply>
+  <minus/>
+  <apply>
+    <minus/>
+    <ci>x</ci>
+    <ci>y</ci>
+  </apply>
+  <ci>z</ci>
+</apply>
+====
+*
+<times/>
+====
+*1
+!UCEOP0
+====
+1*
+!UCEOP1
+====
+x\times y
+<apply>
+  <times/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+/
+<divide/>
+====
+1/2
+<apply>
+  <divide/>
+  <cn>1</cn>
+  <cn>2</cn>
+</apply>
+====
+/1
+!UCEOP0
+====
+1/
+!UCEOP1
+====
+a/b/c
+<apply>
+ <divide/>
+  <apply>
+    <divide/>
+    <ci>a</ci>
+    <ci>b</ci>
+  </apply>
+  <ci>c</ci>
+</apply>
+====
+1+x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <ci>x</ci>
+</apply>
+====
+2x
+<apply>
+  <times/>
+  <cn>2</cn>
+  <ci>x</ci>
+</apply>
+====
+(2x)
+<apply>
+  <times/>
+  <cn>2</cn>
+  <ci>x</ci>
+</apply>
+====
+\sin x
+<apply>
+  <sin/>
+  <ci>x</ci>
+</apply>
+====
+###################################
+# More complex tests
+2\alpha
+<apply>
+  <times/>
+  <cn>2</cn>
+  <ci>&#x3b1;</ci>
+</apply>
+====
+\sin 2x
+<apply>
+  <sin/>
+  <apply>
+    <times/>
+    <cn>2</cn>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
+2x+4
+<apply>
+  <plus/>
+  <apply>
+    <times/>
+    <cn>2</cn>
+    <ci>x</ci>
+  </apply>
+  <cn>4</cn>
+</apply>
+====
+2\alpha - \sin y + x
+<apply>
+  <plus/>
+  <apply>
+    <minus/>
+    <apply>
+      <times/>
+      <cn>2</cn>
+      <ci>&#x3b1;</ci>
+    </apply>
+    <apply>
+      <sin/>
+      <ci>y</ci>
+    </apply>
+  </apply>
+  <ci>x</ci>
+</apply>
+====
+\frac{1}{2}
+<apply>
+  <divide/>
+  <cn>1</cn>
+  <cn>2</cn>
+</apply>
+====
+\frac{x+y}{2}
+<apply>
+  <divide/>
+  <apply>
+    <plus/>
+    <ci>x</ci>
+    <ci>y</ci>
+  </apply>
+  <cn>2</cn>
+</apply>
+====
+2^x
+<apply>
+  <power/>
+  <cn>2</cn>
+  <ci>x</ci>
+</apply>
+====
+\sqrt x
+<apply>
+  <root/>
+  <ci>x</ci>
+</apply>
+====
+## Note that the 'x' only binds with the \sqrt below!
+\sqrt x y
+<apply>
+  <times/>
+  <apply>
+    <root/>
+    <ci>x</ci>
+  </apply>
+  <ci>y</ci>
+</apply>
+====
+\sqrt{b^2-4ac}
+<apply>
+  <root/>
+  <apply>
+    <minus/>
+    <apply>
+      <power/>
+      <ci>b</ci>
+      <cn>2</cn>
+    </apply>
+    <apply>
+      <times/>
+      <cn>4</cn>
+      <ci>a</ci>
+      <ci>c</ci>
+    </apply>
+  </apply>
+</apply>
+====
+\frac{-b+\sqrt{b^2-4ac}}{2a}
+<apply>
+  <divide/>
+  <apply>
+    <plus/>
+    <apply>
+      <minus/>
+      <ci>b</ci>
+    </apply>
+    <apply>
+      <root/>
+      <apply>
+        <minus/>
+        <apply>
+          <power/>
+          <ci>b</ci>
+          <cn>2</cn>
+        </apply>
+        <apply>
+          <times/>
+          <cn>4</cn>
+          <ci>a</ci>
+          <ci>c</ci>
+        </apply>
+      </apply>
+    </apply>
+  </apply>
+  <apply>
+    <times/>
+    <cn>2</cn>
+    <ci>a</ci>
+  </apply>
+</apply>
+====
+\sqrt[3]{x}
+<apply>
+  <root/>
+  <degree>
+    <cn>3</cn>
+  </degree>
+  <ci>x</ci>
+</apply>
+====
+## Space interpreted as implicit multiplication
+x\,y
+<apply>
+  <times/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+x\,y\,z
+<apply>
+  <times/>
+  <ci>x</ci>
+  <ci>y</ci>
+  <ci>z</ci>
+</apply>
+====
+## Note how this is different from \sin xy
+\sin x\,y
+<apply>
+  <times/>
+  <apply>
+    <sin/>
+    <ci>x</ci>
+  </apply>
+  <ci>y</ci>
+</apply>
+====
+## I'm not sure what I really want with this one!
+\frac{}{}
+<apply>
+  <divide/>
+</apply>
+====
+## Test inference of apply function on inverses
+\sin^{-1} x
+<apply>
+  <arcsin/>
+  <ci>x</ci>
+</apply>
+====
+## Test inference of apply function on powers
+\sin^{2} x
+<apply>
+  <apply>
+    <power/>
+    <sin/>
+    <cn>2</cn>
+  </apply>
+  <ci>x</ci>
+</apply>
+====
+## Natural log
+\ln x
+<apply>
+  <ln/>
+  <ci>x</ci>
+</apply>
+====
+## Log to base 10
+\log x
+<apply>
+  <log/>
+  <ci>x</ci>
+</apply>
+====
+## Similarly we can let apply function work over subscripted logs, interpreted as bases.
+\log_a x
+<apply>
+  <log/>
+  <logbase>
+    <ci>a</ci>
+  </logbase>
+  <ci>x</ci>
+</apply>
+====
+## Log base mixed with powers
+\log_a^2 x
+<apply>
+  <apply>
+    <power/>
+    <apply>
+      <log/>
+      <logbase>
+        <ci>a</ci>
+      </logbase>
+    </apply>
+    <cn>2</cn>
+  </apply>
+  <ci>x</ci>
+</apply>
+====
+## Inverse logs aren't allowed!
+\ln^{-1} x
+!UCEFN1
+====
+## Unapplied elementary functions
+\sin
+<sin/>
+====
+\sin {}
+<apply>
+  <sin/>
+</apply>
+====
+\sin^{-1}
+<arcsin/>
+====
+\sin^{-1} {}
+<apply>
+  <arcsin/>
+</apply>
+====
+## e is interepreted as the exponential number by default
+e^x
+<apply>
+  <exp/>
+  <ci>x</ci>
+</apply>
+====
+## e is interepreted as the exponential number by default
+e
+<exponentiale/>
+====
+## i is interprested as the imaginary number by default
+i
+<imaginaryi/>
+====
+## pi is interpreted as the constant pi
+\pi
+<pi/>
+====
+## Subscripted identifiers are now handled as mix of CMathML and PMathML
+x_1
+<ci>
+  <msub>
+    <mi>x</mi>
+    <mn>1</mn>
+  </msub>
+</ci>
+====
+## Mismatched fences
+\left( x \right]
+!UCEG02
+====
+## These are handles as lists by default
+[1,2]
+<list>
+  <cn>1</cn>
+  <cn>2</cn>
+</list>
+====
+\{1,2\}
+<set>
+  <cn>1</cn>
+  <cn>2</cn>
+</set>
+====
+[[a,b],c]
+<list>
+  <list>
+    <ci>a</ci>
+    <ci>b</ci>
+  </list>
+  <ci>c</ci>
+</list>
+====
+##########################
+## Infix as prefix handling
+1++x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <apply>
+    <plus/>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
+1+-x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <apply>
+    <minus/>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
+1+++x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <apply>
+    <plus/>
+    <apply>
+      <plus/>
+      <ci>x</ci>
+    </apply>
+  </apply>
+</apply>
+====
+#\neg A
+#<mo>&#xac;</mo><mi>A</mi>
+#====
+#x!y!
+#<mrow><mi>x</mi><mo>!</mo></mrow><mo>&#x2062;</mo><mrow><mi>y</mi><mo>!</mo></mrow>
+#====
+### The ! operator only binds to the preceding item
+#2x!
+#<mn>2</mn><mo>&#x2062;</mo><mrow><mi>x</mi><mo>!</mo></mrow>
+#====
+### As above
+#2x!!
+#<mn>2</mn><mo>&#x2062;</mo><mrow><mrow><mi>x</mi><mo>!</mo></mrow><mo>!</mo></mrow>
+#====
+### Lonely factorial
+#!
+#<mo>!</mo>
+#====
+#x^{!}
+#<msup><mi>x</mi><mo>!</mo></msup>
+#====
+### I'm not sure about these ones yet...
+##a\in A
+##<mi>a</mi>
+##<mo>&#x2208;</mo>
+##<mi>A</mi>
+##====
+##a\not\in A
+##<mi>a</mi>
+##<mo>&#x2209;</mo>
+##<mi>A</mi>
+##====

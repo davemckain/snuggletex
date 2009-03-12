@@ -23,7 +23,7 @@ import org.w3c.dom.Document;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MultiLineTests extends AbstractGoodXMLTests {
+public class MultiLineTests extends AbstractGoodXMLTest {
     
     public static final String TEST_RESOURCE_NAME = "multiline-tests.txt";
     

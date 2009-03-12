@@ -26,6 +26,8 @@ package uk.ac.ed.ph.snuggletex;
  */
 public enum ErrorCode {
     
+    /* ================ Errors in the normal SnuggleTeX -> MathML Process (T) =============== */
+    
     /* Tokenisation errors */
     TTEG00(),
     TTEG01(),
@@ -100,6 +102,19 @@ public enum ErrorCode {
     TDEUN0(),
     TDEUN1(),
     TDEUN2(),
+    
+    /* ================ Errors in the Up-conversion Process, via extension (U) =============== */
+    
+    UCEG00(),
+    UCEG01(),
+    UCEG02(),
+    UCEOP0(),
+    UCEOP1(),
+    UCEOP2(),
+    UCEFN0(),
+    UCEFN1(),
+    UCEFX0(),
+    UCEFX1(),
     
     ;
 }

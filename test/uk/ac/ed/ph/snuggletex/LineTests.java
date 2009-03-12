@@ -24,7 +24,7 @@ import org.w3c.dom.Document;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class LineTests extends AbstractGoodXMLTests {
+public class LineTests extends AbstractGoodXMLTest {
     
     public static final String TEST_RESOURCE_NAME = "line-tests.txt";
     

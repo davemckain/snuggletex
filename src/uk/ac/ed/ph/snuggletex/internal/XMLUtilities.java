@@ -21,6 +21,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 /**
  * Some trivial little helpers for creating suitably-configured {@link TransformerFactory}
  * instances.
@@ -91,8 +95,6 @@ public final class XMLUtilities {
         }
     }
     
-
-    
     /**
      * Tests whether the given {@link Transformer} is known to support XSLT 2.0.
      * <p>
@@ -116,5 +118,36 @@ public final class XMLUtilities {
         catch (ParserConfigurationException e) {
             throw new SnuggleRuntimeException("Could not create Namespace-aware DocumentBuilder", e);
         }
+    }
+
+    /**
+     * Trivial convenience method to extract the value of a (text) Element, coping with the
+     * possibility that text child Nodes may not have been coalesced.
+     * 
+     * @param textElement
+     */
+    public static String extractTextElementValue(final Element textElement) {
+        NodeList childNodes = textElement.getChildNodes();
+        String result;
+        if (childNodes.getLength()==1) {
+            /* Text Nodes have been coalesced */
+            result = ensureExtractTextNodeValue(childNodes.item(0));
+        }
+        else {
+            /* Need to coalesce manually */
+            StringBuilder resultBuilder = new StringBuilder();
+            for (int i=0; i<childNodes.getLength(); i++) {
+                resultBuilder.append(ensureExtractTextNodeValue(childNodes.item(i)));
+            }
+            result = resultBuilder.toString();
+        }
+        return result;
+    }
+    
+    private static String ensureExtractTextNodeValue(final Node node) {
+        if (node.getNodeType()==Node.TEXT_NODE) {
+            return node.getNodeValue();
+        }
+        throw new IllegalArgumentException("Node is not a text Node");
     }
 }

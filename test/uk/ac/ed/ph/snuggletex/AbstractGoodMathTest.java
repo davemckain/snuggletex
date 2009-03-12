@@ -20,9 +20,9 @@ import org.w3c.dom.NodeList;
  * @author  David McKain
  * @version $Revision:179 $
  */
-abstract class AbstractGoodMathTests extends AbstractGoodXMLTests {
+abstract class AbstractGoodMathTest extends AbstractGoodXMLTest {
     
-    public AbstractGoodMathTests(final String inputLaTeXMaths, final String expectedMathMLContent) {
+    public AbstractGoodMathTest(final String inputLaTeXMaths, final String expectedMathMLContent) {
         super("$" + inputLaTeXMaths + "$",
                 "<math xmlns='" + Globals.MATHML_NAMESPACE + "'>"
                 + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")

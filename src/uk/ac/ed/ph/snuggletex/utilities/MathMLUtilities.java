@@ -168,7 +168,7 @@ public final class MathMLUtilities {
             if (search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())) {
                 searchElement = (Element) search;
                 if (ANNOTATION_LOCAL_NAME.equals(search.getLocalName())) {
-                    result.getTextAnnotations().put(searchElement.getAttribute("encoding"), extractTextElementValue(searchElement));
+                    result.getTextAnnotations().put(searchElement.getAttribute("encoding"), XMLUtilities.extractTextElementValue(searchElement));
                 }
                 else if (ANNOTATION_XML_LOCAL_NAME.equals(search.getLocalName())) {
                     result.getXmlAnnotations().put(searchElement.getAttribute("encoding"), searchElement.getChildNodes());
@@ -215,7 +215,7 @@ public final class MathMLUtilities {
      */
     public static String extractAnnotationString(final Element mathElement, final String encodingAttribute) {
         Element annotationElement = extractAnnotationElement(mathElement, ANNOTATION_LOCAL_NAME, encodingAttribute);
-        return annotationElement!=null ? extractTextElementValue(annotationElement) : null;
+        return annotationElement!=null ? XMLUtilities.extractTextElementValue(annotationElement) : null;
     }
 
     /**
@@ -274,26 +274,6 @@ public final class MathMLUtilities {
         }
     }
     
-    private static String extractTextElementValue(final Element textElement) {
-        NodeList childNodes = textElement.getChildNodes();
-        String result;
-        if (childNodes.getLength()==1) {
-            /* Text Nodes have been coalesced */
-            result = childNodes.item(0).getNodeValue();
-        }
-        else {
-            /* Need to coalesce manually */
-            StringBuilder resultBuilder = new StringBuilder();
-            for (int i=0; i<childNodes.getLength(); i++) {
-                resultBuilder.append(childNodes.item(i).getNodeValue());
-            }
-            result = resultBuilder.toString();
-        }
-        return result;
-    }
-    
-    //---------------------------------------------------------------------
-
     /**
      * "Isolates" the first <semantics/> branch of an annotation MathML element
      * by producing a copy of the MathML element with a single child containing

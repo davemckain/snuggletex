@@ -22,7 +22,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathTests extends AbstractGoodMathTests {
+public class MathTests extends AbstractGoodMathTest {
     
     public static final String TEST_RESOURCE_NAME = "math-tests.txt";
     

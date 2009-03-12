@@ -18,14 +18,14 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * Same idea as {@link MathTests}, but tests the initial up-conversion to more
- * semantic Presentation MathML.
+ * Same idea as {@link MathTests}, but tests the up-conversion to Content
+ * MathML.
  * 
  * @author  David McKain
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionPMathMLTests extends AbstractGoodMathTests {
+public class MathUpConversionPMathMLTests extends AbstractGoodMathTest {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-pmathml-tests.txt";
     
@@ -54,6 +54,11 @@ public class MathUpConversionPMathMLTests extends AbstractGoodMathTests {
         DOMOutputOptions result = super.createDOMOutputOptions();
         result.setDOMPostProcessor(upconverter);
         return result;
+    }
+    
+    @Override
+    protected boolean showTokensOnFailure() {
+        return false;
     }
     
     @Override

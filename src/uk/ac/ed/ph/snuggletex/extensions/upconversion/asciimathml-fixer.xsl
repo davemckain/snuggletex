@@ -20,12 +20,12 @@ All Rights Reserved
   exclude-result-prefixes="xs m s"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
+  <xsl:import href="common.xsl"/>
+  <xsl:strip-space elements="m:*"/>
+  <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
+
   <!-- ************************************************************ -->
 
-  <xsl:strip-space elements="m:*"/>
-
-  <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
-  
   <xsl:variable name="s:asciimath-input-annotation" as="xs:string" select="'ASCIIMathInput'"/>
 
   <!-- ************************************************************ -->
@@ -194,22 +194,6 @@ All Rights Reserved
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
     </xsl:copy>
-  </xsl:template>
-
-  <!-- *********************************************************** -->
-
-  <xsl:template name="maybe-wrap-in-mrow">
-    <xsl:param name="elements" as="element()*" required="yes"/>
-    <xsl:choose>
-      <xsl:when test="count($elements)=1">
-        <xsl:copy-of select="$elements"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <mrow>
-          <xsl:copy-of select="$elements"/>
-        </mrow>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>
