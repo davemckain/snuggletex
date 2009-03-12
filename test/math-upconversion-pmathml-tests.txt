@@ -278,15 +278,48 @@ x\,y\,z
 <mo>&#xac;</mo><mi>A</mi>
 ====
 x!y!
-<mrow><mi>x</mi><mo>!</mo></mrow><mo>&#x2062;</mo><mrow><mi>y</mi><mo>!</mo></mrow>
+<mrow>
+  <mi>x</mi>
+  <mo>!</mo>
+</mrow>
+<mo>&#x2062;</mo>
+<mrow>
+  <mi>y</mi>
+  <mo>!</mo>
+</mrow>
 ====
 ## The ! operator only binds to the preceding item
 2x!
-<mn>2</mn><mo>&#x2062;</mo><mrow><mi>x</mi><mo>!</mo></mrow>
+<mn>2</mn>
+<mo>&#x2062;</mo>
+<mrow>
+  <mi>x</mi>
+  <mo>!</mo>
+</mrow>
+====
+\sin 2x!
+<mi>sin</mi>
+<mo>&#x2061;</mo>
+<mrow>
+  <mn>2</mn>
+  <mo>&#x2062;</mo>
+  <mrow>
+    <mi>x</mi>
+    <mo>!</mo>
+  </mrow>
+</mrow>
 ====
 ## As above
 2x!!
-<mn>2</mn><mo>&#x2062;</mo><mrow><mrow><mi>x</mi><mo>!</mo></mrow><mo>!</mo></mrow>
+<mn>2</mn>
+<mo>&#x2062;</mo>
+<mrow>
+  <mrow>
+    <mi>x</mi>
+    <mo>!</mo>
+  </mrow>
+  <mo>!</mo>
+</mrow>
 ====
 ## Lonely factorial
 !

@@ -527,26 +527,76 @@ x_1
   </apply>
 </apply>
 ====
+x!
+<apply>
+  <factorial/>
+  <ci>x</ci>
+</apply>
+====
+!
+<factorial/>
+====
+x!y!
+<apply>
+  <times/>
+  <apply>
+    <factorial/>
+    <ci>x</ci>
+  </apply>
+  <apply>
+    <factorial/>
+    <ci>y</ci>
+  </apply>
+</apply>
+====
+## The ! operator only binds to the preceding item
+2x!
+<apply>
+  <times/>
+  <cn>2</cn>
+  <apply>
+    <factorial/>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
+## As above
+2x!!
+<apply>
+  <times/>
+  <cn>2</cn>
+  <apply>
+    <factorial/>
+    <apply>
+      <factorial/>
+      <ci>x</ci>
+    </apply>
+  </apply>
+</apply>
+====
+\sin 2x!
+<apply>
+  <sin/>
+  <apply>
+    <times/>
+    <cn>2</cn>
+    <apply>
+      <factorial/>
+      <ci>x</ci>
+    </apply>
+  </apply>
+</apply>
+====
+## This makes no sense!
+x^{!}
+<apply>
+  <power/>
+  <ci>x</ci>
+  <factorial/>
+</apply>
+====
 #\neg A
 #<mo>&#xac;</mo><mi>A</mi>
-#====
-#x!y!
-#<mrow><mi>x</mi><mo>!</mo></mrow><mo>&#x2062;</mo><mrow><mi>y</mi><mo>!</mo></mrow>
-#====
-### The ! operator only binds to the preceding item
-#2x!
-#<mn>2</mn><mo>&#x2062;</mo><mrow><mi>x</mi><mo>!</mo></mrow>
-#====
-### As above
-#2x!!
-#<mn>2</mn><mo>&#x2062;</mo><mrow><mrow><mi>x</mi><mo>!</mo></mrow><mo>!</mo></mrow>
-#====
-### Lonely factorial
-#!
-#<mo>!</mo>
-#====
-#x^{!}
-#<msup><mi>x</mi><mo>!</mo></msup>
 #====
 ### I'm not sure about these ones yet...
 ##a\in A

@@ -10,7 +10,6 @@ few other things).
 Some semantic inference is also performed basic on common conventions,
 which can be turned off if required.
 
-TODO: Factorial operator
 TODO: Need to trim whitespace from MathML elements when performing comparisons.
 
 Copyright (c) 2009 The University of Edinburgh
@@ -89,6 +88,11 @@ All Rights Reserved
     <xsl:sequence select="boolean($element[self::mo])"/>
   </xsl:function>
 
+  <xsl:function name="local:is-factorial-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($element[self::mo and .='!'])"/>
+  </xsl:function>
+
   <!-- ************************************************************ -->
 
   <!-- Entry point -->
@@ -153,6 +157,12 @@ All Rights Reserved
       <xsl:when test="$elements[1][local:is-supported-function(.)]">
         <!-- Supported function (not necessarily applied) -->
         <xsl:call-template name="local:handle-supported-function-group">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[position()=last()][local:is-factorial-operator(.)]">
+        <!-- Factorial -->
+        <xsl:call-template name="local:handle-factorial-group">
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
@@ -405,6 +415,31 @@ All Rights Reserved
         <xsl:message terminate="yes">
           Unknown supported function <xsl:copy-of select="$operator-element"/>.
           This logic branch should not have been reached!
+        </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="local:handle-factorial-group">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:choose>
+      <xsl:when test="count($elements)=1">
+        <!-- Unapplied factorial -->
+        <factorial/>
+      </xsl:when>
+      <xsl:when test="count($elements)=2">
+        <!-- Applied factorial -->
+        <apply>
+          <factorial/>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="$elements[1]"/>
+          </xsl:call-template>
+        </apply>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="yes">
+          Expected factorial operator to be preceded by 1 element.
+          Got: <xsl:copy-of select="$elements[position()!=last()]"/>
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
