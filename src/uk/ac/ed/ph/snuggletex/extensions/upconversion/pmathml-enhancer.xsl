@@ -427,7 +427,8 @@ All Rights Reserved
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$last-element[local:is-postfix-operator(.)]">
-        <!-- General Postfix operator. Bind to everything preceding -->
+        <!-- General Postfix operator. Bind to everything preceding.
+             NOTE: This is not tested yet as we don't have any such operators! -->
         <xsl:call-template name="local:apply-postfix-operators">
           <xsl:with-param name="elements" select="$before-last-element"/>
         </xsl:call-template>
@@ -442,29 +443,128 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template name="local:apply-factorial">
-    <xsl:param name="elements" as="element()*" required="yes"/>
-    <xsl:variable name="last-element" as="element()?" select="$elements[position()=last()]"/>
-    <xsl:variable name="before-last-element" as="element()*" select="$elements[position()!=last()]"/>
-    <xsl:copy-of select="$before-last-element"/>
-    <xsl:choose>
-      <xsl:when test="$last-element[self::mrow]">
+  <!--
+  Applying a factorial is actually pretty complicated as it only binds with
+  the preceding item. We can also have multiple factorials mixed with
+  postfix operators at the same level.
+
+  Example 1:
+
+  <mi>x</mi>
+  <mo>!</mo>
+
+  becomes:
+
+  <mrow>
+    <mi>x</mi>
+    <mo>!</mo>
+  </mrow>
+
+  Example 2:
+
+  <mn>2</mn>
+  <mi>x</mi>
+  <mo>!</mo>
+
+  becomes:
+
+  <mn>2</mn>
+  <mo>&InvisibleTimes;</mo>
+  <mrow>
+    <mi>x</mi>
+    <mo>!</mo>
+  </mrow>
+
+  Example 3:
+
+  <mi>x</mi>
+  <mo>!</mo>
+  <mo>!</mo>
+
+  becomes:
+
+  <mrow>
+    <mrow>
+      <mi>x</mi>
+      <mo>!</mo>
+    </mrow>
+    <mo>!</mo>
+  </mrow>
+
+  Example 4:
+
+  <mn>2</mn>
+  <mi>x</mi>
+  <mo>!</mo>
+  <mo>!</mo>
+
+  becomes:
+
+  <mn>2</mn>
+  <mo>&InvisibleTimes;</mo>
+  <mrow>
+    <mrow>
+      <mi>x</mi>
+      <mo>!</mo>
+    </mrow>
+    <mo>!</mo>
+  </mrow>
+
+  Example 5:
+
+  <mn>2</mn>
+  <mi>x</mi>
+  <mo>!</mo>
+  <mo>#</mo> (some postfix operator #)
+  <mo>!</mo>
+
+  becomes:
+
+  <mrow>
+    <mrow>
+      <mrow>
+        <mn>2</mn>
+        <mo>&InvisibleTimes;</mo>
         <mrow>
-          <xsl:copy-of select="$last-element/*[position()!=last()]"/>
-          <mrow>
-            <xsl:copy-of select="$last-element/*[position()=last()]"/>
-            <mo>!</mo>
-          </mrow>
-        </mrow>
-      </xsl:when>
-      <xsl:when test="exists($last-element)">
-        <mrow>
-          <xsl:copy-of select="$last-element"/>
+          <mi>x</mi>
           <mo>!</mo>
         </mrow>
+      </mrow>
+      <mo>#</mo>
+    </mrow>
+    <mo>!</mo>
+  </mrow>
+  -->
+  <xsl:template name="local:apply-factorial">
+    <!-- NB: This doesn't include the actual factorial operator itself! -->
+    <xsl:param name="elements" as="element()*" required="yes"/>
+    <xsl:choose>
+      <xsl:when test="not(exists($elements))">
+        <!-- Unapplied Factorial -->
+        <mo>!</mo>
       </xsl:when>
       <xsl:otherwise>
-        <mo>!</mo>
+        <xsl:variable name="last-element" as="element()" select="$elements[position()=last()]"/>
+        <xsl:variable name="before-last-element" as="element()*" select="$elements[position()!=last()]"/>
+        <xsl:choose>
+          <xsl:when test="$last-element[self::mrow and not(local:is-postfix-operator($last-element/*[position()=last()]))]
+              and not(exists($before-last-element))">
+              <!-- This is where we're processing a single <mrow/> whose last element
+              is not a postfix operator. In this case, we just re-process by
+              descending into it. -->
+            <xsl:call-template name="local:apply-factorial">
+              <xsl:with-param name="elements" select="$last-element/*"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Otherwise, bind the factorial only to the last element -->
+            <xsl:copy-of select="$before-last-element"/>
+            <mrow>
+              <xsl:copy-of select="$last-element"/>
+              <mo>!</mo>
+            </mrow>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

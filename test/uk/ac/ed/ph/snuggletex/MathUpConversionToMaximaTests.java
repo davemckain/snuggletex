@@ -6,10 +6,13 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.MathMLUpConverter;
+import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionError;
+import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionUtilities;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
@@ -53,6 +56,7 @@ public class MathUpConversionToMaximaTests {
     public void runTest() throws Throwable {
         String maximaAnnotation = null;
         Element mathmlElement = null;
+        String errorCodes = null;
 
         /* We'll fail fast as we're not anticipating any errors */
         SessionConfiguration configuration = new SessionConfiguration();
@@ -73,17 +77,42 @@ public class MathUpConversionToMaximaTests {
             Assert.assertEquals(Node.ELEMENT_NODE, nodeList.item(0).getNodeType());
             mathmlElement = (Element) nodeList.item(0);
             
-            /* Extract Maxima annotation */
-            maximaAnnotation = MathMLUtilities.extractAnnotationString(mathmlElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
-            
-            /* Compare with expected */
-            Assert.assertEquals(expectedMaxima, maximaAnnotation);
+            /* Get any up-conversion errors, if found */
+            List<UpConversionError> upConversionErrors = UpConversionUtilities.extractUpConversionErrors(mathmlElement);
+            StringBuilder errorCodeBuilder = new StringBuilder();
+            for (UpConversionError error : upConversionErrors) {
+                if (errorCodeBuilder.length()!=0) {
+                    errorCodeBuilder.append(", ");
+                }
+                errorCodeBuilder.append(error.getErrorCode());
+            }
+            errorCodes = errorCodeBuilder.toString();
+            if (upConversionErrors.isEmpty()) {
+                /* Should have succeeded... */
+                /* Extract Maxima annotation */
+                maximaAnnotation = MathMLUtilities.extractAnnotationString(mathmlElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
+                
+                /* Compare with expected */
+                Assert.assertEquals(expectedMaxima, maximaAnnotation);
+            }
+            else {
+                /* Make sure we get the correct error code(s) */
+                if (expectedMaxima.charAt(0)!='!') {
+                    Assert.fail("Did not expect up-conversion errors!");
+                }
+                String[] expectedErrorCodes = expectedMaxima.substring(1).split(",\\s*");
+                Assert.assertEquals(expectedErrorCodes.length, upConversionErrors.size());
+                for (int i=0; i<expectedErrorCodes.length; i++) {
+                    Assert.assertEquals(expectedErrorCodes[i], upConversionErrors.get(i).getErrorCode().toString());
+                }
+            }
         }
         catch (Throwable e) {
             log.severe("Input was: " + inputLaTeX);
             log.severe("Resulting MathML was " + MathMLUtilities.serializeElement(mathmlElement));
             log.severe("Resulting Maxima annotation was: " + maximaAnnotation);
-            log.severe("Expected Maxima would have been: " + expectedMaxima);
+            log.severe("Resulting Error codes were:      " + errorCodes);
+            log.severe("Expected result would have been: " + expectedMaxima);
             throw e;
         }
     }

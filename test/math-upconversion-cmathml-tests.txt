@@ -359,6 +359,12 @@ x\,y\,z
   <divide/>
 </apply>
 ====
+## Similarly pathological case!
+{}+{}
+<apply>
+  <plus/>
+</apply>
+====
 ## Test inference of apply function on inverses
 \sin^{-1} x
 <apply>
@@ -527,6 +533,10 @@ x_1
   </apply>
 </apply>
 ====
+## (This fails earlier in the process)
+1+*x
+!UCEOP0
+====
 x!
 <apply>
   <factorial/>
@@ -535,6 +545,15 @@ x!
 ====
 !
 <factorial/>
+====
+x!!
+<apply>
+  <factorial/>
+  <apply>
+    <factorial/>
+    <ci>x</ci>
+  </apply>
+</apply>
 ====
 x!y!
 <apply>

@@ -98,7 +98,7 @@ public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
             super.verifyResultDocument(transformerFactory, resultDocument);
         }
         else {
-            /* Make sure we get the correct code(s) */
+            /* Make sure we get the correct error code(s) */
             result = expectedXML.replaceAll("<.+?>", ""); /* (Yes, it's not really XML in this case!) */
             if (result.charAt(0)!='!') {
                 Assert.fail("Did not expect up-conversion errors!");

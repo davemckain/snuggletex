@@ -68,4 +68,11 @@ public interface UpConversionParameters {
      * Default: {@link Boolean#TRUE}.
      */
     String ASSUME_SQUARE_LIST = "assume-square-list";
+    
+    /**
+     * Specifies the name of a Maxima function to use when faced with unapplied operators.
+     * <p>
+     * Default: operator
+     */
+    String MAXIMA_OPERATOR_FUNCTION = "maxima-operator-function";
 }

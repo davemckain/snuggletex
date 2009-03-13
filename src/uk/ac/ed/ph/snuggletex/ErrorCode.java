@@ -33,11 +33,11 @@ public enum ErrorCode {
     TTEG01(),
     TTEG02(),
     TTEG03(),
+    TTEG04(),
     TTEM00(),
     TTEM01(),
     TTEM02(),
     TTEM03(),
-    TTEG04(),
     TTEV00(),
     TTEV01(),
     TTEC00(),
@@ -115,6 +115,9 @@ public enum ErrorCode {
     UCEFN1(),
     UCEFX0(),
     UCEFX1(),
+    
+    UMEG00(),
+    UMEID0(),
     
     ;
 }

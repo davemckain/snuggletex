@@ -4,11 +4,12 @@
 # Input format is:
 #
 # LaTeX (interpreted inside $...$)
-# Expected Maxima form
+# EITHER Expected Maxima form OR !ErrorCode
 # ==== (divider)
 #
 # Lines starting with '#' are documentation and are stripped out when running tests
 #
+##
 1
 1
 ====
@@ -18,14 +19,86 @@
 x
 x
 ====
+## Demonstrates mapping of non-alphanumeric identifiers using "identifier dictionary"
+\alpha
+%alpha
+====
+## Demonstrates flattening subscripted identifiers for Maxima
+x_1
+x_1
+====
+## @ is currently treated as an identfier, which has no Maxima form
+@
+!UMEID0
+====
+## Binary equals
+x=y
+x = y
+====
+## nary equals
+x=y=z
+x = y = z
+====
+## Unapplied equals
+=
+operator("=")
+====
++x
++x
+====
+x+y
+x + y
+====
+x+y+z
+x + y + z
+====
++
+operator("+")
+====
 -x
 -x
+====
+x-y
+x - y
+====
+-
+operator("-")
 ====
 2x
 2 * x
 ====
+2\times x
+2 * x
+====
+2*x
+2 * x
+====
+*
+operator("*")
+====
+a/b
+a / b
+====
+\frac{a}{b}
+a / b
+====
+/
+operator("/")
+====
 x^2
 x^2
+====
+!
+operator("!")
+====
+x!
+x!
+====
+x!!
+(x!)!
+====
+2x!
+2 * (x!)
 ====
 1+x
 1 + x
@@ -33,17 +106,8 @@ x^2
 a+(b-c)d
 a + ((b - c) * d)
 ====
-a=b
-a = b
-====
 x+1 = 1+x
 (x + 1) = (1 + x)
-====
-\frac{a}{b}
-a / b
-====
-a/b
-a / b
 ====
 a-b-c
 (a - b) - c
@@ -53,6 +117,14 @@ a/b/c
 ====
 (1-a)/(2-b)
 (1 - a) / (2 - b)
+====
+## Unapplied elementary function
+\sin
+sin
+====
+## Unapplied inverse elementary function
+\sin^{-1}
+asin
 ====
 \sin x
 sin(x)
@@ -75,11 +147,20 @@ cos(x)
 \sqrt x
 sqrt(x)
 ====
+\sqrt[3]{x}
+(x)^(1/3)
+====
 x^{1/2}
 x^(1 / 2)
 ====
+\sin x\,y
+sin(x) * y
+====
 \frac{-b+\sqrt{b^2-4ac}}{2a}
 ((-b) + sqrt(((b^2) - (4 * a * c)))) / (2 * a)
+====
+x\,y
+x * y
 ====
 i
 %i
@@ -96,9 +177,58 @@ exp(x)
 \ln y
 log(y)
 ====
+## Still need to decide what to do with these!
+#\log x
+#?
+#====
+#\log_a x
+#?
+#====
 [1,2]
 [1, 2]
 ====
 \{a,b\}
 {a, b}
+====
+[[a,b], c]
+[[a, b], c]
+====
+#####################################
+## Infix as Prefix
+1++x
+1 + (+x)
+====
+1+++x
+1 + (+(+x))
+====
+1--x
+1 - (-x)
+====
+1+-+-x
+1 + (-(+(-x)))
+====
+1+*x
+!UCEOP0
+====
+#####################################
+### Corner Cases
+\sin{}
+sin
+====
+\sin^{-1}{}
+asin
+====
+e^{}
+exp
+====
+## This one is very pathological, but I'll accept for the time being
+{}+{}
+operator("+")
+====
+{}^{}
+operator("^")
+====
+## Likewise
+\frac{}{}
+operator("/")
 ====
