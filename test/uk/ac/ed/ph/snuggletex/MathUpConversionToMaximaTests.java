@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.MathMLUpConverter;
-import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionError;
+import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionFailure;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionUtilities;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
@@ -78,16 +78,16 @@ public class MathUpConversionToMaximaTests {
             mathmlElement = (Element) nodeList.item(0);
             
             /* Get any up-conversion errors, if found */
-            List<UpConversionError> upConversionErrors = UpConversionUtilities.extractUpConversionErrors(mathmlElement);
+            List<UpConversionFailure> upConversionFailures = UpConversionUtilities.extractUpConversionFailures(mathmlElement);
             StringBuilder errorCodeBuilder = new StringBuilder();
-            for (UpConversionError error : upConversionErrors) {
+            for (UpConversionFailure error : upConversionFailures) {
                 if (errorCodeBuilder.length()!=0) {
                     errorCodeBuilder.append(", ");
                 }
                 errorCodeBuilder.append(error.getErrorCode());
             }
             errorCodes = errorCodeBuilder.toString();
-            if (upConversionErrors.isEmpty()) {
+            if (upConversionFailures.isEmpty()) {
                 /* Should have succeeded... */
                 /* Extract Maxima annotation */
                 maximaAnnotation = MathMLUtilities.extractAnnotationString(mathmlElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
@@ -101,9 +101,9 @@ public class MathUpConversionToMaximaTests {
                     Assert.fail("Did not expect up-conversion errors!");
                 }
                 String[] expectedErrorCodes = expectedMaxima.substring(1).split(",\\s*");
-                Assert.assertEquals(expectedErrorCodes.length, upConversionErrors.size());
+                Assert.assertEquals(expectedErrorCodes.length, upConversionFailures.size());
                 for (int i=0; i<expectedErrorCodes.length; i++) {
-                    Assert.assertEquals(expectedErrorCodes[i], upConversionErrors.get(i).getErrorCode().toString());
+                    Assert.assertEquals(expectedErrorCodes[i], upConversionFailures.get(i).getErrorCode().toString());
                 }
             }
         }

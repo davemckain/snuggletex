@@ -35,6 +35,9 @@ import org.w3c.dom.NodeList;
  * @version $Revision$
  */
 public final class XMLUtilities {
+    
+    /** Explicit name of the SAXON 9.X TransformerFactoryImpl Class, as used by the up-conversion extensions */
+    public static final String SAXON_TRANSFORMER_FACTORY_CLASS_NAME = "net.sf.saxon.TransformerFactoryImpl";
 
     /**
      * Creates an instance of the currently specified JAXP {@link TransformerFactory}, ensuring
@@ -65,6 +68,22 @@ public final class XMLUtilities {
                     + feature
                     + " in order to be used with SnuggleTeX");
         }   
+    }
+
+    /**
+     * Explicitly creates a Saxon 9 {@link TransformerFactory}, as used by the up-conversion
+     * extensions.
+     */
+    public static TransformerFactory createSaxonTransformerFactory() {
+        try {
+            /* We call up SAXON explicitly without going through the usual factory path */
+            return (TransformerFactory) Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME).newInstance();
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Failed to explicitly instantiate SAXON "
+                    + SAXON_TRANSFORMER_FACTORY_CLASS_NAME
+                    + " class - check your ClassPath!", e);
+        }
     }
     
     /**
@@ -150,4 +169,5 @@ public final class XMLUtilities {
         }
         throw new IllegalArgumentException("Node is not a text Node");
     }
+
 }

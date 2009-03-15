@@ -68,9 +68,6 @@ public class MathMLUpConverter {
     public static final String MAXIMA_FAILURES_ANNOTATION_NAME = "Maxima-upconversion-failures";
     public static final String ASCIIMATH_INPUT_ANNOTATION_NAME = "ASCIIMathInput";
 
-    /** Explicit name of the SAXON 9.X TransformerFactoryImpl Class */
-    private static final String SAXON_TRANSFORMER_FACTORY_CLASS_NAME = "net.sf.saxon.TransformerFactoryImpl";
-    
     /** "Base" location for the XSLT stylesheets used here */
     private static final String UPCONVERTER_BASE_LOCATION = "classpath:/uk/ac/ed/ph/snuggletex/extensions/upconversion";
     
@@ -147,18 +144,6 @@ public class MathMLUpConverter {
     //---------------------------------------------------------------------
     // Internal helpers
     
-    private TransformerFactory createSaxonTransformerFactory() {
-        try {
-            /* We call up SAXON explicitly without going through the usual factory path */
-            return (TransformerFactory) Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME).newInstance();
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Failed to explicitly instantiate SAXON "
-                    + SAXON_TRANSFORMER_FACTORY_CLASS_NAME
-                    + " class - check your ClassPath!", e);
-        }
-    }
-    
     private Templates getStylesheet(String location) {
         Templates result;
         if (stylesheetCache==null) {
@@ -177,7 +162,7 @@ public class MathMLUpConverter {
     }
     
     private Templates compileStylesheet(String location) {
-        TransformerFactory transformerFactory = createSaxonTransformerFactory();
+        TransformerFactory transformerFactory = XMLUtilities.createSaxonTransformerFactory();
         return XMLUtilities.compileInternalStylesheet(transformerFactory, location);
     }
 }

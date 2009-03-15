@@ -28,12 +28,12 @@ import org.w3c.dom.NodeList;
  */
 public final class UpConversionUtilities {
     
-    public static List<UpConversionError> extractUpConversionErrors(Document upConvertedDocument) {
-        return extractUpConversionErrors(upConvertedDocument.getDocumentElement());
+    public static List<UpConversionFailure> extractUpConversionFailures(Document upConvertedDocument) {
+        return extractUpConversionFailures(upConvertedDocument.getDocumentElement());
     }
     
-    public static List<UpConversionError> extractUpConversionErrors(Element upConvertedElement) {
-        List<UpConversionError> result = new ArrayList<UpConversionError>();
+    public static List<UpConversionFailure> extractUpConversionFailures(Element upConvertedElement) {
+        List<UpConversionFailure> result = new ArrayList<UpConversionFailure>();
         walkDOM(upConvertedElement, result);
         return result;
     }
@@ -49,13 +49,13 @@ public final class UpConversionUtilities {
      * </s:fail>
      * ]]>
      * 
-     * If so, creates an {@link UpConversionError} for this and adds to the result. If not,
+     * If so, creates an {@link UpConversionFailure} for this and adds to the result. If not,
      * traverses downwards recursively.
      * 
      * @param element
      * @param resultBuilder
      */
-    private static void walkDOM(Element element, List<UpConversionError> resultBuilder) {
+    private static void walkDOM(Element element, List<UpConversionFailure> resultBuilder) {
         NodeList childNodes = element.getChildNodes();
         Node child;
         if (element.getNamespaceURI().equals(SnuggleConstants.SNUGGLETEX_NAMESPACE) && element.getLocalName().equals("fail")) {
@@ -94,7 +94,7 @@ public final class UpConversionUtilities {
             if (context==null) {
                 throw new SnuggleLogicException("No <s:context/> element found inside <s:fail/>");
             }
-            resultBuilder.add(new UpConversionError(errorCode, context, arguments.toArray(new String[arguments.size()])));
+            resultBuilder.add(new UpConversionFailure(errorCode, context, arguments.toArray(new String[arguments.size()])));
         }
         else {
             /* Descend into child elements */

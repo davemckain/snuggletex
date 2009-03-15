@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.MathMLUpConverter;
-import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionError;
+import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionFailure;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionParameters;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionUtilities;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
@@ -91,9 +91,9 @@ public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
      */
     @Override
     protected void verifyResultDocument(TransformerFactory transformerFactory, Document resultDocument) throws Throwable {
-        List<UpConversionError> upConversionErrors = UpConversionUtilities.extractUpConversionErrors(resultDocument);
+        List<UpConversionFailure> upConversionFailures = UpConversionUtilities.extractUpConversionFailures(resultDocument);
         String result;
-        if (upConversionErrors.isEmpty()) {
+        if (upConversionFailures.isEmpty()) {
             /* Should have succeeded, so verify as normal */
             super.verifyResultDocument(transformerFactory, resultDocument);
         }
@@ -104,9 +104,9 @@ public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
                 Assert.fail("Did not expect up-conversion errors!");
             }
             String[] expectedErrorCodes = result.substring(1).split(",\\s*");
-            Assert.assertEquals(expectedErrorCodes.length, upConversionErrors.size());
+            Assert.assertEquals(expectedErrorCodes.length, upConversionFailures.size());
             for (int i=0; i<expectedErrorCodes.length; i++) {
-                Assert.assertEquals(expectedErrorCodes[i], upConversionErrors.get(i).getErrorCode().toString());
+                Assert.assertEquals(expectedErrorCodes[i], upConversionFailures.get(i).getErrorCode().toString());
             }
         }
     }
