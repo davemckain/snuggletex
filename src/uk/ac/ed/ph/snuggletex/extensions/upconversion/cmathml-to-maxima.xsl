@@ -45,7 +45,39 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- Supported non-alphanumeric identifiers, mapping Unicode character to Maxima input -->
   <xsl:variable name="sc:identifier-dictionary" as="element()+">
     <ci maxima-input="%alpha">&#x3b1;</ci>
-    <!-- TODO: Finish this off! -->
+    <ci maxima-input="%beta">&#x3b2;</ci>
+    <ci maxima-input="%gamma">&#x3b3;</ci>
+    <ci maxima-input="%delta">&#x3b4;</ci>
+    <ci maxima-input="%epsilon">&#x3f5;</ci>
+    <ci maxima-input="%zeta">&#x3b6;</ci>
+    <ci maxima-input="%eta">&#x3b7;</ci>
+    <ci maxima-input="%theta">&#x3b8;</ci>
+    <ci maxima-input="%iota">&#x3b9;</ci>
+    <ci maxima-input="%kappa">&#x3ba;</ci>
+    <ci maxima-input="%lambda">&#x3bb;</ci>
+    <ci maxima-input="%mu">&#x3bc;</ci>
+    <ci maxima-input="%nu">&#x3bd;</ci>
+    <ci maxima-input="%xi">&#x3be;</ci>
+    <ci maxima-input="%pi">&#x3c0;</ci>
+    <ci maxima-input="%rho">&#x3c1;</ci>
+    <ci maxima-input="%sigma">&#x3c3;</ci>
+    <ci maxima-input="%tau">&#x3c4;</ci>
+    <ci maxima-input="%upsilon">&#x3c5;</ci>
+    <ci maxima-input="%phi">&#x3c6;</ci>
+    <ci maxima-input="%chi">&#x3c7;</ci>
+    <ci maxima-input="%psi">&#x3c8;</ci>
+    <ci maxima-input="%omega">&#x3c9;</ci>
+    <ci maxima-input="%Gamma">&#x393;</ci>
+    <ci maxima-input="%Delta">&#x394;</ci>
+    <ci maxima-input="%Theta">&#x398;</ci>
+    <ci maxima-input="%Lambda">&#x39b;</ci>
+    <ci maxima-input="%Xi">&#x39e;</ci>
+    <ci maxima-input="%Pi">&#x3a0;</ci>
+    <ci maxima-input="%Sigma">&#x3a3;</ci>
+    <ci maxima-input="%Upsilon">&#x3a5;</ci>
+    <ci maxima-input="%Phi">&#x3a6;</ci>
+    <ci maxima-input="%Psi">&#x3a8;</ci>
+    <ci maxima-input="%Omega">&#x3a9;</ci>
   </xsl:variable>
 
   <!-- Supported elementary functions, named after CMathML elements -->
