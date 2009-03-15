@@ -588,6 +588,36 @@ All Rights Reserved
   <!-- ************************************************************ -->
   <!-- Templates for explicit MathML elements -->
 
+  <!--
+  Special template to handle the case where the DOM building process
+  has created an "apply function" of the following form:
+
+  <mrow>
+    <mi>f</mi>
+    <mo>&ApplyFunction;</mo>
+    <mfenced>
+        ... args ...
+    </mfenced>
+  </mrow>
+
+  In this case, we keep the same general structure intact but
+  descend into enhancing the arguments.
+
+  (I have added this primarily for the MathAssess project, but
+  it might have utility with custom DOM handlers as well.)
+  -->
+  <xsl:template match="mrow[count(*)=3 and *[1][self::mi]
+      and *[2][self::mo and .='&#x2061;']
+      and *[3][self::mfenced]]" mode="enhance-pmathml">
+    <xsl:copy>
+      <xsl:copy-of select="*[1]"/>
+      <xsl:copy-of select="*[2]"/>
+      <mfenced open="{*[3]/@open}" close="{*[3]/@close}">
+        <xsl:apply-templates select="*[3]/*" mode="enhance-pmathml"/>
+      </mfenced>
+    </xsl:copy>
+  </xsl:template>
+
   <!-- Container elements with unrestricted content -->
   <xsl:template match="mrow|msqrt" mode="enhance-pmathml">
     <!-- Process contents as normal -->
