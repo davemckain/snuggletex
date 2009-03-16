@@ -75,4 +75,11 @@ public interface UpConversionParameters {
      * Default: operator
      */
     String MAXIMA_OPERATOR_FUNCTION = "maxima-operator-function";
+    
+    /**
+     * Specifies the name of a Maxima function to use when representing units.
+     * <p>
+     * Default: operator
+     */
+    String MAXIMA_UNITS_FUNCTION = "maxima-units-function";
 }

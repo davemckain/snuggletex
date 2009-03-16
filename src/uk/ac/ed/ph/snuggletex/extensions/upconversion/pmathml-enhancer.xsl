@@ -416,6 +416,9 @@ All Rights Reserved
     <xsl:variable name="last-element" as="element()?" select="$elements[position()=last()]"/>
     <xsl:variable name="before-last-element" as="element()*" select="$elements[position()!=last()]"/>
     <xsl:choose>
+      <xsl:when test="not(exists($last-element))">
+        <!-- Nothing left to do -->
+      </xsl:when>
       <xsl:when test="$last-element[local:is-factorial-operator(.)]">
         <!-- The factorial operator only binds to the last resulting subexpression -->
         <xsl:call-template name="local:apply-factorial">

@@ -31,6 +31,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- ************************************************************ -->
 
   <xsl:param name="s:maxima-operator-function" select="'operator'" as="xs:string"/>
+  <xsl:param name="s:maxima-units-function" select="'units'" as="xs:string"/>
 
   <!-- ************************************************************ -->
 
@@ -403,6 +404,25 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:text>[</xsl:text>
     <xsl:copy-of select="sc:to-maxima-map(*, ', ')"/>
     <xsl:text>]</xsl:text>
+  </xsl:template>
+
+  <!-- ************************************************************ -->
+
+  <!--
+  Handles specially marked-up units created via the special \units{.} macro.
+
+  This will have produced CMathML of the following form:
+
+  <semantics definitionURL="http://www.ph.ed.ac.uk/snuggletex/units">
+    <csymbol>kg</csymbol>
+  </semantics>
+  -->
+  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']" mode="cmathml-to-maxima">
+    <xsl:apply-templates mode="cmathml-to-maxima"/>
+  </xsl:template>
+
+  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima">
+    <xsl:value-of select="concat($s:maxima-units-function, '(&quot;', ., '&quot;)')"/>
   </xsl:template>
 
   <!-- ************************************************************ -->

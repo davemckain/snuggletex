@@ -193,6 +193,10 @@ log(y)
 [[a,b], c]
 [[a, b], c]
 ====
+## Special units handling
+\units{kg}
+units("kg")
+====
 #####################################
 ## Infix as Prefix
 1++x

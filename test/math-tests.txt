@@ -399,6 +399,11 @@ a\not \in A
 \mbox{A\par B}
 <mrow><mtext>A</mtext><mspace width="1ex"/><mtext>B</mtext></mrow>
 ====
+## Special units handling
+3\units{kg}
+<mn>3</mn>
+<mi mathvariant="normal" class="MathML-Unit">kg</mi>
+====
 ########################
 # Tests various "empty" cases
 \frac{}{}

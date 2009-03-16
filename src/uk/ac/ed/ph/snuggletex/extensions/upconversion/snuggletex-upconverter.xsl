@@ -54,9 +54,11 @@ All Rights Reserved
   </xsl:template>
 
   <xsl:template match="math" priority="10">
-    <!-- Extract the actual PMathML content and any existing annotations -->
-    <xsl:variable name="presentation-mathml" select="if (semantics) then (if (semantics/mrow) then semantics/mrow/* else semantics/*[1]) else *" as="element()*"/>
-    <xsl:variable name="annotations" select="if (semantics) then semantics/*[position() != 1] else ()" as="element()*"/>
+    <!-- Extract the actual PMathML content and any existing annotations.
+         (The criterion for whether there are any top level annotations will
+         be that we have a <semantics/> element with at least 2 children.) -->
+    <xsl:variable name="presentation-mathml" select="if (semantics[*[2]]) then (if (semantics/mrow) then semantics/mrow/* else semantics/*[1]) else *" as="element()*"/>
+    <xsl:variable name="annotations" select="if (semantics[*[2]]) then semantics/*[position() != 1] else ()" as="element()*"/>
     <!-- We always perform enhancement of the Presentation MathML, creating a new Document Node -->
     <xsl:variable name="enhanced-pmathml">
       <xsl:call-template name="s:enhance-pmathml">

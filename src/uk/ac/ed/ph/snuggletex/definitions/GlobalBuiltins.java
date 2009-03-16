@@ -33,12 +33,12 @@ import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.LiteralHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathComplexCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathEnvironmentHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathFenceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathNotHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathRootHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathFenceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MrowHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ParagraphHandler;
@@ -47,6 +47,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.SpaceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.StyleInterpretationHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.TabularHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.TextSafeInterpretableMathIdentifierHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.UnitsHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.VerbatimHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLAttrHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLBlockElementHandler;
@@ -625,6 +626,9 @@ public final class GlobalBuiltins {
         map.addComplexCommand("href", true, 1, TEXT_MODE_ONLY, new LaTeXMode[] { LR, VERBATIM }, new HrefHandler(), ALLOW_INLINE);
         map.addComplexCommandOneArg("anchor", false, TEXT_MODE_ONLY, VERBATIM, new AnchorHandler(), ALLOW_INLINE);
         map.addComplexCommandOneArg("anchor*", false, TEXT_MODE_ONLY, LR, new AnchorHandler(), ALLOW_INLINE);
+        
+        /* Special MathML helpers */
+        map.addComplexCommandOneArg("units", false, MATH_MODE_ONLY, MATH, new UnitsHandler(), null);
         
         /* Commands for creating custom XML (also see related environments) */
         CMD_XML_ATTR = map.addComplexCommand("xmlAttr", false, 3, ALL_MODES, new LaTeXMode[] { LR, LR, LR }, new XMLAttrHandler(), IGNORE);

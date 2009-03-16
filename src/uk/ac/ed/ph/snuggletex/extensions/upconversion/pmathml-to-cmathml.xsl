@@ -223,6 +223,10 @@ All Rights Reserved
                   <!-- Fail: operator is not a postfix operator -->
                   <xsl:copy-of select="s:make-error('UCEOP1', ., ($cmathml-name))"/>
                 </xsl:if>
+                <xsl:if test="following-sibling::*[1][local:is-operator(.)]">
+                  <!-- Fail: Bad combination of operators -->
+                  <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+                </xsl:if>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:call-template name="local:process-group">
@@ -248,7 +252,7 @@ All Rights Reserved
     <xsl:param name="match" as="xs:string+" required="yes"/>
     <xsl:param name="cmathml-name" as="xs:string" required="yes"/>
     <xsl:param name="allow-as-prefix" as="xs:boolean" select="false()"/>
-    <xsl:variable name="operators" select="$elements[local:is-matching-operator(., $match)]" as="element()?"/>
+    <xsl:variable name="operators" select="$elements[local:is-matching-operator(., $match)]" as="element()+"/>
     <xsl:variable name="operator-count" select="count($operators)" as="xs:integer"/>
     <xsl:choose>
       <xsl:when test="count($elements)=1 and $operator-count=1">
@@ -256,8 +260,8 @@ All Rights Reserved
         <xsl:element name="{$cmathml-name}"/>
       </xsl:when>
       <xsl:when test="$operator-count!=1">
-        <!-- Fail: Ungrouped Binary operator (this should not happen) -->
-        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ($cmathml-name))"/>
+        <!-- Fail: Ungrouped Binary operator -->
+        <xsl:copy-of select="s:make-error('UCEOP3', $elements, ($cmathml-name))"/>
       </xsl:when>
       <xsl:otherwise>
         <!-- Only one operator, so either 'op a', 'a op' or 'a op b' -->
@@ -422,10 +426,16 @@ All Rights Reserved
 
   <xsl:template name="local:handle-factorial-group">
     <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:variable name="factorials" as="element()+" select="$elements[local:is-factorial-operator(.)]"/>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
         <!-- Unapplied factorial -->
         <factorial/>
+      </xsl:when>
+      <xsl:when test="count($factorials)&gt;1">
+        <!-- Too many factorials...
+             Fail: Bad combination of operators -->
+        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
       </xsl:when>
       <xsl:when test="count($elements)=2">
         <!-- Applied factorial -->
@@ -558,6 +568,15 @@ All Rights Reserved
     <ci>
       <xsl:copy-of select="."/>
     </ci>
+  </xsl:template>
+
+  <!-- Special units created using the \units{...} macro -->
+  <xsl:template match="mi[@class='MathML-Unit']" mode="pmathml-to-cmathml">
+    <semantics definitionURL="http://www.ph.ed.ac.uk/snuggletex/units">
+      <csymbol>
+        <xsl:value-of select="."/>
+      </csymbol>
+    </semantics>
   </xsl:template>
 
   <!-- ************************************************************ -->

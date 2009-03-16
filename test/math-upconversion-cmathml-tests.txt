@@ -444,105 +444,6 @@ x\,y\,z
   <arcsin/>
 </apply>
 ====
-## e is interepreted as the exponential number by default
-e^x
-<apply>
-  <exp/>
-  <ci>x</ci>
-</apply>
-====
-## e is interepreted as the exponential number by default
-e
-<exponentiale/>
-====
-## i is interprested as the imaginary number by default
-i
-<imaginaryi/>
-====
-## pi is interpreted as the constant pi
-\pi
-<pi/>
-====
-## Subscripted identifiers are now handled as mix of CMathML and PMathML
-x_1
-<ci>
-  <msub>
-    <mi>x</mi>
-    <mn>1</mn>
-  </msub>
-</ci>
-====
-## Mismatched fences
-\left( x \right]
-!UCEG02
-====
-## These are handles as lists by default
-[1,2]
-<list>
-  <cn>1</cn>
-  <cn>2</cn>
-</list>
-====
-\{1,2\}
-<set>
-  <cn>1</cn>
-  <cn>2</cn>
-</set>
-====
-[[a,b],c]
-<list>
-  <list>
-    <ci>a</ci>
-    <ci>b</ci>
-  </list>
-  <ci>c</ci>
-</list>
-====
-##########################
-## Infix as prefix handling
-1++x
-<apply>
-  <plus/>
-  <cn>1</cn>
-  <apply>
-    <plus/>
-    <ci>x</ci>
-  </apply>
-</apply>
-====
-1+-x
-<apply>
-  <plus/>
-  <cn>1</cn>
-  <apply>
-    <minus/>
-    <ci>x</ci>
-  </apply>
-</apply>
-====
-1+++x
-<apply>
-  <plus/>
-  <cn>1</cn>
-  <apply>
-    <plus/>
-    <apply>
-      <plus/>
-      <ci>x</ci>
-    </apply>
-  </apply>
-</apply>
-====
-## (This fails earlier in the process)
-1+*x
-!UCEOP0
-====
-x!
-<apply>
-  <factorial/>
-  <ci>x</ci>
-</apply>
-====
 !
 <factorial/>
 ====
@@ -612,6 +513,131 @@ x^{!}
   <power/>
   <ci>x</ci>
   <factorial/>
+</apply>
+====
+## e is interepreted as the exponential number by default
+e^x
+<apply>
+  <exp/>
+  <ci>x</ci>
+</apply>
+====
+## e is interepreted as the exponential number by default
+e
+<exponentiale/>
+====
+## i is interprested as the imaginary number by default
+i
+<imaginaryi/>
+====
+## pi is interpreted as the constant pi
+\pi
+<pi/>
+====
+## Subscripted identifiers are now handled as mix of CMathML and PMathML
+x_1
+<ci>
+  <msub>
+    <mi>x</mi>
+    <mn>1</mn>
+  </msub>
+</ci>
+====
+## Mismatched fences
+\left( x \right]
+!UCEG02
+====
+## These are handles as lists by default
+[1,2]
+<list>
+  <cn>1</cn>
+  <cn>2</cn>
+</list>
+====
+\{1,2\}
+<set>
+  <cn>1</cn>
+  <cn>2</cn>
+</set>
+====
+[[a,b],c]
+<list>
+  <list>
+    <ci>a</ci>
+    <ci>b</ci>
+  </list>
+  <ci>c</ci>
+</list>
+====
+## Special units handling
+\units{kg}
+<semantics definitionURL="http://www.ph.ed.ac.uk/snuggletex/units">
+  <csymbol>kg</csymbol>
+</semantics>
+====
+##########################
+## Infix as prefix handling
+1++x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <apply>
+    <plus/>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
+1+-x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <apply>
+    <minus/>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
+1+++x
+<apply>
+  <plus/>
+  <cn>1</cn>
+  <apply>
+    <plus/>
+    <apply>
+      <plus/>
+      <ci>x</ci>
+    </apply>
+  </apply>
+</apply>
+====
+1+*x
+!UCEOP0
+====
+x==y
+!UCEOP0
+====
+x==
+!UCEOP2
+====
+==
+!UCEOP0,UCEOP2
+====
+=+
+!UCEOP0,UCEOP2
+====
+=!
+!UCEOP0,UCEOP2
+====
+!!
+!UCEOP2
+====
+--
+!UCEOP3
+====
+x!
+<apply>
+  <factorial/>
+  <ci>x</ci>
 </apply>
 ====
 #\neg A
