@@ -34,7 +34,7 @@ All Rights Reserved
     <!-- Move the @title to an annotation -->
     <math>
       <semantics>
-        <xsl:call-template name="maybe-wrap-in-mrow">
+        <xsl:call-template name="s:maybe-wrap-in-mrow">
           <xsl:with-param name="elements" as="element()*">
             <xsl:apply-templates/>
           </xsl:with-param>
@@ -105,7 +105,7 @@ All Rights Reserved
           </xsl:when>
           <xsl:otherwise>
             <!-- Item => becomes single child so might need wrapped up -->
-            <xsl:call-template name="maybe-wrap-in-mrow">
+            <xsl:call-template name="s:maybe-wrap-in-mrow">
               <xsl:with-param name="elements" as="element()*">
                 <xsl:apply-templates select="current-group()"/>
               </xsl:with-param>
