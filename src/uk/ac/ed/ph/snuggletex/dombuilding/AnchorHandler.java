@@ -13,7 +13,7 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import org.w3c.dom.Element;
 
 /**
- * Handles the <tt>\anchor</tt> command, generating an XHTML anchor.
+ * Handles the <tt>\\anchor</tt> command, generating an XHTML anchor.
  *
  * @author  David McKain
  * @version $Revision$

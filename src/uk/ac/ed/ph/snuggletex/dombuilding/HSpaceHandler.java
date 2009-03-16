@@ -18,10 +18,10 @@ import java.util.regex.Pattern;
 import org.w3c.dom.Element;
 
 /**
- * Handles the <tt>hspace</tt> and <tt>hspace*</tt> commands.
+ * Handles the <tt>\\hspace</tt> and <tt>\\hspace*</tt> commands.
  * <p>
- * Note that we are going to handle <tt>hspace*</tt> in exactly the same way
- * as <tt>hspace</tt> since it is not easy to detect when we are at the end of
+ * Note that we are going to handle <tt>\\hspace*</tt> in exactly the same way
+ * as <tt>\\hspace</tt> since it is not easy to detect when we are at the end of
  * a line.
  * 
  * @author David McKain
