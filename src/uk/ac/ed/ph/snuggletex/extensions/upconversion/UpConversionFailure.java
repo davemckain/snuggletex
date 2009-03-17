@@ -26,7 +26,11 @@ import java.io.Serializable;
  *     argue that this is just a special case of the last reason!)
  *   </li>
  * </ul>
- *   
+ * 
+ * See {@link UpConversionUtilities} for methods to help with this, including a method
+ * for converting these into error message Strings. 
+ * 
+ * @see UpConversionUtilities
  *
  * @author  David McKain
  * @version $Revision$

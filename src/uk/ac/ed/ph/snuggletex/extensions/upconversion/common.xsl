@@ -4,6 +4,10 @@ $Id$
 
 Some common definitions for the up-conversion process.
 
+NOTE: This uses an extension function to convert raw error codes
+to full messages, which is convenient when inspecting the raw
+XML output.
+
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved
 
@@ -12,8 +16,9 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
+  xmlns:mf="ext://uk.ac.ed.ph.snuggletex.utilities.MessageFormatter"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s">
+  exclude-result-prefixes="xs s mf">
 
   <!-- Helper template for stylesheets that output PMathML. -->
   <xsl:template name="s:maybe-wrap-in-mrow">
@@ -35,7 +40,7 @@ All Rights Reserved
     <xsl:param name="code" as="xs:string"/>
     <xsl:param name="context" as="element()+"/>
     <xsl:param name="arguments" as="xs:string*"/>
-    <s:fail code="{$code}">
+    <s:fail code="{$code}" message="{mf:getErrorMessage($code, $arguments)}">
       <xsl:for-each select="$arguments">
         <s:arg><xsl:value-of select="."/></s:arg>
       </xsl:for-each>

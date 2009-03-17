@@ -53,8 +53,12 @@ public final class MessageFormatter {
     
     /** Constructs an error message for the given {@link InputError}. */
     public static String getErrorMessage(InputError error) {
-        return MessageFormat.format(ERROR_MESSAGE_BUNDLE.getString(error.getErrorCode().toString()),
-                error.getArguments());
+        return getErrorMessage(error.getErrorCode().toString(), error.getArguments());
+    }
+    
+    /** Constructs an error message for the given {@link InputError}. */
+    public static String getErrorMessage(String errorCode, Object[] arguments) {
+        return MessageFormat.format(ERROR_MESSAGE_BUNDLE.getString(errorCode), arguments);
     }
     
     /** Creates a full diagnosis of the given error */

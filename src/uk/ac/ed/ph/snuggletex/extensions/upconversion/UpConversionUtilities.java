@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,16 @@ public final class UpConversionUtilities {
         List<UpConversionFailure> result = new ArrayList<UpConversionFailure>();
         walkDOM(upConvertedElement, result);
         return result;
+    }
+    
+    /**
+     * Returns a full error message for the given {@link UpConversionFailure}, using
+     * the SnuggleTeX {@link MessageFormatter} class to do the hard work.
+     * 
+     * @param failure
+     */
+    public static String getErrorMessage(UpConversionFailure failure) {
+        return MessageFormatter.getErrorMessage(failure.getErrorCode().toString(), failure.getArguments());
     }
 
     /**
