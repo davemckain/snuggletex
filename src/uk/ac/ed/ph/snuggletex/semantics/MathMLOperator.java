@@ -23,14 +23,14 @@ public enum MathMLOperator {
     SLASH(INFIX, "/"),
     COMMA(INFIX, ","),
     EQUALS(INFIX, "="),
+
     FACTORIAL(POSTFIX, "!"),
     BACKSLASH(INFIX, "\\"),    
     NEG(PREFIX, "\u00ac"),
     
     LESS_THAN_OR_OPEN_ANGLE_BRACKET(INFIX, "<"),
     GREATER_THAN_OR_CLOSE_ANGLE_BRACKET(INFIX, ">"),
-    NOT_LESS_THAN(INFIX, "\u226e"),
-    NOT_GREATER_THAN(INFIX, "\u226f"),
+
     
     OPEN_BRACKET(PREFIX, "("),
     CLOSE_BRACKET(POSTFIX, ")"),
@@ -117,13 +117,15 @@ public enum MathMLOperator {
     NOT_APPROX(INFIX, "\u2249"),
     ASYMP(INFIX, "\u224d"),
     DOTEQ(INFIX, "\u2250"),
-    NEQ(INFIX, "\u2260"),
+    NOT_EQUALS(INFIX, "\u2260"),
     EQUIV(INFIX, "\u2261"),
     NOT_EQUIV(INFIX, "\u2262"),
     LEQ(INFIX, "\u2264"),
     GEQ(INFIX, "\u2265"),
     LL(INFIX, "\u226a"),
     GG(INFIX, "\u226b"),
+    NOT_LESS_THAN(INFIX, "\u226e"),
+    NOT_GREATER_THAN(INFIX, "\u226f"),
     NOT_LEQ(INFIX, "\u2270"),
     NOT_GEQ(INFIX, "\u2271"),
     PREC(INFIX, "\u227a"),

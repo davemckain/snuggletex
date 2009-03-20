@@ -12,6 +12,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathRelationOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathRelationOrBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
@@ -68,7 +69,7 @@ public final class Globals {
        '^', new SimpleMathOperatorInterpretation(MathMLOperator.SUPER),
        '+', new SimpleMathOperatorInterpretation(MathMLOperator.ADD),
        '-', new SimpleMathOperatorInterpretation(MathMLOperator.SUBTRACT),
-       '=', new SimpleMathOperatorInterpretation(MathMLOperator.EQUALS),
+       '=', new MathRelationOperatorInterpretation(MathMLOperator.EQUALS, MathMLOperator.NOT_EQUALS),
        ',', new SimpleMathOperatorInterpretation(MathMLOperator.COMMA),
        '/', new SimpleMathOperatorInterpretation(MathMLOperator.SLASH),
        '*', new SimpleMathOperatorInterpretation(MathMLOperator.ASTERISK),

@@ -36,6 +36,9 @@ x
 x = 3
 <mi>x</mi><mo>=</mo><mn>3</mn>
 ====
+x \not= 3
+<mi>x</mi><mo>&#x2260;</mo><mn>3</mn>
+====
 2x
 <mn>2</mn><mi>x</mi>
 ====
