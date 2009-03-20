@@ -27,14 +27,17 @@ public enum MathMLOperator {
     BACKSLASH(INFIX, "\\"),    
     NEG(PREFIX, "\u00ac"),
     
+    LESS_THAN_OR_OPEN_ANGLE_BRACKET(INFIX, "<"),
+    GREATER_THAN_OR_CLOSE_ANGLE_BRACKET(INFIX, ">"),
+    NOT_LESS_THAN(INFIX, "\u226e"),
+    NOT_GREATER_THAN(INFIX, "\u226f"),
+    
     OPEN_BRACKET(PREFIX, "("),
     CLOSE_BRACKET(POSTFIX, ")"),
     OPEN_CURLY_BRACKET(PREFIX, "{"),
     CLOSE_CURLY_BRACKET(POSTFIX, "}"),
     OPEN_SQUARE_BRACKET(PREFIX, "["),
     CLOSE_SQUARE_BRACKET(POSTFIX, "]"),
-    OPEN_ANGLE_BRACKET(PREFIX, "<"),
-    CLOSE_ANGLE_BRACKET(POSTFIX, ">"),
     VERT_BRACKET(INFIX, "|"), /* This is both an opener and a closer! */
     DOUBLE_VERT_BRACKET(INFIX, "\u2225"), /* This is both an opener and a closer! */
 

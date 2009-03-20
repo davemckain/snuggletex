@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
-import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathRelationOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 
 import org.w3c.dom.Element;
@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 public final class MathNotHandler implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken notToken) {
-        NottableMathOperatorInterpretation combinerRelation = (NottableMathOperatorInterpretation) notToken.getCombinerTarget().getInterpretation();
+        MathRelationOperatorInterpretation combinerRelation = (MathRelationOperatorInterpretation) notToken.getCombinerTarget().getInterpretation();
         builder.appendMathMLOperatorElement(parentElement, combinerRelation.getNotOperator());
     }
 

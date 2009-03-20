@@ -11,7 +11,7 @@ import uk.ac.ed.ph.commons.util.ObjectUtilities;
  * Represents a generic Mathematical operator.
  * 
  * @see MathBracketOperatorInterpretation
- * @see NottableMathOperatorInterpretation
+ * @see MathRelationOperatorInterpretation
  * 
  * @author  David McKain
  * @version $Revision$

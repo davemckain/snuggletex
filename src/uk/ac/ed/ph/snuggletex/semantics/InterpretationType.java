@@ -24,7 +24,9 @@ public enum InterpretationType {
     MATH_OPERATOR,
     MATH_RELATION_OPERATOR,
     MATH_BRACKET_OPERATOR,
+
+    /** FIXME: Yuck! Required for '<'... need this to be more polymorphic I think */
+    MATH_RELATION_OR_BRACKET_OPERATOR,
     
     ;
-
 }

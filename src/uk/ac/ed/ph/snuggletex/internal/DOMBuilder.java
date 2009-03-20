@@ -11,8 +11,8 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.LinkResolver;
-import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
@@ -26,7 +26,8 @@ import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.NottableMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathRelationOrBracketOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathRelationOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
@@ -452,13 +453,18 @@ public final class DOMBuilder {
                 break;
                 
             case MATH_RELATION_OPERATOR:
-                NottableMathOperatorInterpretation relationInterp = (NottableMathOperatorInterpretation) interpretation;
+                MathRelationOperatorInterpretation relationInterp = (MathRelationOperatorInterpretation) interpretation;
                 appendMathMLOperatorElement(parentElement, relationInterp.getOperator());
                 break;
                 
             case MATH_BRACKET_OPERATOR:
                 MathBracketOperatorInterpretation bracketInterp = (MathBracketOperatorInterpretation) interpretation;
                 appendMathMLOperatorElement(parentElement, bracketInterp.getOperator());
+                break;
+                
+            case MATH_RELATION_OR_BRACKET_OPERATOR:
+                MathRelationOrBracketOperatorInterpretation relationOrBracketInterp = (MathRelationOrBracketOperatorInterpretation) interpretation;
+                appendMathMLOperatorElement(parentElement, relationOrBracketInterp.getOperator());
                 break;
                 
             default:

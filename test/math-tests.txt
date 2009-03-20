@@ -558,3 +558,17 @@ x/2
 3*5
 <mn>3</mn><mo>*</mo><mn>5</mn>
 ====
+## The '<' and '>' operators are polymorphic in that they may be relations or
+## may be brackets!
+1 < x < 2
+<mn>1</mn>
+<mo>&lt;</mo>
+<mi>x</mi>
+<mo>&lt;</mo>
+<mn>2</mn>
+====
+\left< 1 \right>
+<mfenced open="&lt;" close="&gt;">
+  <mn>1</mn>
+</mfenced>
+====

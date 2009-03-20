@@ -14,6 +14,7 @@ import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathRelationOrBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
@@ -112,6 +113,9 @@ public final class MathFenceHandler implements EnvironmentHandler {
             FlowToken bracketToken = contents.get(0);
             if (bracketToken.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
                 return ((MathBracketOperatorInterpretation) bracketToken.getInterpretation()).getOperator().getOutput();
+            }
+            else if (bracketToken.isInterpretationType(InterpretationType.MATH_RELATION_OR_BRACKET_OPERATOR)) {
+                return ((MathRelationOrBracketOperatorInterpretation) bracketToken.getInterpretation()).getOperator().getOutput();
             }
             /* (Since this token is created only during token fixing, the following is a logic
              * failure rather than a client error.)

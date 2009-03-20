@@ -12,6 +12,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathRelationOrBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
 
@@ -76,8 +77,8 @@ public final class Globals {
        ')', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_BRACKET, MathMLOperator.OPEN_BRACKET, BracketType.CLOSER),
        '[', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET, MathMLOperator.CLOSE_SQUARE_BRACKET, BracketType.OPENER),
        ']', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET, MathMLOperator.OPEN_SQUARE_BRACKET, BracketType.CLOSER),
-       '<', new MathBracketOperatorInterpretation(MathMLOperator.OPEN_ANGLE_BRACKET, MathMLOperator.CLOSE_ANGLE_BRACKET, BracketType.OPENER),
-       '>', new MathBracketOperatorInterpretation(MathMLOperator.CLOSE_ANGLE_BRACKET, MathMLOperator.OPEN_ANGLE_BRACKET, BracketType.CLOSER),
+       '<', new MathRelationOrBracketOperatorInterpretation(MathMLOperator.LESS_THAN_OR_OPEN_ANGLE_BRACKET, MathMLOperator.GREATER_THAN_OR_CLOSE_ANGLE_BRACKET, MathMLOperator.NOT_LESS_THAN, BracketType.OPENER),
+       '>', new MathRelationOrBracketOperatorInterpretation(MathMLOperator.GREATER_THAN_OR_CLOSE_ANGLE_BRACKET, MathMLOperator.LESS_THAN_OR_OPEN_ANGLE_BRACKET, MathMLOperator.NOT_GREATER_THAN, BracketType.OPENER),
        '|', new MathBracketOperatorInterpretation(MathMLOperator.VERT_BRACKET, MathMLOperator.VERT_BRACKET, BracketType.OPENER_OR_CLOSER),
     };
     
