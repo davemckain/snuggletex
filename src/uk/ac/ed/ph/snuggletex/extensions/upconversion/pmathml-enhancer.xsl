@@ -12,7 +12,6 @@ or Maxima input.
 See the local:process-group template to see how groupings/precedence
 are established.
 
-TODO: Think about plus-or-minus operator??
 TODO: Other infix operators from set theory such as \in and stuff like that?
 TODO: Should we specify precedence for other infix operators? (Later... nothing to do with MathAssess... actually maybe not!)
 TODO: <mstyle/> is essentially being treated as neutering its contents... is this a good idea? It's a hard problem to solve in general.
@@ -73,7 +72,7 @@ All Rights Reserved
   <!-- NOTE: We're allowing infix operators to act as prefix operators here, even though
        this won't make sense further in the up-conversion process -->
   <xsl:variable name="local:infix-operators" as="xs:string+"
-    select="('=', '+', '-',
+    select="('&#x2227;', '&#x2228;', '=', '+', '-',
              $local:explicit-multiplication-characters,
              $local:explicit-division-characters)"/>
 
@@ -167,6 +166,20 @@ All Rights Reserved
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <!-- Infix Operator Grouping -->
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2228;'))]">
+        <!-- Logical Or -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x2228;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2227;'))]">
+        <!-- Logical And -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x2227;')"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test="$elements[local:is-matching-infix-mo(., ('='))]">
         <!-- Equals -->
         <xsl:call-template name="local:group-associative-infix-mo">
@@ -394,9 +407,15 @@ All Rights Reserved
       <xsl:when test="local:is-prefix-operator($first-element)">
         <!-- This is a prefix operator. Apply to everything that follows. -->
         <xsl:copy-of select="$first-element"/>
-        <xsl:call-template name="local:apply-prefix-functions-and-operators">
-          <xsl:with-param name="elements" select="$after-first-element"/>
-        </xsl:call-template>
+        <xsl:if test="exists($after-first-element)">
+          <xsl:call-template name="s:maybe-wrap-in-mrow">
+            <xsl:with-param name="elements" as="element()*">
+              <xsl:call-template name="local:apply-prefix-functions-and-operators">
+                <xsl:with-param name="elements" select="$after-first-element"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
       </xsl:when>
       <xsl:otherwise>
         <!-- This is everything after any prefixes but before any postfixes -->

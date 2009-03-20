@@ -122,6 +122,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <divide maxima-unapplied-operator="/" maxima-nary-infix-operator=" / "/>
     <power maxima-unapplied-operator="^" maxima-nary-infix-operator="^"/>
     <factorial maxima-unapplied-operator="!" maxima-unary-postfix-operator="!"/>
+    <not maxima-unapplied-operator="not" maxima-unary-function="not"/>
+    <and maxima-unapplied-operator="and" maxima-nary-infix-operator=" and "/>
+    <or maxima-unapplied-operator="or" maxima-nary-infix-operator=" or "/>
   </xsl:variable>
 
   <xsl:function name="sc:is-operator" as="xs:boolean">
@@ -217,9 +220,16 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
         <!-- Unary case -->
         <xsl:choose>
           <xsl:when test="$operator/@maxima-unary-prefix-operator">
-            <!-- Prefix operator -->
+            <!-- Prefix operator, e.g. '-' in unary context -->
             <xsl:text>(</xsl:text>
             <xsl:value-of select="$operator/@maxima-unary-prefix-operator"/>
+            <xsl:copy-of select="sc:to-maxima($operands[1])"/>
+            <xsl:text>)</xsl:text>
+          </xsl:when>
+          <xsl:when test="$operator/@maxima-unary-function">
+            <!-- Fucntion operator e.g. not() -->
+            <xsl:value-of select="$operator/@maxima-unary-function"/>
+            <xsl:text>(</xsl:text>
             <xsl:copy-of select="sc:to-maxima($operands[1])"/>
             <xsl:text>)</xsl:text>
           </xsl:when>

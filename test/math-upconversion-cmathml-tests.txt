@@ -640,17 +640,72 @@ x!
   <ci>x</ci>
 </apply>
 ====
-#\neg A
-#<mo>&#xac;</mo><mi>A</mi>
+\neg
+<not/>
+====
+\neg A
+<apply>
+  <not/>
+  <ci>A</ci>
+</apply>
+====
+\neg \neg A
+<apply>
+  <not/>
+  <apply>
+    <not/>
+    <ci>A</ci>
+  </apply>
+</apply>
+====
+\neg \neg
+!UCEOP2
+====
+\neg \neg \neg
+!UCEOP2
+====
+A \land B \lor C
+<apply>
+  <or/>
+  <apply>
+    <and/>
+    <ci>A</ci>
+    <ci>B</ci>
+  </apply>
+  <ci>C</ci>
+</apply>
+====
+\neg (A \vee B)
+<apply>
+  <not/>
+  <apply>
+    <or/>
+    <ci>A</ci>
+    <ci>B</ci>
+  </apply>
+</apply>
+====
+A \land \lnot B
+<apply>
+  <and/>
+  <ci>A</ci>
+  <apply>
+    <not/>
+    <ci>B</ci>
+  </apply>
+</apply>
+====
+\land\land
+!UCEOP0,UCEOP2
+====
+## I'm not sure about these ones yet...
+#a\in A
+#<mi>a</mi>
+#<mo>&#x2208;</mo>
+#<mi>A</mi>
 #====
-### I'm not sure about these ones yet...
-##a\in A
-##<mi>a</mi>
-##<mo>&#x2208;</mo>
-##<mi>A</mi>
-##====
-##a\not\in A
-##<mi>a</mi>
-##<mo>&#x2209;</mo>
-##<mi>A</mi>
-##====
+#a\not\in A
+#<mi>a</mi>
+#<mo>&#x2209;</mo>
+#<mi>A</mi>
+#====

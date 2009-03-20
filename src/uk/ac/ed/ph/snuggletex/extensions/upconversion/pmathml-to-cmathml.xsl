@@ -66,6 +66,10 @@ All Rights Reserved
     select="($local:explicit-multiplication-characters,
              $local:implicit-multiplication-characters)"/>
 
+  <xsl:variable name="local:prefix-operators" as="element()+">
+    <local:prefix-operator input="&#xac;" output="not"/>
+  </xsl:variable>
+
   <!--
   Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}
   Result need not make any actual sense so will need further inspection
@@ -86,6 +90,17 @@ All Rights Reserved
   <xsl:function name="local:is-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo])"/>
+  </xsl:function>
+
+  <xsl:function name="local:get-prefix-operator" as="xs:string?">
+    <xsl:param name="string" as="xs:string"/>
+    <xsl:sequence select="$local:prefix-operators[@input=$string]/@output"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-prefix-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="local:is-operator($element)
+      and exists(local:get-prefix-operator(string($element)))"/>
   </xsl:function>
 
   <xsl:function name="local:is-factorial-operator" as="xs:boolean">
@@ -109,6 +124,24 @@ All Rights Reserved
   <xsl:template name="local:process-group">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
+      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2228;'))]">
+        <!-- Logical Or -->
+        <xsl:call-template name="local:handle-nary-operator">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x2228;')"/>
+          <xsl:with-param name="cmathml-name" select="'or'"/>
+          <xsl:with-param name="allow-as-prefix" select="false()"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2227;'))]">
+        <!-- Logical And -->
+        <xsl:call-template name="local:handle-nary-operator">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x2227;')"/>
+          <xsl:with-param name="cmathml-name" select="'and'"/>
+          <xsl:with-param name="allow-as-prefix" select="false()"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test="$elements[local:is-matching-operator(., ('='))]">
         <!-- Equals -->
         <xsl:call-template name="local:handle-nary-operator">
@@ -157,6 +190,12 @@ All Rights Reserved
       <xsl:when test="$elements[1][local:is-supported-function(.)]">
         <!-- Supported function (not necessarily applied) -->
         <xsl:call-template name="local:handle-supported-function-group">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[1][local:is-prefix-operator(.)]">
+        <!-- Supported prefix operator (not necessarily applied) -->
+        <xsl:call-template name="local:handle-prefix-group">
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
@@ -420,6 +459,47 @@ All Rights Reserved
           Unknown supported function <xsl:copy-of select="$operator-element"/>.
           This logic branch should not have been reached!
         </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+
+  <!--
+  Group starting with a prefix operator, say 'p'. Main possibilities:
+
+  (1) 'p' is unapplied
+  (2) 'p' is applied to what follows
+
+  -->
+  <xsl:template name="local:handle-prefix-group">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <!-- Get Content MathML element corresponding to this operator -->
+    <xsl:variable name="prefix-operator" as="xs:string" select="local:get-prefix-operator($elements[1])"/>
+    <xsl:variable name="cmathml-operator" as="element()">
+      <xsl:element name="{$prefix-operator}"/>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="count($elements)=1">
+        <!-- This is case (1) above -->
+        <xsl:copy-of select="$cmathml-operator"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- This is (2) -->
+        <xsl:variable name="operands" as="element()+" select="$elements[position()!=1]"/>
+        <xsl:choose>
+          <xsl:when test="$operands[local:is-operator(.)]">
+            <!-- Fail: bad combination of operators -->
+            <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <apply>
+              <xsl:copy-of select="$cmathml-operator"/>
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$operands"/>
+              </xsl:call-template>
+            </apply>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

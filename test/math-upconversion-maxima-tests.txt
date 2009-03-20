@@ -193,6 +193,33 @@ log(y)
 [[a,b], c]
 [[a, b], c]
 ====
+\lnot A
+not(A)
+====
+\lnot \lnot A
+not(not(A))
+====
+\lnot
+operator("not")
+====
+A \land B
+A and B
+====
+A \land B \lor C
+(A and B) or C
+====
+\neg (A \vee B)
+not((A or B))
+====
+A \land \lnot B
+A and not(B)
+====
+\land
+operator("and")
+====
+\lor
+operator("or")
+====
 ## Special units handling
 \units{kg}
 units("kg")

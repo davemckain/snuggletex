@@ -395,10 +395,6 @@ x\,y\,z
 <mo>&#x2061;</mo>
 <mrow/>
 ====
-\neg A
-<mo>&#xac;</mo>
-<mi>A</mi>
-====
 x!
 <mi>x</mi>
 <mo>!</mo>
@@ -457,6 +453,76 @@ x!y!
 ## Lonely factorial
 !
 <mo>!</mo>
+====
+## Logical operators
+\lnot A
+<mo>&#xac;</mo>
+<mi>A</mi>
+====
+\neg \neg A
+<mo>&#xac;</mo>
+<mrow>
+  <mo>&#xac;</mo>
+  <mi>A</mi>
+</mrow>
+====
+\neg \neg \neg A
+<mo>&#xac;</mo>
+<mrow>
+  <mo>&#xac;</mo>
+  <mrow>
+    <mo>&#xac;</mo>
+    <mi>A</mi>
+  </mrow>
+</mrow>
+====
+A \land B \lor C
+<mrow>
+  <mi>A</mi>
+  <mo>&#x2227;</mo>
+  <mi>B</mi>
+</mrow>
+<mo>&#x2228;</mo>
+<mi>C</mi>
+====
+\neg (A \vee B)
+<mo>&#xac;</mo>
+<mfenced open='(' close=')'>
+  <mrow>
+    <mi>A</mi>
+    <mo>&#x2228;</mo>
+    <mi>B</mi>
+  </mrow>
+</mfenced>
+====
+\neg {A \vee B}
+<mo>&#xac;</mo>
+<mrow>
+  <mi>A</mi>
+  <mo>&#x2228;</mo>
+  <mi>B</mi>
+</mrow>
+====
+a \land \lnot b
+<mi>a</mi>
+<mo>&#x2227;</mo>
+<mrow>
+  <mo>&#xac;</mo>
+  <mi>b</mi>
+</mrow>
+====
+## (Pathological)
+\neg \neg
+<mo>&#xac;</mo>
+<mo>&#xac;</mo>
+====
+## (Pathological)
+\neg \neg \neg
+<mo>&#xac;</mo>
+<mrow>
+  <mo>&#xac;</mo>
+  <mo>&#xac;</mo>
+</mrow>
 ====
 #x^{!}
 #<msup>
