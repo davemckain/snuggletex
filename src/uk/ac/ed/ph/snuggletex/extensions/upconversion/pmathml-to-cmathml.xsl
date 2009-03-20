@@ -10,8 +10,6 @@ few other things).
 Some semantic inference is also performed basic on common conventions,
 which can be turned off if required.
 
-TODO: Need to trim whitespace from MathML elements when performing comparisons.
-
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved
 
@@ -67,8 +65,19 @@ All Rights Reserved
              $local:implicit-multiplication-characters)"/>
 
   <xsl:variable name="local:prefix-operators" as="element()+">
-    <local:prefix-operator input="&#xac;" output="not"/>
+    <local:operator input="&#xac;" output="not"/>
   </xsl:variable>
+
+  <xsl:variable name="local:relation-operators" as="element()+">
+    <local:operator input="=" output="eq"/>
+    <local:operator input="&lt;" output="lt"/>
+    <local:operator input="&gt;" output="gt"/>
+    <local:operator input="&#x2264;" output="leq"/>
+    <local:operator input="&#x2265;" output="geq"/>
+  </xsl:variable>
+
+  <xsl:variable name="local:relation-characters" as="xs:string+"
+    select="for $op in $local:relation-operators return $op/@output"/>
 
   <!--
   Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}
@@ -91,6 +100,18 @@ All Rights Reserved
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo])"/>
   </xsl:function>
+
+  <xsl:function name="local:get-relation-operator" as="xs:string?">
+    <xsl:param name="string" as="xs:string"/>
+    <xsl:sequence select="$local:relation-operators[@input=$string]/@output"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-relation-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="local:is-operator($element)
+      and exists(local:get-relation-operator(string($element)))"/>
+  </xsl:function>
+
 
   <xsl:function name="local:get-prefix-operator" as="xs:string?">
     <xsl:param name="string" as="xs:string"/>
@@ -142,13 +163,10 @@ All Rights Reserved
           <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('='))]">
-        <!-- Equals -->
-        <xsl:call-template name="local:handle-nary-operator">
+      <xsl:when test="$elements[local:is-relation-operator(.)]">
+        <!-- (Possibly mixed) Relation Operators -->
+        <xsl:call-template name="local:handle-relation-operators">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('=')"/>
-          <xsl:with-param name="cmathml-name" select="'eq'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[local:is-matching-operator(., ('+'))]">
@@ -233,7 +251,7 @@ All Rights Reserved
   </xsl:function>
 
   <!--
-  n-ary operator, such as '=' or '+'.
+  n-ary operator, such as '+'.
 
   We need to be careful to handle unapplied operators and illegal
   prefix/postfix applications.
@@ -275,6 +293,100 @@ All Rights Reserved
             </xsl:choose>
           </xsl:for-each-group>
         </apply>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!--
+  Mix of (positive) relation operators, such as '=', '<', '>'.
+
+  If there are more than 2 of these then we pair them into logical "and" groups.
+
+  For example, an expression like '1 < 2 = 3' would end up being represented as:
+
+  <apply>
+    <and/>
+    <apply>
+      <lt/>
+      <ci>1</ci>
+      <ci>2</ci>
+    </apply>
+    <apply>
+      <eq/>
+      <ci>2</ci>
+      <ci>3</ci>
+    </apply>
+  </apply>
+
+  This is not strictly necessary if there is only one unique type of operator
+  in the expression as they are n-ary, but makes any later up-conversion to Maxima
+  much easier.
+
+  TODO: Tidy this up with respect to error handling, and backport into the nary
+  operator case as there's no need for grouping in that one either.
+  TODO: Also need to cope with negative operators, which need to generatate
+  corresponding notted operators in the output.
+  -->
+  <xsl:template name="local:handle-relation-operators">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:variable name="element-count" as="xs:integer" select="count($elements)"/>
+    <xsl:variable name="relation-operator-count" as="xs:integer" select="count($elements[local:is-relation-operator(.)])"/>
+    <xsl:choose>
+      <xsl:when test="$element-count=1 and $relation-operator-count=1">
+        <!-- Single unapplied relation is OK -->
+        <xsl:element name="{local:get-relation-operator($elements[1])}"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!--
+        The only form we will allow is 'op1 rel1 op2 rel2 ... opn'.
+        It's easiest to do a counting loop with this to ensure everything works out.
+        -->
+        <xsl:variable name="paired" as="element()+">
+          <xsl:if test="count($elements) mod 2 = 0">
+            <!-- Fail: Bad combination of operators (expecting odd number) -->
+            <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+          </xsl:if>
+          <xsl:for-each select="$elements">
+            <xsl:variable name="i" as="xs:integer" select="position()"/>
+            <xsl:choose>
+              <xsl:when test="$i mod 2 = 1">
+                <!-- Odd position, so expecting operand -->
+                <xsl:if test="local:is-relation-operator(.)">
+                  <!-- Fail: Bad combination of operators -->
+                  <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+                </xsl:if>
+              </xsl:when>
+              <xsl:otherwise>
+                <!-- Even position, so expecting relation -->
+                <xsl:if test="not(local:is-relation-operator(.))">
+                  <!-- Fail: Bad combination of operators -->
+                  <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+                </xsl:if>
+                <!-- Group what came before and what comes after -->
+                <apply>
+                  <xsl:element name="{local:get-relation-operator(.)}"/>
+                  <xsl:call-template name="local:process-group">
+                    <xsl:with-param name="elements" select="$elements[position()=$i - 1]"/>
+                  </xsl:call-template>
+                  <xsl:call-template name="local:process-group">
+                    <xsl:with-param name="elements" select="$elements[position()=$i + 1]"/>
+                  </xsl:call-template>
+                </apply>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="count($paired)=1">
+            <xsl:copy-of select="$paired[1]"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <apply>
+              <and/>
+              <xsl:copy-of select="$paired"/>
+            </apply>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

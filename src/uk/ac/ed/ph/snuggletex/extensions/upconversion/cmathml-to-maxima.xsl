@@ -116,6 +116,10 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- Supported prefix/infix/postfix operators -->
   <xsl:variable name="sc:operators" as="element()+">
     <eq maxima-unapplied-operator="=" maxima-nary-infix-operator=" = "/>
+    <lt maxima-unapplied-operator="&lt;" maxima-nary-infix-operator=" &lt; "/>
+    <gt maxima-unapplied-operator="&gt;" maxima-nary-infix-operator=" &gt; "/>
+    <leq maxima-unapplied-operator="&lt;=" maxima-nary-infix-operator=" &lt;= "/>
+    <geq maxima-unapplied-operator="&gt;=" maxima-nary-infix-operator=" &gt;= "/>
     <plus maxima-unapplied-operator="+" maxima-nary-infix-operator=" + " maxima-unary-prefix-operator="+"/>
     <minus maxima-unapplied-operator="-" maxima-nary-infix-operator=" - " maxima-unary-prefix-operator="-"/>
     <times maxima-unapplied-operator="*" maxima-nary-infix-operator=" * "/>

@@ -9,257 +9,266 @@
 #
 # Lines starting with '#' are documentation and are stripped out when running tests
 #
-##
-1
-1
-====
--1
--1
-====
-x
-x
-====
-## Demonstrates mapping of non-alphanumeric identifiers using "identifier dictionary"
-\alpha
-%alpha
-====
-## Demonstrates flattening subscripted identifiers for Maxima
-x_1
-x_1
-====
-## @ is currently treated as an identfier, which has no Maxima form
-@
-!UMEID0
-====
-## Binary equals
-x=y
-x = y
-====
-## nary equals
-x=y=z
-x = y = z
-====
-## Unapplied equals
-=
-operator("=")
-====
-+x
-+x
-====
-x+y
-x + y
-====
-x+y+z
-x + y + z
-====
-+
-operator("+")
-====
--x
--x
-====
-x-y
-x - y
-====
--
-operator("-")
-====
-2x
-2 * x
-====
-2\times x
-2 * x
-====
-2*x
-2 * x
-====
-*
-operator("*")
-====
-a/b
-a / b
-====
-\frac{a}{b}
-a / b
-====
-/
-operator("/")
-====
-x^2
-x^2
-====
-!
-operator("!")
-====
-x!
-x!
-====
-x!!
-(x!)!
-====
-2x!
-2 * (x!)
-====
-1+x
-1 + x
-====
-a+(b-c)d
-a + ((b - c) * d)
-====
-x+1 = 1+x
-(x + 1) = (1 + x)
-====
-a-b-c
-(a - b) - c
-====
-a/b/c
-(a / b) / c
-====
-(1-a)/(2-b)
-(1 - a) / (2 - b)
-====
-## Unapplied elementary function
-\sin
-sin
-====
-## Unapplied inverse elementary function
-\sin^{-1}
-asin
-====
-\sin x
-sin(x)
-====
--\cos x
--cos(x)
-====
-\sin^2 x
-sin(x)^2
-====
-\sin^{-1} x
-asin(x)
-====
-\sin (x+a)
-sin((x + a))
-====
-\cos x
-cos(x)
-====
-\sqrt x
-sqrt(x)
-====
-\sqrt[3]{x}
-(x)^(1/3)
-====
-x^{1/2}
-x^(1 / 2)
-====
-\sin x\,y
-sin(x) * y
-====
-\frac{-b+\sqrt{b^2-4ac}}{2a}
-((-b) + sqrt(((b^2) - (4 * a * c)))) / (2 * a)
-====
-x\,y
-x * y
-====
-i
-%i
-====
-e
-%e
-====
-\pi
-%pi
-====
-e^x
-exp(x)
-====
-\ln y
-log(y)
-====
-## Still need to decide what to do with these!
-#\log x
-#?
+###
+#1
+#1
 #====
-#\log_a x
-#?
+#-1
+#-1
 #====
-[1,2]
-[1, 2]
+#x
+#x
+#====
+### Demonstrates mapping of non-alphanumeric identifiers using "identifier dictionary"
+#\alpha
+#%alpha
+#====
+### Demonstrates flattening subscripted identifiers for Maxima
+#x_1
+#x_1
+#====
+### @ is currently treated as an identfier, which has no Maxima form
+#@
+#!UMEID0
+#====
+### Binary equals
+#x=y
+#x = y
+#====
+### nary equals
+#x=y=z
+#x = y = z
+#====
+### Unapplied equals
+#=
+#operator("=")
+#====
+#+x
+#+x
+#====
+#x+y
+#x + y
+#====
+#x+y+z
+#x + y + z
+#====
+#+
+#operator("+")
+#====
+#-x
+#-x
+#====
+#x-y
+#x - y
+#====
+#-
+#operator("-")
+#====
+#2x
+#2 * x
+#====
+#2\times x
+#2 * x
+#====
+#2*x
+#2 * x
+#====
+#*
+#operator("*")
+#====
+#a/b
+#a / b
+#====
+#\frac{a}{b}
+#a / b
+#====
+#/
+#operator("/")
+#====
+#x^2
+#x^2
+#====
+#!
+#operator("!")
+#====
+#x!
+#x!
+#====
+#x!!
+#(x!)!
+#====
+#2x!
+#2 * (x!)
+#====
+#1+x
+#1 + x
+#====
+#a+(b-c)d
+#a + ((b - c) * d)
+#====
+#x+1 = 1+x
+#(x + 1) = (1 + x)
+#====
+#a-b-c
+#(a - b) - c
+#====
+#a/b/c
+#(a / b) / c
+#====
+#(1-a)/(2-b)
+#(1 - a) / (2 - b)
+#====
+### Unapplied elementary function
+#\sin
+#sin
+#====
+### Unapplied inverse elementary function
+#\sin^{-1}
+#asin
+#====
+#\sin x
+#sin(x)
+#====
+#-\cos x
+#-cos(x)
+#====
+#\sin^2 x
+#sin(x)^2
+#====
+#\sin^{-1} x
+#asin(x)
+#====
+#\sin (x+a)
+#sin((x + a))
+#====
+#\cos x
+#cos(x)
+#====
+#\sqrt x
+#sqrt(x)
+#====
+#\sqrt[3]{x}
+#(x)^(1/3)
+#====
+#x^{1/2}
+#x^(1 / 2)
+#====
+#\sin x\,y
+#sin(x) * y
+#====
+#\frac{-b+\sqrt{b^2-4ac}}{2a}
+#((-b) + sqrt(((b^2) - (4 * a * c)))) / (2 * a)
+#====
+#x\,y
+#x * y
+#====
+#i
+#%i
+#====
+#e
+#%e
+#====
+#\pi
+#%pi
+#====
+#e^x
+#exp(x)
+#====
+#\ln y
+#log(y)
+#====
+### Still need to decide what to do with these!
+##\log x
+##?
+##====
+##\log_a x
+##?
+##====
+#[1,2]
+#[1, 2]
+#====
+#\{a,b\}
+#{a, b}
+#====
+#[[a,b], c]
+#[[a, b], c]
+#====
+#\lnot A
+#not(A)
+#====
+#\lnot \lnot A
+#not(not(A))
+#====
+#\lnot
+#operator("not")
+#====
+#A \land B
+#A and B
+#====
+#A \land B \lor C
+#(A and B) or C
+#====
+#\neg (A \vee B)
+#not((A or B))
+#====
+#A \land \lnot B
+#A and not(B)
+#====
+#\land
+#operator("and")
+#====
+#\lor
+#operator("or")
+#====
+<
+operator("<")
 ====
-\{a,b\}
-{a, b}
+x<y
+x < y
 ====
-[[a,b], c]
-[[a, b], c]
+1 < x < 2
+(1 < x) and (x < 2)
 ====
-\lnot A
-not(A)
-====
-\lnot \lnot A
-not(not(A))
-====
-\lnot
-operator("not")
-====
-A \land B
-A and B
-====
-A \land B \lor C
-(A and B) or C
-====
-\neg (A \vee B)
-not((A or B))
-====
-A \land \lnot B
-A and not(B)
-====
-\land
-operator("and")
-====
-\lor
-operator("or")
-====
-## Special units handling
-\units{kg}
-units("kg")
-====
-#####################################
-## Infix as Prefix
-1++x
-1 + (+x)
-====
-1+++x
-1 + (+(+x))
-====
-1--x
-1 - (-x)
-====
-1+-+-x
-1 + (-(+(-x)))
-====
-1+*x
-!UCEOP0
-====
-#####################################
-### Corner Cases
-\sin{}
-sin
-====
-\sin^{-1}{}
-asin
-====
-e^{}
-exp
-====
-## This one is very pathological, but I'll accept for the time being
-{}+{}
-operator("+")
-====
-{}^{}
-operator("^")
-====
-## Likewise
-\frac{}{}
-operator("/")
-====
+### Special units handling
+#\units{kg}
+#units("kg")
+#====
+######################################
+### Infix as Prefix
+#1++x
+#1 + (+x)
+#====
+#1+++x
+#1 + (+(+x))
+#====
+#1--x
+#1 - (-x)
+#====
+#1+-+-x
+#1 + (-(+(-x)))
+#====
+#1+*x
+#!UCEOP0
+#====
+######################################
+#### Corner Cases
+#\sin{}
+#sin
+#====
+#\sin^{-1}{}
+#asin
+#====
+#e^{}
+#exp
+#====
+### This one is very pathological, but I'll accept for the time being
+#{}+{}
+#operator("+")
+#====
+#{}^{}
+#operator("^")
+#====
+### Likewise
+#\frac{}{}
+#operator("/")
+#====

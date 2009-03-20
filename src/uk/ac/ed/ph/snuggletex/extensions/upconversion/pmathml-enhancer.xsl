@@ -60,6 +60,10 @@ All Rights Reserved
             'arcsech', 'arccsch', 'arccoth',
             'ln', 'log', 'exp')"/>
 
+  <xsl:variable name="local:relation-characters" as="xs:string+"
+    select="('=', '&lt;', '&gt;', '&#x2264;', '&#x2265;',
+             '&#x2260;', '&#x226e;', '&#x226f;', '&#x2270;', '&#x2271;')"/>
+
   <xsl:variable name="local:explicit-multiplication-characters" as="xs:string+"
     select="('*', '&#xd7;', '&#x22c5;')"/>
 
@@ -72,7 +76,8 @@ All Rights Reserved
   <!-- NOTE: We're allowing infix operators to act as prefix operators here, even though
        this won't make sense further in the up-conversion process -->
   <xsl:variable name="local:infix-operators" as="xs:string+"
-    select="('&#x2227;', '&#x2228;', '=', '+', '-',
+    select="('&#x2227;', '&#x2228;', '+', '-',
+             $local:relation-characters,
              $local:explicit-multiplication-characters,
              $local:explicit-division-characters)"/>
 
@@ -180,11 +185,11 @@ All Rights Reserved
           <xsl:with-param name="match" select="('&#x2227;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('='))]">
-        <!-- Equals -->
+      <xsl:when test="$elements[local:is-matching-infix-mo(., $local:relation-characters)]">
+        <!-- Relations are all kept at the same precedence level -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('=')"/>
+          <xsl:with-param name="match" select="$local:relation-characters"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[local:is-matching-infix-mo(., ('+'))]">

@@ -524,20 +524,29 @@ a \land \lnot b
   <mo>&#xac;</mo>
 </mrow>
 ====
-#x^{!}
-#<msup>
-#  <mi>x</mi>
-#  <mo>!</mo>
-#</msup>
+## Odd but allowed (until later in the up-conversion process)
+x^{!}
+<msup>
+  <mi>x</mi>
+  <mo>!</mo>
+</msup>
+====
+## Relation operators share same precedence level
+1 < 2 = 3
+<mn>1</mn>
+<mo>&lt;</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mn>3</mn>
+====
+## I'm not sure about these ones yet...
+#a\in A
+#<mi>a</mi>
+#<mo>&#x2208;</mo>
+#<mi>A</mi>
 #====
-### I'm not sure about these ones yet...
-##a\in A
-##<mi>a</mi>
-##<mo>&#x2208;</mo>
-##<mi>A</mi>
-##====
-##a\not\in A
-##<mi>a</mi>
-##<mo>&#x2209;</mo>
-##<mi>A</mi>
-##====
+#a\not\in A
+#<mi>a</mi>
+#<mo>&#x2209;</mo>
+#<mi>A</mi>
+#====

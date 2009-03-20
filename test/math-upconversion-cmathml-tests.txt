@@ -29,12 +29,20 @@ x = 3
   <cn>3</cn>
 </apply>
 ====
+## This invokes the special case of having multiple relations at the same level
 a=b=c
 <apply>
-  <eq/>
-  <ci>a</ci>
-  <ci>b</ci>
-  <ci>c</ci>
+  <and/>
+  <apply>
+    <eq/>
+    <ci>a</ci>
+    <ci>b</ci>
+  </apply>
+  <apply>
+    <eq/>
+    <ci>b</ci>
+    <ci>c</ci>
+  </apply>
 </apply>
 ====
 3=
@@ -697,6 +705,31 @@ A \land \lnot B
 ====
 \land\land
 !UCEOP0,UCEOP2
+====
+## 2 or more relation operators at same level get converted into booleans and relations!
+1 < 2 = 3
+<apply>
+  <and/>
+  <apply>
+    <lt/>
+    <cn>1</cn>
+    <cn>2</cn>
+  </apply>
+  <apply>
+    <eq/>
+    <cn>2</cn>
+    <cn>3</cn>
+  </apply>
+</apply>
+====
+<
+<lt/>
+====
+>
+<gt/>
+====
+<<
+!UCEOP2
 ====
 ## I'm not sure about these ones yet...
 #a\in A
