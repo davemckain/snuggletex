@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * This is the equivalent of an {@link InputError} for the up-conversion process,
@@ -65,5 +66,14 @@ public final class UpConversionFailure implements Serializable {
 
     public String getContext() {
         return context;
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getName()
+            + "(errorCode=" + errorCode
+            + ",arguments=" + Arrays.toString(arguments)
+            + ",context=" + context
+            + ")";
     }
 }

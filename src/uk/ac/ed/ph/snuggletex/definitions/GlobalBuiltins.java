@@ -577,7 +577,7 @@ public final class GlobalBuiltins {
         /* This is a LaTeX-specific combiner macro that always comes before a
          * {@link MathRelationOperatorInterpretation} command.
          */
-        CMD_NOT = map.addCombinerCommand("not", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_RELATION_OPERATOR), new MathNotHandler(), null);
+        CMD_NOT = map.addCombinerCommand("not", MATH_MODE_ONLY, EnumSet.of(InterpretationType.MATH_RELATION_OPERATOR, InterpretationType.MATH_RELATION_OR_BRACKET_OPERATOR), new MathNotHandler(), null);
 
         /* Complex math macros */
         map.addComplexCommandSameArgMode("sqrt", true, 1, MATH_MODE_ONLY, new MathRootHandler(), null);

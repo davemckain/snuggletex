@@ -575,3 +575,23 @@ x/2
   <mn>1</mn>
 </mfenced>
 ====
+1 \not< 2
+<mn>1</mn>
+<mo>&#x226e;</mo>
+<mn>2</mn>
+====
+1 \not> 2
+<mn>1</mn>
+<mo>&#x226f;</mo>
+<mn>2</mn>
+====
+1 \not\leq 2
+<mn>1</mn>
+<mo>&#x2270;</mo>
+<mn>2</mn>
+====
+1 \not\geq 2
+<mn>1</mn>
+<mo>&#x2271;</mo>
+<mn>2</mn>
+====

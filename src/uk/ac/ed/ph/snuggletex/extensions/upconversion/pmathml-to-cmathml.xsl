@@ -69,15 +69,12 @@ All Rights Reserved
   </xsl:variable>
 
   <xsl:variable name="local:relation-operators" as="element()+">
-    <local:operator input="=" output="eq"/>
-    <local:operator input="&lt;" output="lt"/>
-    <local:operator input="&gt;" output="gt"/>
-    <local:operator input="&#x2264;" output="leq"/>
-    <local:operator input="&#x2265;" output="geq"/>
+    <local:operator input="=" input-negated="&#x2260;" output="eq"/>
+    <local:operator input="&lt;" input-negated="&#x226e;" output="lt"/>
+    <local:operator input="&gt;" input-negated="&#x226f;" output="gt"/>
+    <local:operator input="&#x2264;" input-negated="&#x2270;" output="leq"/>
+    <local:operator input="&#x2265;" input-negated="&#x2271;" output="geq"/>
   </xsl:variable>
-
-  <xsl:variable name="local:relation-characters" as="xs:string+"
-    select="for $op in $local:relation-operators return $op/@output"/>
 
   <!--
   Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}
@@ -101,17 +98,12 @@ All Rights Reserved
     <xsl:sequence select="boolean($element[self::mo])"/>
   </xsl:function>
 
-  <xsl:function name="local:get-relation-operator" as="xs:string?">
-    <xsl:param name="string" as="xs:string"/>
-    <xsl:sequence select="$local:relation-operators[@input=$string]/@output"/>
-  </xsl:function>
-
   <xsl:function name="local:is-relation-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="local:is-operator($element)
-      and exists(local:get-relation-operator(string($element)))"/>
+      and ($local:relation-operators[@input=string($element)]
+        or $local:relation-operators[@input-negated=string($element)])"/>
   </xsl:function>
-
 
   <xsl:function name="local:get-prefix-operator" as="xs:string?">
     <xsl:param name="string" as="xs:string"/>
@@ -145,6 +137,12 @@ All Rights Reserved
   <xsl:template name="local:process-group">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
+      <xsl:when test="$elements[self::mspace]">
+        <!-- Strip off <mspace/> and reapply this template to whatever is left -->
+        <xsl:call-template name="local:process-group">
+          <xsl:with-param name="elements" select="$elements[not(self::mspace)]"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test="$elements[local:is-matching-operator(., ('&#x2228;'))]">
         <!-- Logical Or -->
         <xsl:call-template name="local:handle-nary-operator">
@@ -230,12 +228,6 @@ All Rights Reserved
       <xsl:when test="empty($elements)">
         <!-- Empty -> empty -->
       </xsl:when>
-      <xsl:when test="$elements[self::mspace]">
-        <!-- Strip off <mspace/> and reapply this template to whatever is left -->
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$elements[not(self::mspace)]"/>
-        </xsl:call-template>
-      </xsl:when>
       <xsl:otherwise>
         <!-- Fail: unhandled group -->
         <xsl:copy-of select="s:make-error('UCEG01', $elements, ())"/>
@@ -251,7 +243,14 @@ All Rights Reserved
   </xsl:function>
 
   <!--
-  n-ary operator, such as '+'.
+  n-ary infix operator, such as '+', optionally allowed to be used in a prefix context.
+
+  This will have been grouped appropriately by the pmathml-enhancer.xsl stylesheet
+  so supported legal expressions will always be of one of the following forms:
+
+  1. n1 op1 n2 op2 ... nk (usual infix form)
+  2. op (unapplied operator)
+  3. op n (if the operator may also be used in prefix context)
 
   We need to be careful to handle unapplied operators and illegal
   prefix/postfix applications.
@@ -266,33 +265,72 @@ All Rights Reserved
         <!-- Unapplied operator -->
         <xsl:element name="{$cmathml-name}"/>
       </xsl:when>
+      <xsl:when test="count($elements)=2 and local:is-matching-operator($elements[1], $match)
+          and not(local:is-operator($elements[2]))">
+        <!-- Prefix context -->
+        <xsl:choose>
+          <xsl:when test="not($allow-as-prefix)">
+            <!-- Fail: operator is not a prefix operator -->
+            <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Legal prefix application -->
+            <apply>
+              <xsl:element name="{$cmathml-name}"/>
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$elements[2]"/>
+              </xsl:call-template>
+            </apply>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
       <xsl:otherwise>
-        <apply>
-          <xsl:element name="{$cmathml-name}"/>
-          <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-operator(., $match)">
+        <!-- Expecting legal infix content. We will check and process contents first -->
+        <xsl:variable name="content" as="element()*">
+          <xsl:if test="count($elements) mod 2 = 0">
+            <!-- Fail: Unsupported n-ary infix grouping -->
+            <xsl:copy-of select="s:make-error('UCEOP1', $elements, ($cmathml-name))"/>
+          </xsl:if>
+          <xsl:for-each select="$elements">
+            <xsl:variable name="i" as="xs:integer" select="position()"/>
             <xsl:choose>
-              <xsl:when test="current-grouping-key()">
-                <xsl:if test="not($allow-as-prefix) and not(preceding-sibling::*[1])">
-                  <!-- Fail: operator is not a prefix operator -->
-                  <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
-                </xsl:if>
-                <xsl:if test="not(following-sibling::*[1])">
-                  <!-- Fail: operator is not a postfix operator -->
-                  <xsl:copy-of select="s:make-error('UCEOP1', ., ($cmathml-name))"/>
-                </xsl:if>
-                <xsl:if test="following-sibling::*[1][local:is-operator(.)]">
-                  <!-- Fail: Bad combination of operators -->
-                  <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
-                </xsl:if>
+              <xsl:when test="$i mod 2 = 1">
+                <!-- Odd position, so expecting operand -->
+                <xsl:choose>
+                  <xsl:when test="local:is-matching-operator(., $match)">
+                    <!-- Fail: (as above) -->
+                    <xsl:copy-of select="s:make-error('UCEOP1', $elements, ($cmathml-name))"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <!-- Supported -->
+                    <xsl:call-template name="local:process-group">
+                      <xsl:with-param name="elements" select="."/>
+                    </xsl:call-template>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:call-template name="local:process-group">
-                  <xsl:with-param name="elements" select="current-group()"/>
-                </xsl:call-template>
+                <!-- Even position, so expecting operator -->
+                <xsl:if test="not(local:is-matching-operator(., $match))">
+                  <!-- Fail: (as above) -->
+                  <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
+                </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
-          </xsl:for-each-group>
-        </apply>
+          </xsl:for-each>
+        </xsl:variable>
+        <!-- Report first error child, if found -->
+        <xsl:choose>
+          <xsl:when test="$content[self::s:fail]">
+            <xsl:copy-of select="$content[self::s:fail][1] | $content[not(self::s:fail)]"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <apply>
+              <xsl:element name="{$cmathml-name}"/>
+              <xsl:copy-of select="$content"/>
+            </apply>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -322,29 +360,28 @@ All Rights Reserved
   in the expression as they are n-ary, but makes any later up-conversion to Maxima
   much easier.
 
-  TODO: Tidy this up with respect to error handling, and backport into the nary
-  operator case as there's no need for grouping in that one either.
-  TODO: Also need to cope with negative operators, which need to generatate
+  As with infix operators, we support the following forms:
+
+  1. n1 rel1 n2 rel2 ... nk
+  2. rel (unapplied relation)
+
+  FIXME: Need to cope with negative operators, which need to generatate
   corresponding notted operators in the output.
   -->
   <xsl:template name="local:handle-relation-operators">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:variable name="element-count" as="xs:integer" select="count($elements)"/>
-    <xsl:variable name="relation-operator-count" as="xs:integer" select="count($elements[local:is-relation-operator(.)])"/>
     <xsl:choose>
-      <xsl:when test="$element-count=1 and $relation-operator-count=1">
-        <!-- Single unapplied relation is OK -->
-        <xsl:element name="{local:get-relation-operator($elements[1])}"/>
+      <xsl:when test="$element-count=1 and local:is-relation-operator($elements[1])">
+        <!-- Unapplied relation -->
+        <xsl:copy-of select="local:create-relation-element($elements[1], ())"/>
       </xsl:when>
       <xsl:otherwise>
-        <!--
-        The only form we will allow is 'op1 rel1 op2 rel2 ... opn'.
-        It's easiest to do a counting loop with this to ensure everything works out.
-        -->
+        <!-- Standard infix form -->
         <xsl:variable name="paired" as="element()+">
           <xsl:if test="count($elements) mod 2 = 0">
-            <!-- Fail: Bad combination of operators (expecting odd number) -->
-            <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+            <!-- Fail: Relation operators must be strictly infix -->
+            <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
           </xsl:if>
           <xsl:for-each select="$elements">
             <xsl:variable name="i" as="xs:integer" select="position()"/>
@@ -352,35 +389,45 @@ All Rights Reserved
               <xsl:when test="$i mod 2 = 1">
                 <!-- Odd position, so expecting operand -->
                 <xsl:if test="local:is-relation-operator(.)">
-                  <!-- Fail: Bad combination of operators -->
-                  <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+                  <!-- Fail: Relation operators must be strictly infix -->
+                  <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
                 </xsl:if>
               </xsl:when>
               <xsl:otherwise>
                 <!-- Even position, so expecting relation -->
-                <xsl:if test="not(local:is-relation-operator(.))">
-                  <!-- Fail: Bad combination of operators -->
-                  <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
-                </xsl:if>
-                <!-- Group what came before and what comes after -->
-                <apply>
-                  <xsl:element name="{local:get-relation-operator(.)}"/>
-                  <xsl:call-template name="local:process-group">
-                    <xsl:with-param name="elements" select="$elements[position()=$i - 1]"/>
-                  </xsl:call-template>
-                  <xsl:call-template name="local:process-group">
-                    <xsl:with-param name="elements" select="$elements[position()=$i + 1]"/>
-                  </xsl:call-template>
-                </apply>
+                <xsl:choose>
+                  <xsl:when test="not(local:is-relation-operator(.))">
+                    <!-- Fail: Relation operators must be strictly infix -->
+                    <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <!-- Group what came before and what comes after -->
+                    <xsl:variable name="arguments" as="element()*">
+                      <xsl:call-template name="local:process-group">
+                        <xsl:with-param name="elements" select="$elements[position()=$i - 1]"/>
+                      </xsl:call-template>
+                      <xsl:call-template name="local:process-group">
+                        <xsl:with-param name="elements" select="$elements[position()=$i + 1]"/>
+                      </xsl:call-template>
+                    </xsl:variable>
+                    <xsl:copy-of select="local:create-relation-element(., $arguments)"/>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:for-each>
         </xsl:variable>
         <xsl:choose>
+          <xsl:when test="$paired[self::s:fail]">
+            <!-- Grouping error occurred. Keep the first one only as otherwise it gets tedious -->
+            <xsl:copy-of select="$paired[self::s:fail][1] | $paired[not(self::s:fail)]"/>
+          </xsl:when>
           <xsl:when test="count($paired)=1">
+            <!-- Single relation operator used in binary context, so easy -->
             <xsl:copy-of select="$paired[1]"/>
           </xsl:when>
           <xsl:otherwise>
+            <!-- More than one operator, so group as a logical 'and' -->
             <apply>
               <and/>
               <xsl:copy-of select="$paired"/>
@@ -392,11 +439,67 @@ All Rights Reserved
   </xsl:template>
 
   <!--
-  Binary operator, such as '-' or '/'.
+  Helper for the above template that creates the appropriate CMathML relation operator
+  corresponding to the given <mi/>, wrapping in <not/> if required
+  -->
+  <xsl:function name="local:create-relation-element" as="element()?">
+    <xsl:param name="mi" as="element()"/>
+    <xsl:param name="arguments" as="element()*"/>
+    <xsl:variable name="standard" as="xs:string?" select="$local:relation-operators[@input=string($mi)]/@output"/>
+    <xsl:variable name="negated" as="xs:string?" select="$local:relation-operators[@input-negated=string($mi)]/@output"/>
+    <xsl:choose>
+      <xsl:when test="exists($standard)">
+        <xsl:choose>
+          <xsl:when test="exists($arguments)">
+            <apply>
+              <xsl:element name="{$standard}"/>
+              <xsl:copy-of select="$arguments"/>
+            </apply>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Unapplied relation -->
+            <xsl:element name="{$standard}"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:when test="exists($negated)">
+        <xsl:choose>
+          <xsl:when test="exists($arguments)">
+            <apply>
+              <not/>
+              <apply>
+                <xsl:element name="{$negated}"/>
+                <xsl:copy-of select="$arguments"/>
+              </apply>
+            </apply>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Unapplied case, though not we still apply "not" to it -->
+            <apply>
+              <not/>
+              <xsl:element name="{$negated}"/>
+            </apply>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="yes">
+          Unexpected logic branch
+        </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 
-  These may be left unapplied.
-  We forbid these from being applied as postfix operators.
-  These may be allowed to behave as prefix operators, if specified.
+
+  <!--
+  Binary (and possibly unary) operator, such as '-' or '/'.
+
+  Supported legal expressions will always be of one of the following forms:
+
+  1. n1 op n2 (infix form)
+  2. op (unapplied operator)
+  3. op n (if the operator may also be used in unary (prefix) context)
+
   -->
   <xsl:template name="local:handle-binary-operator">
     <xsl:param name="elements" as="element()+" required="yes"/>
@@ -406,40 +509,48 @@ All Rights Reserved
     <xsl:variable name="operators" select="$elements[local:is-matching-operator(., $match)]" as="element()+"/>
     <xsl:variable name="operator-count" select="count($operators)" as="xs:integer"/>
     <xsl:choose>
-      <xsl:when test="count($elements)=1 and $operator-count=1">
+      <xsl:when test="count($elements)=1 and local:is-matching-operator($elements[1], $match)">
         <!-- Unapplied operator -->
         <xsl:element name="{$cmathml-name}"/>
       </xsl:when>
-      <xsl:when test="$operator-count!=1">
-        <!-- Fail: Ungrouped Binary operator -->
-        <xsl:copy-of select="s:make-error('UCEOP3', $elements, ($cmathml-name))"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <!-- Only one operator, so either 'op a', 'a op' or 'a op b' -->
-        <xsl:variable name="operator" select="$elements[local:is-operator(.)]" as="element()"/>
-        <xsl:variable name="left-operand" select="$elements[. &lt;&lt; $operator]" as="element()*"/>
-        <xsl:variable name="right-operand" select="$elements[. &gt;&gt; $operator]" as="element()*"/>
+      <xsl:when test="count($elements)=2 and local:is-matching-operator($elements[1], $match)
+          and not(local:is-operator($elements[2]))">
+        <!-- Unary/prefix context -->
         <xsl:choose>
-          <xsl:when test="empty($right-operand)">
-            <!-- Fail: operator is not a postfix operator -->
-            <xsl:copy-of select="s:make-error('UCEOP1', ., ($cmathml-name))"/>
-          </xsl:when>
-          <xsl:when test="empty($left-operand) and not($allow-as-prefix)">
+          <xsl:when test="not($allow-as-prefix)">
             <!-- Fail: operator is not a prefix operator -->
             <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
           </xsl:when>
           <xsl:otherwise>
+            <!-- Legal prefix/unary application -->
             <apply>
               <xsl:element name="{$cmathml-name}"/>
               <xsl:call-template name="local:process-group">
-                <xsl:with-param name="elements" select="$left-operand"/>
-              </xsl:call-template>
-              <xsl:call-template name="local:process-group">
-                <xsl:with-param name="elements" select="$right-operand"/>
+                <xsl:with-param name="elements" select="$elements[2]"/>
               </xsl:call-template>
             </apply>
           </xsl:otherwise>
         </xsl:choose>
+      </xsl:when>
+      <xsl:when test="count($elements) &gt; 3">
+        <!-- Fail: n-ary with n>2 not allowed -->
+        <xsl:copy-of select="s:make-error('UCEOP3', $elements, ($cmathml-name))"/>
+      </xsl:when>
+      <xsl:when test="count($elements) &lt; 3 or $elements[position()!=2][local:is-operator(.)] or not($elements[2][local:is-matching-operator(., $match)])">
+        <!-- Fail: bad grouping for binary operator -->
+        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ($cmathml-name))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- This is type (1) as outlined above -->
+        <apply>
+          <xsl:element name="{$cmathml-name}"/>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="$elements[1]"/>
+          </xsl:call-template>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="$elements[3]"/>
+          </xsl:call-template>
+        </apply>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -601,7 +712,7 @@ All Rights Reserved
         <xsl:choose>
           <xsl:when test="$operands[local:is-operator(.)]">
             <!-- Fail: bad combination of operators -->
-            <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+            <xsl:copy-of select="s:make-error('UCEOP5', $elements, ())"/>
           </xsl:when>
           <xsl:otherwise>
             <apply>
@@ -627,7 +738,7 @@ All Rights Reserved
       <xsl:when test="count($factorials)&gt;1">
         <!-- Too many factorials...
              Fail: Bad combination of operators -->
-        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ())"/>
+        <xsl:copy-of select="s:make-error('UCEOP5', $elements, ())"/>
       </xsl:when>
       <xsl:when test="count($elements)=2">
         <!-- Applied factorial -->

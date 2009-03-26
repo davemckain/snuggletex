@@ -112,6 +112,8 @@ public enum ErrorCode {
     UCEOP1(),
     UCEOP2(),
     UCEOP3(),
+    UCEOP4(),
+    UCEOP5(),
     UCEFN0(),
     UCEFN1(),
     UCEFX0(),
