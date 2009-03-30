@@ -539,14 +539,17 @@ x^{!}
 <mo>=</mo>
 <mn>3</mn>
 ====
-## I'm not sure about these ones yet...
-#a\in A
-#<mi>a</mi>
-#<mo>&#x2208;</mo>
-#<mi>A</mi>
-#====
-#a\not\in A
-#<mi>a</mi>
-#<mo>&#x2209;</mo>
-#<mi>A</mi>
-#====
+x \not\in A
+<mi>x</mi>
+<mo>&#x2209;</mo>
+<mi>A</mi>
+====
+x+A \in B
+<mrow>
+  <mi>x</mi>
+  <mo>+</mo>
+  <mi>A</mi>
+</mrow>
+<mo>&#x2208;</mo>
+<mi>B</mi>
+====

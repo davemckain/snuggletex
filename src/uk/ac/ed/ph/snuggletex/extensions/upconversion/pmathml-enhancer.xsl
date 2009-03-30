@@ -12,8 +12,6 @@ or Maxima input.
 See the local:process-group template to see how groupings/precedence
 are established.
 
-TODO: Other infix operators from set theory such as \in and stuff like that?
-TODO: Should we specify precedence for other infix operators? (Later... nothing to do with MathAssess... actually maybe not!)
 TODO: <mstyle/> is essentially being treated as neutering its contents... is this a good idea? It's a hard problem to solve in general.
 
 Copyright (c) 2009 The University of Edinburgh
@@ -61,8 +59,13 @@ All Rights Reserved
             'ln', 'log', 'exp')"/>
 
   <xsl:variable name="local:relation-characters" as="xs:string+"
-    select="('=', '&lt;', '&gt;', '&#x2264;', '&#x2265;',
-             '&#x2260;', '&#x226e;', '&#x226f;', '&#x2270;', '&#x2271;')"/>
+    select="('=', '&lt;', '&gt;', '|', '&#x2192;', '&#x21d2;',
+            '&#x2208;', '&#x2209;', '&#x2224;', '&#x2248;', '&#x2249;',
+            '&#x2264;', '&#x2265;', '&#x2260;', '&#x2261;', '&#x2264;',
+            '&#x2265;', '&#x226e;', '&#x226f;', '&#x2270;', '&#x2271;',
+            '&#x2261;', '&#x2262;', '&#x2248;', '&#x2249;', '&#x2282;',
+            '&#x2284;', '&#x2286;', '&#x2288;'
+            )"/>
 
   <xsl:variable name="local:explicit-multiplication-characters" as="xs:string+"
     select="('*', '&#xd7;', '&#x22c5;')"/>

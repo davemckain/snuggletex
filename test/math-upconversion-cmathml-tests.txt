@@ -733,19 +733,20 @@ A \land \lnot B
 ====
 ## Notted relations
 \not =
+<neq/>
+====
+## (CMathML doesn't have a 'not less than' operator so we need to synthesise one)
+\not <
 <apply>
   <not/>
-  <eq/>
+  <lt/>
 </apply>
 ====
 1 \not = 2
 <apply>
-  <not/>
-  <apply>
-    <eq/>
-    <cn>1</cn>
-    <cn>2</cn>
-  </apply>
+  <neq/>
+  <cn>1</cn>
+  <cn>2</cn>
 </apply>
 ====
 a \not< b \not> c \not\leq d \not\geq f
@@ -785,14 +786,115 @@ a \not< b \not> c \not\leq d \not\geq f
   </apply>
 </apply>
 ====
-## I'm not sure about these ones yet...
-#a\in A
-#<mi>a</mi>
-#<mo>&#x2208;</mo>
-#<mi>A</mi>
-#====
-#a\not\in A
-#<mi>a</mi>
-#<mo>&#x2209;</mo>
-#<mi>A</mi>
-#====
+a \equiv b
+<apply>
+  <equivalent/>
+  <ci>a</ci>
+  <ci>b</ci>
+</apply>
+====
+a \not\equiv b
+<apply>
+  <not/>
+  <apply>
+    <equivalent/>
+    <ci>a</ci>
+    <ci>b</ci>
+  </apply>
+</apply>
+====
+a \approx b
+<apply>
+  <approx/>
+  <ci>a</ci>
+  <ci>b</ci>
+</apply>
+====
+a \not\approx b
+<apply>
+  <not/>
+  <apply>
+    <approx/>
+    <ci>a</ci>
+    <ci>b</ci>
+  </apply>
+</apply>
+====
+a \equiv b
+<apply>
+  <equivalent/>
+  <ci>a</ci>
+  <ci>b</ci>
+</apply>
+====
+a\in A
+<apply>
+  <in/>
+  <ci>a</ci>
+  <ci>A</ci>
+</apply>
+====
+a\not\in A
+<apply>
+  <notin/>
+  <ci>a</ci>
+  <ci>A</ci>
+</apply>
+====
+a|b
+<apply>
+  <factorof/>
+  <ci>a</ci>
+  <ci>b</ci>
+</apply>
+====
+a|bc
+<apply>
+  <factorof/>
+  <ci>a</ci>
+  <apply>
+    <times/>
+    <ci>b</ci>
+    <ci>c</ci>
+  </apply>
+</apply>
+====
+A\subset B\subseteq C \not\subset D \not\subseteq E
+<apply>
+  <and/>
+  <apply>
+    <prsubset/>
+    <ci>A</ci>
+    <ci>B</ci>
+  </apply>
+  <apply>
+    <subset/>
+    <ci>B</ci>
+    <ci>C</ci>
+  </apply>
+  <apply>
+    <notprsubset/>
+    <ci>C</ci>
+    <ci>D</ci>
+  </apply>
+  <apply>
+    <notsubset/>
+    <ci>D</ci>
+    <ci>E</ci>
+  </apply>
+</apply>
+====
+x \longrightarrow 1
+<apply>
+  <tendsto/>
+  <ci>x</ci>
+  <cn>1</cn>
+</apply>
+====
+A \Longrightarrow B
+<apply>
+  <implies/>
+  <ci>A</ci>
+  <ci>B</ci>
+</apply>
+====

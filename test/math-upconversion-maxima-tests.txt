@@ -236,7 +236,7 @@ x < y
 (1 = x) and (x > y)
 ====
 1 \not= 2
-not((1 = 2))
+1 # 2
 ====
 1 \not< 2
 not((1 < 2))
@@ -251,7 +251,7 @@ not((1 <= 2))
 not((1 >= 2))
 ====
 a \not= b \not= c
-not((a = b)) and not((b = c))
+(a # b) and (b # c)
 ====
 ## Special units handling
 \units{kg}

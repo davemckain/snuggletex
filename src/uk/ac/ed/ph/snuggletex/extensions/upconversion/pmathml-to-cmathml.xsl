@@ -68,12 +68,33 @@ All Rights Reserved
     <local:operator input="&#xac;" output="not"/>
   </xsl:variable>
 
+  <!--
+  Mappings of <mi/> element contents to Content MathML relation operators,
+  including support for negating operators by combining with a <not/> element
+  where appropriate.
+  -->
   <xsl:variable name="local:relation-operators" as="element()+">
-    <local:operator input="=" input-negated="&#x2260;" output="eq"/>
+    <local:operator input="=" output="eq"/>
+    <local:operator input="&#x2260;" output="neq"/>
     <local:operator input="&lt;" input-negated="&#x226e;" output="lt"/>
     <local:operator input="&gt;" input-negated="&#x226f;" output="gt"/>
     <local:operator input="&#x2264;" input-negated="&#x2270;" output="leq"/>
     <local:operator input="&#x2265;" input-negated="&#x2271;" output="geq"/>
+    <local:operator input="&#x2261;" input-negated="&#x2262;" output="equivalent"/>
+    <local:operator input="&#x2248;" input-negated="&#x2249;" output="approx"/>
+    <local:operator input="|" input-negated="&#x2224;" output="factorof"/>
+    <local:operator input="&#x2208;" output="in"/>
+    <local:operator input="&#x2209;" output="notin"/>
+    <!--
+    TODO: The following outputs are often represented by different input characters.
+    Might be good to parametrise these.
+    -->
+    <local:operator input="&#x2282;" output="prsubset"/>
+    <local:operator input="&#x2284;" output="notprsubset"/>
+    <local:operator input="&#x2286;" output="subset"/>
+    <local:operator input="&#x2288;" output="notsubset"/>
+    <local:operator input="&#x2192;" output="tendsto"/>
+    <local:operator input="&#x21d2;" output="implies"/>
   </xsl:variable>
 
   <!--
@@ -445,30 +466,32 @@ All Rights Reserved
   <xsl:function name="local:create-relation-element" as="element()?">
     <xsl:param name="mi" as="element()"/>
     <xsl:param name="arguments" as="element()*"/>
-    <xsl:variable name="standard" as="xs:string?" select="$local:relation-operators[@input=string($mi)]/@output"/>
-    <xsl:variable name="negated" as="xs:string?" select="$local:relation-operators[@input-negated=string($mi)]/@output"/>
+    <xsl:variable name="positive-native" as="xs:string?" select="$local:relation-operators[@input=string($mi)]/@output"/>
+    <xsl:variable name="negated-native" as="xs:string?" select="$local:relation-operators[@input-negated=string($mi)]/@output-negated"/>
+    <xsl:variable name="negated-synthetic" as="xs:string?" select="$local:relation-operators[@input-negated=string($mi)]/@output"/>
     <xsl:choose>
-      <xsl:when test="exists($standard)">
+      <xsl:when test="exists($positive-native) or exists($negated-native)">
+        <xsl:variable name="output-native" as="xs:string" select="($positive-native, $negated-native)[1]"/>
         <xsl:choose>
           <xsl:when test="exists($arguments)">
             <apply>
-              <xsl:element name="{$standard}"/>
+              <xsl:element name="{$output-native}"/>
               <xsl:copy-of select="$arguments"/>
             </apply>
           </xsl:when>
           <xsl:otherwise>
             <!-- Unapplied relation -->
-            <xsl:element name="{$standard}"/>
+            <xsl:element name="{$output-native}"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
-      <xsl:when test="exists($negated)">
+      <xsl:when test="exists($negated-synthetic)">
         <xsl:choose>
           <xsl:when test="exists($arguments)">
             <apply>
               <not/>
               <apply>
-                <xsl:element name="{$negated}"/>
+                <xsl:element name="{$negated-synthetic}"/>
                 <xsl:copy-of select="$arguments"/>
               </apply>
             </apply>
@@ -477,7 +500,7 @@ All Rights Reserved
             <!-- Unapplied case, though not we still apply "not" to it -->
             <apply>
               <not/>
-              <xsl:element name="{$negated}"/>
+              <xsl:element name="{$negated-synthetic}"/>
             </apply>
           </xsl:otherwise>
         </xsl:choose>
