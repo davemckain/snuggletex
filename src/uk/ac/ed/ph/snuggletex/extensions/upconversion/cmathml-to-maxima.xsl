@@ -110,7 +110,6 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <arccoth maxima-function="acoth"/>
     <exp maxima-function="exp"/>
     <ln maxima-function="log"/>
-    <log/>
   </xsl:variable>
 
   <!-- Supported prefix/infix/postfix operators -->

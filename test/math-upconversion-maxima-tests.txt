@@ -178,12 +178,15 @@ exp(x)
 log(y)
 ====
 ## Still need to decide what to do with these!
-#\log x
-#?
-#====
-#\log_a x
-#?
-#====
+\log x
+!UMEG01
+====
+\log_a x
+!UMEG01
+====
+\log
+!UMEG00
+====
 [1,2]
 [1, 2]
 ====
