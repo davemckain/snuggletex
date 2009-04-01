@@ -185,17 +185,24 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   Example:
 
   <plus/>
+
+  Output:
+
+  operator("+")
   -->
   <xsl:template match="*[sc:is-operator(.)]" mode="cmathml-to-maxima">
     <xsl:variable name="operator" select="sc:get-operator(.)" as="element()"/>
-    <xsl:value-of select="local:unapply-operator($operator)"/>
+    <xsl:value-of select="local:unapply-operator($operator, false())"/>
   </xsl:template>
 
   <xsl:function name="local:unapply-operator" as="xs:string">
     <xsl:param name="operator" as="element()"/>
+    <xsl:param name="negate" as="xs:boolean"/>
+    <xsl:variable name="maxima-raw-name" as="xs:string?" select="$operator/@maxima-unapplied-operator"/>
     <xsl:choose>
-      <xsl:when test="$operator/@maxima-unapplied-operator">
-        <xsl:copy-of select="sc:make-unapplied-operator($operator/@maxima-unapplied-operator)"/>
+      <xsl:when test="$maxima-raw-name">
+        <xsl:copy-of select="sc:make-unapplied-operator(if ($negate)
+          then concat('not', $maxima-raw-name) else $maxima-raw-name)"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">
@@ -205,6 +212,44 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
       </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
+
+  <!--
+  Unapplied and negated infix operator
+
+  Example:
+
+  <apply>
+    <not/>
+    <plus/>
+  </apply>
+
+  For better or worse, this would output:
+
+  operator("not+")
+  -->
+  <xsl:template match="apply[count(*)=2 and *[1][self::not] and sc:is-operator(*[2])]" mode="cmathml-to-maxima">
+    <xsl:variable name="operator" as="element()" select="sc:get-operator(*[2])"/>
+    <xsl:value-of select="local:unapply-operator($operator, true())"/>
+  </xsl:template>
+
+  <!--
+  Half-arsed Applied infix operator
+
+  Example:
+
+  <apply>
+    <plus/>
+  </apply>
+
+  This one doesn't really make any sense; we'll pretend it's an unapplied
+  operator for the time being and output:
+
+  operator("+")
+  -->
+  <xsl:template match="apply[count(*)=1 and sc:is-operator(*[1])]" mode="cmathml-to-maxima">
+    <xsl:variable name="operator" as="element()" select="sc:get-operator(*[1])"/>
+    <xsl:value-of select="local:unapply-operator($operator, false())"/>
+  </xsl:template>
 
   <!--
   Applied infix operator.
@@ -217,7 +262,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <cn>5</cn>
   </apply>
   -->
-  <xsl:template match="apply[sc:is-operator(*[1]) and count(*)&gt;1]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*)&gt;1 and sc:is-operator(*[1]) and not(sc:is-operator(*[2]))]" mode="cmathml-to-maxima">
     <xsl:variable name="operator" as="element()" select="sc:get-operator(*[1])"/>
     <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
@@ -260,24 +305,6 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
         <xsl:text>)</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-
-  <!--
-  Half-arsed Applied infix operator
-
-  Example:
-
-  <apply>
-    <plus/>
-  </apply>
-
-  This one doesn't really make any sense; we'll pretend it's an unapplied
-  operator for the time being
-
-  -->
-  <xsl:template match="apply[sc:is-operator(*[1]) and count(*)=1]" mode="cmathml-to-maxima">
-    <xsl:variable name="operator" as="element()" select="sc:get-operator(*[1])"/>
-    <xsl:value-of select="local:unapply-operator($operator)"/>
   </xsl:template>
 
   <!--
@@ -402,11 +429,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <!-- ************************************************************ -->
 
-  <!--
-  Maxima doesn't actually support intervals!
-  -->
+  <!-- Maxima doesn't actually support intervals! -->
   <xsl:template match="interval" mode="cmathml-to-maxima">
-    <xsl:copy-of select="s:make-error('UMEG00', ., ())"/>
+    <xsl:copy-of select="s:make-error('UMEG02', ., ())"/>
   </xsl:template>
 
   <xsl:template match="set" mode="cmathml-to-maxima">
@@ -479,7 +504,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
           </xsl:when>
           <xsl:otherwise>
             <!-- Fail: no suitable Maxima input form for identifier -->
-            <xsl:copy-of select="s:make-error('UMEID0', $element, ($name))"/>
+            <xsl:copy-of select="s:make-error('UMEG03', $element, ($name))"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -513,11 +538,14 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <!-- ************************************************************ -->
 
-  <!-- Default catch-all -->
+  <!-- Catch-all for the <apply/> cases we can't or won't handle here -->
+  <xsl:template match="apply" mode="cmathml-to-maxima">
+    <xsl:copy-of select="s:make-error('UMEG01', ., (local-name(*[1])))"/>
+  </xsl:template>
+
+  <!-- Default catch-all for everything else -->
   <xsl:template match="*" mode="cmathml-to-maxima">
-    <xsl:message terminate="yes">
-      No template match for element <xsl:copy-of select="."/>
-    </xsl:message>
+    <xsl:copy-of select="s:make-error('UMEG00', ., (local-name(.)))"/>
   </xsl:template>
 
 </xsl:stylesheet>

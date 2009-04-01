@@ -29,7 +29,7 @@ x_1
 ====
 ## @ is currently treated as an identfier, which has no Maxima form
 @
-!UMEID0
+!UMEG03
 ====
 ## Binary equals
 x=y
@@ -274,6 +274,43 @@ units("kg")
 1+*x
 !UCEOP0
 ====
+## Other relations
+\not =
+operator("#")
+====
+<
+operator("<")
+====
+>
+operator(">")
+====
+\leq
+operator("<=")
+====
+\geq
+operator(">=")
+====
+1 \not= 2
+1 # 2
+====
+a < b \leq c \geq d > f
+(a < b) and (b <= c) and (c >= d) and (d > f)
+====
+a \not< b \not\leq c \not\geq d \not> f
+not((a < b)) and not((b <= c)) and not((c >= d)) and not((d > f))
+====
+\not<
+operator("not<")
+====
+a \equiv b
+!UMEG01
+====
+a \approx b
+!UMEG01
+====
+\equiv
+!UMEG00
+====
 #####################################
 ### Corner Cases
 \sin{}
@@ -289,6 +326,7 @@ exp
 {}+{}
 operator("+")
 ====
+## Likewise. (This is currently the only way of obtaining operator("^"))
 {}^{}
 operator("^")
 ====

@@ -120,7 +120,9 @@ public enum ErrorCode {
     UCEFX1(),
     
     UMEG00(),
-    UMEID0(),
+    UMEG01(),
+    UMEG02(),
+    UMEG03(),
     
     ;
 }
