@@ -542,6 +542,13 @@ i
 \pi
 <pi/>
 ====
+## special identifiers
+\emptyset
+<emptyset/>
+====
+\infty
+<infinity/>
+====
 ## Subscripted identifiers are now handled as mix of CMathML and PMathML
 x_1
 <ci>
@@ -897,4 +904,54 @@ A \Longrightarrow B
   <ci>A</ci>
   <ci>B</ci>
 </apply>
+====
+## More set theory
+A \cup B
+<apply>
+  <union/>
+  <ci>A</ci>
+  <ci>B</ci>
+</apply>
+====
+A \cup x+A
+<apply>
+  <union/>
+  <ci>A</ci>
+  <apply>
+    <plus/>
+    <ci>x</ci>
+    <ci>A</ci>
+  </apply>
+</apply>
+====
+A \cup B \cap C
+<apply>
+  <union/>
+  <ci>A</ci>
+  <apply>
+    <intersect/>
+    <ci>B</ci>
+    <ci>C</ci>
+  </apply>
+</apply>
+====
+A \cup B \backslash C
+<apply>
+  <union/>
+  <ci>A</ci>
+  <apply>
+    <setdiff/>
+    <ci>B</ci>
+    <ci>C</ci>
+  </apply>
+</apply>
+====
+\cup
+<union/>
+====
+\cap
+<intersect/>
+====
+\backslash
+<setdiff/>
 ====

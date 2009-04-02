@@ -553,3 +553,36 @@ x+A \in B
 <mo>&#x2208;</mo>
 <mi>B</mi>
 ====
+## More set theory
+A \cup B
+<mi>A</mi>
+<mo>&#x222a;</mo>
+<mi>B</mi>
+====
+A \cup x+A
+<mi>A</mi>
+<mo>&#x222a;</mo>
+<mrow>
+  <mi>x</mi>
+  <mo>+</mo>
+  <mi>A</mi>
+</mrow>
+====
+A \cup B \cap C
+<mi>A</mi>
+<mo>&#x222a;</mo>
+<mrow>
+  <mi>B</mi>
+  <mo>&#x2229;</mo>
+  <mi>C</mi>
+</mrow>
+====
+A \cup B \backslash C
+<mi>A</mi>
+<mo>&#x222a;</mo>
+<mrow>
+  <mi>B</mi>
+  <mo>\</mo>
+  <mi>C</mi>
+</mrow>
+====

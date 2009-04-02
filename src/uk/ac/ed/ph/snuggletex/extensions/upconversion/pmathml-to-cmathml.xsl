@@ -188,6 +188,33 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
+      <xsl:when test="$elements[local:is-matching-operator(., ('&#x222a;'))]">
+        <!-- Set Union -->
+        <xsl:call-template name="local:handle-nary-operator">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x222a;')"/>
+          <xsl:with-param name="cmathml-name" select="'union'"/>
+          <xsl:with-param name="allow-as-prefix" select="false()"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2229;'))]">
+        <!-- Set Intersection -->
+        <xsl:call-template name="local:handle-nary-operator">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x2229;')"/>
+          <xsl:with-param name="cmathml-name" select="'intersect'"/>
+          <xsl:with-param name="allow-as-prefix" select="false()"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-operator(., ('\'))]">
+        <!-- Set Difference -->
+        <xsl:call-template name="local:handle-nary-operator">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('\')"/>
+          <xsl:with-param name="cmathml-name" select="'setdiff'"/>
+          <xsl:with-param name="allow-as-prefix" select="false()"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test="$elements[local:is-matching-operator(., ('+'))]">
         <!-- Addition -->
         <xsl:call-template name="local:handle-nary-operator">
@@ -907,7 +934,17 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <!-- Optional Special constants. -->
+  <!-- Special identifiers -->
+
+  <xsl:template match="mi[.='&#x2205;']" mode="pmathml-to-cmathml">
+    <emptyset/>
+  </xsl:template>
+
+  <xsl:template match="mi[.='&#x221e;']" mode="pmathml-to-cmathml">
+    <infinity/>
+  </xsl:template>
+
+  <!-- Optional Special identifiers -->
 
   <xsl:template match="mi[.='e' and $s:assume-exponential-e]" mode="pmathml-to-cmathml">
     <exponentiale/>

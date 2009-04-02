@@ -76,11 +76,20 @@ All Rights Reserved
   <xsl:variable name="local:prefix-operators" as="xs:string+"
     select="('&#xac;')"/>
 
-  <!-- NOTE: We're allowing infix operators to act as prefix operators here, even though
-       this won't make sense further in the up-conversion process -->
+  <!--
+  All supported infix operators.
+
+  NOTE: I've listed these in precedence order for readability. The actual ordering
+  is not used in the code though.
+
+  NOTE: We're allowing infix operators to act as prefix operators here, even though
+  this won't make sense further in the up-conversion process
+  -->
   <xsl:variable name="local:infix-operators" as="xs:string+"
-    select="('&#x2227;', '&#x2228;', '+', '-',
+    select="('&#x2228;', '&#x2227;',
              $local:relation-characters,
+             '\', '&#x222a;', '&#x2229;',
+             '+', '-',
              $local:explicit-multiplication-characters,
              $local:explicit-division-characters)"/>
 
@@ -193,6 +202,27 @@ All Rights Reserved
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="$local:relation-characters"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x222a;'))]">
+        <!-- Set Union -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x222a;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2229;'))]">
+        <!-- Set Intersection -->
+        <xsl:call-template name="local:group-left-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#x2229;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('\'))]">
+        <!-- Set Difference -->
+        <xsl:call-template name="local:group-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('\')"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[local:is-matching-infix-mo(., ('+'))]">

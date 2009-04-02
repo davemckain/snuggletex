@@ -162,6 +162,12 @@ sin(x) * y
 x\,y
 x * y
 ====
+\emptyset
+{}
+====
+\infty
+inf
+====
 i
 %i
 ====
@@ -305,6 +311,7 @@ not((a < b)) and not((b <= c)) and not((c >= d)) and not((d > f))
 \not<
 operator("not<")
 ====
+## These aren't supported currently
 a \equiv b
 !UMEG01
 ====
@@ -313,6 +320,28 @@ a \approx b
 ====
 \equiv
 !UMEG00
+====
+## Set theory stuff
+\cup
+operator("union")
+====
+\cap
+operator("intersection")
+====
+\backslash
+operator("setdifference")
+====
+A \cup B
+union(A, B)
+====
+A \cup x+A
+union(A, (x + A))
+====
+A \cup B \cap C
+union(A, intersection(B, C))
+====
+A \cup B \backslash C
+union(A, setdifference(B, C))
 ====
 #####################################
 ### Corner Cases

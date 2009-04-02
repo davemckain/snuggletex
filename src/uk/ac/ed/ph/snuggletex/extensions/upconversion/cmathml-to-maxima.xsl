@@ -129,6 +129,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <not maxima-unapplied-operator="not" maxima-unary-function="not"/>
     <and maxima-unapplied-operator="and" maxima-nary-infix-operator=" and "/>
     <or maxima-unapplied-operator="or" maxima-nary-infix-operator=" or "/>
+    <union maxima-unapplied-operator="union" maxima-nary-function="union"/>
+    <intersect maxima-unapplied-operator="intersection" maxima-nary-function="intersection"/>
+    <setdiff maxima-unapplied-operator="setdifference" maxima-nary-function="setdifference"/>
   </xsl:variable>
 
   <xsl:function name="sc:is-operator" as="xs:boolean">
@@ -276,7 +279,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-unary-function">
-            <!-- Fucntion operator e.g. not() -->
+            <!-- Function operator e.g. not() -->
             <xsl:value-of select="$operator/@maxima-unary-function"/>
             <xsl:text>(</xsl:text>
             <xsl:copy-of select="sc:to-maxima($operands[1])"/>
@@ -299,9 +302,31 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
       </xsl:when>
       <xsl:otherwise>
         <!-- nary case (NOTE: Earlier stylesheet will ensure binary when required) -->
-        <xsl:text>(</xsl:text>
-        <xsl:copy-of select="sc:to-maxima-map($operands, $operator/@maxima-nary-infix-operator)"/>
-        <xsl:text>)</xsl:text>
+        <xsl:choose>
+          <xsl:when test="$operator/@maxima-nary-infix-operator">
+            <xsl:text>(</xsl:text>
+            <xsl:copy-of select="sc:to-maxima-map($operands, $operator/@maxima-nary-infix-operator)"/>
+            <xsl:text>)</xsl:text>
+          </xsl:when>
+          <xsl:when test="$operator/@maxima-nary-function">
+            <!-- Function operator, e.g. union() -->
+            <xsl:value-of select="$operator/@maxima-nary-function"/>
+            <xsl:text>(</xsl:text>
+            <xsl:for-each select="$operands">
+              <xsl:copy-of select="sc:to-maxima(.)"/>
+              <xsl:if test="position()!=last()">
+                <xsl:text>, </xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+            <xsl:text>)</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:message terminate="yes">
+              Operator <xsl:value-of select="$operator/local-name()"/> cannot
+              be used in an n-ary context.
+            </xsl:message>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -462,6 +487,17 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima">
     <xsl:value-of select="concat($s:maxima-units-function, '(&quot;', ., '&quot;)')"/>
+  </xsl:template>
+
+  <!-- ************************************************************ -->
+
+  <xsl:template match="emptyset" mode="cmathml-to-maxima">
+    <xsl:text>{}</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="infinity" mode="cmathml-to-maxima">
+    <!-- NB: This represents real positive infinity only! -->
+    <xsl:text>inf</xsl:text>
   </xsl:template>
 
   <!-- ************************************************************ -->
