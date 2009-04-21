@@ -373,6 +373,7 @@ public final class GlobalBuiltins {
         map.addSimpleMathCommand("inf", new MathFunctionIdentifierInterpretation("inf"));
         map.addSimpleMathCommand("ker", new MathFunctionIdentifierInterpretation("ker"));
         map.addSimpleMathCommand("lg", new MathFunctionIdentifierInterpretation("lg"));
+        map.addSimpleMathCommand("lcm", new MathFunctionIdentifierInterpretation("lcm"));
         map.addSimpleMathCommand("lim", new MathFunctionIdentifierInterpretation("lim"));
         map.addSimpleMathCommand("liminf", new MathFunctionIdentifierInterpretation("lim inf"));
         map.addSimpleMathCommand("limsup", new MathFunctionIdentifierInterpretation("lim sup"));
