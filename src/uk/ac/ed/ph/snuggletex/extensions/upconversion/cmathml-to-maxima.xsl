@@ -20,10 +20,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:sc="http://www.ph.ed.ac.uk/snuggletex/cmathml"
   xmlns:local="http://www.ph.ed.ac.uk/snuggletex/cmathml-to-maxima"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s sc local"
+  exclude-result-prefixes="xs s local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <xsl:import href="common.xsl"/>
@@ -44,7 +43,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- ************************************************************ -->
 
   <!-- Supported non-alphanumeric identifiers, mapping Unicode character to Maxima input -->
-  <xsl:variable name="sc:identifier-dictionary" as="element()+">
+  <xsl:variable name="local:identifier-dictionary" as="element(ci)+">
     <ci maxima-input="%alpha">&#x3b1;</ci>
     <ci maxima-input="%beta">&#x3b2;</ci>
     <ci maxima-input="%gamma">&#x3b3;</ci>
@@ -81,8 +80,8 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <ci maxima-input="%Omega">&#x3a9;</ci>
   </xsl:variable>
 
-  <!-- Supported elementary functions, named after CMathML elements -->
-  <xsl:variable name="sc:elementary-functions" as="element()+">
+  <!-- Supported functions, named after CMathML elements -->
+  <xsl:variable name="local:supported-functions" as="element()+">
     <!-- The resulting Maxima function name is encoded within an input Content MathML element -->
     <sin maxima-function="sin"/>
     <cos maxima-function="cos"/>
@@ -110,10 +109,27 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <arccoth maxima-function="acoth"/>
     <exp maxima-function="exp"/>
     <ln maxima-function="log"/>
+    <determinant maxima-function="determinant"/>
+    <real maxima-function="realpart"/>
+    <imaginary maxima-function="imagpart"/>
+    <gcd maxima-function="gcd" require-nary="true"/>
+    <lcm maxima-function="lcm" require-nary="true"/>
+    <max maxima-function="max" require-nary="true"/>
+    <min maxima-function="min" require-nary="true"/>
   </xsl:variable>
 
+  <xsl:function name="local:is-supported-function" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($local:supported-functions[local-name()=$element/local-name()])"/>
+  </xsl:function>
+
+  <xsl:function name="local:get-supported-function" as="element()?">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="$local:supported-functions[local-name()=$element/local-name()]"/>
+  </xsl:function>
+
   <!-- Supported prefix/infix/postfix operators -->
-  <xsl:variable name="sc:operators" as="element()+">
+  <xsl:variable name="local:operators" as="element()+">
     <eq maxima-unapplied-operator="=" maxima-nary-infix-operator=" = "/>
     <neq maxima-unapplied-operator="#" maxima-nary-infix-operator=" # "/>
     <lt maxima-unapplied-operator="&lt;" maxima-nary-infix-operator=" &lt; "/>
@@ -134,47 +150,37 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <setdiff maxima-unapplied-operator="setdifference" maxima-nary-function="setdifference"/>
   </xsl:variable>
 
-  <xsl:function name="sc:is-operator" as="xs:boolean">
+  <xsl:function name="local:is-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($sc:operators[local-name()=$element/local-name()])"/>
+    <xsl:sequence select="boolean($local:operators[local-name()=$element/local-name()])"/>
   </xsl:function>
 
-  <xsl:function name="sc:get-operator" as="element()?">
+  <xsl:function name="local:get-operator" as="element()?">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="$sc:operators[local-name()=$element/local-name()]"/>
-  </xsl:function>
-
-  <xsl:function name="sc:is-elementary-function" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($sc:elementary-functions[local-name()=$element/local-name()])"/>
-  </xsl:function>
-
-  <xsl:function name="sc:get-maxima-function" as="xs:string?">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="$sc:elementary-functions[local-name()=$element/local-name()]/@maxima-function"/>
+    <xsl:sequence select="$local:operators[local-name()=$element/local-name()]"/>
   </xsl:function>
 
   <!-- ************************************************************ -->
   <!-- "Functional" helpers  -->
   <!-- (Recall that these may return either xs:string or an <s:fail/> element) -->
 
-  <xsl:function name="sc:to-maxima" as="node()*">
+  <xsl:function name="local:to-maxima" as="node()*">
     <xsl:param name="element" as="element()"/>
     <xsl:apply-templates select="$element" mode="cmathml-to-maxima"/>
   </xsl:function>
 
-  <xsl:function name="sc:to-maxima-map" as="node()*">
+  <xsl:function name="local:to-maxima-map" as="node()*">
     <xsl:param name="elements" as="element()*"/>
     <xsl:param name="joiner" as="xs:string"/>
     <xsl:for-each select="$elements">
-      <xsl:value-of select="sc:to-maxima(.)"/>
+      <xsl:value-of select="local:to-maxima(.)"/>
       <xsl:if test="position() != last()">
         <xsl:value-of select="$joiner"/>
       </xsl:if>
     </xsl:for-each>
   </xsl:function>
 
-  <xsl:function name="sc:make-unapplied-operator" as="node()*">
+  <xsl:function name="local:make-unapplied-operator" as="node()*">
     <xsl:param name="operator" as="xs:string"/>
     <xsl:value-of select="concat($s:maxima-operator-function, '(&quot;', $operator, '&quot;)')"/>
   </xsl:function>
@@ -192,8 +198,8 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   operator("+")
   -->
-  <xsl:template match="*[sc:is-operator(.)]" mode="cmathml-to-maxima">
-    <xsl:variable name="operator" select="sc:get-operator(.)" as="element()"/>
+  <xsl:template match="*[local:is-operator(.)]" mode="cmathml-to-maxima">
+    <xsl:variable name="operator" select="local:get-operator(.)" as="element()"/>
     <xsl:value-of select="local:unapply-operator($operator, false())"/>
   </xsl:template>
 
@@ -203,7 +209,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:variable name="maxima-raw-name" as="xs:string?" select="$operator/@maxima-unapplied-operator"/>
     <xsl:choose>
       <xsl:when test="$maxima-raw-name">
-        <xsl:copy-of select="sc:make-unapplied-operator(if ($negate)
+        <xsl:copy-of select="local:make-unapplied-operator(if ($negate)
           then concat('not', $maxima-raw-name) else $maxima-raw-name)"/>
       </xsl:when>
       <xsl:otherwise>
@@ -229,8 +235,8 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   operator("not+")
   -->
-  <xsl:template match="apply[count(*)=2 and *[1][self::not] and sc:is-operator(*[2])]" mode="cmathml-to-maxima">
-    <xsl:variable name="operator" as="element()" select="sc:get-operator(*[2])"/>
+  <xsl:template match="apply[count(*)=2 and *[1][self::not] and local:is-operator(*[2])]" mode="cmathml-to-maxima">
+    <xsl:variable name="operator" as="element()" select="local:get-operator(*[2])"/>
     <xsl:value-of select="local:unapply-operator($operator, true())"/>
   </xsl:template>
 
@@ -248,8 +254,8 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   operator("+")
   -->
-  <xsl:template match="apply[count(*)=1 and sc:is-operator(*[1])]" mode="cmathml-to-maxima">
-    <xsl:variable name="operator" as="element()" select="sc:get-operator(*[1])"/>
+  <xsl:template match="apply[count(*)=1 and local:is-operator(*[1])]" mode="cmathml-to-maxima">
+    <xsl:variable name="operator" as="element()" select="local:get-operator(*[1])"/>
     <xsl:value-of select="local:unapply-operator($operator, false())"/>
   </xsl:template>
 
@@ -264,8 +270,8 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <cn>5</cn>
   </apply>
   -->
-  <xsl:template match="apply[count(*)&gt;1 and sc:is-operator(*[1]) and not(sc:is-operator(*[2]))]" mode="cmathml-to-maxima">
-    <xsl:variable name="operator" as="element()" select="sc:get-operator(*[1])"/>
+  <xsl:template match="apply[count(*)&gt;1 and local:is-operator(*[1]) and not(local:is-operator(*[2]))]" mode="cmathml-to-maxima">
+    <xsl:variable name="operator" as="element()" select="local:get-operator(*[1])"/>
     <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
       <xsl:when test="count($operands)=1">
@@ -275,20 +281,20 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <!-- Prefix operator, e.g. '-' in unary context -->
             <xsl:text>(</xsl:text>
             <xsl:value-of select="$operator/@maxima-unary-prefix-operator"/>
-            <xsl:copy-of select="sc:to-maxima($operands[1])"/>
+            <xsl:copy-of select="local:to-maxima($operands[1])"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-unary-function">
             <!-- Function operator e.g. not() -->
             <xsl:value-of select="$operator/@maxima-unary-function"/>
             <xsl:text>(</xsl:text>
-            <xsl:copy-of select="sc:to-maxima($operands[1])"/>
+            <xsl:copy-of select="local:to-maxima($operands[1])"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-unary-postfix-operator">
             <!-- Postfix operator -->
             <xsl:text>(</xsl:text>
-            <xsl:copy-of select="sc:to-maxima($operands[1])"/>
+            <xsl:copy-of select="local:to-maxima($operands[1])"/>
             <xsl:value-of select="$operator/@maxima-unary-postfix-operator"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
@@ -305,7 +311,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
         <xsl:choose>
           <xsl:when test="$operator/@maxima-nary-infix-operator">
             <xsl:text>(</xsl:text>
-            <xsl:copy-of select="sc:to-maxima-map($operands, $operator/@maxima-nary-infix-operator)"/>
+            <xsl:copy-of select="local:to-maxima-map($operands, $operator/@maxima-nary-infix-operator)"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-nary-function">
@@ -313,7 +319,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <xsl:value-of select="$operator/@maxima-nary-function"/>
             <xsl:text>(</xsl:text>
             <xsl:for-each select="$operands">
-              <xsl:copy-of select="sc:to-maxima(.)"/>
+              <xsl:copy-of select="local:to-maxima(.)"/>
               <xsl:if test="position()!=last()">
                 <xsl:text>, </xsl:text>
               </xsl:if>
@@ -345,7 +351,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <xsl:template match="apply[*[1][self::root] and not(degree) and count(*)=2]" mode="cmathml-to-maxima">
     <xsl:variable name="operand" as="element()" select="*[2]"/>
     <xsl:text>sqrt(</xsl:text>
-    <xsl:copy-of select="sc:to-maxima($operand)"/>
+    <xsl:copy-of select="local:to-maxima($operand)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
@@ -365,26 +371,25 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <xsl:template match="apply[*[1][self::root] and degree and count(*)=3]" mode="cmathml-to-maxima">
     <xsl:variable name="operand" as="element()" select="*[3]"/>
     <xsl:text>((</xsl:text>
-    <xsl:copy-of select="sc:to-maxima($operand)"/>
+    <xsl:copy-of select="local:to-maxima($operand)"/>
     <xsl:text>)^(1/</xsl:text>
-    <xsl:copy-of select="sc:to-maxima(degree/*)"/>
+    <xsl:copy-of select="local:to-maxima(degree/*)"/>
     <xsl:text>))</xsl:text>
   </xsl:template>
 
   <!--
-  Unapplied elementary function
+  Unapplied function
 
   Example:
 
   <sin/>
   -->
-  <xsl:template match="*[sc:is-elementary-function(.)]" mode="cmathml-to-maxima">
-    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(.)"/>
-    <xsl:value-of select="$function"/>
+  <xsl:template match="*[local:is-supported-function(.)]" mode="cmathml-to-maxima">
+    <xsl:value-of select="local:get-supported-function(.)/@maxima-function"/>
   </xsl:template>
 
   <!--
-  Applied Elementary Function
+  Applied Function, allowing n-ary application when supported.
 
   Example:
 
@@ -394,17 +399,25 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
 
   -->
-  <xsl:template match="apply[count(*)=2 and *[1][sc:is-elementary-function(.)]]" mode="cmathml-to-maxima">
-    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1])"/>
-    <xsl:variable name="argument" as="element()" select="*[2]"/>
-    <xsl:value-of select="$function"/>
-    <xsl:text>(</xsl:text>
-    <xsl:copy-of select="sc:to-maxima($argument)"/>
-    <xsl:text>)</xsl:text>
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima">
+    <xsl:variable name="function" as="element()" select="local:get-supported-function(*[1])"/>
+    <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
+    <xsl:choose>
+      <xsl:when test="count($arguments)=1 and $function/@require-nary='true'">
+        <!-- Fail: function must be used in n-ary context -->
+        <xsl:copy-of select="s:make-error('UMEFX0', ., ($function/@maxima-function))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$function/@maxima-function"/>
+        <xsl:text>(</xsl:text>
+        <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+        <xsl:text>)</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!--
-  Half-arsed Applied Elementary Function
+  Half-arsed Applied Function
 
   Example:
 
@@ -416,13 +429,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   function for the time being
 
   -->
-  <xsl:template match="apply[count(*)=1 and *[1][sc:is-elementary-function(.)]]" mode="cmathml-to-maxima">
-    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1])"/>
-    <xsl:value-of select="$function"/>
+  <xsl:template match="apply[count(*)=1 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima">
+    <xsl:value-of select="local:get-supported-function(*[1])/@maxima-function"/>
   </xsl:template>
 
   <!--
-  Power of an Elementary Function. For example:
+  Power of a function. For example:
 
   <apply>
     <apply>
@@ -433,21 +445,29 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <ci>x</ci>
   </apply>
   -->
-  <xsl:template match="apply[count(*)=2 and *[1][self::apply and *[1][self::power] and sc:is-elementary-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
-    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1]/*[2])"/>
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::power] and local:is-supported-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
+    <xsl:variable name="function" as="element()" select="local:get-supported-function(*[1]/*[2])"/>
     <xsl:variable name="power" as="element()" select="*[1]/*[3]"/>
-    <xsl:variable name="argument" as="element()" select="*[2]"/>
-    <xsl:value-of select="$function"/>
-    <xsl:text>(</xsl:text>
-    <xsl:copy-of select="sc:to-maxima($argument)"/>
-    <xsl:text>)^</xsl:text>
-    <xsl:copy-of select="sc:to-maxima($power)"/>
+    <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
+    <xsl:choose>
+      <xsl:when test="count($arguments)=1 and $function/@require-nary='true'">
+        <!-- Fail: function must be used in n-ary context -->
+        <xsl:copy-of select="s:make-error('UMEFX0', ., ($function/@maxima-function))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$function/@maxima-function"/>
+        <xsl:text>(</xsl:text>
+        <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+        <xsl:text>)^</xsl:text>
+        <xsl:copy-of select="local:to-maxima($power)"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="apply[count(*)!=2 and *[1][self::apply and *[1][self::power] and sc:is-elementary-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
-    <xsl:variable name="function" as="xs:string" select="sc:get-maxima-function(*[1]/*[2])"/>
+  <xsl:template match="apply[count(*)=1 and *[1][self::apply and *[1][self::power] and local:is-supported-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
     <xsl:message terminate="yes">
-      Power of elementary function <xsl:value-of select="$function"/> was expected to take one argument
+      Power of function <xsl:value-of select="local:get-supported-function(*[1]/*[2])/@maxima-function"/>
+      was expected to take at least one argument
     </xsl:message>
   </xsl:template>
 
@@ -460,13 +480,13 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <xsl:template match="set" mode="cmathml-to-maxima">
     <xsl:text>{</xsl:text>
-    <xsl:copy-of select="sc:to-maxima-map(*, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map(*, ', ')"/>
     <xsl:text>}</xsl:text>
   </xsl:template>
 
-  <xsl:template match="list" mode="cmathml-to-maxima">
+  <xsl:template match="list|vector" mode="cmathml-to-maxima">
     <xsl:text>[</xsl:text>
-    <xsl:copy-of select="sc:to-maxima-map(*, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map(*, ', ')"/>
     <xsl:text>]</xsl:text>
   </xsl:template>
 
@@ -532,7 +552,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
       <xsl:otherwise>
         <!-- Use the identifier dictionary to map it to some Maxima input -->
         <xsl:variable name="maxima-input" as="xs:string?"
-          select="$sc:identifier-dictionary[.=$name]/@maxima-input"/>
+          select="$local:identifier-dictionary[.=$name]/@maxima-input"/>
         <xsl:choose>
           <xsl:when test="exists($maxima-input)">
             <xsl:value-of select="$maxima-input"/>

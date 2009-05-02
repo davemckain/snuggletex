@@ -118,11 +118,13 @@ public enum ErrorCode {
     UCEFN1(),
     UCEFX0(),
     UCEFX1(),
+    UCEFX2(),
     
     UMEG00(),
     UMEG01(),
     UMEG02(),
     UMEG03(),
+    UMEFX0()
     
     ;
 }

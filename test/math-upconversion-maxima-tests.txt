@@ -193,6 +193,9 @@ log(y)
 \log
 !UMEG00
 ====
+(1,2)
+[1, 2]
+====
 [1,2]
 [1, 2]
 ====
@@ -328,7 +331,7 @@ operator("union")
 \cap
 operator("intersection")
 ====
-\backslash
+\setminus
 operator("setdifference")
 ====
 A \cup B
@@ -340,8 +343,36 @@ union(A, (x + A))
 A \cup B \cap C
 union(A, intersection(B, C))
 ====
-A \cup B \backslash C
+A \cup B \setminus C
 union(A, setdifference(B, C))
+====
+## Other functions
+\Re x
+realpart(x)
+====
+\Re x \Im y
+realpart(x) * imagpart(y)
+====
+\det A
+determinant(A)
+====
+\gcd
+gcd
+====
+\gcd(x,y)
+gcd(x, y)
+====
+\gcd(x)
+!UMEFX0
+====
+\lcm(x,y)
+lcm(x, y)
+====
+\min(x,y)
+min(x, y)
+====
+\max(x,y)
+max(x, y)
 ====
 #####################################
 ### Corner Cases

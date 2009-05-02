@@ -49,6 +49,7 @@ x
 <mo>+</mo>
 <mn>1</mn>
 ====
+## Implicit Multiplication
 2x
 <mn>2</mn>
 <mo>&#x2062;</mo>
@@ -231,6 +232,24 @@ x\,y\,z
 <mspace width="0.167em"/>
 <mo>&#x2062;</mo>
 <mi>y</mi>
+====
+## We now break subexpressions over fences as well, so the 'z' does
+## not bind with application of 'sin' below. This makes more sense
+## for n-ary functions...
+\sin(x+y) z
+<mrow>
+  <mi>sin</mi>
+  <mo>&#x2061;</mo>
+  <mfenced open='(' close=')'>
+    <mrow>
+      <mi>x</mi>
+      <mo>+</mo>
+      <mi>y</mi>
+    </mrow>
+  </mfenced>
+</mrow>
+<mo>&#x2062;</mo>
+<mi>z</mi>
 ====
 #########################
 # Tests various "empty" cases
@@ -577,12 +596,53 @@ A \cup B \cap C
   <mi>C</mi>
 </mrow>
 ====
-A \cup B \backslash C
+A \cup B \setminus C
 <mi>A</mi>
 <mo>&#x222a;</mo>
 <mrow>
   <mi>B</mi>
-  <mo>\</mo>
+  <mo>&#x2216;</mo>
   <mi>C</mi>
 </mrow>
+====
+## Other functions
+\Re x
+<mi>&#x211c;</mi>
+<mo>&#x2061;</mo>
+<mi>x</mi>
+====
+\Re x \Im y
+<mrow>
+  <mi>&#x211c;</mi>
+  <mo>&#x2061;</mo>
+  <mi>x</mi>
+</mrow>
+<mo>&#x2062;</mo>
+<mrow>
+  <mi>&#x2111;</mi>
+  <mo>&#x2061;</mo>
+  <mi>y</mi>
+</mrow>
+====
+\gcd(x,y)
+<mi>gcd</mi>
+<mo>&#x2061;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+  <mi>y</mi>
+</mfenced>
+====
+## Again, note how the 'z' isn't part of gcd's operand. This makes
+## it easier to convert to Content MathML later on.
+\gcd(x,y) z
+<mrow>
+  <mi>gcd</mi>
+  <mo>&#x2061;</mo>
+  <mfenced open='(' close=')'>
+    <mi>x</mi>
+    <mi>y</mi>
+  </mfenced>
+</mrow>
+<mo>&#x2062;</mo>
+<mi>z</mi>
 ====

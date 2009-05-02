@@ -444,6 +444,10 @@ x\,y\,z
   <sin/>
 </apply>
 ====
+## Erroneous n-ary application of \sin
+\sin(x,y)
+!UCEFX2
+====
 \sin^{-1}
 <arcsin/>
 ====
@@ -562,13 +566,21 @@ x_1
 \left( x \right]
 !UCEG02
 ====
-## These are handles as lists by default
+## Round brackets with more than 1 element become vectors by default
+(1,2)
+<vector>
+  <cn>1</cn>
+  <cn>2</cn>
+</vector>
+====
+## Square brackets become lists by default
 [1,2]
 <list>
   <cn>1</cn>
   <cn>2</cn>
 </list>
 ====
+## Curly brackets become sets by default
 \{1,2\}
 <set>
   <cn>1</cn>
@@ -935,7 +947,7 @@ A \cup B \cap C
   </apply>
 </apply>
 ====
-A \cup B \backslash C
+A \cup B \setminus C
 <apply>
   <union/>
   <ci>A</ci>
@@ -952,6 +964,67 @@ A \cup B \backslash C
 \cap
 <intersect/>
 ====
-\backslash
+\setminus
 <setdiff/>
+====
+## Other functions
+\Re x
+<apply>
+  <real/>
+  <ci>x</ci>
+</apply>
+====
+\Re x \Im y
+<apply>
+  <times/>
+  <apply>
+    <real/>
+    <ci>x</ci>
+  </apply>
+  <apply>
+    <imaginary/>
+    <ci>y</ci>
+  </apply>
+</apply>
+====
+\det A
+<apply>
+  <determinant/>
+  <ci>A</ci>
+</apply>
+====
+\gcd(x,y)
+<apply>
+  <gcd/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+\lcm(x,y)
+<apply>
+  <lcm/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+\min A
+<apply>
+  <min/>
+  <ci>A</ci>
+</apply>
+====
+## Note n-ary application here
+\min(x,y)
+<apply>
+  <min/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
+====
+\max(x,y)
+<apply>
+  <max/>
+  <ci>x</ci>
+  <ci>y</ci>
+</apply>
 ====

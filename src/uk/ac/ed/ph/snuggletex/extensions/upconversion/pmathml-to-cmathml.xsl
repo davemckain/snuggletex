@@ -18,11 +18,10 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:sp="http://www.ph.ed.ac.uk/snuggletex/pmathml"
   xmlns:local="http://www.ph.ed.ac.uk/snuggletex/pmathml-to-cmathml"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs m s sp local"
+  exclude-result-prefixes="xs m s local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <xsl:import href="common.xsl"/>
@@ -32,27 +31,75 @@ All Rights Reserved
   <xsl:param name="s:assume-exponential-e" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-imaginary-i" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-constant-pi" select="true()" as="xs:boolean"/>
+  <xsl:param name="s:assume-brackets-vector" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-braces-set" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-square-list" select="true()" as="xs:boolean"/>
 
   <!-- ************************************************************ -->
-  <!-- TODO: A lot of what follows is shared with pmathml-enhancer.xsl -->
+  <!-- TODO: A reasonable amount of what follows is shared with pmathml-enhancer.xsl -->
 
   <xsl:strip-space elements="m:*"/>
 
-  <xsl:variable name="sp:invertible-elementary-functions" as="xs:string+"
-    select="('sin', 'cos', 'tan',
-             'sec', 'csc' ,'cot',
-             'sinh', 'cosh', 'tanh',
-             'sech', 'csch', 'coth')"/>
+  <!--
+  All supported functions, input as <mi>@input</mi> etc.
+  and output using Content MathML elements named according to the
+  @output attribute.
+  -->
+  <xsl:variable name="local:supported-function-dictionary" as="element(local:function)+">
+    <local:function input="sin" output="sin" inverse-output="arcsin"/>
+    <local:function input="cos" output="cos" inverse-output="arccos"/>
+    <local:function input="tan" output="tan" inverse-output="arctan"/>
+    <local:function input="sec" output="csc" inverse-output="arcsec"/>
+    <local:function input="cot" output="cot" inverse-output="arccot"/>
+    <local:function input="sinh" output="sinh" inverse-output="arcsinh"/>
+    <local:function inout="cosh" output="cosh" inverse-output="arccosh"/>
+    <local:function inout="tanh" output="tanh" inverse-output="arctanh"/>
+    <local:function input="sech" output="sech" inverse-output="arcsech"/>
+    <local:function inout="csch" output="csch" inverse-output="arccsch"/>
+    <local:function inout="coth" output="coth" inverse-output="arccoth"/>
+    <local:function input="arcsin" output="arcsin"/>
+    <local:function input="arccos" output="arccos"/>
+    <local:function input="arctan" output="arctan"/>
+    <local:function input="arcsec" output="arcsec"/>
+    <local:function input="arccsc" output="arccsc"/>
+    <local:function input="arccot" output="arccot"/>
+    <local:function input="arcsinh" output="arcsinh"/>
+    <local:function input="arccosh" output="arccosh"/>
+    <local:function input="arctanh" output="arctanh"/>
+    <local:function input="arcsech" output="arcsech"/>
+    <local:function input="arccsch" output="arccsch"/>
+    <local:function input="arccoth" output="arccoth"/>
+    <local:function input="ln" output="ln"/>
+    <local:function input="log" output="log"/>
+    <local:function input="exp" output="exp"/>
+    <local:function input="det" output="determinant"/>
+    <local:function input="gcd" output="gcd" nary="true"/>
+    <local:function input="lcm" output="lcm" nary="true"/>
+    <local:function input="max" output="max" nary="true"/>
+    <local:function input="min" output="min" nary="true"/>
+    <local:function input="&#x2111;" output="imaginary"/>
+    <local:function input="&#x211c;" output="real"/>
+  </xsl:variable>
 
-  <xsl:variable name="sp:elementary-functions" as="xs:string+"
-    select="($sp:invertible-elementary-functions,
-            'arcsin', 'arccos', 'arctan',
-            'arcsec', 'arccsc', 'arccot',
-            'arcsinh', 'arccosh', 'arctanh',
-            'arcsech', 'arccsch', 'arccoth',
-            'ln', 'log', 'exp')"/>
+  <xsl:function name="local:is-supported-function" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($element[self::mi] and $local:supported-function-dictionary[@input=string($element)])"/>
+  </xsl:function>
+
+  <xsl:function name="local:get-supported-function" as="element(local:function)?">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="if ($element[self::mi])
+      then $local:supported-function-dictionary[@input=string($element)]
+      else ()"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-supported-function-construct" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="local:is-supported-function($element)
+      or $element[self::msup and local:is-supported-function(*[1])]
+      or $element[self::msub and *[1][self::mi and .='log']]
+      or $element[self::msubsup and *[1][self::mi and .='log']]"/>
+  </xsl:function>
 
   <xsl:variable name="local:explicit-multiplication-characters" as="xs:string+"
     select="('*', '&#xd7;', '&#x22c5;')"/>
@@ -64,6 +111,9 @@ All Rights Reserved
     select="($local:explicit-multiplication-characters,
              $local:implicit-multiplication-characters)"/>
 
+  <xsl:variable name="local:explicit-division-characters" as="xs:string+"
+    select="('/', '&#xf7;')"/>
+
   <xsl:variable name="local:prefix-operators" as="element()+">
     <local:operator input="&#xac;" output="not"/>
   </xsl:variable>
@@ -73,7 +123,7 @@ All Rights Reserved
   including support for negating operators by combining with a <not/> element
   where appropriate.
   -->
-  <xsl:variable name="local:relation-operators" as="element()+">
+  <xsl:variable name="local:relation-operators" as="element(local:operator)+">
     <local:operator input="=" output="eq"/>
     <local:operator input="&#x2260;" output="neq"/>
     <local:operator input="&lt;" input-negated="&#x226e;" output="lt"/>
@@ -96,23 +146,6 @@ All Rights Reserved
     <local:operator input="&#x2192;" output="tendsto"/>
     <local:operator input="&#x21d2;" output="implies"/>
   </xsl:variable>
-
-  <!--
-  Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}
-  Result need not make any actual sense so will need further inspection
-  -->
-  <xsl:function name="local:is-supported-function" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="local:is-elementary-function($element)
-      or $element[self::msup and local:is-elementary-function(*[1])]
-      or $element[self::msub and *[1][self::mi and .='log']]
-      or $element[self::msubsup and *[1][self::mi and .='log']]"/>
-  </xsl:function>
-
-  <xsl:function name="local:is-elementary-function" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mi and $sp:elementary-functions=string(.)])"/>
-  </xsl:function>
 
   <xsl:function name="local:is-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
@@ -206,11 +239,11 @@ All Rights Reserved
           <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('\'))]">
+      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2216;'))]">
         <!-- Set Difference -->
         <xsl:call-template name="local:handle-nary-operator">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('\')"/>
+          <xsl:with-param name="match" select="('&#x2216;')"/>
           <xsl:with-param name="cmathml-name" select="'setdiff'"/>
           <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
@@ -242,16 +275,16 @@ All Rights Reserved
           <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('/'))]">
+      <xsl:when test="$elements[local:is-matching-operator(., $local:explicit-division-characters)]">
         <!-- Division -->
         <xsl:call-template name="local:handle-binary-operator">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('/')"/>
+          <xsl:with-param name="match" select="$local:explicit-division-characters"/>
           <xsl:with-param name="cmathml-name" select="'divide'"/>
           <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[1][local:is-supported-function(.)]">
+      <xsl:when test="$elements[1][local:is-supported-function-construct(.)]">
         <!-- Supported function (not necessarily applied) -->
         <xsl:call-template name="local:handle-supported-function-group">
           <xsl:with-param name="elements" select="$elements"/>
@@ -620,9 +653,13 @@ All Rights Reserved
     <xsl:choose>
       <xsl:when test="count($elements)=1">
         <!-- This is case (1) above -->
-        <xsl:call-template name="local:create-elementary-function-operator">
-          <xsl:with-param name="operator-element" select="$elements[1]"/>
-        </xsl:call-template>
+        <xsl:variable name="function-output" as="element(local:function-mapping)">
+          <xsl:call-template name="local:map-supported-function">
+            <xsl:with-param name="operator-element" select="$elements[1]"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <!-- Just return resulting CMathML as there are no operands here -->
+        <xsl:copy-of select="$function-output/local:cmathml/*"/>
       </xsl:when>
       <xsl:otherwise>
         <!-- This is (2) or (3). In both cases, the second element must be "apply function" -->
@@ -640,92 +677,159 @@ All Rights Reserved
             <!-- This is really (2) or (3)! -->
             <xsl:variable name="first-apply" select="$elements[2]" as="element()"/>
             <xsl:variable name="after-first-apply" select="$elements[position() &gt; 2]" as="element()+"/>
-            <apply>
-              <xsl:call-template name="local:create-elementary-function-operator">
+            <xsl:variable name="function-output" as="element(local:function-mapping)">
+              <xsl:call-template name="local:map-supported-function">
                 <xsl:with-param name="operator-element" select="$first-function"/>
               </xsl:call-template>
-              <xsl:call-template name="local:process-group">
-                <xsl:with-param name="elements" select="$after-first-apply"/>
+            </xsl:variable>
+            <xsl:variable name="output-form" as="element()+" select="$function-output/local:cmathml/*"/>
+            <xsl:variable name="function" as="element(local:function)" select="$function-output/local:function"/>
+            <!-- Work out operands -->
+            <xsl:variable name="operands" as="element()*">
+              <xsl:call-template name="local:handle-function-operands">
+                <xsl:with-param name="after-apply-function" select="$after-first-apply"/>
               </xsl:call-template>
-            </apply>
+            </xsl:variable>
+            <!-- If 'n' operands, then make sure function is actually nary -->
+            <xsl:choose>
+              <xsl:when test="count($operands) &gt; 1 and not($function/@nary='true')">
+                <!-- Fail: Function is not n-ary -->
+                <xsl:copy-of select="s:make-error('UCEFX2', $elements, ($function/local-name(), string(count($operands))))"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <!-- Do application -->
+                <apply>
+                  <xsl:copy-of select="$output-form"/>
+                  <xsl:copy-of select="$operands"/>
+                </apply>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template name="local:create-elementary-function-operator">
+  <!--
+  Helper to get at the (processed) operands for a function application, treating a single
+  <mfenced/> as a container for an nary argument.
+  -->
+  <xsl:template name="local:handle-function-operands" as="element()*">
+    <xsl:param name="after-apply-function" as="element()+"/>
+    <xsl:choose>
+      <xsl:when test="count($after-apply-function)=1 and $after-apply-function[self::mfenced]">
+        <xsl:for-each select="$after-apply-function[1]/*">
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="."/>
+          </xsl:call-template>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="local:process-group">
+          <xsl:with-param name="elements" select="$after-apply-function"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!--
+  Helper to work out the output form of a supported function, handling cases
+  of inverses and powers correctly.
+
+  Returns an element having the following form, to be unwrapped as appropriate
+  by the caller:
+
+  <local:function-mapping>
+    <local:cmathml>
+      1 or more elements giving computed function form (e.g. <sin/>, <apply><power><sin/><cn>2</cn></power></apply> ...)
+      OR s:fail
+    </local:cmathml>
+    <local:function ... /> (as pulled from $local:supported-function-dictionary)
+  </local:function-mapping>
+
+  This slightly complex output helps the caller handle unary and nary applications.
+  -->
+  <xsl:template name="local:map-supported-function" as="element(local:function-mapping)">
     <xsl:param name="operator-element" as="element()" required="yes"/>
     <xsl:choose>
       <xsl:when test="$operator-element[self::msup and *[1][self::mi] and *[2][self::mn and .='-1']]">
         <!-- It looks like an inverse function. Make sure we know about it -->
-        <xsl:variable name="function" select="string($operator-element/*[1])" as="xs:string"/>
-        <xsl:choose>
-          <xsl:when test="$sp:invertible-elementary-functions=$function">
-            <xsl:element name="arc{$function}"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <!-- Fail: Unknown inverse function -->
-            <xsl:copy-of select="s:make-error('UCEFN1', $operator-element, ($function))"/>
-          </xsl:otherwise>
-        </xsl:choose>
+        <xsl:variable name="function" select="local:get-supported-function($operator-element/*[1])" as="element(local:function)"/>
+        <local:function-mapping>
+          <local:cmathml>
+            <xsl:choose>
+              <xsl:when test="$function/@inverse-output">
+                <xsl:element name="{$function/@inverse-output}"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <!-- Fail: Function cannot be inverted -->
+                <xsl:copy-of select="s:make-error('UCEFN1', $operator-element, ($function))"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </local:cmathml>
+          <xsl:copy-of select="$function"/>
+        </local:function-mapping>
       </xsl:when>
       <xsl:when test="$operator-element[self::msup
           and *[1][self::mi]
           and *[2][self::mn and number(.) &gt;= 1]]">
         <!-- This looks like sin^2, which we will interpret as such -->
-        <xsl:variable name="function" select="string($operator-element/*[1])" as="xs:string"/>
-        <xsl:choose>
-          <xsl:when test="$sp:elementary-functions=$function">
+        <xsl:variable name="function" select="local:get-supported-function($operator-element/*[1])" as="element(local:function)"/>
+        <local:function-mapping>
+          <local:cmathml>
             <apply>
               <power/>
-              <xsl:element name="{$function}"/>
+              <xsl:element name="{$function/@output}"/>
               <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
             </apply>
-          </xsl:when>
-          <xsl:otherwise>
-            <!-- Fail: Unknown function -->
-            <xsl:copy-of select="s:make-error('UCEFN0', $operator-element, ($function))"/>
-          </xsl:otherwise>
-        </xsl:choose>
+          </local:cmathml>
+          <xsl:copy-of select="$function"/>
+        </local:function-mapping>
       </xsl:when>
       <xsl:when test="$operator-element[self::msub
           and *[1][self::mi and .='log']
           and *[2][self::mi or self::mn]]">
         <!-- Log to a different base -->
-        <log/>
-        <logbase>
-          <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
-        </logbase>
+        <local:function-mapping>
+          <local:cmathml>
+            <log/>
+            <logbase>
+              <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
+            </logbase>
+          </local:cmathml>
+          <xsl:copy-of select="$local:supported-function-dictionary[.[@input='log']]"/>
+        </local:function-mapping>
       </xsl:when>
       <xsl:when test="$operator-element[self::msubsup
           and *[1][self::mi and .='log']
           and *[2][self::mi or self::mn]
           and *[3][self::mn and number(.) &gt;=1]]">
         <!-- Log to a different base with a power -->
-        <apply>
-          <power/>
-          <apply>
-            <log/>
-            <logbase>
-              <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
-            </logbase>
-          </apply>
-          <xsl:apply-templates select="$operator-element/*[3]" mode="pmathml-to-cmathml"/>
-        </apply>
+        <local:function-mapping>
+          <local:cmathml>
+            <apply>
+              <power/>
+              <apply>
+                <log/>
+                <logbase>
+                  <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
+                </logbase>
+              </apply>
+              <xsl:apply-templates select="$operator-element/*[3]" mode="pmathml-to-cmathml"/>
+            </apply>
+          </local:cmathml>
+          <xsl:copy-of select="$local:supported-function-dictionary[.[@input='log']]"/>
+        </local:function-mapping>
       </xsl:when>
       <xsl:when test="$operator-element[self::mi]">
-        <xsl:variable name="function" select="string($operator-element)" as="xs:string"/>
-        <xsl:choose>
-          <xsl:when test="$sp:elementary-functions=$function">
-            <!-- Create Content MathML element with same name as content of <mi/> element -->
-            <xsl:element name="{$function}"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <!-- Fail: Unknown function -->
-            <xsl:copy-of select="s:make-error('UCEFN0', $operator-element, ($function))"/>
-          </xsl:otherwise>
-        </xsl:choose>
+        <!-- Unapplied case: create Content MathML element with same name as content of <mi/> element -->
+        <xsl:variable name="function" select="local:get-supported-function($operator-element)" as="element(local:function)"/>
+        <local:function-mapping>
+          <local:cmathml>
+            <xsl:element name="{$function/@output}"/>
+          </local:cmathml>
+          <xsl:copy-of select="$function"/>
+        </local:function-mapping>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">
@@ -735,7 +839,6 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
 
   <!--
   Group starting with a prefix operator, say 'p'. Main possibilities:
@@ -821,6 +924,13 @@ All Rights Reserved
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="*[1]"/>
     </xsl:call-template>
+  </xsl:template>
+
+  <!-- (Optional) Treat (a,b,c,...) with more than 1 element as a vector -->
+  <xsl:template match="mfenced[$s:assume-brackets-vector and @open='(' and @close=')' and count(*)&gt;1]" mode="pmathml-to-cmathml">
+    <vector>
+      <xsl:apply-templates mode="pmathml-to-cmathml"/>
+    </vector>
   </xsl:template>
 
   <!-- (Optional) Treat [a,b,c,...] as a list -->

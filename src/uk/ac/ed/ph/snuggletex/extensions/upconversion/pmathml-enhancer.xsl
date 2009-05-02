@@ -44,20 +44,55 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:variable name="local:invertible-elementary-functions" as="xs:string+"
+  <!--
+  All supported elementary functions.
+  -->
+  <xsl:variable name="local:elementary-functions" as="xs:string+"
     select="('sin', 'cos', 'tan',
              'sec', 'csc' ,'cot',
              'sinh', 'cosh', 'tanh',
-             'sech', 'csch', 'coth')"/>
+             'sech', 'csch', 'coth',
+             'arcsin', 'arccos', 'arctan',
+             'arcsec', 'arccsc', 'arccot',
+             'arcsinh', 'arccosh', 'arctanh',
+             'arcsech', 'arccsch', 'arccoth',
+             'ln', 'log', 'exp')"/>
 
-  <xsl:variable name="local:elementary-functions" as="xs:string+"
-    select="($local:invertible-elementary-functions,
-            'arcsin', 'arccos', 'arctan',
-            'arcsec', 'arccsc', 'arccot',
-            'arcsinh', 'arccosh', 'arctanh',
-            'arcsech', 'arccsch', 'arccoth',
-            'ln', 'log', 'exp')"/>
+  <!--
+  Other supported functions, such as \Re and \Im.
+  -->
+  <xsl:variable name="local:other-functions" as="xs:string+"
+    select="('gcd', 'lcm', 'min', 'max', 'det',
+             '&#x2111;' (: imaginary part :),
+             '&#x211c;' (: real part :)
+             )"/>
 
+  <!--
+  All supported functions, based on the above.
+  -->
+  <xsl:variable name="local:supported-functions" as="xs:string+"
+    select="($local:elementary-functions, $local:other-functions)"/>
+
+  <xsl:function name="local:is-supported-function" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($element[self::mi and $local:supported-functions=string(.)])"/>
+  </xsl:function>
+
+  <!--
+  Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}, \Re, \Re^{.} etc.
+  Result need not make any actual sense!
+  -->
+  <xsl:function name="local:is-supported-function-construct" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="local:is-supported-function($element)
+      or $element[self::msup and local:is-supported-function(*[1])]
+      or $element[self::msub and *[1][self::mi and .='log']]
+      or $element[self::msubsup and *[1][self::mi and .='log']]"/>
+  </xsl:function>
+
+  <!--
+  All supported relation operators.
+  -->
   <xsl:variable name="local:relation-characters" as="xs:string+"
     select="('=', '&lt;', '&gt;', '|', '&#x2192;', '&#x21d2;',
             '&#x2208;', '&#x2209;', '&#x2224;', '&#x2248;', '&#x2249;',
@@ -67,12 +102,22 @@ All Rights Reserved
             '&#x2284;', '&#x2286;', '&#x2288;'
             )"/>
 
+  <!--
+  Operators specifying explicit multiplications, such as * and \times
+  -->
   <xsl:variable name="local:explicit-multiplication-characters" as="xs:string+"
     select="('*', '&#xd7;', '&#x22c5;')"/>
 
+  <!--
+  Operators specifying explicit division. (This doesn't include \frac{}{} which
+  is special.)
+  -->
   <xsl:variable name="local:explicit-division-characters" as="xs:string+"
     select="('/', '&#xf7;')"/>
 
+  <!--
+  All supported prefix operators
+  -->
   <xsl:variable name="local:prefix-operators" as="xs:string+"
     select="('&#xac;')"/>
 
@@ -88,14 +133,18 @@ All Rights Reserved
   <xsl:variable name="local:infix-operators" as="xs:string+"
     select="('&#x2228;', '&#x2227;',
              $local:relation-characters,
-             '\', '&#x222a;', '&#x2229;',
+             '&#x2216;', '&#x222a;', '&#x2229;',
              '+', '-',
              $local:explicit-multiplication-characters,
              $local:explicit-division-characters)"/>
 
-  <!-- NOTE: Currently, the only postfix operator is factorial, which is handled in a special way.
-       But I'll keep this more general logic for the time being as it gives nicer symmetry with prefix
-       operators. -->
+  <!--
+  All supported postfix operators.
+
+  NOTE: Currently, the only postfix operator is factorial, which is handled in a special way.
+  But I'll keep this more general logic for the time being as it gives nicer symmetry with prefix
+  operators.
+  -->
   <xsl:variable name="local:postfix-operators" as="xs:string+"
     select="('!')"/>
 
@@ -122,23 +171,6 @@ All Rights Reserved
     <xsl:sequence select="boolean($element[self::mo and .='!'])"/>
   </xsl:function>
 
-  <xsl:function name="local:is-elementary-function" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mi and $local:elementary-functions=string(.)])"/>
-  </xsl:function>
-
-  <!--
-  Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}
-  Result need not make any actual sense!
-  -->
-  <xsl:function name="local:is-supported-function" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="local:is-elementary-function($element)
-      or $element[self::msup and local:is-elementary-function(*[1])]
-      or $element[self::msub and *[1][self::mi and .='log']]
-      or $element[self::msubsup and *[1][self::mi and .='log']]"/>
-  </xsl:function>
-
   <xsl:function name="local:is-prefix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="boolean($element[self::mo and $local:prefix-operators=string(.)])"/>
@@ -146,7 +178,7 @@ All Rights Reserved
 
   <xsl:function name="local:is-prefix-or-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean(local:is-supported-function($element) or local:is-prefix-operator($element))"/>
+    <xsl:sequence select="boolean(local:is-supported-function-construct($element) or local:is-prefix-operator($element))"/>
   </xsl:function>
 
   <xsl:function name="local:is-postfix-operator" as="xs:boolean">
@@ -158,21 +190,23 @@ All Rights Reserved
   We'll say that an element starts a "no-infix group" if:
 
   1. It is either the first in a sequence of siblings
-  OR 2. It is a prefix operator or function and doesn't immediately follow a prefix operator or function
-  OR 3. It is neither a prefix operator/function nor postfix operator and follows a postfix operator
+  OR 2. It comes immediately after an <mfenced/> element
+  OR 3. It is a prefix operator or function and doesn't immediately follow a prefix operator or function
+  OR 4. It is neither a prefix operator/function nor postfix operator and follows a postfix operator
 
   Such an element will thus consist of:
 
-  prefix-operator-or-function* implicit-multiplication* postfix-opeator*
+  prefix-operator-or-function* implicit-multiplication* postfix-operator*
 
   -->
   <xsl:function name="local:is-no-infix-group-starter" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
     <xsl:sequence select="boolean(
-      not(exists($previous))
-      or (local:is-prefix-or-function($element) and not(local:is-prefix-or-function($previous)))
-      or (not(local:is-prefix-or-function($element)) and not(local:is-postfix-operator($element))
+      not(exists($previous)) (: case 1 :)
+      or ($previous[self::mfenced]) (: case 2 :)
+      or (local:is-prefix-or-function($element) and not(local:is-prefix-or-function($previous))) (: case 3 :)
+      or (not(local:is-prefix-or-function($element)) and not(local:is-postfix-operator($element)) (: case 4 :)
         and local:is-postfix-operator($previous)))"/>
   </xsl:function>
 
@@ -218,11 +252,11 @@ All Rights Reserved
           <xsl:with-param name="match" select="('&#x2229;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('\'))]">
+      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2216;'))]">
         <!-- Set Difference -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('\')"/>
+          <xsl:with-param name="match" select="('&#x2216;')"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[local:is-matching-infix-mo(., ('+'))]">
@@ -432,7 +466,7 @@ All Rights Reserved
     <xsl:variable name="first-element" as="element()" select="$elements[1]"/>
     <xsl:variable name="after-first-element" as="element()*" select="$elements[position()!=1]"/>
     <xsl:choose>
-      <xsl:when test="local:is-supported-function($first-element) and exists($after-first-element)">
+      <xsl:when test="local:is-supported-function-construct($first-element) and exists($after-first-element)">
         <!-- This is a (prefix) function application. Copy the operator as-is -->
         <xsl:copy-of select="$first-element"/>
         <!-- Add an "Apply Function" operator -->

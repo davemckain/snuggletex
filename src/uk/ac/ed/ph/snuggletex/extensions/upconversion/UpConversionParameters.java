@@ -55,6 +55,14 @@ public interface UpConversionParameters {
     
     /**
      * Set to {@link Boolean#TRUE} if you want a comma-separated fence bound with matching
+     * round brackets and containing 2 or more child elements to be treated as a vector.
+     * <p>
+     * Default: {@link Boolean#TRUE}.
+     */
+    String ASSUME_BRACKETS_VECTOR = "assume-brackets-vector";
+    
+    /**
+     * Set to {@link Boolean#TRUE} if you want a comma-separated fence bound with matching
      * braces to be treated as a set.
      * <p>
      * Default: {@link Boolean#TRUE}.
