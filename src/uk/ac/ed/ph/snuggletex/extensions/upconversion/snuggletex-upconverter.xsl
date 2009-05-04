@@ -16,13 +16,13 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:sho="http://www.ph.ed.ac.uk/snuggletex/higher-order"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s sho"
+  exclude-result-prefixes="xs s"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <!-- ************************************************************ -->
 
+  <xsl:import href="common.xsl"/>
   <xsl:import href="pmathml-enhancer.xsl"/>
   <xsl:import href="pmathml-to-cmathml.xsl"/>
   <xsl:import href="cmathml-to-maxima.xsl"/>
@@ -41,8 +41,8 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <!-- Catch-all template for non-MathML (also non-"higher-order elements" used by PMathML enhancer) -->
-  <xsl:template match="*[not(self::sho:*)]">
+  <!-- Catch-all template for non-MathML -->
+  <xsl:template match="*">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
@@ -166,22 +166,6 @@ All Rights Reserved
         </xsl:otherwise>
       </xsl:choose>
     </math>
-  </xsl:template>
-
-  <!-- ************************************************************ -->
-
-  <xsl:template name="s:maybe-wrap-in-mrow">
-    <xsl:param name="elements" as="element()*" required="yes"/>
-    <xsl:choose>
-      <xsl:when test="count($elements)=1">
-        <xsl:copy-of select="$elements"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <mrow>
-          <xsl:copy-of select="$elements"/>
-        </mrow>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>
