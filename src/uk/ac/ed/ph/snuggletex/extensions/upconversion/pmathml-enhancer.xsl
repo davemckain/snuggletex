@@ -213,7 +213,7 @@ All Rights Reserved
   <!-- ************************************************************ -->
   <!-- Grouping by implied precedence -->
 
-  <xsl:template name="local:process-group">
+  <xsl:template name="local:process-group" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <!-- Infix Operator Grouping -->
@@ -333,7 +333,7 @@ All Rights Reserved
   </xsl:function>
 
   <!-- Groups an associative infix <mo/> operator -->
-  <xsl:template name="local:group-associative-infix-mo">
+  <xsl:template name="local:group-associative-infix-mo" as="element()*">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="match" as="xs:string+" required="yes"/>
     <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-infix-mo(., $match)">
@@ -356,7 +356,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Groups a left- but not right-associative infix <mo/> operator -->
-  <xsl:template name="local:group-left-associative-infix-mo">
+  <xsl:template name="local:group-left-associative-infix-mo" as="element()*">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="match" as="xs:string+" required="yes"/>
     <xsl:variable name="operators" select="$elements[local:is-matching-infix-mo(., $match)]" as="element()+"/>
@@ -418,7 +418,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- <mspace/> as explicit multiplication -->
-  <xsl:template name="local:handle-mspace-group">
+  <xsl:template name="local:handle-mspace-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:for-each-group select="$elements" group-adjacent="boolean(self::mspace)">
       <xsl:choose>
@@ -443,7 +443,7 @@ All Rights Reserved
     </xsl:for-each-group>
   </xsl:template>
 
-  <xsl:template name="local:handle-no-infix-group">
+  <xsl:template name="local:handle-no-infix-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:for-each-group select="$elements" group-starting-with="*[local:is-no-infix-group-starter(.)]">
       <!-- Add an invisible times if we're the second multiplicative group -->
@@ -461,7 +461,7 @@ All Rights Reserved
     </xsl:for-each-group>
   </xsl:template>
 
-  <xsl:template name="local:apply-prefix-functions-and-operators">
+  <xsl:template name="local:apply-prefix-functions-and-operators" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:variable name="first-element" as="element()" select="$elements[1]"/>
     <xsl:variable name="after-first-element" as="element()*" select="$elements[position()!=1]"/>
@@ -502,7 +502,7 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template name="local:apply-postfix-operators">
+  <xsl:template name="local:apply-postfix-operators" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:variable name="last-element" as="element()?" select="$elements[position()=last()]"/>
     <xsl:variable name="before-last-element" as="element()*" select="$elements[position()!=last()]"/>
@@ -629,7 +629,7 @@ All Rights Reserved
     <mo>!</mo>
   </mrow>
   -->
-  <xsl:template name="local:apply-factorial">
+  <xsl:template name="local:apply-factorial" as="element()*">
     <!-- NB: This doesn't include the actual factorial operator itself! -->
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
@@ -663,7 +663,7 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template name="local:handle-implicit-multiplicative-group">
+  <xsl:template name="local:handle-implicit-multiplicative-group" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:call-template name="s:maybe-wrap-in-mrow">
       <xsl:with-param name="elements" as="element()*">
@@ -702,7 +702,7 @@ All Rights Reserved
   -->
   <xsl:template match="mrow[count(*)=3 and *[1][self::mi]
       and *[2][self::mo and .='&#x2061;']
-      and *[3][self::mfenced]]" mode="enhance-pmathml">
+      and *[3][self::mfenced]]" mode="enhance-pmathml" as="element(mrow)">
     <xsl:copy>
       <xsl:copy-of select="*[1]"/>
       <xsl:copy-of select="*[2]"/>
@@ -713,7 +713,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Container elements with unrestricted content -->
-  <xsl:template match="mrow|msqrt" mode="enhance-pmathml">
+  <xsl:template match="mrow|msqrt" mode="enhance-pmathml" as="element()">
     <!-- Process contents as normal -->
     <xsl:variable name="processed-contents" as="element()*">
       <xsl:call-template name="local:process-group">
@@ -735,14 +735,14 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Default template for other MathML elements -->
-  <xsl:template match="*" mode="enhance-pmathml">
+  <xsl:template match="*" mode="enhance-pmathml" as="element()">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="enhance-pmathml"/>
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="text()" mode="enhance-pmathml">
+  <xsl:template match="text()" mode="enhance-pmathml" as="text()">
     <xsl:copy-of select="."/>
   </xsl:template>
 

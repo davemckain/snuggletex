@@ -21,7 +21,7 @@ All Rights Reserved
   exclude-result-prefixes="xs s mf">
 
   <!-- Helper template for stylesheets that output PMathML. -->
-  <xsl:template name="s:maybe-wrap-in-mrow">
+  <xsl:template name="s:maybe-wrap-in-mrow" as="element()">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
@@ -36,7 +36,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Creats an error element <s:fail/> with the given arguments -->
-  <xsl:function name="s:make-error" as="element()">
+  <xsl:function name="s:make-error" as="element(s:fail)">
     <xsl:param name="code" as="xs:string"/>
     <xsl:param name="context" as="element()+"/>
     <xsl:param name="arguments" as="xs:string*"/>
@@ -51,7 +51,7 @@ All Rights Reserved
   </xsl:function>
 
   <!-- Creats an error element <s:fail/> with the given arguments -->
-  <xsl:template name="s:make-error" as="element()">
+  <xsl:template name="s:make-error" as="element(s:fail)">
     <xsl:param name="code" as="xs:string" required="yes"/>
     <xsl:param name="context" as="element()" required="yes"/>
     <xsl:param name="arguments" as="xs:string*" required="yes"/>

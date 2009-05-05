@@ -198,7 +198,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   operator("+")
   -->
-  <xsl:template match="*[local:is-operator(.)]" mode="cmathml-to-maxima">
+  <xsl:template match="*[local:is-operator(.)]" mode="cmathml-to-maxima" as="text()">
     <xsl:variable name="operator" select="local:get-operator(.)" as="element()"/>
     <xsl:value-of select="local:unapply-operator($operator, false())"/>
   </xsl:template>
@@ -235,7 +235,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   operator("not+")
   -->
-  <xsl:template match="apply[count(*)=2 and *[1][self::not] and local:is-operator(*[2])]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*)=2 and *[1][self::not] and local:is-operator(*[2])]" mode="cmathml-to-maxima" as="text()">
     <xsl:variable name="operator" as="element()" select="local:get-operator(*[2])"/>
     <xsl:value-of select="local:unapply-operator($operator, true())"/>
   </xsl:template>
@@ -254,7 +254,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   operator("+")
   -->
-  <xsl:template match="apply[count(*)=1 and local:is-operator(*[1])]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*)=1 and local:is-operator(*[1])]" mode="cmathml-to-maxima" as="text()">
     <xsl:variable name="operator" as="element()" select="local:get-operator(*[1])"/>
     <xsl:value-of select="local:unapply-operator($operator, false())"/>
   </xsl:template>
@@ -270,7 +270,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <cn>5</cn>
   </apply>
   -->
-  <xsl:template match="apply[count(*)&gt;1 and local:is-operator(*[1]) and not(local:is-operator(*[2]))]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*)&gt;1 and local:is-operator(*[1]) and not(local:is-operator(*[2]))]" mode="cmathml-to-maxima" as="node()+">
     <xsl:variable name="operator" as="element()" select="local:get-operator(*[1])"/>
     <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
@@ -348,7 +348,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
 
   -->
-  <xsl:template match="apply[*[1][self::root] and not(degree) and count(*)=2]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[*[1][self::root] and not(degree) and count(*)=2]" mode="cmathml-to-maxima" as="node()+">
     <xsl:variable name="operand" as="element()" select="*[2]"/>
     <xsl:text>sqrt(</xsl:text>
     <xsl:copy-of select="local:to-maxima($operand)"/>
@@ -368,7 +368,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <ci>x</ci>
   </apply>
   -->
-  <xsl:template match="apply[*[1][self::root] and degree and count(*)=3]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[*[1][self::root] and degree and count(*)=3]" mode="cmathml-to-maxima" as="node()+">
     <xsl:variable name="operand" as="element()" select="*[3]"/>
     <xsl:text>((</xsl:text>
     <xsl:copy-of select="local:to-maxima($operand)"/>
@@ -384,7 +384,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <sin/>
   -->
-  <xsl:template match="*[local:is-supported-function(.)]" mode="cmathml-to-maxima">
+  <xsl:template match="*[local:is-supported-function(.)]" mode="cmathml-to-maxima" as="text()">
     <xsl:value-of select="local:get-supported-function(.)/@maxima-function"/>
   </xsl:template>
 
@@ -399,7 +399,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
 
   -->
-  <xsl:template match="apply[count(*) &gt;= 2 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima" as="node()+">
     <xsl:variable name="function" as="element()" select="local:get-supported-function(*[1])"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
@@ -429,7 +429,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   function for the time being
 
   -->
-  <xsl:template match="apply[count(*)=1 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*)=1 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima" as="text()">
     <xsl:value-of select="local:get-supported-function(*[1])/@maxima-function"/>
   </xsl:template>
 
@@ -445,7 +445,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <ci>x</ci>
   </apply>
   -->
-  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::power] and local:is-supported-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima">
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::power] and local:is-supported-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima" as="node()+">
     <xsl:variable name="function" as="element()" select="local:get-supported-function(*[1]/*[2])"/>
     <xsl:variable name="power" as="element()" select="*[1]/*[3]"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
@@ -474,17 +474,17 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- ************************************************************ -->
 
   <!-- Maxima doesn't actually support intervals! -->
-  <xsl:template match="interval" mode="cmathml-to-maxima">
+  <xsl:template match="interval" mode="cmathml-to-maxima" as="element(s:fail)">
     <xsl:copy-of select="s:make-error('UMEG02', ., ())"/>
   </xsl:template>
 
-  <xsl:template match="set" mode="cmathml-to-maxima">
+  <xsl:template match="set" mode="cmathml-to-maxima" as="node()+">
     <xsl:text>{</xsl:text>
     <xsl:copy-of select="local:to-maxima-map(*, ', ')"/>
     <xsl:text>}</xsl:text>
   </xsl:template>
 
-  <xsl:template match="list|vector" mode="cmathml-to-maxima">
+  <xsl:template match="list|vector" mode="cmathml-to-maxima" as="node()+">
     <xsl:text>[</xsl:text>
     <xsl:copy-of select="local:to-maxima-map(*, ', ')"/>
     <xsl:text>]</xsl:text>
@@ -501,36 +501,36 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <csymbol>kg</csymbol>
   </semantics>
   -->
-  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']" mode="cmathml-to-maxima">
+  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']" mode="cmathml-to-maxima" as="node()*">
     <xsl:apply-templates mode="cmathml-to-maxima"/>
   </xsl:template>
 
-  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima">
+  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima" as="node()*">
     <xsl:value-of select="concat($s:maxima-units-function, '(&quot;', ., '&quot;)')"/>
   </xsl:template>
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="emptyset" mode="cmathml-to-maxima">
+  <xsl:template match="emptyset" mode="cmathml-to-maxima" as="text()">
     <xsl:text>{}</xsl:text>
   </xsl:template>
 
-  <xsl:template match="infinity" mode="cmathml-to-maxima">
+  <xsl:template match="infinity" mode="cmathml-to-maxima" as="text()">
     <!-- NB: This represents real positive infinity only! -->
     <xsl:text>inf</xsl:text>
   </xsl:template>
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="exponentiale" mode="cmathml-to-maxima">
+  <xsl:template match="exponentiale" mode="cmathml-to-maxima" as="text()">
     <xsl:text>%e</xsl:text>
   </xsl:template>
 
-  <xsl:template match="imaginaryi" mode="cmathml-to-maxima">
+  <xsl:template match="imaginaryi" mode="cmathml-to-maxima" as="text()">
     <xsl:text>%i</xsl:text>
   </xsl:template>
 
-  <xsl:template match="pi" mode="cmathml-to-maxima">
+  <xsl:template match="pi" mode="cmathml-to-maxima" as="text()">
     <xsl:text>%pi</xsl:text>
   </xsl:template>
 
@@ -567,12 +567,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </xsl:function>
 
   <!-- Map simple identifiers over as-is -->
-  <xsl:template match="ci[count(node())=1 and text()]" mode="cmathml-to-maxima">
+  <xsl:template match="ci[count(node())=1 and text()]" mode="cmathml-to-maxima" as="node()">
     <xsl:copy-of select="local:map-identifier(., string(.))"/>
   </xsl:template>
 
   <!-- Map subscripts in a reasonable way -->
-  <xsl:template match="ci[count(node())=1 and msub]" mode="cmathml-to-maxima">
+  <xsl:template match="ci[count(node())=1 and msub]" mode="cmathml-to-maxima" as="node()">
     <xsl:copy-of select="local:map-identifier(., concat(msub/*[1], '_', msub/*[2]))"/>
   </xsl:template>
 
@@ -585,7 +585,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="cn" mode="cmathml-to-maxima">
+  <xsl:template match="cn" mode="cmathml-to-maxima" as="text()">
     <xsl:value-of select="if (starts-with(., '-'))
         then concat('(', string(.), ')')
         else string(.)"/>
@@ -594,12 +594,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- ************************************************************ -->
 
   <!-- Catch-all for the <apply/> cases we can't or won't handle here -->
-  <xsl:template match="apply" mode="cmathml-to-maxima">
+  <xsl:template match="apply" mode="cmathml-to-maxima" as="element(s:fail)">
     <xsl:copy-of select="s:make-error('UMEG01', ., (local-name(*[1])))"/>
   </xsl:template>
 
   <!-- Default catch-all for everything else -->
-  <xsl:template match="*" mode="cmathml-to-maxima">
+  <xsl:template match="*" mode="cmathml-to-maxima" as="element(s:fail)">
     <xsl:copy-of select="s:make-error('UMEG00', ., (local-name(.)))"/>
   </xsl:template>
 

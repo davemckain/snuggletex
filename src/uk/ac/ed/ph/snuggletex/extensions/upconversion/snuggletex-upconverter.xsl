@@ -42,18 +42,18 @@ All Rights Reserved
   <!-- ************************************************************ -->
 
   <!-- Catch-all template for non-MathML -->
-  <xsl:template match="*">
+  <xsl:template match="*" as="element()">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="text()">
+  <xsl:template match="text()" as="text()">
     <xsl:copy-of select="."/>
   </xsl:template>
 
-  <xsl:template match="math" priority="10">
+  <xsl:template match="math" priority="10" as="element(math)">
     <!-- Extract the actual PMathML content and any existing annotations.
          (The criterion for whether there are any top level annotations will
          be that we have a <semantics/> element with at least 2 children.) -->

@@ -114,7 +114,7 @@ All Rights Reserved
   <xsl:variable name="local:explicit-division-characters" as="xs:string+"
     select="('/', '&#xf7;')"/>
 
-  <xsl:variable name="local:prefix-operators" as="element()+">
+  <xsl:variable name="local:prefix-operators" as="element(local:operator)+">
     <local:operator input="&#xac;" output="not"/>
   </xsl:variable>
 
@@ -178,7 +178,7 @@ All Rights Reserved
   <!-- ************************************************************ -->
 
   <!-- Entry point -->
-  <xsl:template name="s:pmathml-to-cmathml">
+  <xsl:template name="s:pmathml-to-cmathml" as="element()*">
     <xsl:param name="elements" as="element()*"/>
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="$elements"/>
@@ -188,7 +188,7 @@ All Rights Reserved
   <!-- ************************************************************ -->
 
   <!-- Application of groups by the precedence order built by pmathml-enhancer.xsl -->
-  <xsl:template name="local:process-group">
+  <xsl:template name="local:process-group" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <xsl:when test="$elements[self::mspace]">
@@ -336,7 +336,7 @@ All Rights Reserved
   We need to be careful to handle unapplied operators and illegal
   prefix/postfix applications.
   -->
-  <xsl:template name="local:handle-nary-operator">
+  <xsl:template name="local:handle-nary-operator" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="match" as="xs:string+" required="yes"/>
     <xsl:param name="cmathml-name" as="xs:string" required="yes"/>
@@ -449,7 +449,7 @@ All Rights Reserved
   FIXME: Need to cope with negative operators, which need to generatate
   corresponding notted operators in the output.
   -->
-  <xsl:template name="local:handle-relation-operators">
+  <xsl:template name="local:handle-relation-operators" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:variable name="element-count" as="xs:integer" select="count($elements)"/>
     <xsl:choose>
@@ -523,7 +523,7 @@ All Rights Reserved
   Helper for the above template that creates the appropriate CMathML relation operator
   corresponding to the given <mi/>, wrapping in <not/> if required
   -->
-  <xsl:function name="local:create-relation-element" as="element()?">
+  <xsl:function name="local:create-relation-element" as="element()">
     <xsl:param name="mi" as="element()"/>
     <xsl:param name="arguments" as="element()*"/>
     <xsl:variable name="positive-native" as="xs:string?" select="$local:relation-operators[@input=string($mi)]/@output"/>
@@ -584,7 +584,7 @@ All Rights Reserved
   3. op n (if the operator may also be used in unary (prefix) context)
 
   -->
-  <xsl:template name="local:handle-binary-operator">
+  <xsl:template name="local:handle-binary-operator" as="element()">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="match" as="xs:string+" required="yes"/>
     <xsl:param name="cmathml-name" as="xs:string" required="yes"/>
@@ -648,7 +648,7 @@ All Rights Reserved
   (3) 'fogox' which is treated as 'fo(gox)'
 
   -->
-  <xsl:template name="local:handle-supported-function-group">
+  <xsl:template name="local:handle-supported-function-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
@@ -847,7 +847,7 @@ All Rights Reserved
   (2) 'p' is applied to what follows
 
   -->
-  <xsl:template name="local:handle-prefix-group">
+  <xsl:template name="local:handle-prefix-group" as="element()">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <!-- Get Content MathML element corresponding to this operator -->
     <xsl:variable name="prefix-operator" as="xs:string" select="local:get-prefix-operator($elements[1])"/>
@@ -880,7 +880,7 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template name="local:handle-factorial-group">
+  <xsl:template name="local:handle-factorial-group" as="element()">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:variable name="factorials" as="element()+" select="$elements[local:is-factorial-operator(.)]"/>
     <xsl:choose>
@@ -913,13 +913,13 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:template match="mrow" mode="pmathml-to-cmathml">
+  <xsl:template match="mrow" mode="pmathml-to-cmathml" as="element()*">
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="*"/>
     </xsl:call-template>
   </xsl:template>
 
-  <xsl:template match="mfenced[@open='(' and @close=')' and count(*)=1]" mode="pmathml-to-cmathml">
+  <xsl:template match="mfenced[@open='(' and @close=')' and count(*)=1]" mode="pmathml-to-cmathml" as="element()*">
     <!-- Treat this as (...), which basically means we treat the content as a single group -->
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="*[1]"/>
@@ -927,21 +927,21 @@ All Rights Reserved
   </xsl:template>
 
   <!-- (Optional) Treat (a,b,c,...) with more than 1 element as a vector -->
-  <xsl:template match="mfenced[$s:assume-brackets-vector and @open='(' and @close=')' and count(*)&gt;1]" mode="pmathml-to-cmathml">
+  <xsl:template match="mfenced[$s:assume-brackets-vector and @open='(' and @close=')' and count(*)&gt;1]" mode="pmathml-to-cmathml" as="element(vector)">
     <vector>
       <xsl:apply-templates mode="pmathml-to-cmathml"/>
     </vector>
   </xsl:template>
 
   <!-- (Optional) Treat [a,b,c,...] as a list -->
-  <xsl:template match="mfenced[$s:assume-square-list and @open='[' and @close=']']" mode="pmathml-to-cmathml">
+  <xsl:template match="mfenced[$s:assume-square-list and @open='[' and @close=']']" mode="pmathml-to-cmathml" as="element(list)">
     <list>
       <xsl:apply-templates mode="pmathml-to-cmathml"/>
     </list>
   </xsl:template>
 
   <!-- (Optional) Treat {a,b,c,...} as a set -->
-  <xsl:template match="mfenced[$s:assume-braces-set and @open='{' and @close='}']" mode="pmathml-to-cmathml">
+  <xsl:template match="mfenced[$s:assume-braces-set and @open='{' and @close='}']" mode="pmathml-to-cmathml" as="element(set)">
     <!-- We treat this as a set of elements -->
     <set>
       <xsl:apply-templates mode="pmathml-to-cmathml"/>
@@ -949,23 +949,23 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Failure fallback for other types of fences -->
-  <xsl:template match="mfenced" mode="pmathml-to-cmathml">
+  <xsl:template match="mfenced" mode="pmathml-to-cmathml" as="element(s:fail)">
     <!-- Failure: can't handle this type of fence -->
     <xsl:copy-of select="s:make-error('UCEG02', ., (@open, @close))"/>
   </xsl:template>
 
   <!-- Numbers. TODO: Different notations? -->
-  <xsl:template match="mn" mode="pmathml-to-cmathml">
+  <xsl:template match="mn" mode="pmathml-to-cmathml" as="element(cn)">
     <cn><xsl:value-of select="."/></cn>
   </xsl:template>
 
   <!-- Identifiers -->
-  <xsl:template match="mi" mode="pmathml-to-cmathml">
+  <xsl:template match="mi" mode="pmathml-to-cmathml" as="element(ci)">
     <ci><xsl:value-of select="."/></ci>
   </xsl:template>
 
   <!-- Fractions -->
-  <xsl:template match="mfrac" mode="pmathml-to-cmathml">
+  <xsl:template match="mfrac" mode="pmathml-to-cmathml" as="element(apply)">
     <!-- Fractions are relatively easy to cope with here! -->
     <apply>
       <divide/>
@@ -979,7 +979,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- (Optional) Treat $e^x$ as exponential -->
-  <xsl:template match="msup[*[1][self::mi and .='e' and $s:assume-exponential-e]]" mode="pmathml-to-cmathml">
+  <xsl:template match="msup[*[1][self::mi and .='e' and $s:assume-exponential-e]]" mode="pmathml-to-cmathml" as="element(apply)">
     <apply>
       <exp/>
       <xsl:call-template name="local:process-group">
@@ -989,7 +989,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- We interpret <msup/> as a power -->
-  <xsl:template match="msup" mode="pmathml-to-cmathml">
+  <xsl:template match="msup" mode="pmathml-to-cmathml" as="element(apply)">
     <apply>
       <power/>
       <xsl:call-template name="local:process-group">
@@ -1002,7 +1002,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Square roots -->
-  <xsl:template match="msqrt" mode="pmathml-to-cmathml">
+  <xsl:template match="msqrt" mode="pmathml-to-cmathml" as="element(apply)">
     <apply>
       <root/>
       <xsl:call-template name="local:process-group">
@@ -1012,7 +1012,7 @@ All Rights Reserved
   </xsl:template>
 
   <!-- nth roots -->
-  <xsl:template match="mroot" mode="pmathml-to-cmathml">
+  <xsl:template match="mroot" mode="pmathml-to-cmathml" as="element(apply)">
     <apply>
       <root/>
       <degree>
@@ -1027,14 +1027,14 @@ All Rights Reserved
   </xsl:template>
 
   <!-- Subscripts made of identifiers and numbers only are treated as special identifiers -->
-  <xsl:template match="msub[not(*[not(self::mi or self::mn or self::msub)])]" mode="pmathml-to-cmathml">
+  <xsl:template match="msub[not(*[not(self::mi or self::mn or self::msub)])]" mode="pmathml-to-cmathml" as="element(ci)">
     <ci>
       <xsl:copy-of select="."/>
     </ci>
   </xsl:template>
 
   <!-- Special units created using the \units{...} macro -->
-  <xsl:template match="mi[@class='MathML-Unit']" mode="pmathml-to-cmathml">
+  <xsl:template match="mi[@class='MathML-Unit']" mode="pmathml-to-cmathml" as="element(semantics)">
     <semantics definitionURL="http://www.ph.ed.ac.uk/snuggletex/units">
       <csymbol>
         <xsl:value-of select="."/>
@@ -1046,32 +1046,32 @@ All Rights Reserved
 
   <!-- Special identifiers -->
 
-  <xsl:template match="mi[.='&#x2205;']" mode="pmathml-to-cmathml">
+  <xsl:template match="mi[.='&#x2205;']" mode="pmathml-to-cmathml" as="element(emptyset)">
     <emptyset/>
   </xsl:template>
 
-  <xsl:template match="mi[.='&#x221e;']" mode="pmathml-to-cmathml">
+  <xsl:template match="mi[.='&#x221e;']" mode="pmathml-to-cmathml" as="element(infinity)">
     <infinity/>
   </xsl:template>
 
   <!-- Optional Special identifiers -->
 
-  <xsl:template match="mi[.='e' and $s:assume-exponential-e]" mode="pmathml-to-cmathml">
+  <xsl:template match="mi[.='e' and $s:assume-exponential-e]" mode="pmathml-to-cmathml" as="element(exponentiale)">
     <exponentiale/>
   </xsl:template>
 
-  <xsl:template match="mi[.='i' and $s:assume-imaginary-i]" mode="pmathml-to-cmathml">
+  <xsl:template match="mi[.='i' and $s:assume-imaginary-i]" mode="pmathml-to-cmathml" as="element(imaginaryi)">
     <imaginaryi/>
   </xsl:template>
 
-  <xsl:template match="mi[.='&#x3c0;' and $s:assume-constant-pi]" mode="pmathml-to-cmathml">
+  <xsl:template match="mi[.='&#x3c0;' and $s:assume-constant-pi]" mode="pmathml-to-cmathml" as="element(pi)">
     <pi/>
   </xsl:template>
 
   <!-- ************************************************************ -->
 
   <!-- Fallback for unsupported MathML elements -->
-  <xsl:template match="*" mode="pmathml-to-cmathml">
+  <xsl:template match="*" mode="pmathml-to-cmathml" as="element(s:fail)">
     <!-- Failure: no support for this element -->
     <xsl:copy-of select="s:make-error('UCEG00', ., (local-name()))"/>
   </xsl:template>
