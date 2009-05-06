@@ -119,7 +119,7 @@ public final class MathMLUtilities {
             final boolean omitXMLDeclaration) {
         StringWriter resultWriter = new StringWriter();
         try {
-            Transformer serializer = XMLUtilities.createTransformerFactory().newTransformer();
+            Transformer serializer = XMLUtilities.createJAXPTransformerFactory().newTransformer();
             serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));

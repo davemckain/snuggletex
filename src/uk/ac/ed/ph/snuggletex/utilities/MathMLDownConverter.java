@@ -30,8 +30,8 @@ import org.w3c.dom.Element;
  * <p>
  * More complex MathML expressions are left as-is.
  * <p>
- * This can be used independently of SnuggleTeX if required; you can instantiate and provide
- * your own {@link StylesheetManager} yourself though.
+ * This can be used independently of SnuggleTeX if required; you may want to instantiate and
+ * provide your own {@link StylesheetCache} in this case if you already do things with XSLT.
  *
  * @author  David McKain
  * @version $Revision$

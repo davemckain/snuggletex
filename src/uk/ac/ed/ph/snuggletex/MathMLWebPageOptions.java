@@ -63,10 +63,11 @@ public final class MathMLWebPageOptions extends BaseWebPageOptions {
          * The <strong>pref:renderer</strong> attribute on the <tt>html</tt> element will be set
          * to <tt>mathplayer-dl</tt>.
          * <p>
-         * You <strong>MUST</strong> call
-         * {@link MathMLWebPageOptions#setClientSideXSLTStylesheetURLs(String...)}
-         * to indicate where the USS is going to be loaded from - which must be on a server local
-         * to the document you are serving from (as otherwise IE has problems). If you don't do
+         * You <strong>MUST</strong> also call
+         * {@link #setClientSideXSLTStylesheetURLs(String...)}
+         * to indicate where the USS is going to be loaded from. This <strong>MUST</strong>
+         * be on a server local to the document you are serving from, because IE enforces
+         * a "same origin" policy for loading XSLT stylesheets. If you don't do
          * this, your page will not work on IE.
          * 
          * <h2>Notes</h2>

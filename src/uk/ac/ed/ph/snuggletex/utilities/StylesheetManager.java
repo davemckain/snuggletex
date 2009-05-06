@@ -12,10 +12,10 @@ import javax.xml.transform.TransformerFactory;
 
 /**
  * Trivial helper class to manage the loading of SnuggleTeX's internal stylesheets, using
- * the optional {@link StylesheetCache} to cache stylesheets for performance.
+ * a {@link StylesheetCache} to cache stylesheets for performance.
  * <p>
  * This has been made "public" as it is used by certain standalone tools, like the
- * {@link MathMLDownConverter}, but its use outside SnuggleTeX is somewhat limited.
+ * {@link MathMLDownConverter}, but its use outside SnuggleTeX is perhaps somewhat limited.
  * <p>
  * This class is thread-safe.
  *
@@ -47,8 +47,9 @@ public final class StylesheetManager {
     //----------------------------------------------------------
 
     /**
-     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, compiling
-     * and storing one if the cache fails to return anything.
+     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache} using the
+     * JAXP Default {@link TransformerFactory}, compiling and storing one if the cache fails to
+     * return anything.
      * 
      * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
      *   URI scheme in {@link ClassPathURIResolver}.
@@ -56,15 +57,32 @@ public final class StylesheetManager {
      * @return compiled XSLT stylesheet.
      */
     public Templates getStylesheet(String classPathUri) {
+        return getStylesheet(classPathUri, false);
+    }
+    
+    /**
+     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, using either the
+     * JAXP Default {@link TransformerFactory} or SAXON (if requireXSLT20 is true),
+     * compiling and storing one if the cache fails to return anything.
+     * 
+     * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
+     *   URI scheme in {@link ClassPathURIResolver}.
+     * @param requireXSLT20 if false uses the JAXP default {@link TransformerFactory}, otherwise
+     *   specifies that we require an XSLT 2.0-compliant transformer, of which the only currently
+     *   supported implementation is SAXON 9.x.
+     *   
+     * @return compiled XSLT stylesheet.
+     */
+    public Templates getStylesheet(final String classPathUri, final boolean requireXSLT20) {
         Templates result;
         if (stylesheetCache==null) {
-            result = compileStylesheet(classPathUri);
+            result = compileStylesheet(classPathUri, requireXSLT20);
         }
         else {
             synchronized(stylesheetCache) {
                 result = stylesheetCache.getStylesheet(classPathUri);
                 if (result==null) {
-                    result = compileStylesheet(classPathUri);
+                    result = compileStylesheet(classPathUri, requireXSLT20);
                     stylesheetCache.putStylesheet(classPathUri, result);
                 }
             }
@@ -72,9 +90,15 @@ public final class StylesheetManager {
         return result;
     }
     
-    private Templates compileStylesheet(String classPathUri) {
-        /* (Can use JAXP default here) */
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+    
+    private Templates compileStylesheet(final String classPathUri, final boolean requireXSLT20) {
+        TransformerFactory transformerFactory;
+        if (requireXSLT20) {
+            transformerFactory = XMLUtilities.createSaxonTransformerFactory();
+        }
+        else {
+            transformerFactory = XMLUtilities.createJAXPTransformerFactory();
+        }
         return XMLUtilities.compileInternalStylesheet(transformerFactory, classPathUri);
     }
 }

@@ -44,7 +44,7 @@ public final class XMLUtilities {
      * that the result supports the {@link DOMSource#FEATURE} and {@link DOMResult#FEATURE}
      * features.
      */
-    public static TransformerFactory createTransformerFactory() {
+    public static TransformerFactory createJAXPTransformerFactory() {
         TransformerFactory transformerFactory = null;
         try {
             transformerFactory = TransformerFactory.newInstance();

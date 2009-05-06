@@ -10,15 +10,13 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.transform.Templates;
 
 /**
  * This is the main entry point into SnuggleTeX.
@@ -59,12 +57,29 @@ public final class SnuggleEngine {
     
     /** Default {@link DOMOutputOptions} */
     private DOMOutputOptions defaultDOMOptions;
-  
+
+    /**
+     * Creates a new {@link SnuggleEngine} using a very simple cache for any
+     * XSLT stylesheets required that simply stores them internally for the lifetime
+     * of the engine. This will be fine in most cases. If you want more control over
+     * this, consider the alternative constructor.
+     */
     public SnuggleEngine() {
+        this(new SimpleStylesheetCache());
+    }
+
+    /**
+     * Creates a new {@link SnuggleEngine} using the given {@link StylesheetCache}
+     * for managing stylesheets. Use this if you want to integrate XSLT caching
+     * with your own code or want moe control over how things get cached.
+     */
+    public SnuggleEngine(StylesheetCache stylesheetCache) {
         this.definitionMaps = new ArrayList<DefinitionMap>();
         this.defaultSessionConfiguration = new SessionConfiguration();
         this.defaultDOMOptions = new DOMOutputOptions();
-        this.stylesheetManager = new StylesheetManager(new DefaultStylesheetCache());
+        
+        /* Create manager for XSLT stlyesheets using the given cache */
+        this.stylesheetManager = new StylesheetManager(stylesheetCache);
         
         /* Add in global definitions */
         definitionMaps.add(GlobalBuiltins.getDefinitionMap());
@@ -136,27 +151,5 @@ public final class SnuggleEngine {
     
     public StylesheetManager getStylesheetManager() {
         return stylesheetManager;
-    }
-    
-    /**
-     * Default implementation of {@link StylesheetCache} that simply caches all stylesheets
-     * for the lifetime of the engine. This is reasonable since we currently don't have many
-     * of these. In future, this behaviour may change.
-     */
-    public static class DefaultStylesheetCache implements StylesheetCache {
-        
-        private final Map<String, Templates> cacheMap;
-        
-        public DefaultStylesheetCache() {
-            this.cacheMap = new HashMap<String, Templates>();
-        }
-        
-        public Templates getStylesheet(String resourceName) {
-            return cacheMap.get(resourceName);
-        }
-        
-        public void putStylesheet(String resourceName, Templates stylesheet) {
-            cacheMap.put(resourceName, stylesheet);
-        }
     }
 }

@@ -17,11 +17,16 @@ import javax.xml.transform.Templates;
  * A {@link SnuggleEngine} creates a default implementation of this that caches stylesheets
  * over the lifetime of the {@link SnuggleEngine} Object, which is reasonable. If you want
  * to change this, create your own implementation and attach it to your {@link SnuggleEngine}.
+ * <p>
+ * You can use the {@link SimpleStylesheetCache} in your own applications if you want to.
  * 
  * <h2>Internal Note</h2>
  * 
  * (I'm not currently enforcing that implementations of this should be thread-safe. Therefore, make
- * sure that you synchronise correctly when accessing an instance of this cache.) 
+ * sure that you synchronise correctly when accessing an instance of this cache. You would normally
+ * just use a {@link StylesheetManager} instance to do this safely.)
+ * 
+ * @see SimpleStylesheetCache
  *
  * @author  David McKain
  * @version $Revision$

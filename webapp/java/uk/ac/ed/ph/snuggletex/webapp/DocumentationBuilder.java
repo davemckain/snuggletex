@@ -117,7 +117,7 @@ public final class DocumentationBuilder {
         
         /* Create stylesheet to format the resulting web page */
         try {
-            stylesheet = XMLUtilities.createTransformerFactory().newTransformer(new StreamSource(formattingStylesheet));
+            stylesheet = XMLUtilities.createJAXPTransformerFactory().newTransformer(new StreamSource(formattingStylesheet));
             stylesheet.setParameter("context-path", contextPath);
         }
         catch (TransformerConfigurationException e) {

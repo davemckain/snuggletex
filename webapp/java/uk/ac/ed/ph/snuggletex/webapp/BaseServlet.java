@@ -56,7 +56,7 @@ abstract class BaseServlet extends HttpServlet {
      */
     protected Templates compileStylesheet(String xsltPathInsideWebapp) throws ServletException {
         StreamSource xsltSource = new StreamSource(ensureReadResource(xsltPathInsideWebapp));
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+        TransformerFactory transformerFactory = XMLUtilities.createJAXPTransformerFactory();
 
         /* Create a cheap URIResolver to help with xsl:import and friends. */
         transformerFactory.setURIResolver(new CheapoURIResolver());

@@ -169,7 +169,7 @@ abstract class AbstractGoodXMLTest {
             
             /* Serialize the output */
             StringWriter outputWriter = new StringWriter();
-            TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+            TransformerFactory transformerFactory = XMLUtilities.createJAXPTransformerFactory();
             Transformer serializer = transformerFactory.newTransformer();
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             serializer.transform(new DOMSource(resultDocument), new StreamResult(outputWriter));

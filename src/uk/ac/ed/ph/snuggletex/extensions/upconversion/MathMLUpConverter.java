@@ -9,9 +9,10 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.SnuggleEngine.DefaultStylesheetCache;
 import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,7 +20,6 @@ import java.util.Map.Entry;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
@@ -76,9 +76,8 @@ public class MathMLUpConverter {
     
     /** Location of the main up-converting XSLT */
     private static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
-
-    /** XSLT cache to use */
-    private final StylesheetCache stylesheetCache;
+    
+    private final StylesheetManager stylesheetManager;
     
     /**
      * Creates a new up-converter using a simple internal cache.
@@ -87,7 +86,7 @@ public class MathMLUpConverter {
      * instance of this class to be reused as much as possible to get the benefits of caching.
      */
     public MathMLUpConverter() {
-        this(new DefaultStylesheetCache());
+        this(new SimpleStylesheetCache());
     }
     
     /**
@@ -98,14 +97,14 @@ public class MathMLUpConverter {
      * if the default doesn't do what you want.
      */
     public MathMLUpConverter(final StylesheetCache stylesheetCache) {
-        this.stylesheetCache = stylesheetCache;
+        this.stylesheetManager = new StylesheetManager(stylesheetCache);
     }
     
     public Document upConvertSnuggleTeXMathML(final Document document, final Map<String, Object> upconversionParameters) {
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             /* Create required XSLT */
-            Templates upconverterStylesheet = getStylesheet(UPCONVERTER_XSL_LOCATION);
+            Templates upconverterStylesheet = stylesheetManager.getStylesheet(UPCONVERTER_XSL_LOCATION, true);
             Transformer upconverter = upconverterStylesheet.newTransformer();
             
             /* Set any specified parameters */
@@ -131,7 +130,7 @@ public class MathMLUpConverter {
         /* First of all we convert the ASCIIMathML into something equivalent to SnuggleTeX output */
         Document fixedDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
-            Templates fixerStylesheet = getStylesheet(ASCIIMATH_FIXER_XSL_LOCATION);
+            Templates fixerStylesheet = stylesheetManager.getStylesheet(ASCIIMATH_FIXER_XSL_LOCATION, true);
             fixerStylesheet.newTransformer().transform(new DOMSource(document), new DOMResult(fixedDocument));
         }
         catch (TransformerException e) {
@@ -139,30 +138,5 @@ public class MathMLUpConverter {
         }
         /* Then do the normal SnuggleTeX up-conversion */
         return upConvertSnuggleTeXMathML(fixedDocument, upconversionParameters);
-    }
-    
-    //---------------------------------------------------------------------
-    // Internal helpers
-    
-    private Templates getStylesheet(String location) {
-        Templates result;
-        if (stylesheetCache==null) {
-            result = compileStylesheet(location);
-        }
-        else {
-            synchronized(stylesheetCache) {
-                result = stylesheetCache.getStylesheet(location);
-                if (result==null) {
-                    result = compileStylesheet(location);
-                    stylesheetCache.putStylesheet(location, result);
-                }
-            }
-        }
-        return result;
-    }
-    
-    private Templates compileStylesheet(String location) {
-        TransformerFactory transformerFactory = XMLUtilities.createSaxonTransformerFactory();
-        return XMLUtilities.compileInternalStylesheet(transformerFactory, location);
     }
 }

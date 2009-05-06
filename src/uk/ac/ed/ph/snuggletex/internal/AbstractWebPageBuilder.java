@@ -129,7 +129,7 @@ public abstract class AbstractWebPageBuilder<P extends BaseWebPageOptions> {
         /* Create either an identity transform (for XHTML) or one which converts XHTML to HTML
          * for proper no-namespace HTML output.
          */
-        TransformerFactory transformerFactory = XMLUtilities.createTransformerFactory();
+        TransformerFactory transformerFactory = XMLUtilities.createJAXPTransformerFactory();
         SerializationMethod serializationMethod = options.getSerializationMethod();
         Transformer serializer;
         try {
