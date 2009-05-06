@@ -305,14 +305,6 @@ public final class DOMBuilder {
                     appendTextNode(parentElement, " ", false);
                 }
                 break;
-            
-            case COMMENT:
-                if (options.isIncludingComments()) {
-                    SimpleToken commentToken = (SimpleToken) token;
-                    Element commentElement = appendSnuggleElement(parentElement, "comment");
-                    appendTextNode(commentElement, commentToken.getSlice().extract().toString(), true);
-                }
-                break;
                 
             /* Math tokens (it's assumed that these all have Interpretations attached) */
                 

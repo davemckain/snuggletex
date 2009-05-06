@@ -214,7 +214,7 @@ Space
 <p>White</p>
 <p>Space</p>
 ====
-# Breathing space test. When splitting up multi-line commands, we traditionally use
+# Breathing space test. When splitting up multi-line commands, we often use
 # '%' at the end of a line to do a continuation that absorbs leading whitespace on
 # the next line. The following is an example of this.
 \newcommand{\bob}{%
@@ -226,6 +226,13 @@ Space
 ----
 <qName xmlns="urn">Content</qName>
 <qName xmlns="urn">Content</qName>
+====
+## Comments between arguments
+\newcommand{\a}[2]{#1 #2}
+\a{x}%
+{y}
+----
+x y
 ====
 ## Horrible deep environment!
 \newenvironment{a}{\begin{itemize}}{\end{itemize}}
@@ -347,7 +354,7 @@ Line 1<br/>
   </tbody>
 </table>
 ====
-## Comments inside tabulars need to be handled correctly
+## Comments inside tabulars need to be handled correctly (this is no longer a problem)
 \begin{tabular}{|r|l|}
  \hline
  1 & 2 \\ %Blah

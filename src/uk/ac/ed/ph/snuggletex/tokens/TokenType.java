@@ -25,7 +25,6 @@ public enum TokenType {
     ERROR,
 
     /* Simple tokens */
-    COMMENT,
     NEW_PARAGRAPH, /* (This is stripped out during fixing) */
     TAB_CHARACTER, /* (a.k.a. &, as used in tables and arrays) */
     TEXT_MODE_TEXT,

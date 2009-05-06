@@ -61,9 +61,6 @@ public class DOMOutputOptions implements Cloneable {
     /** Set to true to annotate MathML elements with the original SnuggleTeX source. */
     private boolean addingMathAnnotations;
     
-    /** Set to true to include TeX comments in the output */
-    private boolean includingComments;
-    
     /** 
      * Set to true to inline CSS styling (i.e. uses <tt>style</tt> attributes). This is useful
      * if your output is going to end up embedded in someone else's page or in a system where you
@@ -124,7 +121,6 @@ public class DOMOutputOptions implements Cloneable {
     public DOMOutputOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
         this.inliningCSS = false;
-        this.includingComments = false;
         this.addingMathAnnotations = false;
         this.inlineCSSProperties = null;
         this.mathMLPrefix = "m";
@@ -143,15 +139,6 @@ public class DOMOutputOptions implements Cloneable {
             throw new IllegalArgumentException("ErrorOutputOptions must not be null");
         }
         this.errorOutputOptions = errorOptions;
-    }
-    
-    
-    public boolean isIncludingComments() {
-        return includingComments;
-    }
-    
-    public void setIncludingComments(boolean includingComments) {
-        this.includingComments = includingComments;
     }
     
     

@@ -56,7 +56,7 @@ public final class LaTeXTokeniser {
     
     /** 
      * Set of reserved commands. These cannot be redefined and are not all listed in
-     * {@link BuiltinCommand}.
+     * {@link GlobalBuiltins}.
      */
     public static final Set<String> reservedCommands = new HashSet<String>(Arrays.asList(new String[] {
         "begin",
@@ -74,8 +74,7 @@ public final class LaTeXTokeniser {
     /** 
      * Name of internal command that gets temporarily appended after the begin clauses of a
      * user-defined environment has been substituted in order to perform house-keeping duties.
-     * No trace of this
-     * command will exist once tokenisation has finished.
+     * No trace of this command will exist once tokenisation has finished.
      * <p>
      * I've chosen a non-ASCII name for this command so as to make it impossible to be used in
      * "real" inputs.
@@ -389,9 +388,13 @@ public final class LaTeXTokeniser {
 //                + ", envsOpen=" + openEnvironmentStack
 //                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
         
-        /* In MATH Mode, we skip over any leading whitespace */
+        /* In MATH Mode, we skip over any leading whitespace and comments; in other modes we skip
+         * over any comments */
         if (currentModeState.latexMode==LaTeXMode.MATH) {
-            skipOverWhitespace();
+            skipOverCommentsAndWhitespace();
+        }
+        else {
+            skipOverComment();
         }
         
         /* See if we are at our required terminator or at the end of the document */
@@ -500,8 +503,8 @@ public final class LaTeXTokeniser {
                 return readBraceRegion();
                 
             case '%':
-                /* Start of a comment. Ignore until end of line */
-                return readComment();
+                /* Start of a comment. This should have been caught earlier */
+                throw new SnuggleLogicException("Comment should be have been skipped before getting here!");
                 
             case '&':
                 /* 'Tab' character */
@@ -633,8 +636,8 @@ public final class LaTeXTokeniser {
                 return readBraceRegion();
                 
             case '%':
-                /* Start of a comment. Ignore until end of line */
-                return readComment();
+                /* Start of a comment. This should have been caught earlier */
+                throw new SnuggleLogicException("Comment should be have been skipped before getting here!");
                 
             case '&':
                 /* 'Tab' character */
@@ -724,37 +727,6 @@ public final class LaTeXTokeniser {
                     TokenType.TEXT_MODE_TEXT, currentModeState.latexMode, TextFlowContext.ALLOW_INLINE);
         }
         return result;
-    }
-    
-    /**
-     * Reads the rest of the current LaTeX comment line, with '%' assumed to be the first
-     * character.
-     * <p>
-     * Bizarrely, if the next line contains non-whitespace characters then LaTeX comments
-     * also absorb the newline at the end of the original line plus any leading whitespace
-     * on the next line(!)
-     */
-    private SimpleToken readComment() {
-        /* Read to end of current line */
-        int index = position + 1;
-        while (index<workingDocument.length() && workingDocument.charAt(index)!='\n') {
-            index++;
-        }
-        if (workingDocument.charAt(index)=='\n') {
-            /* See if the next line contains non-whitespace */
-            int searchIndex = index + 1;
-            int c;
-            while (searchIndex<workingDocument.length() && (c=workingDocument.charAt(searchIndex))!='\n') {
-                if (!Character.isWhitespace(c)) {
-                    /* Found non-whitespace so terminate comment here and stop */
-                    index = searchIndex;
-                    break;
-                }
-                searchIndex++;
-            }
-        }
-        return new SimpleToken(workingDocument.freezeSlice(position, index),
-                TokenType.COMMENT, currentModeState.latexMode, TextFlowContext.IGNORE);
     }
     
     /**
@@ -1175,8 +1147,8 @@ public final class LaTeXTokeniser {
      * @throws SnuggleParseException
      */
     private FlowToken finishCombiningCommand(final BuiltinCommand command) throws SnuggleParseException {
-        /* We always skip trailing whitespace for these types of commands */
-        skipOverWhitespace();
+        /* We always skip trailing comments/whitespace for these types of commands */
+        skipOverCommentsAndWhitespace();
         int afterWhitespaceIndex = position;
         
         /* Record index of the start of this command since we're going to read in the next token */
@@ -1270,8 +1242,8 @@ public final class LaTeXTokeniser {
             return null;
         }
         
-        /* If still here, we're expecting arguments so skip any whitespace before first argument */
-        skipOverWhitespace();
+        /* If still here, we're expecting arguments so skip any comments/whitespace before first argument */
+        skipOverCommentsAndWhitespace();
         
         /* Consider optional argument, if allowed */
         ArgumentContainerToken optionalArgument = null;
@@ -1320,8 +1292,8 @@ public final class LaTeXTokeniser {
         ArgumentContainerToken[] requiredArguments = new ArgumentContainerToken[argCount];
         FrozenSlice[] requiredArgumentSlices = new FrozenSlice[argCount];
         for (int i=0; i<argCount; i++) {
-            /* Skip any whitespace before this argument */
-            skipOverWhitespace();
+            /* Skip any comments/whitespace before this argument */
+            skipOverCommentsAndWhitespace();
             
             /* Decide which parsing mode to use for this argument, using current if none specified */
             argumentMode = commandOrEnvironment.getArgumentMode(argumentIndex++);
@@ -1467,7 +1439,7 @@ public final class LaTeXTokeniser {
         }
         
         /* Skip any whitespace before arguments */
-        skipOverWhitespace();
+        skipOverCommentsAndWhitespace();
         
         /* Consider optional argument, if allowed */
         int c;
@@ -1493,8 +1465,8 @@ public final class LaTeXTokeniser {
         int argCount = commandOrEnvironment.getArgumentCount();
         CharSequence[] requiredArguments = new CharSequence[argCount];
         for (int i=0; i<argCount; i++) {
-            /* Skip any whitespace before this argument */
-            skipOverWhitespace();
+            /* Skip any comments/whitespace before this argument */
+            skipOverCommentsAndWhitespace();
             
             /* Now look for argument */
             c = workingDocument.charAt(position);
@@ -1628,7 +1600,7 @@ public final class LaTeXTokeniser {
     
     /**
      * Reads text of the form '{envName}' from the current position onwards, skipping any leading
-     * whitespace and advancing the current position to just after the final '}'.
+     * comments/whitespace and advancing the current position to just after the final '}'.
      * <p>
      * Returns null if this information was not found.
      * <p>
@@ -1636,8 +1608,8 @@ public final class LaTeXTokeniser {
      * POST-CONDITION: position will point to just after the <tt>{envName}</tt>, if found
      */
     private String advanceOverBracesAndEnvironmentName() {
-        /* Skip leading whitespace */
-        skipOverWhitespace();
+        /* Skip leading comments/whitespace */
+        skipOverCommentsAndWhitespace();
         
         /* Read in name of environment and move beyond it */
         if (workingDocument.charAt(position)!='{') {
@@ -1714,8 +1686,8 @@ public final class LaTeXTokeniser {
             openEnvironmentStack.pop();
         }
         else {
-            /* Gobble up any whitespace before the start of the content */
-            skipOverWhitespace();
+            /* Gobble up any comments/whitespace before the start of the content */
+            skipOverCommentsAndWhitespace();
             
             /* Now we parse the environment content. We don't set a terminator here - the tokenisation
              * logic knows to search for \\end and make sure things are balanced up with whatever
@@ -1864,8 +1836,8 @@ public final class LaTeXTokeniser {
      */
     private FlowToken finishCommandDefinition(final BuiltinCommand definitionCommand)
             throws SnuggleParseException {
-        /* Skip whitespace after \\newcommand or whatever. */
-        skipOverWhitespace();
+        /* Skip whitespace/comments after \\newcommand or whatever. */
+        skipOverCommentsAndWhitespace();
         
         /* First thing to read is the name of the command, which is written as either
          * 
@@ -1879,7 +1851,7 @@ public final class LaTeXTokeniser {
         }
         else if (c=='{') { /* It's {\name}, with possible whitespace */
             position++;
-            skipOverWhitespace();
+            skipOverCommentsAndWhitespace();
             nameIsInBraces = true;
         }
         /* Try to read in \name */
@@ -1900,7 +1872,7 @@ public final class LaTeXTokeniser {
         position += commandName.length();
         if (nameIsInBraces) {
             /* Skip over whitespace and make sure closing brace is there */
-            skipOverWhitespace();
+            skipOverCommentsAndWhitespace();
             if (workingDocument.charAt(position)!='}') {
                 /* Error: No matching '}' after command name */
                 return createError(ErrorCode.TTEUC6, startTokenIndex, position);
@@ -1930,7 +1902,7 @@ public final class LaTeXTokeniser {
         
         /* Skip trailing whitespace */
         position = endCurlyIndex + 1;
-        skipOverWhitespace();
+        skipOverCommentsAndWhitespace();
         
         /* Now create the new command */
         FrozenSlice definitionSlice = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
@@ -1967,8 +1939,8 @@ public final class LaTeXTokeniser {
      */
     private FlowToken finishEnvironmentDefinition(final BuiltinCommand definitionCommand)
             throws SnuggleParseException {
-        /* Skip whitespace after \\newenvironment or whatever. */
-        skipOverWhitespace();
+        /* Skip comments/whitespace after \\newenvironment or whatever. */
+        skipOverCommentsAndWhitespace();
         
         /* Read name of new environment, specified as {envName} */
         String environmentName = advanceOverBracesAndEnvironmentName();
@@ -1983,7 +1955,7 @@ public final class LaTeXTokeniser {
         }
         
         /* Skip whitespace after name */
-        skipOverWhitespace();
+        skipOverCommentsAndWhitespace();
         
         /* Read in specification of arguments. */
         ArgumentDefinitionResult argumentDefinitionResult = new ArgumentDefinitionResult();
@@ -2007,7 +1979,7 @@ public final class LaTeXTokeniser {
             
             /* Skip trailing whitespace */
             position = endCurlyIndex + 1;
-            skipOverWhitespace();
+            skipOverCommentsAndWhitespace();
 
             /* Record slice */
             definitionSlices[i] = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
@@ -2065,8 +2037,8 @@ public final class LaTeXTokeniser {
      */
     private ErrorToken advanceOverUserDefinedCommandOrEnvironmentArgumentDefinition(final String commandOrEnvironmentName,
             final ArgumentDefinitionResult result) throws SnuggleParseException {
-        /* Skip initial whitespace */
-        skipOverWhitespace();
+        /* Skip initial comments/whitespace */
+        skipOverCommentsAndWhitespace();
         
         /* Next we read in the number of arguments, specified as [<1-9>],
          * then whether there are optional arguments (specified as a further [<anything>])
@@ -2105,7 +2077,7 @@ public final class LaTeXTokeniser {
                 return createError(ErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
-            skipOverWhitespace();
+            skipOverCommentsAndWhitespace();
             if (workingDocument.charAt(position)=='[') {
                 allowOptArgs = true;
                 argCount--;
@@ -2118,8 +2090,8 @@ public final class LaTeXTokeniser {
             }
         }
         
-        /* Skip trailing whitespace */
-        skipOverWhitespace();
+        /* Skip trailing comments/whitespace */
+        skipOverCommentsAndWhitespace();
         
         /* Fill in result and return null to indicate 'no error' */
         result.allowOptionalArgument = allowOptArgs;
@@ -2221,14 +2193,57 @@ public final class LaTeXTokeniser {
         }
         return -1;
     }
+
+    /**
+     * Advances the current position past any comments and/or whitespace, including newlines.
+     */
+    private void skipOverCommentsAndWhitespace() {
+        int c;
+        while (position<workingDocument.length()) {
+            c = workingDocument.charAt(position);
+            if (c=='%') {
+                skipOverComment();
+            }
+            else if (Character.isWhitespace(c)) {
+                position++;
+            }
+            else {
+                break;
+            }
+        }
+    }
     
     /**
-     * Advances the current position past any whitespace, including newlines.
+     * Advances the current position past a comment, indicated by a '%' symbol.
+     * <p>
+     * As per LaTeX convention, comments continue until the end of the current line.
+     * Moreover, if the next line contains non-whitespace characters then LaTeX comments
+     * also absorb the newline at the end of the original line plus any leading whitespace
+     * on the next line(!)
      */
-    private void skipOverWhitespace() {
-        while (position<workingDocument.length() && Character.isWhitespace(workingDocument.charAt(position))) {
-            position++;
+    private void skipOverComment() {
+        /* Read to end of current line */
+        if (workingDocument.charAt(position)!='%') {
+            return;
         }
+        int index = position + 1;
+        while (index<workingDocument.length() && workingDocument.charAt(index)!='\n') {
+            index++;
+        }
+        if (workingDocument.charAt(index)=='\n') {
+            /* See if the next line contains non-whitespace */
+            int searchIndex = index + 1;
+            int c;
+            while (searchIndex<workingDocument.length() && (c=workingDocument.charAt(searchIndex))!='\n') {
+                if (!Character.isWhitespace(c)) {
+                    /* Found non-whitespace so terminate comment here and stop */
+                    index = searchIndex;
+                    break;
+                }
+                searchIndex++;
+            }
+        }
+        position = index;
     }
     
     /**

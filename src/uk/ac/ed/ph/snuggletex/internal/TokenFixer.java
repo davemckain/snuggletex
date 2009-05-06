@@ -93,7 +93,6 @@ public final class TokenFixer {
             case SINGLE_CHARACTER_MATH_IDENTIFIER:
             case SINGLE_CHARACTER_MATH_SPECIAL:
             case ERROR:
-            case COMMENT:
             case TAB_CHARACTER:
                 /* Nothing to do here */
                 break;
@@ -445,12 +444,8 @@ public final class TokenFixer {
                 continue;
             }
             else if (!foundItem) {
-                /* Found stuff before first \item. The only things we allow are comments and
-                 * whitespace text */
-                if (token.getType()==TokenType.COMMENT) {
-                    resultBuilder.add(token);
-                }
-                else if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()
+                /* Found stuff before first \item. The only thing we allow is whitespace text */
+                if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()
                         || token.getType()==TokenType.NEW_PARAGRAPH) {
                     /* This is whitespace, so we'll just ignore this token */
                 }
@@ -519,10 +514,6 @@ public final class TokenFixer {
             }
             else if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()) {
                 /* Whitespace token - we'll ignore this */
-                continue;
-            }
-            else if (token.getType()==TokenType.COMMENT) {
-                /* We'll strip comments as trying to keep them around makes life far too complicated */
                 continue;
             }
             else if (token.getType()==TokenType.TAB_CHARACTER) {

@@ -97,9 +97,6 @@ public abstract class AbstractCustomXMLElementHandler implements EnvironmentHand
                 String value = builder.extractStringValue(resolvedAttrToken.getArguments()[2]);
                 resultElement.setAttributeNS(namespace, qName, value);
             }
-            else if (rawAttrToken.getType()==TokenType.COMMENT) {
-                /* Ignore */
-            }
             else if (rawAttrToken.getType()==TokenType.ERROR) {
                 /* Keep this */
                 builder.handleToken(parentElement, rawAttrToken);

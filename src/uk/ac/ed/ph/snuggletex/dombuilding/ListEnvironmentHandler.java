@@ -52,10 +52,6 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
                 /* We'll append errors immediately *after* the list environment */
                 builder.handleToken(parentElement, contentToken);
             }
-            else if (contentToken.getType()==TokenType.COMMENT) {
-                /* We'll mix comments into the list */
-                builder.handleToken(listElement, contentToken);
-            }
             else {
                 /* List environments should only contain list items. This should have
                  * been sorted at token fixing so we've got a logic fault if we get here!
