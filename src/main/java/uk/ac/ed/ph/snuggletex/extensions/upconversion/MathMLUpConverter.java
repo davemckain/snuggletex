@@ -39,6 +39,12 @@ import org.w3c.dom.Document;
  * <h2>Usage Notes</h2>
  * 
  * <ul>
+ *   <li>
+ *     If the up-conversion process fails because the input cannot be understood, you can find
+ *     out what went wrong by passing the resulting {@link Document} to
+ *     {@link UpConversionUtilities#extractUpConversionFailures(Document)}, to get a List
+ *     of {@link UpConversionFailure} Objects that can be inspected further.
+ *   </li>
  *   <li>An implementation of this class is thread-safe</li>
  *   <li>
  *     If you use XSLT in your own application, consider using the constructor that
@@ -77,6 +83,7 @@ public class MathMLUpConverter {
     /** Location of the main up-converting XSLT */
     private static final String UPCONVERTER_XSL_LOCATION = UPCONVERTER_BASE_LOCATION + "/snuggletex-upconverter.xsl";
     
+    /** Helper to manage the {@link StylesheetCache} */
     private final StylesheetManager stylesheetManager;
     
     /**
