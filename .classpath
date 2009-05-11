@@ -1,30 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
-  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
-  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
-  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
-  <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-anim/1.7/batik-anim-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-awt-util/1.7/batik-awt-util-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-css/1.7/batik-css-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-dom/1.7/batik-dom-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-ext/1.7/batik-ext-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-parser/1.7/batik-parser-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-svg-dom/1.7/batik-svg-dom-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-util/1.7/batik-util-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/batik-xml/1.7/batik-xml-1.7.jar"/>
-  <classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.3.1/commons-io-1.3.1.jar" sourcepath="M2_REPO/commons-io/commons-io/1.3.1/commons-io-1.3.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" sourcepath="M2_REPO/commons-logging/commons-logging/1.1/commons-logging-1.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/easymock/easymock/2.3/easymock-2.3.jar" sourcepath="M2_REPO/org/easymock/easymock/2.3/easymock-2.3-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/net/sourceforge/jeuclid/jeuclid-core/3.1.1/jeuclid-core-3.1.1.jar" sourcepath="M2_REPO/net/sourceforge/jeuclid/jeuclid-core/3.1.1/jeuclid-core-3.1.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar" sourcepath="M2_REPO/junit/junit/4.4/junit-4.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/uk/ac/ed/ph/ph-commons-util/1.0-SNAPSHOT/ph-commons-util-1.0-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/uk/ac/ed/ph/ph-commons-xml/1.0-SNAPSHOT/ph-commons-xml-1.0-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/uk/ac/ed/ph/ph-commons-xml-testutils/1.0-SNAPSHOT/ph-commons-xml-testutils-1.0-SNAPSHOT.jar"/>
-  <classpathentry kind="var" path="M2_REPO/net/sf/saxon/saxon9/9.1.0.5/saxon9-9.1.0.5.jar"/>
-  <classpathentry kind="var" path="M2_REPO/net/sf/saxon/saxon9-dom/9.1.0.5/saxon9-dom-9.1.0.5.jar"/>
-  <classpathentry kind="var" path="M2_REPO/xml-apis/xml-apis/1.3.04/xml-apis-1.3.04.jar" sourcepath="M2_REPO/xml-apis/xml-apis/1.3.04/xml-apis-1.3.04-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/xmlgraphics/xmlgraphics-commons/1.3/xmlgraphics-commons-1.3.jar"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="src" output="snuggletex-core/target/classes" path="snuggletex-core/src/main/java"/>
+  <classpathentry kind="src" output="snuggletex-core/target/test-classes" path="snuggletex-core/src/test/java"/>
+  <classpathentry kind="src" output="snuggletex-webapp/target/classes" path="snuggletex-webapp/src/main/java"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+  <classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 </classpath>

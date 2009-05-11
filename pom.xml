@@ -5,7 +5,11 @@
   <groupId>uk.ac.ed.ph.snuggletex</groupId>
   <artifactId>snuggletex</artifactId>
   <version>1.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
+  <modules>
+    <module>snuggletex-core</module>
+    <module>snuggletex-webapp</module>
+  </modules>
   <properties>
     <junit.version>4.4</junit.version>
     <easymock.version>2.3</easymock.version>
@@ -30,11 +34,6 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>net.sourceforge.jeuclid</groupId>
-      <artifactId>jeuclid-core</artifactId>
-      <version>${jeuclid.version}</version>
-    </dependency>
-    <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon9</artifactId>
       <version>${saxon9.version}</version>
@@ -58,13 +57,22 @@
       <version>${easymock.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>uk.ac.ed.ph</groupId>
-      <artifactId>ph-commons-xml-testutils</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+  <developers>
+    <developer>
+      <id>dmckain</id>
+      <name>David McKain</name>
+      <email>david.mckain@ed.ac.uk</email>
+      <url>http://www.ph.ed.ac.uk/~dmckain/</url>
+      <organization>School of Physics and Astronomy, University of Edinburgh</organization>
+      <organizationUrl>http://www.ph.ed.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
   <!-- This next bit is obviously temporary until we sort out exactly where to deploy to -->
   <distributionManagement>
     <snapshotRepository>
@@ -87,13 +95,6 @@
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>
           <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <test>uk/ac/ed/ph/snuggletex/SnuggleTeXTestSuite</test>
         </configuration>
       </plugin>
     </plugins>
