@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: AbstractGoodXMLTest.java 302 2009-05-11 13:46:21Z davemckain $
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -7,16 +7,16 @@ package uk.ac.ed.ph.snuggletex;
 
 import static org.easymock.EasyMock.createStrictControl;
 
-import uk.ac.ed.ph.commons.testutils.xml.EasyMockContentHandler;
-import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
-import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumper;
-import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
+import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumper;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.testutil.EasyMockContentHandler;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -47,9 +47,9 @@ import org.xml.sax.XMLReader;
  * against the specified output.
  * 
  * @author  David McKain
- * @version $Revision$
+ * @version $Revision: 302 $
  */
-abstract class AbstractGoodXMLTest {
+public abstract class AbstractGoodXMLTest {
     
     private static final Logger log = Logger.getLogger(AbstractGoodXMLTest.class.getName());
     

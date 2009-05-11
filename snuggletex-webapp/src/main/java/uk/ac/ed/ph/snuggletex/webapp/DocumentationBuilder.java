@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.commons.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
@@ -18,10 +17,11 @@ import uk.ac.ed.ph.snuggletex.SnuggleSnapshot;
 import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
-import uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions;
-import uk.ac.ed.ph.snuggletex.extensions.jeuclid.SimpleMathMLImageSavingCallback;
-import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
+import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions;
+import uk.ac.ed.ph.snuggletex.jeuclid.SimpleMathMLImageSavingCallback;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.File;

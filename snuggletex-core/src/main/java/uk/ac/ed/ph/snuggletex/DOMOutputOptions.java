@@ -5,8 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
-
 import java.util.Properties;
 
 /**
@@ -108,11 +106,10 @@ public class DOMOutputOptions implements Cloneable {
      * to acceptable XHTML alternatives.
      * Any expressions deemed too complex to be down-converted are kept as MathML.
      * <p>
-     * SnuggleTeX also includes a {@link UpConvertingPostProcessor} as an extension, that may
-     * be useful in certain circumstances.
+     * The SnuggleTeX Up-Conversion module also includes an "UpConvertingPostProcessor" that
+     * may be used here as well.
      * 
      * @see DownConvertingPostProcessor
-     * @see UpConvertingPostProcessor
      */
     private DOMPostProcessor domPostProcessor;
     

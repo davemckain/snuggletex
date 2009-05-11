@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.testutil;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 
 import java.io.IOException;
 import java.io.InputStream;

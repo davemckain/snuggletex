@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import org.w3c.dom.Document;
@@ -14,12 +13,17 @@ import org.w3c.dom.Document;
  * This interface allows you to hook into the SnuggleTeX process immediately after the raw
  * DOM tree has been built. By implementing this interface, you may make modifications to the
  * DOM to suit your needs.
- * <p>
- * SnuggleTeX ships with a {@link DownConvertingPostProcessor} and (as an extension) an
- * {@link UpConvertingPostProcessor}.
+ * <ul>
+ *   <li>
+ *     The SnuggleTeX core contains a {@link DownConvertingPostProcessor}
+ *   </li>
+ *   <li>
+ *     The SnuggleTeX Up-Conversion module also includes an "UpConvertingPostProcessor" that
+ *     may be used here as well.
+ *   </li>
+ * </ul>
  * 
  * @see DownConvertingPostProcessor
- * @see UpConvertingPostProcessor
  *
  * @author  David McKain
  * @version $Revision$

@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
  * @author  David McKain
  * @version $Revision:179 $
  */
-abstract class AbstractGoodMathTest extends AbstractGoodXMLTest {
+public abstract class AbstractGoodMathTest extends AbstractGoodXMLTest {
     
     public AbstractGoodMathTest(final String inputLaTeXMaths, final String expectedMathMLContent) {
         super("$" + inputLaTeXMaths + "$",

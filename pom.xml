@@ -8,12 +8,14 @@
   <packaging>pom</packaging>
   <modules>
     <module>snuggletex-core</module>
+    <module>snuggletex-jeuclid</module>
     <module>snuggletex-webapp</module>
+    <module>snuggletex-upconversion</module>
   </modules>
   <properties>
     <junit.version>4.4</junit.version>
     <easymock.version>2.3</easymock.version>
-    <jeuclid.version>3.1.1</jeuclid.version>
+    <jeuclid.version>3.1.5</jeuclid.version>
     <saxon9.version>9.1.0.5</saxon9.version>
   </properties>
   <repositories>
@@ -58,6 +60,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <licenses>
+    <license>
+      <name>BSD License (3 clause)</name>
+      <url>LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <developers>
     <developer>
       <id>dmckain</id>
@@ -96,6 +105,20 @@
         <configuration>
           <encoding>UTF-8</encoding>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
