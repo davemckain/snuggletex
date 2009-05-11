@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex.extensions.upconversion;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 

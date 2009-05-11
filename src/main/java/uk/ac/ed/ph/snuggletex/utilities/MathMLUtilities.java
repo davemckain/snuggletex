@@ -7,11 +7,11 @@ package uk.ac.ed.ph.snuggletex.utilities;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
-import uk.ac.ed.ph.commons.util.ConstraintUtilities;
-import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 
 import java.io.IOException;
 import java.io.StringReader;

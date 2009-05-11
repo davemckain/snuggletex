@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
+
 import java.util.Collection;
 
 import org.junit.Test;

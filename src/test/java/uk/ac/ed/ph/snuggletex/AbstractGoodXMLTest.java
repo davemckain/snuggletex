@@ -8,15 +8,15 @@ package uk.ac.ed.ph.snuggletex;
 import static org.easymock.EasyMock.createStrictControl;
 
 import uk.ac.ed.ph.commons.testutils.xml.EasyMockContentHandler;
-import uk.ac.ed.ph.commons.util.DumpMode;
-import uk.ac.ed.ph.commons.util.ObjectDumper;
+import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumper;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 

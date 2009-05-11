@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.util.Arrays;

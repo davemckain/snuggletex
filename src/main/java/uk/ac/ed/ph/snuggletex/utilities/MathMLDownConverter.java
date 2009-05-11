@@ -9,7 +9,7 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
 import java.util.Properties;
 import java.util.Map.Entry;

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 
 import javax.xml.transform.Transformer;
 

@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import uk.ac.ed.ph.commons.util.DumpMode;
-import uk.ac.ed.ph.commons.util.ObjectDumperOptions;
+import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumperOptions;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.Environment;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;

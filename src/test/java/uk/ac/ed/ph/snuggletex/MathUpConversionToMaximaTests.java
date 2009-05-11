@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.extensions.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionFailure;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConversionUtilities;
 import uk.ac.ed.ph.snuggletex.extensions.upconversion.UpConvertingPostProcessor;
+import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;

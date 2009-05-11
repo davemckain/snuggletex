@@ -9,7 +9,7 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;

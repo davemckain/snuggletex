@@ -5,7 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
-import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;

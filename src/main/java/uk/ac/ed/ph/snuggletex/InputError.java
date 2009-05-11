@@ -5,9 +5,10 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.commons.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
+
+import java.util.Arrays;
 
 /**
  * Encapsulates an error in the LaTeX input, providing information about what the error is and
@@ -30,6 +31,8 @@ public final class InputError {
      */
     private final Object[] arguments;
     
+    private String stringRepresentation;
+    
     public InputError(final ErrorCode errorCode, final FrozenSlice slice, final Object... arguments) {
         this.slice = slice;
         this.errorCode = errorCode;
@@ -50,6 +53,17 @@ public final class InputError {
 
     @Override
     public String toString() {
-        return ObjectUtilities.beanToString(this);
+        if (stringRepresentation==null) {
+            stringRepresentation = buildStringRepresentation();
+        }
+        return stringRepresentation;
+    }
+    
+    private String buildStringRepresentation() {
+        return getClass().getSimpleName()
+            + "(errorCode=" + errorCode.toString()
+            + ",slice=" + slice.toString()
+            + ",arguments=" + Arrays.toString(arguments)
+            + ")";
     }
 }

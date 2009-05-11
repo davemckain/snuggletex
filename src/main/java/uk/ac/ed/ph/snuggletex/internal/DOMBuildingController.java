@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex.internal;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.util.List;

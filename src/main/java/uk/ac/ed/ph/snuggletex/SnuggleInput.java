@@ -5,8 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.commons.util.ObjectUtilities;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
@@ -55,6 +53,8 @@ public final class SnuggleInput {
     private final File file;
     private final InputStream inputStream;
     private final Reader reader;
+    
+    private String stringRepresentation;
     
     public SnuggleInput(final String string) {
         this(string, "\"" + string + "\"");
@@ -140,6 +140,13 @@ public final class SnuggleInput {
     
     @Override
     public String toString() {
-        return ObjectUtilities.beanToString(this);
+        if (stringRepresentation==null) {
+            stringRepresentation = buildStringRepresentation();
+        }
+        return stringRepresentation;
+    }
+    
+    private String buildStringRepresentation() {
+        return getClass().getSimpleName() + "(" + identifier + ")";
     }
 }

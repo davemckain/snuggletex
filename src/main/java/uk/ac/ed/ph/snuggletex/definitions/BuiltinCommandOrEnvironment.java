@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.definitions;
 
-import uk.ac.ed.ph.commons.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 
 import java.util.EnumSet;

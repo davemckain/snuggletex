@@ -3,9 +3,9 @@
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex;
+package uk.ac.ed.ph.snuggletex.testutil;
 
-import uk.ac.ed.ph.commons.util.IOUtilities;
+import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -3,7 +3,7 @@
  * Copyright (c) 2003 - 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.internal;
+package uk.ac.ed.ph.snuggletex.internal.util;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
  * Some trivial little helpers for creating suitably-configured {@link TransformerFactory}
  * instances.
  * <p>
- * (This is based on similar utility methods in Aardvark.)
+ * (This is based on similar utility methods in <tt>ph-commons</tt>.)
  *
  * @author  David McKain
  * @version $Revision$

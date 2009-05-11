@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
-import uk.ac.ed.ph.commons.util.ArrayListStack;
-import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;

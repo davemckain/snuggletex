@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.utilities;
 
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerFactory;

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
-import uk.ac.ed.ph.commons.util.ObjectUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
  * Represents a mathematical relation operator that can be applied to the <tt>\\not</tt>

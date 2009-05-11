@@ -12,7 +12,7 @@ import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.utilities.CSSUtilities;
 

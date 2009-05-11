@@ -5,8 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.commons.util.ConstraintUtilities;
-import uk.ac.ed.ph.commons.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
@@ -20,7 +21,6 @@ import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
-import uk.ac.ed.ph.snuggletex.internal.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
