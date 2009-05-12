@@ -458,6 +458,9 @@ Hello &#x2013; There
 Hello --- There
 Hello &#x2014; There
 ====
+Hello|There
+Hello&#x2014;There
+====
 \href[My Web Site]{http://www.ph.ed.ac.uk/~dmckain}
 <a href="http://www.ph.ed.ac.uk/~dmckain">My Web Site</a>
 ====

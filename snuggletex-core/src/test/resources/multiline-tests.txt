@@ -411,18 +411,18 @@ A}
 A
 ====
 ## Similar regression case to above
-\newcommand{\bob}[1]{|#1|}
+\newcommand{\bob}[1]{x#1x}
 \bob{A%}
 B}
 ----
-|AB|
+xABx
 ====
 ## Similar regression but with square brackets
-\newcommand{\bob}[1][]{|#1|}
+\newcommand{\bob}[1][]{x#1x}
 \bob[A%]
 B]
 ----
-|AB|
+xABx
 ====
 ## Regression: commands at end of lines were eating up the newline as trailing whitespace
 Hello\ldots

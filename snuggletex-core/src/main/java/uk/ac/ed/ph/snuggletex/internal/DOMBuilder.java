@@ -351,6 +351,10 @@ public final class DOMBuilder {
                     resultBuilder.append('\u00bf');
                     break;
                     
+                case '|':
+                    resultBuilder.append('\u2014');
+                    break;
+                    
                 case '`':
                     if (i+1<length && rawText.charAt(i+1)=='`') {
                         /* Double open quote */
