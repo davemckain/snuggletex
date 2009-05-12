@@ -446,13 +446,13 @@ public final class SnuggleSession implements SessionContext {
         if (options instanceof MathMLWebPageOptions) {
             result = new MathMLWebPageBuilder(this, (MathMLWebPageOptions) options);
         }
-        else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions")) {
+        else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions")) {
             /* Use reflection to instantiate as this is an "extension" as we don't want to
              * hard-wire a dependency on it just in case it's not being used.
              */
             try {
-                Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageBuilder");
-                Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.extensions.jeuclid.JEuclidWebPageOptions");
+                Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageBuilder");
+                Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions");
                 Constructor<?> constructor = builderClass.getConstructor(SessionContext.class, optionsClass);
                 result = (AbstractWebPageBuilder<?>) constructor.newInstance(this, options);
             }
