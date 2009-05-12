@@ -8,8 +8,6 @@ package uk.ac.ed.ph.snuggletex.utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -344,43 +342,4 @@ public final class LaTeXIndenter {
             outputWriter.write(' ');
         }
     }
-    
-    public static void main(String[] args) throws IOException {
-        StringWriter resultWriter = new StringWriter();
-        String input = ""
-//                + "   \\begin\n{a}\n"
-//                + "\\begin{sue}\n"
-//                + "BBB\n\n\n\n\nBob!"
-//                + "Wendy!"
-//                + "\\end{sue}\nHello"
-//                + "\nHello\n\\end{a}\n\nSue\n    \\begin{verbatim}\n    =bob  X\n\n dubn \n"
-//                + "    \\begin{silly}\n"
-//                + " A\n"
-//                + "\\end\n\n{silly}\n"
-//                + "  \\end{verbatim}\n"
-//                + "HELLO\n"
-                + "\\begin{verbatim}\\begin{verbatim}\n"
-                + "             \\begin{verbatim}\n"
-                + ">>boo\n"
-                + "  \\begin{silly}\n"
-                + "NOINDENT\\end{silly}\n"
-                + "\\end{verbatim}\n"
-                + "HELLO"
-                + "\\begin{susan}\n"
-                + "Bollocks"
-                ;
-        LaTeXIndenter formatter = new LaTeXIndenter(resultWriter);
-        formatter.setIndentWidth(2);
-        formatter.setCompactingBlankLines(true);
-        try {
-            formatter.run(new BufferedReader(new StringReader(input)));
-        }
-        finally {
-            System.out.println("----");
-            System.out.print(resultWriter.toString());
-            System.out.println("----");
-        }
-        resultWriter.close();
-    }
-
 }
