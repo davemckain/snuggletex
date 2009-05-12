@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
  */
 public final class SnuggleUtilities {
     
-    private static final Pattern charsToVerbPattern = Pattern.compile("([\\\\^]+)");
+    private static final Pattern charsToVerbPattern = Pattern.compile("([\\\\^~<>|]+)");
     private static final Pattern charsToBackslashPattern = Pattern.compile("([%#_$&\\{\\}])");
 
     /**
@@ -32,11 +32,13 @@ public final class SnuggleUtilities {
      * @return quoted text suitable for being input into LaTeX.
      */
     public static String quoteTextForInput(String text) {
-        String result = charsToVerbPattern.matcher(text).replaceAll("\\\\verb|$1|");
+        /* (Use '-' as \\verb delimiter here is '|' is special and we want a character
+         * that won't be replaced in the next line as well) */
+        String result = charsToVerbPattern.matcher(text).replaceAll("\\\\verb-$1-");
         result = charsToBackslashPattern.matcher(result).replaceAll("\\\\$1");
         return result;
     }
-
+    
     /**
      * Extracts a SnuggleTeX annotation from a MathML <tt>math</tt> element, if found. This allows
      * you to extract the input LaTeX from a MathML element created by SnuggleTeX, provided that
