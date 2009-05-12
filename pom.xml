@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <name>SnuggleTeX</name>
   <groupId>uk.ac.ed.ph.snuggletex</groupId>
   <artifactId>snuggletex</artifactId>
   <version>1.1-SNAPSHOT</version>
@@ -60,6 +59,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <name>SnuggleTeX</name>
+  <url>http://www.ph.ed.ac.uk/snuggletex/</url>
+  <inceptionYear>2008</inceptionYear>
+  <organization>
+    <name>The University of Edinburgh</name>
+    <url>http://www.ed.ac.uk</url>
+  </organization>
   <licenses>
     <license>
       <name>BSD License (3 clause)</name>
@@ -82,6 +88,9 @@
       <timezone>0</timezone>
     </developer>
   </developers>
+  <scm>
+    <connection>scm:svn:https://snuggletex.svn.sourceforge.net/svnroot/snuggletex</connection>
+  </scm>
   <!-- This next bit is obviously temporary until we sort out exactly where to deploy to -->
   <distributionManagement>
     <snapshotRepository>
@@ -112,13 +121,41 @@
         <version>2.1</version>
         <executions>
           <execution>
-            <id>attach-sources</id>
             <phase>verify</phase>
             <goals>
               <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assemble/src.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <linksource>yes</linksource>
+          <show>private</show>
+          <author>true</author>
+          <version>true</version>
+          <use>true</use>
+          <docencoding>UTF-8</docencoding>
+          <windowtitle>SnuggleTeX API Documentation</windowtitle>
+          <doctitle>SnuggleTeX API Documentation</doctitle>
+          <bottom><![CDATA[
+            <p><a href="http://www.ph.ed.ac.uk/snuggletex/" target="_top">SnuggleTeX Home Page</a></p>
+            <p>Copyright &#xa9; 2009 The School of Physics and Astronomy, The University of Edinburgh.</p>
+            <p style="font-style:italic">The University of Edinburgh is a charitable body, registered in Scotland, with registration number SC005336.</p>
+          ]]></bottom>
+        </configuration>
       </plugin>
     </plugins>
   </build>
