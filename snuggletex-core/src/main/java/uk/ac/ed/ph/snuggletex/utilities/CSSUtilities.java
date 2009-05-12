@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex.utilities;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -137,6 +138,7 @@ public final class CSSUtilities {
      * Main method is used by the build process to write out the default CSS stylesheet.
      * 
      * @param args Array containing 1 argument: the File that the default CSS should be written to.
+     *   Any parent directories will be created as required.
      * 
      * @throws FileNotFoundException 
      */
@@ -145,6 +147,8 @@ public final class CSSUtilities {
             System.err.println("Usage: specify a File that the default SnuggleTeX CSS will be written to");
             System.exit(1);
         }
-        writeDefaultStylesheet(new FileOutputStream(new File(args[0])));
+        File outputFile = new File(args[0]);
+        IOUtilities.ensureFileCreated(outputFile);
+        writeDefaultStylesheet(new FileOutputStream(outputFile));
     }
 }
