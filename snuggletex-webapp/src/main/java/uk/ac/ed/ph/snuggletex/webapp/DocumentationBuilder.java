@@ -63,26 +63,33 @@ public final class DocumentationBuilder {
     
     static final Logger log = Logger.getLogger(DocumentationBuilder.class.getName());
 
-    /** Directory to process documentation in */
+    /** Directory to process raw documentation from */
     private final File sourceDirectory;
+    
+    /** Directory in which to output finished documentation files */
+    private final File outputDirectory;
     
     /** Location of <tt>macros.tex</tt> file */
     private final File macrosFile;
     
-    /** Location of the XSLT to generate the final web pages */
-    private final File formattingStylesheet;
+    /** XSLT File used to generate the final web pages */
+    private final File formattingStylesheetFile;
     
     /** Post-processor which will up-convert the resulting MathML */
     private final UpConvertingPostProcessor upconverter;
     
-    /** 
-     * Base path for webapp. This can either be hard-coded "context path" (which is not portable)
-     * or something relative to the {@link #sourceDirectory}.
-     */
+    /** Resulting context path for this webapp. This is required to create some internal links. */
     private final String contextPath;
     
+    private final Map<WebPageType, String> webPageTypeToExtensionMap;
+    
     /**
-     * Name of directory inside {@link #sourceDirectory} that MathML image renditions will be
+     * Maximum last modified time for files like {@link #macrosFile} and {@link #formattingStylesheetFile}.
+     */
+    private final long helperFilesLastModified;
+    
+    /**
+     * Name of directory inside {@link #outputDirectory} that MathML image renditions will be
      * saved to.
      */
     final String mathMLImageDirectoryName;
@@ -91,15 +98,25 @@ public final class DocumentationBuilder {
     private Transformer stylesheet;
     private SnuggleSnapshot snapshot;
     
-    public DocumentationBuilder(final File sourceDirectory, final File macrosFile,
-            final File formattingStylesheet, final String contextPath,
-            final String mathMLImageDirectory) {
+    public DocumentationBuilder(final File sourceDirectory, final File outputDirectory,
+            final String contextPath, final File macrosFile,
+            final File formattingStylesheetFile, final String mathMLImageDirectory) {
         this.sourceDirectory = sourceDirectory;
-        this.macrosFile = macrosFile;
-        this.formattingStylesheet = formattingStylesheet;
+        this.outputDirectory = outputDirectory;
         this.contextPath = contextPath;
+        this.macrosFile = macrosFile;
+        this.formattingStylesheetFile = formattingStylesheetFile;
         this.mathMLImageDirectoryName = mathMLImageDirectory;
         this.upconverter = new UpConvertingPostProcessor();
+        
+        this.helperFilesLastModified = Math.max(macrosFile.lastModified(), formattingStylesheetFile.lastModified());
+        
+        /* Define web page types */
+        this.webPageTypeToExtensionMap = new HashMap<WebPageType, String>();
+        webPageTypeToExtensionMap.put(WebPageType.MOZILLA, ".xhtml");
+        webPageTypeToExtensionMap.put(WebPageType.MATHPLAYER_HTML, ".htm");
+        webPageTypeToExtensionMap.put(WebPageType.UNIVERSAL_STYLESHEET, ".xml");
+        webPageTypeToExtensionMap.put(WebPageType.CROSS_BROWSER_XHTML, ".cxml");
         
         /* These will be set on first use */
         this.stylesheet = null;
@@ -111,20 +128,23 @@ public final class DocumentationBuilder {
         /* Parse the macros and create a snapshot */
         snapshot = createPostMacrosSnapshot();
         
-        /* Create image output directory */
-        imageOutputDirectory = new File(sourceDirectory, mathMLImageDirectoryName);
+        /* Create output directories */
+        IOUtilities.ensureDirectoryCreated(outputDirectory);
+        imageOutputDirectory = new File(outputDirectory, mathMLImageDirectoryName);
         IOUtilities.ensureDirectoryCreated(imageOutputDirectory);
         
         /* Create stylesheet to format the resulting web page */
         try {
-            stylesheet = XMLUtilities.createJAXPTransformerFactory().newTransformer(new StreamSource(formattingStylesheet));
+            stylesheet = XMLUtilities.createJAXPTransformerFactory().newTransformer(new StreamSource(formattingStylesheetFile));
             stylesheet.setParameter("context-path", contextPath);
         }
         catch (TransformerConfigurationException e) {
-            throw new RuntimeException("Could not compile stylesheet at " + formattingStylesheet, e);
+            throw new RuntimeException("Could not compile stylesheet at " + formattingStylesheetFile, e);
         }
         
-        /* Now process each .tex file in the sourceDirectory */
+        /* Now process each .tex file in the sourceDirectory (and also in the outputDirectory
+         * since the build process creates some dynamic .tex files that we need to turn into
+         * documentation) */
         FilenameFilter texFilter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".tex");
@@ -133,11 +153,12 @@ public final class DocumentationBuilder {
         for (File sourceFile : sourceDirectory.listFiles(texFilter)) {
             processFile(sourceFile);
         }
+        for (File sourceFile : outputDirectory.listFiles(texFilter)) {
+            processFile(sourceFile);
+        }
     }
     
     private void processFile(File sourceFile) throws IOException {
-        log.info("Processing " + sourceFile);
-        
         /* Recreate session based on parsed macros and parse input file */
         SnuggleSession session = snapshot.createSession();
         session.parseInput(new SnuggleInput(sourceFile));
@@ -149,45 +170,53 @@ public final class DocumentationBuilder {
         String pageBaseName = sourceFile.getName().replaceFirst("\\.tex$", "");
         
         /* Build the normal web outputs */
-        Map<WebPageType, String> typeToExtensionMap = new HashMap<WebPageType, String>();
-        typeToExtensionMap.put(WebPageType.MOZILLA, ".xhtml");
-        typeToExtensionMap.put(WebPageType.MATHPLAYER_HTML, ".htm");
-        typeToExtensionMap.put(WebPageType.UNIVERSAL_STYLESHEET, ".xml");
-        typeToExtensionMap.put(WebPageType.CROSS_BROWSER_XHTML, ".cxml");
         File targetFile;
-        for (Entry<WebPageType, String> entry : typeToExtensionMap.entrySet()) {
+        for (Entry<WebPageType, String> entry : webPageTypeToExtensionMap.entrySet()) {
             WebPageType pageType = entry.getKey();
             String fileExtension = entry.getValue();
+            targetFile = new File(outputDirectory, pageBaseName + fileExtension);
+            
+            /* Check if we actually need to recreate target. This will be true if any of the
+             * following are newer than the targetFile:
+             * 
+             * sourceFile
+             * formattingStylesheetFile
+             * macrosFile
+             */
+            if (!targetFile.exists() || targetFile.lastModified() < Math.max(sourceFile.lastModified(), helperFilesLastModified)) {
+                log.info("Generating " + pageType + " output for " + sourceFile);
 
-            /* (Create new options each time as they might be altered by the writing process) */
-            MathMLWebPageOptions mathOptions = new MathMLWebPageOptions();
-            setupWebOptions(mathOptions);
-            mathOptions.setPageType(pageType);
-            
-            /* Pass parameter to sylesheet providing view information */
-            stylesheet.setParameter("page-type", pageType.name());
-            
-            /* Do tweaking if necessary */
-            if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
-                /* Point to our own version of the USS */
-                mathOptions.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
+                /* (Create new options each time as they might be altered by the writing process) */
+                MathMLWebPageOptions mathOptions = new MathMLWebPageOptions();
+                setupWebOptions(mathOptions);
+                mathOptions.setPageType(pageType);
+                
+                /* Pass parameter to sylesheet providing view information */
+                stylesheet.setParameter("page-type", pageType.name());
+                
+                /* Do tweaking if necessary */
+                if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
+                    /* Point to our own version of the USS */
+                    mathOptions.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
+                }
+
+                /* Create target file */
+                session.writeWebPage(mathOptions, new FileOutputStream(targetFile));
+                logNewErrors(session);
             }
-
-            targetFile = new File(sourceDirectory, pageBaseName + fileExtension);
-            
-            session.writeWebPage(mathOptions, new FileOutputStream(targetFile));
-            logNewErrors(session);
         }
         
-        /* Build compatibility output */
-        JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
-        setupWebOptions(jeuclidOptions);
-        stylesheet.setParameter("page-type", null); /* (Reset as it will have been set earlier) */
-        jeuclidOptions.setDOMPostProcessor(new DownConvertingPostProcessor());
-        jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
-        jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));
-        targetFile = new File(sourceDirectory, pageBaseName + ".html");
-        session.writeWebPage(jeuclidOptions, new FileOutputStream(targetFile));
+        /* Maybe rebuild compatibility output */
+        targetFile = new File(outputDirectory, pageBaseName + ".html");
+        if (!targetFile.exists() || targetFile.lastModified() < Math.max(sourceFile.lastModified(), helperFilesLastModified)) {
+            JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
+            setupWebOptions(jeuclidOptions);
+            stylesheet.setParameter("page-type", null); /* (Reset as it will have been set earlier) */
+            jeuclidOptions.setDOMPostProcessor(new DownConvertingPostProcessor());
+            jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
+            jeuclidOptions.setImageSavingCallback(new ImageSavingCallback(pageBaseName));
+            session.writeWebPage(jeuclidOptions, new FileOutputStream(targetFile));
+        }
     }
     
     /**
@@ -263,17 +292,18 @@ public final class DocumentationBuilder {
     }
     
     public static void main(String[] args) throws IOException {
-        if (args.length!=5) {
-            System.err.println("Please supply: sourceDirectory macrosFile formattingStylesheet contextPath mathMLImageDirectoryName");
+        if (args.length!=6) {
+            System.err.println("Please supply: sourceDirectory outputDirectory contextPath macrosFile formattingStylesheetFile mathMLImageDirectoryName");
             System.exit(1);
         }
-        File sourceDirectory = new File(args[0]);
-        File macrosFile = new File(args[1]);
-        File formattingStylesheet = new File(args[2]);
-        String contextPath = args[3];
-        String mathMLImageDirectoryName = args[4];
-        
-        DocumentationBuilder builder = new DocumentationBuilder(sourceDirectory, macrosFile, formattingStylesheet, contextPath, mathMLImageDirectoryName);
-        builder.run();
+        int i=0;
+        File sourceDirectory = new File(args[i++]);
+        File outputDirectory = new File(args[i++]);
+        String contextPath = args[i++];
+        File macrosFile = new File(args[i++]);
+        File formattingStylesheetFile = new File(args[i++]);
+        String mathMLImageDirectoryName = args[i++];
+        new DocumentationBuilder(sourceDirectory, outputDirectory, contextPath, macrosFile,
+                formattingStylesheetFile, mathMLImageDirectoryName).run();
     }
 }

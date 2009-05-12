@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
@@ -30,6 +31,7 @@ public final class ErrorCodeDocumentBuilder {
     }
     
     public void run() throws IOException {
+        IOUtilities.ensureFileCreated(outputFile);
         PrintWriter outputWriter = new PrintWriter(outputFile);
         outputWriter.println("\\pageId{errorCodes}");
         outputWriter.println("\n\\section*{SnuggleTeX Error Codes}");
