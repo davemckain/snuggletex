@@ -23,6 +23,7 @@ import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
@@ -192,6 +193,7 @@ public abstract class AbstractGoodXMLTest {
                 log.severe("Expected output: " + expectedXML);
                 log.severe("Actual output:   " + output);
             }
+            log.log(Level.SEVERE, "Error was: ", e);
             throw e;
         }
     }
