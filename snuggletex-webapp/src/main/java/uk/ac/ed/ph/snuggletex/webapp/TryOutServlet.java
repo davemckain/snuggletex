@@ -34,7 +34,7 @@ import javax.xml.transform.TransformerConfigurationException;
  * @author  David McKain
  * @version $Revision:158 $
  */
-public final class TryOutServlet extends BaseServlet {
+public final class TryOutServlet extends OldBaseServlet {
     
     private static final long serialVersionUID = 4376587500238353176L;
     

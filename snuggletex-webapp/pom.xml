@@ -106,6 +106,7 @@
             </configuration>
           </execution>
           <!-- Generate Web Documentation (including error codes) -->
+          <!--
           <execution>
             <id>generate-documentation</id>
             <goals>
@@ -119,15 +120,16 @@
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>uk.ac.ed.ph.snuggletex.webapp.DocumentationBuilder</argument>
-                <argument>${basedir}/src/main/webapp/docs</argument>
+                <argument>${project.build.directory}/classes/docs</argument>
                 <argument>${project.build.directory}/extras/docs</argument>
                 <argument>${context.path}</argument>
-                <argument>${basedir}/src/main/webapp/WEB-INF/macros.tex</argument>
-                <argument>${basedir}/src/main/webapp/WEB-INF/format-output.xsl</argument>
+                <argument>${project.build.directory}/classes/WEB-INF/macros.tex</argument>
+                <argument>${project.build.directory}/classes/WEB-INF/format-output.xsl</argument>
                 <argument>maths</argument>
               </arguments>
             </configuration>
           </execution>
+          -->
         </executions>
       </plugin>
       <!-- Pull in auto-generated content created above when building WAR structure -->
@@ -145,6 +147,7 @@
         </configuration>
       </plugin>
       <!-- Tomcat Deployment -->
+      <!-- NOT REALLY WORKING WELL
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
@@ -153,6 +156,7 @@
           <path>${context.path}</path>
         </configuration>
       </plugin>
+      -->
     </plugins>
   </build>
 </project>

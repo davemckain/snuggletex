@@ -17,6 +17,10 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
+  <listener>
+    <listener-class>uk.ac.ed.ph.snuggletex.webapp.ContextInitialiser</listener-class>
+  </listener>
+
   <!--
   Set up Content Types for generated document, which maps to content produced (offline)
   by SnuggleTeX during the Ant build process
@@ -46,10 +50,22 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.TryOutServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
+  <servlet>
+    <description>
+      TODO!
+    </description>
+    <servlet-name>LaTeXInputServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.LaTeXInputServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>TryOutServlet</servlet-name>
     <url-pattern>/tryout.xml</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LaTeXInputServlet</servlet-name>
+    <url-pattern>/latexInput.xml</url-pattern>
   </servlet-mapping>
 
 </web-app>

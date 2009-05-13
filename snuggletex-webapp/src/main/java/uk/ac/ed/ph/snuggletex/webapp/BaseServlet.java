@@ -5,19 +5,18 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.xml.transform.Source;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  * Trivial base class for servlets in the demo webapp
@@ -45,46 +44,42 @@ abstract class BaseServlet extends HttpServlet {
         return result;
     }
     
+    protected ClassPathURIResolver getURIResolver() {
+        return ClassPathURIResolver.getInstance();
+    }
+    
+    protected StylesheetManager getStylesheetManager() {
+        return (StylesheetManager) getServletContext().getAttribute(ContextInitialiser.STYLESHEET_MANAGER_ATTRIBUTE_NAME);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected TransformerFactory getTransformerFactory() {
+        return ((ThreadLocal<TransformerFactory>) getServletContext().getAttribute(ContextInitialiser.TRANSFORMER_FACTORY_THREAD_LOCAL)).get();
+    }
+    
     /**
-     * Compiles the XSLT stylesheet at the given location within the webapp. This uses a
-     * {@link CheapoURIResolver} to resolve any other stylesheets referenced using
-     * <tt>xsl:import</tt> and friends.
+     * Compiles the XSLT stylesheet at the given location within the webapp, using {@link ClassPathURIResolver}
+     * to locate the stylesheet and anything it wants to import.
      * 
-     * @param xsltPathInsideWebapp location of XSLT to compile.
+     * @param classPathUri location of XSLT to compile.
+     * 
      * @return resulting {@link Templates} representing the compiled stylesheet.
      * @throws ServletException if XSLT could not be found or could not be compiled.
      */
-    protected Templates compileStylesheet(String xsltPathInsideWebapp) throws ServletException {
-        StreamSource xsltSource = new StreamSource(ensureReadResource(xsltPathInsideWebapp));
-        TransformerFactory transformerFactory = XMLUtilities.createJAXPTransformerFactory();
-
-        /* Create a cheap URIResolver to help with xsl:import and friends. */
-        transformerFactory.setURIResolver(new CheapoURIResolver());
-        
-        /* Then compile the XSLT */
+    protected Transformer getStylesheet(String classPathUri) throws ServletException {
         try {
-            return transformerFactory.newTemplates(xsltSource);
+            return getStylesheetManager().getStylesheet(classPathUri).newTransformer();
         }
         catch (TransformerConfigurationException e) {
-            throw new ServletException("Could not compile stylesheet at " + xsltPathInsideWebapp);
+            throw new ServletException("Could not create Transformer from Templates", e);
         }
     }
 
-    /**
-     * Trivial implementation of {@link URIResolver} that assumes that all lookups will be
-     * absolute paths resolved against the base of the webapp.
-     * <p>
-     * This is quite a poor state of affairs in general but is all we need here!
-     */
-    protected final class CheapoURIResolver implements URIResolver {
-        
-        public Source resolve(String href, String base) throws TransformerException {
-            InputStream resource = getServletContext().getResourceAsStream(href);
-            if (resource==null) {
-                throw new TransformerException("Could not resolve resource at href=" + href
-                        + " using cheap resolver");
-            }
-            return new StreamSource(resource);
-        }
+    protected Transformer createSerializer() throws TransformerConfigurationException {
+        Transformer serializer = getTransformerFactory().newTransformer();
+        serializer.setOutputProperty(OutputKeys.INDENT, "yes");
+        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        serializer.setOutputProperty(OutputKeys.ENCODING, "US-ASCII");
+        return serializer;
     }
 }

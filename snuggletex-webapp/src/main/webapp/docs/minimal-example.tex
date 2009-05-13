@@ -11,10 +11,10 @@ SnuggleSession session = engine.createSession();
 
 SnuggleInput input = new SnuggleInput("$$1+2=3$$");
 session.parseInput(input);
-String.htmlString = session.buildXMLString();
+String xmlString = session.buildXMLString();
 
 System.out.println("Input " + input.getString()
-    + " was converted to:\n" +.htmlString);
+    + " was converted to:\n" + xmlString);
 \end{verbatim}
 
 This block of code converts the LaTeX String \verb|$$1+2=3$$| to a simple XML
