@@ -5,12 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
@@ -21,13 +17,14 @@ import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,10 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -345,18 +338,7 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        StringWriter resultWriter = new StringWriter();
-        try {
-            Transformer serializer = getStylesheetManager()
-                .getStylesheet(Globals.XML_STRING_XSL_RESOURCE_NAME).newTransformer();
-            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
-            serializer.transform(new DOMSource(document), new StreamResult(resultWriter));
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Could not serialize", e);
-        }
-        return resultWriter.toString();
+        return XMLUtilities.serializeNodeChildren(temporaryRoot, indent, true, getStylesheetManager());
     }
     
     //---------------------------------------------

@@ -500,6 +500,12 @@ public final class DOMBuilder {
         return xhtmlElement;
     }
     
+    public Element appendXHTMLTextElement(Element parentElement, String elementName, String content, boolean trim) {
+        Element xhtmlElement = appendXHTMLElement(parentElement, elementName);
+        appendTextNode(xhtmlElement, content, trim);
+        return xhtmlElement;
+    }
+    
     public Element appendMathMLElement(Element parentElement, String elementLocalName) {
         String qName;
         if (options.isPrefixingMathML()) {

@@ -9,6 +9,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.LR;
 import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.MATH;
 import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
@@ -39,8 +40,8 @@ public final class Globals {
     public static final String GENERAL_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/general-messages";
     public static final String CSS_PROPERTIES_NAME = "uk/ac/ed/ph/snuggletex/css.properties";
     
-    /** Specifies the ClassPath location of the Stylesheet used by buildXMLString() */
-    public static final String XML_STRING_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/to-xml-string.xsl";
+    /** Specifies the ClassPath location of the Stylesheet used by {@link XMLUtilities#serializeNodeChildren(org.w3c.dom.Node, boolean, boolean, uk.ac.ed.ph.snuggletex.utilities.StylesheetManager)} */
+    public static final String EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/extract-child-nodes.xsl";
     
     /** Specifies the ClassPath location of the XHTML -> HTML used for serializing as legacy HTML */
     public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";

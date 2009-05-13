@@ -53,6 +53,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.XMLAttrHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLBlockElementHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLInlineElementHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameOrIdHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.XMLUnparseHandler;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
@@ -639,6 +640,7 @@ public final class GlobalBuiltins {
         map.addComplexCommandOneArg("xmlName*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.NAME), IGNORE);
         map.addComplexCommandOneArg("xmlId", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
         map.addComplexCommandOneArg("xmlId*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
+        map.addComplexCommandSameArgMode("xmlUnparse", false, 1, TEXT_MODE_ONLY, new XMLUnparseHandler(), ALLOW_INLINE);
         
         /* =================================== ENVIRONMENTS ================================= */
         
@@ -695,5 +697,6 @@ public final class GlobalBuiltins {
         /* Environments for generating custom XML islands (see corresponding command versions as well) */
         map.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, null, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
         map.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, null, new XMLInlineElementHandler(), ALLOW_INLINE);
+        map.addEnvironment("xmlUnparse", false, 0, TEXT_MODE_ONLY, null, null, new XMLUnparseHandler(), ALLOW_INLINE);
     }
 }

@@ -6,11 +6,16 @@
 package uk.ac.ed.ph.snuggletex.internal.util;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
+
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -20,7 +25,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -60,7 +67,7 @@ public final class XMLUtilities {
         return transformerFactory;
     }
     
-    private static void requireFeature(TransformerFactory transformerFactory, String feature) {
+    private static void requireFeature(final TransformerFactory transformerFactory, final String feature) {
         if (!transformerFactory.getFeature(feature)) {
             throw new SnuggleRuntimeException("TransformerFactory "
                     + transformerFactory.getClass().getName()
@@ -97,7 +104,7 @@ public final class XMLUtilities {
      * @param classPathUri absolute URI specifying the location of the stylesheet in the ClassPath,
      *   specified via the scheme mentioned in {@link ClassPathURIResolver}.
      */
-    public static Templates compileInternalStylesheet(TransformerFactory transformerFactory,
+    public static Templates compileInternalStylesheet(final TransformerFactory transformerFactory,
             String classPathUri) {
         ClassPathURIResolver uriResolver = ClassPathURIResolver.getInstance();
         transformerFactory.setURIResolver(uriResolver);
@@ -120,7 +127,7 @@ public final class XMLUtilities {
      * Currently, this involves checking for a suitable version of SAXON; this will
      * change once more processors become available.
      */
-    public static boolean supportsXSLT20(Transformer tranformer) {
+    public static boolean supportsXSLT20(final Transformer tranformer) {
         return tranformer.getClass().getName().startsWith("net.sf.saxon.");
     }
     
@@ -169,5 +176,52 @@ public final class XMLUtilities {
         }
         throw new IllegalArgumentException("Node is not a text Node");
     }
-
+    
+    /**
+     * Serializes the given {@link Node} to a well-formed external parsed entity.
+     * (If the given Node is an {@link Element} or a {@link Document} then the result
+     * will be a well-formed XML String.)
+     *
+     * @param node DOM Node to serialize.
+     * @param indent whether to indent the results or not
+     * @param omitXMLDeclaration whether to omit the XML declaration or not.
+     */
+    public static String serializeNode(final Node node, final boolean indent,
+            final boolean omitXMLDeclaration) {
+        StringWriter resultWriter = new StringWriter();
+        try {
+            Transformer serializer = createJAXPTransformerFactory().newTransformer();
+            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
+            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
+            serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Could not serialize DOM", e);
+        }
+        return resultWriter.toString();
+    }
+    
+    /**
+     * Serializes the <tt>children</tt> of given {@link Node} to a well-formed external parsed entity.
+     * <p>
+     * (This uses a little XSLT stylesheet to help, hence the requirement for a {@link StylesheetManager}).
+     *
+     * @param node DOM Node to serialize.
+     * @param indent whether to indent the results or not
+     * @param omitXMLDeclaration whether to omit the XML declaration or not.
+     */
+    public static String serializeNodeChildren(final Node node, final boolean indent,
+            final boolean omitXMLDeclaration, StylesheetManager stylesheetManager) {
+        StringWriter resultWriter = new StringWriter();
+        try {
+            Transformer serializer = stylesheetManager.getStylesheet(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME).newTransformer();
+            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
+            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
+            serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Could not serialize DOM", e);
+        }
+        return resultWriter.toString();
+    }
 }

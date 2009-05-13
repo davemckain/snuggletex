@@ -476,6 +476,9 @@ Hello&#x2014;There
 \xmlName{a}
 a
 ====
+\xmlUnparse{$x$}
+<tt class="unparsed-xml">&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;</tt>
+====
 # Demonstrates the starred variants of these parse argument in LR mode
 \newcommand{\a}[1]{X-#1}\xmlName*{\a{1}}
 X-1

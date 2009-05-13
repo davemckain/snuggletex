@@ -7,20 +7,12 @@ package uk.ac.ed.ph.snuggletex.utilities;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
-import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -117,17 +109,7 @@ public final class MathMLUtilities {
      */
     private static String serializeNode(final Node node, final boolean indent,
             final boolean omitXMLDeclaration) {
-        StringWriter resultWriter = new StringWriter();
-        try {
-            Transformer serializer = XMLUtilities.createJAXPTransformerFactory().newTransformer();
-            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
-            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
-            serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Could not serialize DOM", e);
-        }
-        return resultWriter.toString();
+        return XMLUtilities.serializeNode(node, indent, omitXMLDeclaration);
     }
     
     //---------------------------------------------------------------------
