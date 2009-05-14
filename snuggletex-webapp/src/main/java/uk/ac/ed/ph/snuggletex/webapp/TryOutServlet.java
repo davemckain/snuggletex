@@ -24,9 +24,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 
 /**
  * Trivial servlet to provide the functionality for the "try out" page.
@@ -34,7 +32,7 @@ import javax.xml.transform.TransformerConfigurationException;
  * @author  David McKain
  * @version $Revision:158 $
  */
-public final class TryOutServlet extends OldBaseServlet {
+public final class TryOutServlet extends BaseServlet {
     
     private static final long serialVersionUID = 4376587500238353176L;
     
@@ -42,23 +40,10 @@ public final class TryOutServlet extends OldBaseServlet {
     private Logger log = Logger.getLogger(TryOutServlet.class.getSimpleName());
     
     /** Location of XSLT controlling page layout */
-    public static final String TRYOUT_XSLT_LOCATION = "/WEB-INF/tryout.xsl";
+    public static final String TRYOUT_XSLT_LOCATION = "classpath:/tryout.xsl";
     
     /** Location of default input to use when visiting the page for the first time */
     public static final String DEFAULT_INPUT_LOCATION = "/WEB-INF/tryout-default.tex";
-    
-    /** Compiled XSLT */
-    public static Templates templates;
-    
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        
-        /* Pre-compile special XSLT that builds on the standard XSLT to put the
-         * input LaTeX into a simple form.
-         */       
-        templates = compileStylesheet(TRYOUT_XSLT_LOCATION);
-    }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -88,7 +73,6 @@ public final class TryOutServlet extends OldBaseServlet {
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine();
         SnuggleSession session = engine.createSession();
-        
         SnuggleInput input = new SnuggleInput(resultingInputLaTeX, "Form Input");
         session.parseInput(input);
         
@@ -122,15 +106,9 @@ public final class TryOutServlet extends OldBaseServlet {
         }
         
         /* Create XSLT to generate the resulting page */
-        Transformer stylesheet;
-        try {
-            stylesheet = templates.newTransformer();
-            stylesheet.setParameter("context-path", request.getContextPath());
-            stylesheet.setParameter("latex-input", resultingInputLaTeX);
-        }
-        catch (TransformerConfigurationException e) {
-            throw new ServletException("Could not create stylesheet from Templates", e);
-        }
+        Transformer stylesheet = getStylesheet(TRYOUT_XSLT_LOCATION);
+        stylesheet.setParameter("context-path", request.getContextPath());
+        stylesheet.setParameter("latex-input", resultingInputLaTeX);
         options.setStylesheet(stylesheet);
         
         /* Generate and serve the resulting web page */

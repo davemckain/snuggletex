@@ -18,7 +18,7 @@ All Rights Reserved
   exclude-result-prefixes="h xs">
 
   <!-- Import basic formatting stylesheet -->
-  <xsl:import href="/WEB-INF/format-output.xsl"/>
+  <xsl:import href="format-output.xsl"/>
 
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'tryout'" as="xs:string"/>
