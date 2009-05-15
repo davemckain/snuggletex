@@ -141,6 +141,9 @@ public final class MathMLUtilities {
         /* Pull out the first child */
         Element semantics = (Element) search;
         NodeList childNodes = semantics.getChildNodes();
+        if (childNodes.getLength()==0) {
+            return null;
+        }
         result.setFirstBranch((Element) childNodes.item(0));
         
         /* Then pull out annotations, which must be the subsequent children */
@@ -175,7 +178,7 @@ public final class MathMLUtilities {
         }
         Element semantics = (Element) search;
         NodeList childNodes = semantics.getChildNodes();
-        return ((Element) childNodes.item(0));
+        return childNodes.getLength()==0 ? null : ((Element) childNodes.item(0));
     }
 
     /**
@@ -215,7 +218,8 @@ public final class MathMLUtilities {
      * ]]></pre>
      * 
      * @param mathElement
-     * @return DOM NodeList corresponding to the first matching annotation, or null if no such annotation found.
+     * @return DOM NodeList corresponding to the child Nodes of the first matching
+     *   <tt>annotation-xml</tt> element, or null if no such annotation found.
      */
     public static NodeList extractAnnotationXML(final Element mathElement, final String encodingAttribute) {
         Element annotationElement = extractAnnotationElement(mathElement, ANNOTATION_XML_LOCAL_NAME, encodingAttribute);
