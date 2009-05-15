@@ -659,7 +659,7 @@ All Rights Reserved
           </xsl:call-template>
         </xsl:variable>
         <!-- Just return resulting CMathML as there are no operands here -->
-        <xsl:copy-of select="$function-output/local:cmathml/*"/>
+        <xsl:copy-of select="$function-output/local:cmathml/*" copy-namespaces="no"/>
       </xsl:when>
       <xsl:otherwise>
         <!-- This is (2) or (3). In both cases, the second element must be "apply function" -->
@@ -699,7 +699,7 @@ All Rights Reserved
               <xsl:otherwise>
                 <!-- Do application -->
                 <apply>
-                  <xsl:copy-of select="$output-form"/>
+                  <xsl:copy-of select="$output-form" copy-namespaces="no"/>
                   <xsl:copy-of select="$operands"/>
                 </apply>
               </xsl:otherwise>
