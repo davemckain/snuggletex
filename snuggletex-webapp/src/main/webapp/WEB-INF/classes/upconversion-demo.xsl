@@ -12,10 +12,10 @@ All Rights Reserved
 -->
 <xsl:stylesheet version="2.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:h="http://www.w3.org/1999/xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  exclude-result-prefixes="h xs">
+  xpath-default-namespace="http://www.w3.org/1999/xhtml"
+  exclude-result-prefixes="xs">
 
   <!-- Import basic formatting stylesheet -->
   <xsl:import href="format-output.xsl"/>
@@ -24,18 +24,17 @@ All Rights Reserved
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
 
   <!-- Various text outputs -->
-  <xsl:param name="mathml" as="xs:string" select="'(Failed)'" required="no"/>
-  <xsl:param name="maxima-input" as="xs:string" select="'(Failed)'" required="no"/>
-  <xsl:param name="maxima-output" as="xs:string" select="'(Failed)'" required="no"/>
-  <xsl:param name="maxima-mathml-output" as="xs:string" select="'(Failed)'" required="no"/>
+  <xsl:param name="mathml-annotated" as="xs:string" select="'(Failed)'" required="no"/>
+  <xsl:param name="cmathml" as="xs:string" select="'(Failed)'" required="no"/>
+  <xsl:param name="maxima" as="xs:string" select="'(Failed)'" required="no"/>
 
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'latexinput'" as="xs:string"/>
 
   <!-- Override title -->
-  <xsl:variable name="title" select="'LaTeX Conversion Demo'" as="xs:string"/>
+  <xsl:variable name="title" select="'MathML Up-Conversion Demo'" as="xs:string"/>
 
-  <xsl:template match="h:body" mode="make-content">
+  <xsl:template match="body" mode="make-content">
     <h2><xsl:value-of select="$title"/></h2>
 
     <!-- Now do input form -->
@@ -58,24 +57,8 @@ All Rights Reserved
 
     <h3>Up-converted MathML</h3>
     <pre class="result">
-      <xsl:value-of select="$mathml"/>
+      <xsl:value-of select="$mathml-annotated"/>
     </pre>
-
-    <h3>Maxima Input</h3>
-    <pre class="result">
-      <xsl:value-of select="$maxima-input"/>
-    </pre>
-
-    <h3>(Raw) Maxima Output</h3>
-    <pre class="result">
-      <xsl:value-of select="$maxima-output"/>
-    </pre>
-
-    <h3>Up-converted Maxima MathML Output</h3>
-    <pre class="result">
-      <xsl:value-of select="$maxima-mathml-output"/>
-    </pre>
-
   </xsl:template>
 
 </xsl:stylesheet>

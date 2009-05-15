@@ -54,8 +54,8 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <description>
       TODO!
     </description>
-    <servlet-name>LaTeXInputServlet</servlet-name>
-    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.LaTeXInputServlet</servlet-class>
+    <servlet-name>UpConversionDemoServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionDemoServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
 
@@ -64,8 +64,8 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <url-pattern>/tryout.xml</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>LaTeXInputServlet</servlet-name>
-    <url-pattern>/latexInput.xml</url-pattern>
+    <servlet-name>UpConversionDemoServlet</servlet-name>
+    <url-pattern>/UpConversionDemo</url-pattern>
   </servlet-mapping>
 
 </web-app>

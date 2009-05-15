@@ -11,7 +11,9 @@ import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
+import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -21,21 +23,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 /**
- * Trivial servlet demonstrating the conversion of LaTeX input into other forms.
+ * Servlet demonstrating the up-conversion process on user-entered MATH mode
+ * inputs.
  * 
  * @author  David McKain
  * @version $Revision:158 $
  */
-public final class LaTeXInputServlet extends BaseServlet {
+public final class UpConversionDemoServlet extends BaseServlet {
     
     private static final long serialVersionUID = 4376587500238353176L;
     
     /** Logger so that we can log what users are trying out to allow us to improve things */
-    private Logger log = Logger.getLogger(LaTeXInputServlet.class.getName());
+    private Logger log = Logger.getLogger(UpConversionDemoServlet.class.getName());
+    
+    /** Default input to use when first showing the page */
+    private static final String DEFAULT_INPUT = "\\frac{2x-y^2}{\\sin xy(x-2)}";
     
     /** Location of XSLT controlling page layout */
-    private static final String DISPLAY_XSLT_LOCATION = "classpath:/latexinput.xsl";
+    private static final String DISPLAY_XSLT_LOCATION = "classpath:/upconversion-demo.xsl";
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -55,12 +65,11 @@ public final class LaTeXInputServlet extends BaseServlet {
         String rawInputLaTeX = request.getParameter("input");
         String resultingInputLaTeX;
         if (rawInputLaTeX!=null) {
-            /* Tidy up line endings */
-            resultingInputLaTeX = rawInputLaTeX.replaceAll("(\r\n|\r|\n)", "\n");
+            /* Normalise any input space */
+            resultingInputLaTeX = rawInputLaTeX.replaceAll("\\s+", " ");
         }
         else {
-            /* Use some default input */
-            resultingInputLaTeX = "1+x";
+            resultingInputLaTeX = DEFAULT_INPUT;
         }
         
         /* Parse the LaTeX */
@@ -82,14 +91,27 @@ public final class LaTeXInputServlet extends BaseServlet {
                 request.getContextPath() + "/includes/physics.css"
         );
         
-        /* Do up-conversion */
+        /* Do up-conversion. We will leave error extraction to the XSLT, as all (parsing) errors
+         * will have been nicely formatted as XHTML by then. */
         UpConvertingPostProcessor upConvertingPostProcessor = new UpConvertingPostProcessor();
         options.setDOMPostProcessor(upConvertingPostProcessor);
+        NodeList result = session.buildDOMSubtree(options);
+        boolean isParsingSuccess = result.getLength()==1
+            && result.item(0).getNodeType()==Node.ELEMENT_NODE
+            && session.getErrors().isEmpty();
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("context-path", request.getContextPath());
         viewStylesheet.setParameter("latex-input", resultingInputLaTeX);
+        viewStylesheet.setParameter("is-success", Boolean.valueOf(isParsingSuccess));
+        if (isParsingSuccess) {
+            /* Create various versions of the resulting MathML */
+            Element mathElement = (Element) result.item(0);
+            viewStylesheet.setParameter("mathml-annotated", MathMLUtilities.serializeElement(mathElement));
+            viewStylesheet.setParameter("cmathml", MathMLUtilities.serializeDocument(MathMLUtilities.isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME)));
+            viewStylesheet.setParameter("maxima", MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME));
+        }
         options.setStylesheet(viewStylesheet);
         
         /* Generate and serve the resulting web page */

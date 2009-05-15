@@ -19,11 +19,11 @@ All Rights Reserved
 <xsl:stylesheet version="2.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://www.w3.org/1999/xhtml"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  exclude-result-prefixes="h m s xs">
+  xpath-default-namespace="http://www.w3.org/1999/xhtml"
+  exclude-result-prefixes="m s xs">
 
   <xsl:output method="xhtml"/>
 
@@ -34,25 +34,25 @@ All Rights Reserved
   <xsl:param name="page-type" as="xs:string?" required="no"/>
 
   <!-- Extract page ID as first <s:pageId/> element -->
-  <xsl:variable name="pageId" select="string(/h:html/h:body/s:pageId[1])" as="xs:string"/>
+  <xsl:variable name="pageId" select="string(/html/body/s:pageId[1])" as="xs:string"/>
 
   <!-- Extract page title as first <h2/> heading -->
-  <xsl:variable name="title" select="string(/h:html/h:body/h:h2[1])" as="xs:string"/>
+  <xsl:variable name="title" select="string(/html/body/h2[1])" as="xs:string"/>
 
-  <xsl:template match="h:html">
+  <xsl:template match="html">
     <html xml:lang="en" lang="en">
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
     </html>
   </xsl:template>
 
-  <xsl:template match="h:head">
+  <xsl:template match="head">
     <head>
       <!-- Copy any PIs added earlier in the process -->
       <xsl:copy-of select="processing-instruction()"/>
       <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
       <!-- Copy any existing <meta/> elements -->
-      <xsl:apply-templates select="h:meta"/>
+      <xsl:apply-templates select="meta"/>
       <meta name="description" content="SnuggleTeX Documentation" />
       <meta name="author" content="David McKain" />
       <meta name="publisher" content="The University of Edinburgh" />
@@ -62,7 +62,7 @@ All Rights Reserved
     </head>
   </xsl:template>
 
-  <xsl:template match="h:body">
+  <xsl:template match="body">
     <body id="{$pageId}">
       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="header">
         <tr>
@@ -162,12 +162,12 @@ All Rights Reserved
     </body>
   </xsl:template>
 
-  <xsl:template match="h:body" mode="make-content">
+  <xsl:template match="body" mode="make-content">
     <xsl:apply-templates/>
   </xsl:template>
 
   <!-- Maybe soup up the first heading with information about the page type -->
-  <xsl:template match="h:body/h:h2[1]">
+  <xsl:template match="body/h2[1]">
     <h2>
       <xsl:apply-templates/>
       <xsl:if test="$page-type">
@@ -176,13 +176,16 @@ All Rights Reserved
     </h2>
   </xsl:template>
 
-  <!-- Copy all other HTML and MathML as-is -->
-  <xsl:template match="h:*">
-    <xsl:element name="{local-name()}">
+  <!-- Copy all other HTML as-is -->
+  <xsl:template match="*">
+    <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
-    </xsl:element>
+    </xsl:copy>
   </xsl:template>
+
+  <!-- Leave out SnuggleTeX metadata -->
+  <xsl:template match="s:*"/>
 
   <xsl:template match="m:math">
     <xsl:copy-of select="."/>
@@ -192,8 +195,5 @@ All Rights Reserved
   <xsl:template match="processing-instruction()">
     <xsl:copy-of select="."/>
   </xsl:template>
-
-  <!-- Leave out SnuggleTeX metadata -->
-  <xsl:template match="s:*"/>
 
 </xsl:stylesheet>
