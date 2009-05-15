@@ -113,6 +113,55 @@ public final class MathMLUtilities {
     }
     
     //---------------------------------------------------------------------
+    
+    /**
+     * Convenience method to test whether the given DOM {@link Node} node is a MathML element
+     * having any localName.
+     * 
+     * @param node Node to test
+     *   
+     * @throws IllegalArgumentException if node is null.
+     */
+    public static boolean isMathMLElement(final Node node) {
+        return isMathMLElement(node, null);
+    }
+    
+    /**
+     * Convenience method to test whether the given DOM {@link Node} node is a MathML element
+     * having the given localName.
+     * 
+     * @param node Node to test
+     * @param localName MathML local name to test for, such as <tt>mi</tt> or <tt>math</tt>,
+     *   or null to indicate "any name in the MathML namespace".
+     *   
+     * @throws IllegalArgumentException if node is null.
+     */
+    public static boolean isMathMLElement(final Node node, final String localName) {
+        ConstraintUtilities.ensureNotNull(node, "Node");
+        return node.getNodeType()==ELEMENT_NODE
+            && Globals.MATHML_NAMESPACE.equals(node.getNamespaceURI())
+            && localName==null || localName.equals(node.getLocalName());
+    }
+    
+    public static void ensureMathMLContainer(final Element mathElement) {
+        if (!isMathMLElement(mathElement, "math")) {
+            throw new IllegalArgumentException("Not a MathML <math/> element");
+        }
+    }
+    
+    /**
+     * Checks that the given DOM {@link Document} contains a single MathML <tt>math</tt>
+     * Element. If so, the Element is returned. Otherwise, an {@link IllegalArgumentException} is
+     * thrown.
+     */
+    public static Element ensureMathMLDocument(final Document document) {
+        Element result = document.getDocumentElement();
+        if (result==null) {
+            throw new IllegalArgumentException("Document does not have a document element");
+        }
+        ensureMathMLContainer(result);
+        return result;
+    }
 
     /**
      * Convenience method to unwrap at MathML DOM Object containing top-level parallel markup,
@@ -128,8 +177,7 @@ public final class MathMLUtilities {
         
         /* Look for semantics child then annotation child with encoding set appropriately */
         Node search = mathElement.getFirstChild();
-        if (!(search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())
-                && "semantics".equals(search.getLocalName()))) {
+        if (!isMathMLElement(search, "semantics")) {
             /* Didn't get <semantics/> as first and only child so not parallel markup */
             return null;
         }
@@ -150,7 +198,7 @@ public final class MathMLUtilities {
         Element searchElement;
         for (int i=1, length=childNodes.getLength(); i<length; i++) {
             search = childNodes.item(i);
-            if (search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())) {
+            if (isMathMLElement(search)) {
                 searchElement = (Element) search;
                 if (ANNOTATION_LOCAL_NAME.equals(search.getLocalName())) {
                     result.getTextAnnotations().put(searchElement.getAttribute("encoding"), XMLUtilities.extractTextElementValue(searchElement));
@@ -171,8 +219,7 @@ public final class MathMLUtilities {
         
         /* Look for semantics child then annotation child with encoding set appropriately */
         Node search = mathElement.getFirstChild();
-        if (!(search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())
-                && "semantics".equals(search.getLocalName()))) {
+        if (!isMathMLElement(search, "semantics")) {
             /* Didn't get <semantics/> as first and only child so not parallel markup */
             return null;
         }
@@ -235,8 +282,7 @@ public final class MathMLUtilities {
          */
         /* Look for semantics child then annotation child with encoding set appropriately */
         Node search = mathmlElement.getFirstChild();
-        if (!(search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())
-                && "semantics".equals(search.getLocalName()))) {
+        if (!isMathMLElement(search, "semantics")) {
             /* Didn't get <semantics/> as first and only child */
             return null;
         }
@@ -244,21 +290,14 @@ public final class MathMLUtilities {
         NodeList childNodes = semantics.getChildNodes();
         for (int i=0, length=childNodes.getLength(); i<length; i++) {
             search = childNodes.item(i);
-            if (search.getNodeType()==ELEMENT_NODE && Globals.MATHML_NAMESPACE.equals(search.getNamespaceURI())
-                    && annotationElementLocalName.equals(search.getLocalName())
+            if (isMathMLElement(search, annotationElementLocalName)
                     && encodingAttribute.equals(((Element) search).getAttribute("encoding"))) {
                 return (Element) search;
             }
         }
         return null;
     }
-    
-    private static void ensureMathMLContainer(final Element mathElement) {
-        ConstraintUtilities.ensureNotNull(mathElement, "MathML element");
-        if (!(Globals.MATHML_NAMESPACE.equals(mathElement.getNamespaceURI()) && "math".equals(mathElement.getLocalName()))) {
-            throw new IllegalArgumentException("Not a MathML <math/> element");
-        }
-    }
+
     
     /**
      * "Isolates" the first <semantics/> branch of an annotation MathML element
