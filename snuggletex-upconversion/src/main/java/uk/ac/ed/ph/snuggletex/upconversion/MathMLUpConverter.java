@@ -107,7 +107,7 @@ public class MathMLUpConverter {
         this.stylesheetManager = new StylesheetManager(stylesheetCache);
     }
     
-    public Document upConvertSnuggleTeXMathML(final Document document, final Map<String, Object> upconversionParameters) {
+    public Document upConvertSnuggleTeXMathML(final Document document, final Map<String, Object> upConversionOptions) {
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             /* Create required XSLT */
@@ -115,8 +115,8 @@ public class MathMLUpConverter {
             Transformer upconverter = upconverterStylesheet.newTransformer();
             
             /* Set any specified parameters */
-            if (upconversionParameters!=null) {
-                for (Entry<String, Object> entry : upconversionParameters.entrySet()) {
+            if (upConversionOptions!=null) {
+                for (Entry<String, Object> entry : upConversionOptions.entrySet()) {
                     /* (Recall that the actual stylesheets assume the parameters are in the SnuggleTeX
                      * namespace, so we need to use {uri}localName format for the parameter name.) */
                     upconverter.setParameter("{" + SnuggleConstants.SNUGGLETEX_NAMESPACE + "}" + entry.getKey(),
@@ -133,7 +133,7 @@ public class MathMLUpConverter {
         return resultDocument;
     }
     
-    public Document upConvertASCIIMathML(final Document document, final Map<String, Object> upconversionParameters) {
+    public Document upConvertASCIIMathML(final Document document, final Map<String, Object> upConversionOptions) {
         /* First of all we convert the ASCIIMathML into something equivalent to SnuggleTeX output */
         Document fixedDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
@@ -144,6 +144,6 @@ public class MathMLUpConverter {
             throw new SnuggleRuntimeException("ASCIIMathML fixing step failed", e);
         }
         /* Then do the normal SnuggleTeX up-conversion */
-        return upConvertSnuggleTeXMathML(fixedDocument, upconversionParameters);
+        return upConvertSnuggleTeXMathML(fixedDocument, upConversionOptions);
     }
 }
