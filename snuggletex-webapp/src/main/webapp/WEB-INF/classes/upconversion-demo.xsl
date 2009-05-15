@@ -4,7 +4,8 @@
 $Id$
 
 Overrides format-output.xsl to add in functionality for
-demonstrating LaTeX -> Presentation MathML -> Content MathML -> Maxima.
+demonstrating LaTeX -> Presentation MathML -> Content MathML -> Maxima
+up-covnersion process.
 
 Copyright (c) 2009 University of Edinburgh.
 All Rights Reserved
@@ -20,13 +21,13 @@ All Rights Reserved
   <!-- Import basic formatting stylesheet -->
   <xsl:import href="format-output.xsl"/>
 
-  <!-- LaTeX input - this will be put into a textarea -->
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
-
-  <!-- Various text outputs -->
-  <xsl:param name="mathml-annotated" as="xs:string" select="'(Failed)'" required="no"/>
-  <xsl:param name="cmathml" as="xs:string" select="'(Failed)'" required="no"/>
-  <xsl:param name="maxima" as="xs:string" select="'(Failed)'" required="no"/>
+  <xsl:param name="is-parsing-success" as="xs:boolean" required="yes"/>
+  <xsl:param name="parallel-mathml" as="xs:string?"/>
+  <xsl:param name="pmathml-initial" as="xs:string?"/>
+  <xsl:param name="pmathml-upconverted" as="xs:string?"/>
+  <xsl:param name="cmathml" as="xs:string?"/>
+  <xsl:param name="maxima-input" as="xs:string?"/>
 
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'latexinput'" as="xs:string"/>
@@ -57,7 +58,27 @@ All Rights Reserved
 
     <h3>Up-converted MathML</h3>
     <pre class="result">
-      <xsl:value-of select="$mathml-annotated"/>
+      <xsl:value-of select="$parallel-mathml"/>
+    </pre>
+
+    <h3>Initial PMathML</h3>
+    <pre class="result">
+      <xsl:value-of select="$pmathml-initial"/>
+    </pre>
+
+    <h3>Up-Converted PMathML</h3>
+    <pre class="result">
+      <xsl:value-of select="$pmathml-upconverted"/>
+    </pre>
+
+    <h3>Content MathML</h3>
+    <pre class="result">
+      <xsl:value-of select="$cmathml"/>
+    </pre>
+
+    <h3>Maxima Input Form</h3>
+    <pre class="result">
+      <xsl:value-of select="$maxima-input"/>
     </pre>
   </xsl:template>
 

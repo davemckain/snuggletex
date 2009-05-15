@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.InputStream;
@@ -50,6 +51,10 @@ abstract class BaseServlet extends HttpServlet {
     
     protected StylesheetManager getStylesheetManager() {
         return (StylesheetManager) getServletContext().getAttribute(ContextInitialiser.STYLESHEET_MANAGER_ATTRIBUTE_NAME);
+    }
+    
+    protected StylesheetCache getStylesheetCache() {
+        return getStylesheetManager().getStylesheetCache();
     }
     
     @SuppressWarnings("unchecked")

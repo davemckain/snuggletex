@@ -61,19 +61,19 @@ public final class TryOutServlet extends BaseServlet {
             throws ServletException, IOException {
         /* Read in input LaTeX, using some placeholder text if nothing was provided */
         String rawInputLaTeX = request.getParameter("input");
-        String resultingInputLaTeX;
+        String inputLaTeX;
         if (rawInputLaTeX!=null) {
             /* Tidy up line endings */
-            resultingInputLaTeX = rawInputLaTeX.replaceAll("(\r\n|\r|\n)", "\n");
+            inputLaTeX = rawInputLaTeX.replaceAll("(\r\n|\r|\n)", "\n");
         }
         else {
-            resultingInputLaTeX = readDefaultInput();
+            inputLaTeX = readDefaultInput();
         }
         
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine();
         SnuggleSession session = engine.createSession();
-        SnuggleInput input = new SnuggleInput(resultingInputLaTeX, "Form Input");
+        SnuggleInput input = new SnuggleInput(inputLaTeX, "Form Input");
         session.parseInput(input);
         
         /* Set up web output options */
@@ -97,7 +97,7 @@ public final class TryOutServlet extends BaseServlet {
         if (rawInputLaTeX!=null) {
             List<InputError> errors = session.getErrors();
             Level level = errors.isEmpty() ? Level.INFO : Level.WARNING;
-            log.log(level, "Input: " + resultingInputLaTeX);
+            log.log(level, "Input: " + inputLaTeX);
             log.log(level, "Output: " + xmlString);
             log.log(level, "Error count: " + errors.size());
             for (InputError error : errors) {
@@ -108,7 +108,7 @@ public final class TryOutServlet extends BaseServlet {
         /* Create XSLT to generate the resulting page */
         Transformer stylesheet = getStylesheet(TRYOUT_XSLT_LOCATION);
         stylesheet.setParameter("context-path", request.getContextPath());
-        stylesheet.setParameter("latex-input", resultingInputLaTeX);
+        stylesheet.setParameter("latex-input", inputLaTeX);
         options.setStylesheet(stylesheet);
         
         /* Generate and serve the resulting web page */
