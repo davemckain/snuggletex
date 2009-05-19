@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
+<!--
+
+$Id$
+
+Copyright (c) 2009 The University of Edinburgh
+All Rights Reserved
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.ed.ph.snuggletex</groupId>
@@ -12,7 +20,7 @@
     <module>snuggletex-upconversion</module>
   </modules>
   <properties>
-    <junit.version>4.4</junit.version>
+    <junit.version>4.6</junit.version>
     <easymock.version>2.3</easymock.version>
     <jeuclid.version>3.1.5</jeuclid.version>
     <saxon9.version>9.1.0.6</saxon9.version>
