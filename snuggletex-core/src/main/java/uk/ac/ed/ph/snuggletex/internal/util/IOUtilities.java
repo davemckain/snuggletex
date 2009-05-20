@@ -53,12 +53,13 @@ public final class IOUtilities {
      *
      * @throws IOException if creation could not succeed for some reason.
      */
-    public static void ensureDirectoryCreated(File directory) throws IOException {
+    public static File ensureDirectoryCreated(File directory) throws IOException {
         if (!directory.isDirectory()) {
             if (!directory.mkdirs()) {
                 throw new IOException("Could not create directory " + directory);
             }
         }
+        return directory;
     }
 
     /**
@@ -68,7 +69,7 @@ public final class IOUtilities {
      *
      * @throws IOException if creation could not succeed for some reason.
      */
-    public static void ensureFileCreated(File file) throws IOException {
+    public static File ensureFileCreated(File file) throws IOException {
         /* Make sure parent exists */
         File parentDirectory = file.getParentFile();
         if (parentDirectory!=null) {
@@ -80,6 +81,7 @@ public final class IOUtilities {
                 throw new IOException("Could not create file " + file);
             }
         }
+        return file;
     }
 
     //----------------------------------------------------------------------------
