@@ -66,13 +66,13 @@ rich as it ought to be!)
 
 To do this, you create a \verb|DefinitionMap|, which has a number of methods for
 defining new Commands and Environments. This can then be registered to a \verb|SnuggleEngine|
-using the \verb|registerDefinitions()| method, making them available to ann \verb|SnuggleSession|s
+using the \verb|registerDefinitions()| method, making them available to any \verb|SnuggleSession|s
 created by the engine.
 
 The most complicated part of this process is specifying how each Command and
-Environment should built its branch in the resulting DOM tree. This is done
-by implementing the \verb|CommandHandler| and \verb|EnvironmentHandler| interfaces
-as required and calling back on the \verb|DOMBuilder| Object that gets passed
+Environment should build its branch in the resulting DOM tree. This is done
+by you implementing the \verb|CommandHandler| and \verb|EnvironmentHandler| interfaces
+as required and using the \verb|DOMBuilder| Object that gets passed
 to you to build XHTML, MathML and other XML structures. There are already a lot
 of handler classes in the \verb|snuggletex.dombuilding| package that you can
 inspect, copy and build on to help here.
