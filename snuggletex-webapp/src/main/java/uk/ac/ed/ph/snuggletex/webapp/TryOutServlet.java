@@ -18,13 +18,14 @@ import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Trivial servlet to provide the functionality for the "try out" page.
@@ -37,7 +38,7 @@ public final class TryOutServlet extends BaseServlet {
     private static final long serialVersionUID = 4376587500238353176L;
     
     /** Logger so that we can log what users are trying out to allow us to improve things */
-    private Logger log = Logger.getLogger(TryOutServlet.class.getSimpleName());
+    private Logger log = LoggerFactory.getLogger(TryOutServlet.class);
     
     /** Location of XSLT controlling page layout */
     public static final String TRYOUT_XSLT_LOCATION = "classpath:/tryout.xsl";
@@ -96,12 +97,17 @@ public final class TryOutServlet extends BaseServlet {
         /* Log things nicely */
         if (rawInputLaTeX!=null) {
             List<InputError> errors = session.getErrors();
-            Level level = errors.isEmpty() ? Level.INFO : Level.WARNING;
-            log.log(level, "Input: " + inputLaTeX);
-            log.log(level, "Output: " + xmlString);
-            log.log(level, "Error count: " + errors.size());
-            for (InputError error : errors) {
-                log.log(level, "Error: " + MessageFormatter.formatErrorAsString(error));
+            if (errors.isEmpty()) {
+                log.info("Input:  {}", inputLaTeX);
+                log.info("Output: {}", xmlString);
+            }
+            else {
+                log.warn("Input:  {}" + inputLaTeX);
+                log.warn("Output: {}", xmlString);
+                log.warn("Errors: #{}", errors.size());
+                for (InputError error : errors) {
+                    log.warn("Error:  " + MessageFormatter.formatErrorAsString(error));
+                }
             }
         }
         

@@ -5,6 +5,9 @@ Web Deployment Descriptor for the SnuggleTeX Demo Application
 
 $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
 
+Copyright (c) 2009 The University of Edinburgh
+All Rights Reserved
+
 -->
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,6 +19,10 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
+  <context-param>
+    <param-name>cache.xslt</param-name>
+    <param-value>false</param-value>
+  </context-param>
 
   <listener>
     <listener-class>uk.ac.ed.ph.snuggletex.webapp.ContextInitialiser</listener-class>
@@ -41,14 +48,25 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     <extension>tex</extension>
     <mime-type>application/x-tex</mime-type>
   </mime-mapping>
-
+  <servlet>
+    <description>
+      Manages generation and caching of documentation resources
+    </description>
+    <servlet-name>DocumentationServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.DocumentationServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <init-param>
+      <param-name>caching</param-name>
+      <param-value>false</param-value>
+    </init-param>
+  </servlet>
   <servlet>
     <description>
       Processes and displays user-submitted input for demonstration purposes
     </description>
     <servlet-name>TryOutServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.TryOutServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
+    <load-on-startup>2</load-on-startup>
   </servlet>
   <servlet>
     <description>
@@ -56,9 +74,16 @@ $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
     </description>
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionDemoServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
+    <load-on-startup>3</load-on-startup>
   </servlet>
-
+  <servlet-mapping>
+    <servlet-name>DocumentationServlet</servlet-name>
+    <url-pattern>/documentation/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TryOutServlet</servlet-name>
+    <url-pattern>/tryout.xml</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>TryOutServlet</servlet-name>
     <url-pattern>/tryout.xml</url-pattern>

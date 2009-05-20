@@ -37,6 +37,17 @@ All Rights Reserved
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
@@ -95,7 +106,7 @@ All Rights Reserved
               </arguments>
             </configuration>
           </execution>
-          <!-- Create Error Codes tex input -->
+          <!-- Create Error Codes documentation page source -->
           <execution>
             <id>generate-error-codes-page</id>
             <goals>
@@ -109,35 +120,10 @@ All Rights Reserved
                 <argument>-classpath</argument>
                 <classpath/>
                 <argument>uk.ac.ed.ph.snuggletex.webapp.ErrorCodeDocumentBuilder</argument>
-                <argument>${project.build.directory}/extras/docs/error-codes.tex</argument>
+                <argument>${project.build.directory}/extras/WEB-INF/docs/error-codes.tex</argument>
               </arguments>
             </configuration>
           </execution>
-          <!-- Generate Web Documentation (including error codes) -->
-          <!--
-          <execution>
-            <id>generate-documentation</id>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <executable>java</executable>
-              <classpathScope>runtime</classpathScope>
-              <arguments>
-                <argument>-classpath</argument>
-                <classpath/>
-                <argument>uk.ac.ed.ph.snuggletex.webapp.DocumentationBuilder</argument>
-                <argument>${project.build.directory}/classes/docs</argument>
-                <argument>${project.build.directory}/extras/docs</argument>
-                <argument>${context.path}</argument>
-                <argument>${project.build.directory}/classes/WEB-INF/macros.tex</argument>
-                <argument>${project.build.directory}/classes/WEB-INF/format-output.xsl</argument>
-                <argument>maths</argument>
-              </arguments>
-            </configuration>
-          </execution>
-          -->
         </executions>
       </plugin>
       <!-- Pull in auto-generated content created above when building WAR structure -->

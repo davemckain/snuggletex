@@ -19,9 +19,9 @@ All Rights Reserved
 <xsl:stylesheet version="2.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
   exclude-result-prefixes="m s xs">
 
@@ -90,41 +90,41 @@ All Rights Reserved
             <!-- Standard Navigation -->
             <h2>About SnuggleTeX</h2>
             <ul>
-              <li><a class="overview" href="{$context-path}/docs/overview.html">Overview</a></li>
-              <li><a class="features" href="{$context-path}/docs/features.html">Features</a></li>
-              <li><a class="usecases" href="{$context-path}/docs/use-cases.html">Use Cases</a></li>
-              <li><a class="releasenotes" href="{$context-path}/docs/release-notes.html">Release Notes</a></li>
+              <li><a class="overview" href="{$context-path}/documentation/overview.html">Overview</a></li>
+              <li><a class="features" href="{$context-path}/documentation/features.html">Features</a></li>
+              <li><a class="usecases" href="{$context-path}/documentation/use-cases.html">Use Cases</a></li>
+              <li><a class="releasenotes" href="{$context-path}/documentation/release-notes.html">Release Notes</a></li>
               <li><a href="http://sourceforge.net/project/showfiles.php?group_id=221375">Download from SourceForge.net</a></li>
             </ul>
 
             <h2>User Guide</h2>
             <ul>
-              <li><a class="requirements" href="{$context-path}/docs/requirements.html">Software Requirements</a></li>
-              <li><a class="browserRequirements" href="{$context-path}/docs/browser-requirements.html">Browser Requirements</a></li>
-              <li><a class="gettingstarted" href="{$context-path}/docs/getting-started.html">Getting Started</a></li>
-              <li><a class="usageoverview" href="{$context-path}/docs/usage-overview.html">Usage Overview</a></li>
-              <li><a class="minexample" href="{$context-path}/docs/minimal-example.html">Minimal Example</a></li>
-              <li><a class="inputs" href="{$context-path}/docs/inputs.html">Inputs</a></li>
-              <li><a class="outputs" href="{$context-path}/docs/outputs.html">Outputs</a></li>
-              <li><a class="errors" href="{$context-path}/docs/error-reporting.html">Error Reporting</a></li>
-              <li><a class="errorCodes" href="{$context-path}/docs/error-codes.html">SnuggleTeX Error Codes</a></li>
-              <li><a class="configuration" href="{$context-path}/docs/configuration.html">Configuration</a></li>
+              <li><a class="requirements" href="{$context-path}/documentation/requirements.html">Software Requirements</a></li>
+              <li><a class="browserRequirements" href="{$context-path}/documentation/browser-requirements.html">Browser Requirements</a></li>
+              <li><a class="gettingstarted" href="{$context-path}/documentation/getting-started.html">Getting Started</a></li>
+              <li><a class="usageoverview" href="{$context-path}/documentation/usage-overview.html">Usage Overview</a></li>
+              <li><a class="minexample" href="{$context-path}/documentation/minimal-example.html">Minimal Example</a></li>
+              <li><a class="inputs" href="{$context-path}/documentation/inputs.html">Inputs</a></li>
+              <li><a class="outputs" href="{$context-path}/documentation/outputs.html">Outputs</a></li>
+              <li><a class="errors" href="{$context-path}/documentation/error-reporting.html">Error Reporting</a></li>
+              <li><a class="errorCodes" href="{$context-path}/documentation/error-codes.html">SnuggleTeX Error Codes</a></li>
+              <li><a class="configuration" href="{$context-path}/documentation/configuration.html">Configuration</a></li>
               <li><a class="projects" href="{$context-path}/javadoc/">API Documentation</a></li>
             </ul>
 
             <h2>LaTeX Guide</h2>
             <ul>
-              <li><a class="textMode" href="{$context-path}/docs/text-mode.html">Basic Text Mode Commands</a></li>
-              <li><a class="mathMode" href="{$context-path}/docs/math-mode.html">Basic Math Mode Commands</a></li>
-              <li><a class="verbatimMode" href="{$context-path}/docs/verbatim-mode.html">Verbatim Mode</a></li>
-              <li><a class="commands" href="{$context-path}/docs/commands.html">Defining Commands &amp; Environments</a></li>
-              <li><a class="xhtmlCommands" href="{$context-path}/docs/xhtml-commands.html">XHTML-related Commands</a></li>
-              <li><a class="xmlCommands" href="{$context-path}/docs/xml-commands.html">XML-related Commands</a></li>
+              <li><a class="textMode" href="{$context-path}/documentation/text-mode.html">Basic Text Mode Commands</a></li>
+              <li><a class="mathMode" href="{$context-path}/documentation/math-mode.html">Basic Math Mode Commands</a></li>
+              <li><a class="verbatimMode" href="{$context-path}/documentation/verbatim-mode.html">Verbatim Mode</a></li>
+              <li><a class="commands" href="{$context-path}/documentation/commands.html">Defining Commands &amp; Environments</a></li>
+              <li><a class="xhtmlCommands" href="{$context-path}/documentation/xhtml-commands.html">XHTML-related Commands</a></li>
+              <li><a class="xmlCommands" href="{$context-path}/documentation/xml-commands.html">XML-related Commands</a></li>
             </ul>
 
             <h2>Demos and Samples</h2>
             <ul>
-              <li><a class="samples" href="{$context-path}/docs/latex-samples.html">Web Output Samples</a></li>
+              <li><a class="samples" href="{$context-path}/documentation/latex-samples.html">Web Output Samples</a></li>
               <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
             </ul>
 
@@ -145,7 +145,7 @@ All Rights Reserved
       <div id="copyright">
         <p>
           SnuggleTeX Release 1.1-SNAPSHOT &#x2014;
-          <a href="{$context-path}/docs/release-notes.html">Release Notes</a>
+          <a href="{$context-path}/documentation/release-notes.html">Release Notes</a>
           <br />
           Copyright &#xa9; 2009
           <a href="http://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
@@ -188,11 +188,6 @@ All Rights Reserved
   <xsl:template match="s:*"/>
 
   <xsl:template match="m:math">
-    <xsl:copy-of select="."/>
-  </xsl:template>
-
-  <!-- Keep any PI's (e.g. for MathPlayer) -->
-  <xsl:template match="processing-instruction()">
     <xsl:copy-of select="."/>
   </xsl:template>
 

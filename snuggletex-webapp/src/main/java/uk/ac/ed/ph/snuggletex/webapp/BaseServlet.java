@@ -63,8 +63,8 @@ abstract class BaseServlet extends HttpServlet {
     }
     
     /**
-     * Compiles the XSLT stylesheet at the given location within the webapp, using {@link ClassPathURIResolver}
-     * to locate the stylesheet and anything it wants to import.
+     * Compiles the XSLT stylesheet at the given location within the webapp,
+     * using {@link ClassPathURIResolver} to locate the stylesheet and anything it wants to import.
      * 
      * @param classPathUri location of XSLT to compile.
      * 

@@ -21,14 +21,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -46,7 +46,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
     private static final long serialVersionUID = 4376587500238353176L;
     
     /** Logger so that we can log what users are trying out to allow us to improve things */
-    private Logger log = Logger.getLogger(UpConversionDemoServlet.class.getName());
+    private Logger log = LoggerFactory.getLogger(UpConversionDemoServlet.class);
     
     /** Default input to use when first showing the page */
     private static final String DEFAULT_INPUT = "\\frac{2x-y^2}{\\sin xy(x-2)}";
@@ -125,12 +125,17 @@ public final class UpConversionDemoServlet extends BaseServlet {
         /* Log things nicely */
         if (rawInputLaTeX!=null) {
             List<InputError> errors = session.getErrors();
-            Level level = errors.isEmpty() ? Level.INFO : Level.WARNING;
-            log.log(level, "Input: " + inputLaTeX);
-            log.log(level, "Final Math Output: " + parallelMathML);
-            log.log(level, "Error count: " + errors.size());
-            for (InputError error : errors) {
-                log.log(level, "Error: " + MessageFormatter.formatErrorAsString(error));
+            if (errors.isEmpty()) {
+                log.info("Input: {}", inputLaTeX);
+                log.info("Final MathML: {}", parallelMathML);
+            }
+            else {
+                log.warn("Input: {}", inputLaTeX);
+                log.warn("Final MathML: {}", parallelMathML);
+                log.warn("Error count: {}", errors.size());
+                for (InputError error : errors) {
+                    log.warn("Error: " + MessageFormatter.formatErrorAsString(error));
+                }
             }
         }
         
