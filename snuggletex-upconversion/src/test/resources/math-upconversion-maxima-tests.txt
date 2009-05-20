@@ -397,3 +397,10 @@ operator("^")
 \frac{}{}
 operator("/")
 ====
+\hbar
+!UMEG03
+====
+## Regression bug fix
+\hbar+1
+!UMEG03
+====

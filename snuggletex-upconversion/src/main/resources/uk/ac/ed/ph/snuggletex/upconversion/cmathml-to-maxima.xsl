@@ -173,14 +173,14 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:param name="elements" as="element()*"/>
     <xsl:param name="joiner" as="xs:string"/>
     <xsl:for-each select="$elements">
-      <xsl:value-of select="local:to-maxima(.)"/>
+      <xsl:copy-of select="local:to-maxima(.)"/>
       <xsl:if test="position() != last()">
         <xsl:value-of select="$joiner"/>
       </xsl:if>
     </xsl:for-each>
   </xsl:function>
 
-  <xsl:function name="local:make-unapplied-operator" as="node()*">
+  <xsl:function name="local:make-unapplied-operator" as="xs:string">
     <xsl:param name="operator" as="xs:string"/>
     <xsl:value-of select="concat($s:maxima-operator-function, '(&quot;', $operator, '&quot;)')"/>
   </xsl:function>
@@ -310,6 +310,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
         <!-- nary case (NOTE: Earlier stylesheet will ensure binary when required) -->
         <xsl:choose>
           <xsl:when test="$operator/@maxima-nary-infix-operator">
+            <!-- Operator like '+' -->
             <xsl:text>(</xsl:text>
             <xsl:copy-of select="local:to-maxima-map($operands, $operator/@maxima-nary-infix-operator)"/>
             <xsl:text>)</xsl:text>
@@ -505,7 +506,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:apply-templates mode="cmathml-to-maxima"/>
   </xsl:template>
 
-  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima" as="node()*">
+  <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima" as="text()">
     <xsl:value-of select="concat($s:maxima-units-function, '(&quot;', ., '&quot;)')"/>
   </xsl:template>
 
