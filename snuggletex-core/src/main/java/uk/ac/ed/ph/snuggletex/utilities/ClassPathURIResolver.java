@@ -58,7 +58,7 @@ public final class ClassPathURIResolver implements URIResolver {
 
         /* See if it's one of our URI schemes. If so, resolve */
         Source result = null;
-        if (resolvedUri.getScheme().equals(URI_SCHEME)) {
+        if (URI_SCHEME.equals(resolvedUri.getScheme())) {
             /* Strip off the leading '/' from the path */
             String resourceLocation = resolvedUri.getPath().substring(1);
             InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceLocation);
