@@ -30,7 +30,7 @@ public final class ContextInitialiser implements ServletContextListener {
     
     private static final Logger log = LoggerFactory.getLogger(ContextInitialiser.class);
     
-    public static final String CACHE_XSLT_PROPERTY_NAME = "cache.xslt";
+    public static final String CACHE_XSLT_PROPERTY_NAME = "caching.xslt";
     
     public static final String STYLESHEET_MANAGER_ATTRIBUTE_NAME = "stylesheetManager";
     public static final String STYLESHEET_CACHE_ATTRIBUTE_NAME = "stylesheetCache";
@@ -57,7 +57,7 @@ public final class ContextInitialiser implements ServletContextListener {
     }
     
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        /* (Nothing to do) */
+        log.info("Context destroyed");
     }
 
 }

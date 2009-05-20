@@ -20,7 +20,7 @@ All Rights Reserved
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
   <context-param>
-    <param-name>cache.xslt</param-name>
+    <param-name>caching.xslt</param-name>
     <param-value>false</param-value>
   </context-param>
 
@@ -66,15 +66,15 @@ All Rights Reserved
     </description>
     <servlet-name>TryOutServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.TryOutServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <description>
-      TODO!
+      Demonstrates the Up-conversion process
     </description>
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionDemoServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>DocumentationServlet</servlet-name>

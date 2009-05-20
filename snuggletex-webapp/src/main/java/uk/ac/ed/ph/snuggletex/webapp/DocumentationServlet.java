@@ -11,6 +11,7 @@ import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
@@ -39,7 +40,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * FIXME: Document this class!
+ * Rather trivial (and badly factored) servlet that serves up the documentation pages for
+ * SnuggleTeX. Main points:
+ * <ul>
+ *   <li>
+ *     Documentation is written in SnuggleTeX format as <tt>.tex</tt> files under
+ *     {@link #TEX_SOURCE_BASE_RESOURCE}
+ *   </li>
+ *   <li>
+ *     Servlet responds to requests under a particular base URL as defined in <tt>web.xml</tt>.
+ *     The extra path info is mapped to a "resource path".
+ *   </li>
+ *   <li>
+ *     File extension determines which web output to serve.
+ *   </li>
+ *   <li>
+ *     Servlet stores generated versions of documentation in a temp directory. If not found,
+ *     it tries to recreate from scratch using the <tt>.tex</tt> file.
+ *   </li>
+ *   <li>
+ *     Limited caching is available. If off, we recreate each documentation resource each time,
+ *     otherwise we create once and keep forever.
+ *   </li>
+ * </ul>
  *
  * @author  David McKain
  * @version $Revision$
@@ -50,16 +73,25 @@ public final class DocumentationServlet extends BaseServlet {
 
     static final Logger logger = LoggerFactory.getLogger(DocumentationServlet.class);
     
-    public static final String CACHING_PARAM = "caching";
+    /** <tt>init-param</tt> controlling whether we are caching or not */
+    private static final String CACHING_PARAM = "caching";
     
+    /** Location of XSLT for formatting the resulting web pages */
     private static final String FORMAT_OUTPUT_XSLT_URI = "classpath:/format-output.xsl";
-    private static final String MACROS_RESOURCE_LOCATION = "/WEB-INF/macros.tex";
-    private static final String TEX_SOURCE_BASE_RESOURCE = "/WEB-INF/docs";
-
-    private final Map<String, WebPageType> extensionToWebPageTypeMap;
-    private final Map<String, String> extensionToContentTypeMap;
     
-    /** FIXME: Currently unused */
+    /** Location of macros TeX file (relative to webapp) */
+    private static final String MACROS_RESOURCE_LOCATION = "/WEB-INF/macros.tex";
+    
+    /** Base Location for <tt>.tex</tt> source files (relative to webapp) */
+    private static final String TEX_SOURCE_BASE_RESOURCE = "/WEB-INF/docs";
+    
+    /** Maps supported extensions to Content Types, for all extensions we support here */
+    private final Map<String, String> extensionToContentTypeMap;
+
+    /** Maps extension to {@link WebPageType}, for those generated that way */
+    private final Map<String, WebPageType> extensionToWebPageTypeMap;
+
+    /** Whether to cache result or not */
     private boolean caching;
     
     /** Directory in which Files created and cached by this servlet will be stored. */
@@ -91,45 +123,53 @@ public final class DocumentationServlet extends BaseServlet {
     }
     
     public DocumentationServlet() {
-        /* Define web page types by extension */
-        this.extensionToWebPageTypeMap = new HashMap<String, WebPageType>();
-        extensionToWebPageTypeMap.put("xhtml", WebPageType.MOZILLA);
-        extensionToWebPageTypeMap.put("htm", WebPageType.MATHPLAYER_HTML);
-        extensionToWebPageTypeMap.put("xml", WebPageType.UNIVERSAL_STYLESHEET);
-        extensionToWebPageTypeMap.put("cxml", WebPageType.CROSS_BROWSER_XHTML);
-        
+        /* Define all supported content types */
         this.extensionToContentTypeMap = new HashMap<String, String>();
         extensionToContentTypeMap.put("xhtml", "application/xhtml+xml");
         extensionToContentTypeMap.put("xml", "application/xhtml+xml");
         extensionToContentTypeMap.put("cxml", "application/xhtml+xml");
         extensionToContentTypeMap.put("htm", "text/html");
         extensionToContentTypeMap.put("html", "text/html");
-        extensionToContentTypeMap.put("png", "image/png");
-    }
-    
-    private File mapResourcePath(final String resourcePath) {
-        return new File(baseDirectory + File.separator + resourcePath.replace("/", File.separator));
+        extensionToContentTypeMap.put("png", "image/png"); /* (Required for JEuclid MathML images) */
+        
+        /* Determines which extensions to use for standard web page outputs */
+        this.extensionToWebPageTypeMap = new HashMap<String, WebPageType>();
+        extensionToWebPageTypeMap.put("xhtml", WebPageType.MOZILLA);
+        extensionToWebPageTypeMap.put("htm", WebPageType.MATHPLAYER_HTML);
+        extensionToWebPageTypeMap.put("xml", WebPageType.UNIVERSAL_STYLESHEET);
+        extensionToWebPageTypeMap.put("cxml", WebPageType.CROSS_BROWSER_XHTML);
     }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        /* Determine which resource to serve up, and how it's going to be served */
         String resourcePath = request.getPathInfo();
         String[] splitResourcePath = splitResourcePath(resourcePath);
         String extension = splitResourcePath[1];
-        String contentType = extensionToContentTypeMap.get(extension);
         File resourceFile = mapResourcePath(resourcePath);
+        
+        /* Make sure content type is known */
+        String contentType = extensionToContentTypeMap.get(extension);
         if (contentType==null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unsupported documentation resource extension " + extension);
             return;
         }
+        
+        /* Decide whether to (re)generate resource or not. This will happen if:
+         * 
+         * 1. It's a "proper" documentation page (i.e. not PNG).
+         * 2. Cached resource doesn't already exist (or caching is turned off)
+         */
         if (!"png".equals(extension) && (!resourceFile.exists() || !caching)) {
             resourceFile = generateResource(resourcePath, request.getContextPath(), request.getServletPath());
             if (resourceFile==null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Documentation page does not exist");
                 return;
             }
         }
+        
+        /* Serve up */
         response.setContentType(contentType);
         response.setContentLength((int) resourceFile.length());
         IOUtilities.transfer(new FileInputStream(resourceFile), response.getOutputStream(), true, false);
@@ -147,17 +187,23 @@ public final class DocumentationServlet extends BaseServlet {
     }
     
     /**
-     * FIXME: This is currently not doing any caching!!!
+     * Maps a requested "resource path" to a file under our {@link #baseDirectory} "cache".
+     */
+    private File mapResourcePath(final String resourcePath) {
+        return new File(baseDirectory + File.separator + resourcePath.replace("/", File.separator));
+    }
+    
+    /**
+     * Generates the documentation resource at the given path.
      * 
-     * @param resourcePath
-     * @param contextPath
-     * @param servletPath
-     * @throws ServletException
-     * @throws IOException
+     * @return resulting File, or null if the source TeX file for this resource couldn't be
+     *   located.
      */
     private File generateResource(final String resourcePath, final String contextPath,
             final String servletPath)
             throws ServletException, IOException {
+        logger.info("Generating Resource at " + resourcePath);
+        
         /* Work out what is to be served using the file extension to determine what to do */
         String[] splitResourcePath = splitResourcePath(resourcePath);
         String resourceBaseName = splitResourcePath[0];
@@ -176,6 +222,9 @@ public final class DocumentationServlet extends BaseServlet {
             /* Just copy TeX resource over */
             resultFile = IOUtilities.ensureFileCreated(mapResourcePath(resourcePath));
             IOUtilities.transfer(texSourceStream, new FileOutputStream(resultFile));
+        }
+        else if (extension.equals("png")) {
+            throw new SnuggleLogicException("PNG generation is done as a side-effect so shouldn't have been requested directly");
         }
         else if (extension.equals("html")) {
             /* Use JEuclid web page builder, with down-conversion */
@@ -266,7 +315,8 @@ public final class DocumentationServlet extends BaseServlet {
     }
 
     /**
-     * FIXME: Document this!
+     * Implementation of {@link SimpleMathMLImageSavingCallback} that stores images in the
+     * given output directory with the given base URL, using a very simple naming scheme.
      */
     private class ImageSavingCallback extends SimpleMathMLImageSavingCallback {
         

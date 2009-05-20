@@ -109,7 +109,7 @@ All Rights Reserved
               <li><a class="errors" href="{$context-path}/documentation/error-reporting.html">Error Reporting</a></li>
               <li><a class="errorCodes" href="{$context-path}/documentation/error-codes.html">SnuggleTeX Error Codes</a></li>
               <li><a class="configuration" href="{$context-path}/documentation/configuration.html">Configuration</a></li>
-              <li><a class="projects" href="{$context-path}/javadoc/">API Documentation</a></li>
+              <li><a class="projects" href="{$context-path}/javadoc/"><b>XXXX</b> API Documentation</a></li>
             </ul>
 
             <h2>LaTeX Guide</h2>
@@ -126,6 +126,7 @@ All Rights Reserved
             <ul>
               <li><a class="samples" href="{$context-path}/documentation/latex-samples.html">Web Output Samples</a></li>
               <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
+              <li><a class="tryout" href="{$context-path}/UpConversionDemo">MathML Semantic Up-Conversion Demo</a></li>
             </ul>
 
             <h2>External Links</h2>
