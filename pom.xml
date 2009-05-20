@@ -24,6 +24,7 @@ All Rights Reserved
     <easymock.version>2.3</easymock.version>
     <jeuclid.version>3.1.5</jeuclid.version>
     <saxon9.version>9.1.0.6</saxon9.version>
+    <slf4j.version>1.5.6</slf4j.version>
   </properties>
   <repositories>
     <repository>
