@@ -418,6 +418,22 @@ public final class SnuggleSession implements SessionContext {
     }
     
     /**
+     * Calls the <tt>setContentType</tt> of the given Object to something appropriate for the
+     * given {@link BaseWebPageOptions}. This may be useful in some cases.
+     * <p>
+     * The main example for this would be passing a <tt>javax.servlet.http.HttpResponse</tt>
+     * Object, which I want to avoid a compile-time dependency on.
+     * 
+     * @see #writeWebPage(BaseWebPageOptions, Object, OutputStream)
+     */
+    public void setWebPageContentType(final BaseWebPageOptions options, final Object contentTypeSettable) {
+        ConstraintUtilities.ensureNotNull(options, "options");
+        ConstraintUtilities.ensureNotNull(contentTypeSettable, "contentTypeSettable");
+        AbstractWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
+        webBuilder.setWebPageContentType(contentTypeSettable);
+    }
+    
+    /**
      * Creates the appropriate instance of {@link AbstractWebPageBuilder} that will build
      * web pages supporting the given {@link BaseWebPageOptions} Object.
      * 
