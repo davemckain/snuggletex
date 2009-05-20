@@ -111,6 +111,9 @@ public final class XMLUtilities {
         Source resolved;
         try {
             resolved = uriResolver.resolve(classPathUri, "");
+            if (resolved==null) {
+                throw new SnuggleRuntimeException("Not a ClassPath URI: " + classPathUri);
+            }
             return transformerFactory.newTemplates(resolved);
         }
         catch (TransformerConfigurationException e) {
