@@ -13,11 +13,14 @@ import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -80,34 +82,48 @@ public final class UpConversionDemoServlet extends BaseServlet {
         }
         
         /* Parse the LaTeX */
-        SnuggleEngine engine = new SnuggleEngine();
+        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
         session.parseInput(input);
         
         /* Create raw DOM, without any up-conversion for the time being. I've done this
-         * so that we can show how much the PMathML hopefully "improves".
+         * so that we can show how much the PMathML hopefully improves after up-conversion!
          */
+        Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        Element resultRoot = resultDocument.createElement("root");
+        resultDocument.appendChild(resultRoot);
         DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
         domOptions.setAddingMathAnnotations(true);
         domOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        NodeList result = session.buildDOMSubtree(domOptions);
+        session.buildDOMSubtree(resultRoot);
         
         /* See if parsing succeeded and generated a single <math/> element. We'll only continue
          * up-converting if this happened.
          */
-        boolean isParsingSuccess = result.getLength()==1
-            && result.item(0).getNodeType()==Node.ELEMENT_NODE
-            && session.getErrors().isEmpty();
+        NodeList resultNodeList = resultRoot.getChildNodes();
+        List<InputError> errors = session.getErrors();
         Element mathElement = null;
         String parallelMathML = null;
         String pMathMLInitial = null;
         String pMathMLUpconverted = null;
         String cMathML = null;
         String maximaInput = null;
-        if (isParsingSuccess) {
-            mathElement = (Element) result.item(0);
+        List<Element> parsingErrors = null;
+        boolean badInput = false;
+        if (!errors.isEmpty()) {
+            /* Input error occurred */
+            parsingErrors = new ArrayList<Element>();
+            for (InputError error : errors) {
+                parsingErrors.add(MessageFormatter.formatErrorAsXML(resultDocument, error, true));
+            }
+        }
+        else if (resultNodeList.getLength()==1 && MathMLUtilities.isMathMLElement(resultNodeList.item(0), "math")) {
+            /* Result is a single <math/> element, which looks correct. Note that up-conversion
+             * might not have succeeded though.
+             */
+            mathElement = (Element) resultNodeList.item(0);
             pMathMLInitial = MathMLUtilities.serializeElement(mathElement);
             
             /* Do up-conversion and extract wreckage */
@@ -115,16 +131,22 @@ public final class UpConversionDemoServlet extends BaseServlet {
             Map<String, Object> upConversionOptions = new HashMap<String, Object>();
             Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathElement.getOwnerDocument(), upConversionOptions);
             mathElement = (Element) upConvertedMathDocument.getDocumentElement().getFirstChild();
-            parallelMathML = MathMLUtilities.serializeElement(mathElement);
-            pMathMLUpconverted = MathMLUtilities.serializeElement(MathMLUtilities.extractFirstSemanticsBranch(mathElement));
+            parallelMathML = MathMLUtilities.serializeElement(mathElement, "ASCII");
+            pMathMLUpconverted = MathMLUtilities.serializeElement(MathMLUtilities.extractFirstSemanticsBranch(mathElement), "ASCII");
             NodeList cMathMLElement = MathMLUtilities.extractAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
-            cMathML = cMathMLElement!=null ? MathMLUtilities.serializeElement((Element) cMathMLElement.item(0)) : null;
+            cMathML = cMathMLElement!=null ? MathMLUtilities.serializeElement((Element) cMathMLElement.item(0), "ASCII") : null;
             maximaInput = MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
+        }
+        else {
+            /* This could have been caused by input like 'x \] hello \[ x', which would end
+             * up escaping out of Math mode for a while, causing 3 Nodes to be generated in
+             * this case.
+             */
+            badInput = true;
         }
         
         /* Log things nicely */
         if (rawInputLaTeX!=null) {
-            List<InputError> errors = session.getErrors();
             if (errors.isEmpty()) {
                 log.info("Input: {}", inputLaTeX);
                 log.info("Final MathML: {}", parallelMathML);
@@ -142,13 +164,18 @@ public final class UpConversionDemoServlet extends BaseServlet {
         /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
          * even though most of the interesting page content is going to be fed in as stylesheet
          * parameters.
+         * 
+         * (The actual content passed to the XSLT here will be the final MathML Document that
+         * we produced manually above, though this will actually be recreated using the standard
+         * SnuggleTeX process.)
          */
         MathMLWebPageOptions webOutputOptions = new MathMLWebPageOptions();
+        webOutputOptions.setDOMPostProcessor(new UpConvertingPostProcessor());
         webOutputOptions.setMathVariantMapping(true);
         webOutputOptions.setAddingMathAnnotations(true);
         webOutputOptions.setPageType(WebPageType.CROSS_BROWSER_XHTML);
         webOutputOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        webOutputOptions.setTitle("LaTeX to MathML and Maxima");
+        webOutputOptions.setTitle("MathML Semantic Up-Conversion Demo");
         webOutputOptions.setAddingTitleHeading(false); /* We'll put our own title in */
         webOutputOptions.setIndenting(true);
         webOutputOptions.setCSSStylesheetURLs(
@@ -159,7 +186,8 @@ public final class UpConversionDemoServlet extends BaseServlet {
         Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("context-path", request.getContextPath());
         viewStylesheet.setParameter("latex-input", inputLaTeX);
-        viewStylesheet.setParameter("is-parsing-success", Boolean.valueOf(isParsingSuccess));
+        viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
+        viewStylesheet.setParameter("parsing-errors", parsingErrors);
         viewStylesheet.setParameter("parallel-mathml", parallelMathML);
         viewStylesheet.setParameter("pmathml-initial", pMathMLInitial);
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpconverted);

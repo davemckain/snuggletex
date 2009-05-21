@@ -97,6 +97,7 @@ body#verbatimMode a.verbatimMode,
 body#commands a.commands,
 body#xmlCommands a.xmlCommands,
 body#xhtmlCommands a.xhtmlCommands,
+body#upConversionDemo a.upConversionDemo,
 body#tryout a.tryout {
   color: #f25c69;
   font-weight: bold;
@@ -150,6 +151,35 @@ body#tryout a.tryout {
 pre.verbatim {
   background-color: #f2d7da;
   padding: 0.5em;
+}
+
+.result {
+  -moz-border-radius: 1em;
+  background-color: #dad7f2;
+  padding: 0.5em;
+}
+
+table.failures {
+  width: 100%;
+  -moz-border-radius: 1em;
+}
+
+table.failures th {
+  background-color: #8a87f2;
+  padding: 0.5em;
+  -moz-border-radius: 1em;
+  text-align: center;
+}
+
+table.failures td {
+  background-color: #dad7f2;
+  padding: 0.1em 0.5em;
+  -moz-border-radius: 1em;
+  text-align: center;
+}
+
+table.failures td pre {
+  text-align: left;
 }
 
 div.tryoutOutput {

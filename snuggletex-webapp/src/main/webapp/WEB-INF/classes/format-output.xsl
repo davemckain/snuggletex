@@ -126,7 +126,7 @@ All Rights Reserved
             <ul>
               <li><a class="samples" href="{$context-path}/documentation/latex-samples.html">Web Output Samples</a></li>
               <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
-              <li><a class="tryout" href="{$context-path}/UpConversionDemo">MathML Semantic Up-Conversion Demo</a></li>
+              <li><a class="upConversionDemo" href="{$context-path}/UpConversionDemo">MathML Semantic Up-Conversion Demo</a></li>
             </ul>
 
             <h2>External Links</h2>
