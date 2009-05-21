@@ -72,7 +72,7 @@ public class MathUpConversionToMaximaTests {
             
             /* Up-convert and build DOM */
             DOMOutputOptions domOptions = new DOMOutputOptions();
-            domOptions.setDOMPostProcessor(new UpConvertingPostProcessor());
+            domOptions.getDOMPostProcessors().add(new UpConvertingPostProcessor());
             NodeList nodeList = session.buildDOMSubtree(domOptions);
             
             /* First Node should be MathML element. */

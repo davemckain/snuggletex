@@ -6,7 +6,6 @@
 package uk.ac.ed.ph.snuggletex.upconversion.samples;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionParameters;
@@ -35,8 +34,8 @@ import org.xml.sax.SAXException;
  * (You can do the same with the raw MathML produced by SnuggleTeX as well; you just have to
  * call a {@link MathMLUpConverter#upConvertSnuggleTeXMathML(Document, Map)}) instead of the
  * method for SnuggleTeX. When using SnuggleTeX normally, all of this can be invoked during
- * the snuggling process by registering a {@link UpConvertingPostProcessor} with your
- * {@link DOMOutputOptions#setDOMPostProcessor(DOMPostProcessor)}.)
+ * the snuggling process by adding a {@link UpConvertingPostProcessor} to the List returned
+ * by {@link DOMOutputOptions#getDOMPostProcessors()}.)
  * 
  * <h2>Running Notes</h2>
  * 

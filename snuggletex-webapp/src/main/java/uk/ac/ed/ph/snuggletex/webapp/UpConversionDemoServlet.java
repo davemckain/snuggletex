@@ -170,7 +170,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
          * SnuggleTeX process.)
          */
         MathMLWebPageOptions webOutputOptions = new MathMLWebPageOptions();
-        webOutputOptions.setDOMPostProcessor(new UpConvertingPostProcessor());
+        webOutputOptions.getDOMPostProcessors().add(new UpConvertingPostProcessor());
         webOutputOptions.setMathVariantMapping(true);
         webOutputOptions.setAddingMathAnnotations(true);
         webOutputOptions.setPageType(WebPageType.CROSS_BROWSER_XHTML);

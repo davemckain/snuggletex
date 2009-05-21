@@ -116,7 +116,7 @@ public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
     @Override
     protected DOMOutputOptions createDOMOutputOptions() {
         DOMOutputOptions result = super.createDOMOutputOptions();
-        result.setDOMPostProcessor(upconverter);
+        result.getDOMPostProcessors().add(upconverter);
         return result;
     }
     

@@ -13,7 +13,7 @@ import net.sourceforge.jeuclid.MutableLayoutContext;
 import org.w3c.dom.Document;
 
 /**
- * Trivial callback interface used by {@link JEuclidMathMLConversionVisitor} to determine
+ * Trivial callback interface used by {@link JEuclidMathMLPostProcessor} to determine
  * where to save each generating MathML image and the URL to use in the resulting
  * HTML as it traverses a given DOM {@link Document}.
  * <p>
@@ -21,7 +21,7 @@ import org.w3c.dom.Document;
  * <p>
  * This can be used independently of SnuggleTeX.
  * 
- * @see JEuclidMathMLConversionVisitor
+ * @see JEuclidMathMLPostProcessor
  *
  * @author  David McKain
  * @version $Revision$

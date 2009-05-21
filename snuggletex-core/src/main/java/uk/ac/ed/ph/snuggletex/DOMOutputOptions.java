@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -97,8 +99,8 @@ public class DOMOutputOptions implements Cloneable {
     private boolean mathVariantMapping;
     
     /**
-     * Set to specify your own {@link DOMPostProcessor} that will fix up the raw DOM produced
-     * by SnuggleTeX immediately after it has been built.
+     * List of optional {@link DOMPostProcessor} that will be called in turn to "fix up" or
+     * modify the raw DOM produced by SnuggleTeX immediately after it has been built.
      * <p>
      * One use of this is by registering a {@link DownConvertingPostProcessor}, which will
      * attempt to "down-convert" simple MathML expressions into (X)HTML equivalents.
@@ -111,19 +113,19 @@ public class DOMOutputOptions implements Cloneable {
      * 
      * @see DownConvertingPostProcessor
      */
-    private DOMPostProcessor domPostProcessor;
+    private final List<DOMPostProcessor> domPostProcessors;
     
     private LinkResolver linkResolver;
     
     public DOMOutputOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
+        this.domPostProcessors = new ArrayList<DOMPostProcessor>();
         this.inliningCSS = false;
         this.addingMathAnnotations = false;
         this.inlineCSSProperties = null;
         this.mathMLPrefix = "m";
         this.prefixingMathML = false;
         this.mathVariantMapping = false;
-        this.domPostProcessor = null;
         this.linkResolver = null;
     }
     
@@ -201,14 +203,10 @@ public class DOMOutputOptions implements Cloneable {
     }
     
     
-    public DOMPostProcessor getDOMPostProcessor() {
-        return domPostProcessor;
+    public List<DOMPostProcessor> getDOMPostProcessors() {
+        return domPostProcessors;
     }
     
-    public void setDOMPostProcessor(DOMPostProcessor domPostProcessor) {
-        this.domPostProcessor = domPostProcessor;
-    }
-
 
     public LinkResolver getLinkResolver() {
         return linkResolver;

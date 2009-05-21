@@ -6,7 +6,6 @@
 package uk.ac.ed.ph.snuggletex.upconversion;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -33,8 +32,9 @@ import org.w3c.dom.Document;
  *   <li>Conversion to Content MathML is optionally attempted (assuming PMathML follows certain conventions)</li>
  *   <li>Conversion to Maxima input is optionally attempted (assuming PMathML follows certain conventions)</li>
  * </ul>
- * This can be invoked within the normal SnuggleTeX parsing process using by passing an
- * {@link UpConvertingPostProcessor} via {@link DOMOutputOptions#setDOMPostProcessor(DOMPostProcessor)}.
+ * This can be invoked within the normal SnuggleTeX parsing process using by adding a
+ * {@link UpConvertingPostProcessor} to the List returned by
+ * {@link DOMOutputOptions#getDOMPostProcessors()}.
  * 
  * <h2>Usage Notes</h2>
  * 

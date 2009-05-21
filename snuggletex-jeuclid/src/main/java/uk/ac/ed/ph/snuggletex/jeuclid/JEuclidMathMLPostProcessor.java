@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.jeuclid;
 
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.utilities.MathMLPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
 import java.awt.Dimension;
@@ -18,62 +19,29 @@ import net.sourceforge.jeuclid.converter.Converter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
- * Simple "visitor" class that traverses (part of a) DOM Document, using JEuclid
- * to replace any MathML <tt>math</tt> islands found by an appropriate image rendition.
- * <p>
- * This can be used independently of SnuggleTeX if required.
+ * Extension of {@link MathMLPostProcessor} that uses JEuclid to convert MathML elements into
+ * XHTML + image replacements.
  * 
  * @see MathMLImageSavingCallback
  *
  * @author  David McKain
  * @version $Revision$
  */
-@Deprecated
-public class JEuclidMathMLConversionVisitor {
+public final class JEuclidMathMLPostProcessor extends MathMLPostProcessor {
     
     private final MathMLImageSavingCallback imageSavingCallback;
-    private final Document document;
     
-    /** Count of current <math/> element so as to ensure unique names for replaced files */
-    private int mathmlCounter;
-    
-    public JEuclidMathMLConversionVisitor(final MathMLImageSavingCallback callback, final Document document) {
+    public JEuclidMathMLPostProcessor(final MathMLImageSavingCallback callback) {
         this.imageSavingCallback = callback;
-        this.document = document;
     }
     
-    public void run() {
-        run(document.getDocumentElement());
-    }
-    
-    public void run(Element startElement) {
-        this.mathmlCounter = 0;
-        visitElement(startElement);
-    }
-    
-    protected void visitElement(Element element) {
-        if (Globals.MATHML_NAMESPACE.equals(element.getNamespaceURI()) && element.getLocalName().equals("math")) {
-            replaceMathMLIsland(element);
-        }
-        else {
-            /* Descend into child Nodes */
-            NodeList childNodes = element.getChildNodes();
-            Node childNode;
-            for (int i=0, size=childNodes.getLength(); i<size; i++) {
-                childNode = childNodes.item(i);
-                if (childNode.getNodeType()==Node.ELEMENT_NODE) {
-                    visitElement((Element) childNode);
-                }
-            }
-        }
-    }
-    
-    protected void replaceMathMLIsland(Element mathMLElement) {
-        /* We use JEuclid to create image rendition of Node and replace this element with
-         * an XHTML image link.
+    @Override
+    protected void handleMathMLIsland(final Element inputMathIsland, Document outputDocument,
+            Node outputParentNode, final int mathmlCounter) {
+        /* We use JEuclid to create image rendition of Node, adding some appropriate XHTML to the
+         * outputDocument instead of the original MathML.
          * 
          * First we determine whether we're saving to File (first choice) or OutputStream.
          */
@@ -94,10 +62,10 @@ public class JEuclidMathMLConversionVisitor {
             /* Call up JEuclid, saving to either File or Stream as determine above */
             Converter converter = Converter.getInstance();
             if (imageOutputFile!=null) {
-                imageDimension = converter.convert(mathMLElement, imageOutputFile, contentType, layoutContext);
+                imageDimension = converter.convert(inputMathIsland, imageOutputFile, contentType, layoutContext);
             }
             else {
-                imageDimension = converter.convert(mathMLElement, imageOutputStream, contentType, layoutContext);
+                imageDimension = converter.convert(inputMathIsland, imageOutputStream, contentType, layoutContext);
             }
             if (imageDimension!=null) {
                 /* Success - inform callback */
@@ -117,31 +85,27 @@ public class JEuclidMathMLConversionVisitor {
         /* Next we extract the SnuggleTeX annotation within the MathML element, if applicable, which contains the
          * original LaTeX input for this math region. This is used to create an "alt" attribute.
          */
-        String snuggleTeXEncoding = SnuggleUtilities.extractSnuggleTeXAnnotation(mathMLElement);
+        String snuggleTeXEncoding = SnuggleUtilities.extractSnuggleTeXAnnotation(inputMathIsland);
         if (snuggleTeXEncoding!=null) {
             snuggleTeXEncoding = snuggleTeXEncoding
                 .replaceAll("%\\s+", "") /* Strip LaTeX comments */
                 .replaceAll("\\s+", " "); /* Normalise whitespace */
         }
         
-        /* Next we replace the <math/> element with a <span> or <div> to house its image replacement. */
-        Node parentNode = mathMLElement.getParentNode();
-        boolean isBlock = mathMLElement.getAttribute("display").equals("block");
-        Element replacementContainer = document.createElementNS(Globals.XHTML_NAMESPACE, isBlock ? "div" : "span");
-        replacementContainer.setAttribute("class", "mathml-math");
-        parentNode.replaceChild(replacementContainer, mathMLElement);
+        /* Next we add <div> or <span> to the output Document instead of the input <math/> element */
+        boolean isBlock = inputMathIsland.getAttribute("display").equals("block");
+        Element divOrSpan = outputDocument.createElementNS(Globals.XHTML_NAMESPACE, isBlock ? "div" : "span");
+        divOrSpan.setAttribute("class", "mathml-math");
+        outputParentNode.appendChild(divOrSpan);
         
-        /* Replace MathML with XHTML <img/> element */
-        Element imgElement = document.createElementNS(Globals.XHTML_NAMESPACE, "img");
+        /* Then put an <img/> inside the <div> or <span> */
+        Element imgElement = outputDocument.createElementNS(Globals.XHTML_NAMESPACE, "img");
         imgElement.setAttribute("src", imageSavingCallback.getImageURL(mathmlCounter));
         imgElement.setAttribute("width", Integer.toString(imageDimension.width));
         imgElement.setAttribute("height", Integer.toString(imageDimension.height));
         if (snuggleTeXEncoding!=null) {
             imgElement.setAttribute("alt", snuggleTeXEncoding);
         }
-        replacementContainer.appendChild(imgElement);
-        
-        /* Increment count of MathML islands for next time */
-        mathmlCounter++;
+        divOrSpan.appendChild(imgElement);
     }
 }

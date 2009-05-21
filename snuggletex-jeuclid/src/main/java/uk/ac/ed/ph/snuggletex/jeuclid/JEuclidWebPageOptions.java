@@ -13,6 +13,7 @@ import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
  * @author  David McKain
  * @version $Revision$
  */
+@Deprecated
 public final class JEuclidWebPageOptions extends BaseWebPageOptions {
     
     /** Callback to use when saving out any images produced by the process. */

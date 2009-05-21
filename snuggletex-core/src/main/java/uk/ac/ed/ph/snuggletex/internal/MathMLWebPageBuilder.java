@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
@@ -42,31 +43,38 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
     
     @Override
     protected void fixOptions() {
-        /* 1. If MathPlayer HTML output is specified, then:
-         * 
-         * a. MathML MUST be prefixed
-         * b. We want to generate plain old HTML in no namespace
-         * c. We won't allow client-side XSLT either */
-        if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
+        WebPageType webPageType = options.getPageType();
+        ConstraintUtilities.ensureNotNull(webPageType, "pageType");
+        if (webPageType==WebPageType.MATHPLAYER_HTML) {
             options.setPrefixingMathML(true);
             options.setClientSideXSLTStylesheetURLs(StringUtilities.EMPTY_STRING_ARRAY);
         }
+        else if (webPageType==WebPageType.PROCESSED_HTML) {
+            options.setClientSideXSLTStylesheetURLs(StringUtilities.EMPTY_STRING_ARRAY);
+        }
         /* 2. Set content type */
-        if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
+        if (webPageType==WebPageType.MATHPLAYER_HTML || webPageType==WebPageType.PROCESSED_HTML) {
             options.setContentType("text/html");
         }
         else {
             options.setContentType("application/xhtml+xml");
         }
         /* 3. Set serialization method */
+        /* FIXME: This ALWAYS overrides whatever the user has chosen. It might be nicer to
+         * give them some choice and fudge things that aren't suitable.
+         */
         SerializationMethod serializationMethod = null;
-        switch (options.getPageType()) {
+        switch (webPageType) {
             case MOZILLA:
             case CROSS_BROWSER_XHTML:
                 serializationMethod = SerializationMethod.XHTML;
                 break;
                 
             case MATHPLAYER_HTML:
+                serializationMethod = SerializationMethod.HTML;
+                break;
+                
+            case PROCESSED_HTML:
                 serializationMethod = SerializationMethod.HTML;
                 break;
                 
@@ -218,7 +226,7 @@ public final class MathMLWebPageBuilder extends AbstractWebPageBuilder<MathMLWeb
         }
         
         /* Set language either as 'xml:lang' or plain old 'lang' */
-        if (options.getPageType()==WebPageType.MATHPLAYER_HTML) {
+        if (pageType==WebPageType.MATHPLAYER_HTML || pageType==WebPageType.PROCESSED_HTML) {
             html.setAttribute("lang", options.getLanguage());
         }
         else {

@@ -38,29 +38,47 @@ public final class DOMBuildingController {
     
     public void buildDOMSubtree(final Element targetRoot, final List<FlowToken> fixedTokens)
             throws SnuggleParseException {
-        DOMPostProcessor domPostProcessor = options.getDOMPostProcessor();
-        if (domPostProcessor!=null) {
-            /* We'll build into a "work" Document first, then apply the post-processor and then
-             * finally adopt all of the resulting Nodes as children of the targetRoot
+        List<DOMPostProcessor> domPostProcessors = options.getDOMPostProcessors();
+        if (!domPostProcessors.isEmpty()) {
+            /* We run through each Post-Processor in turn, building a temporary "outputDocument"
+             * and then using it as an input for the next stage. The final outputDocument is
+             * used to decide what gets added into the target Document.
              */
             Document workDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
             Element workRoot = workDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root");
             workDocument.appendChild(workRoot);
-            
-            /* Do raw DOM Building */
-            DOMBuilder domBuilder = new DOMBuilder(sessionContext, workRoot, options);
-            domBuilder.buildDOMSubtree(fixedTokens);
-            
-            /* Now let post-processor do its thing */
-            Document finalDocument = domPostProcessor.postProcessDOM(workDocument, options, sessionContext.getStylesheetManager());
-            
-            /* Pull the children of the root element in the resulting Document into the targetRoot */
-            Element resultRoot = finalDocument.getDocumentElement();
-            NodeList childNodes = resultRoot.getChildNodes();
-            Node childNode;
-            for (int i=0, size=childNodes.getLength(); i<size; i++) {
-                childNode = childNodes.item(0); /* (Adopting each child moves subsequent ones back!) */
-                targetRoot.appendChild(targetRoot.getOwnerDocument().adoptNode(childNode));
+            for (int processorIndex=0, processorCount=domPostProcessors.size(); processorIndex<processorCount; processorIndex++) {
+                DOMPostProcessor domPostProcessor = domPostProcessors.get(processorIndex);
+                
+                /* Do raw DOM Building */
+                DOMBuilder domBuilder = new DOMBuilder(sessionContext, workRoot, options);
+                domBuilder.buildDOMSubtree(fixedTokens);
+                
+                /* Now let post-processor do its thing */
+                Document outputDocument = domPostProcessor.postProcessDOM(workDocument, options, sessionContext.getStylesheetManager());
+                Element adoptRoot;
+                
+                if (processorIndex==processorCount-1) {
+                    /* This is the final step, so add to targetRoot */
+                    adoptRoot = targetRoot;
+                }
+                else {
+                    /* Still go more steps to do, so we will be reusing workRoot. */
+                    adoptRoot = workRoot;
+                    /* But need to remove existing child Nodes first */
+                    NodeList toDelete = workRoot.getChildNodes();
+                    for (int i=toDelete.getLength()-1; i>=0; i--) {
+                        workRoot.removeChild(toDelete.item(i));
+                    }
+                }
+                /* Adopt nodes from outputDocument to adoptRoot */
+                Element resultRoot = outputDocument.getDocumentElement();
+                NodeList childNodes = resultRoot.getChildNodes();
+                Node childNode;
+                for (int nodeIndex=0, size=childNodes.getLength(); nodeIndex<size; nodeIndex++) {
+                    childNode = childNodes.item(0); /* (Adopting each child moves subsequent ones back!) */
+                    adoptRoot.appendChild(adoptRoot.getOwnerDocument().adoptNode(childNode));
+                }
             }
         }
         else {

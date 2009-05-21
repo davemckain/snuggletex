@@ -97,6 +97,16 @@ public final class MathMLWebPageOptions extends BaseWebPageOptions {
          * good cross-browser results.
          */
         CLIENT_SIDE_XSLT_STYLESHEET,
+        
+        /**
+         * HTML deemed suitable for use by any User Agent. This is delivered as <tt>text/html</tt>.
+         * <p>
+         * You will have to use a suitable {@link DOMPostProcessor} to convert any MathML islands
+         * into other forms. (E.g. replace by an applet, replace by images, ...)
+         * <p>
+         * This is what the SnuggleTeX JEuclid extension hooks into to do its magic. 
+         */
+        PROCESSED_HTML,
 
         ;
     }

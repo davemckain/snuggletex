@@ -6,13 +6,13 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
-import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions;
+import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidMathMLPostProcessor;
 import uk.ac.ed.ph.snuggletex.jeuclid.SimpleMathMLImageSavingCallback;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -66,13 +66,12 @@ public final class MathInputToImageServlet extends BaseServlet {
         ImageSavingCallback callback = new ImageSavingCallback(tempFile);
         try {
             /* Set up appropriate web output options */
-            JEuclidWebPageOptions options = new JEuclidWebPageOptions();
-            options.setSerializationMethod(SerializationMethod.XHTML);
+            MathMLWebPageOptions options = new MathMLWebPageOptions();
             options.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
             options.setMathVariantMapping(true);
             options.setAddingMathAnnotations(false);
             options.setIndenting(false);
-            options.setImageSavingCallback(callback);
+            options.getDOMPostProcessors().add(new JEuclidMathMLPostProcessor(callback));
             
             /* Generate web page result, which we'll actually throw away! The important side effect
              * here is that an image should have been saved!

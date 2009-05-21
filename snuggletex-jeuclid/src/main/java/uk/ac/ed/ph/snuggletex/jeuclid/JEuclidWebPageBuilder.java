@@ -33,6 +33,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
+@Deprecated
 public final class JEuclidWebPageBuilder extends AbstractWebPageBuilder<JEuclidWebPageOptions> {
     
     public JEuclidWebPageBuilder(final SessionContext sessionContext, final JEuclidWebPageOptions options) {

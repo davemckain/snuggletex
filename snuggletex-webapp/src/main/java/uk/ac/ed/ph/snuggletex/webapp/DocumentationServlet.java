@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.BaseWebPageOptions;
+import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
@@ -13,11 +13,10 @@ import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.BaseWebPageOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
-import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions;
+import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidMathMLPostProcessor;
 import uk.ac.ed.ph.snuggletex.jeuclid.SimpleMathMLImageSavingCallback;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
@@ -136,9 +135,10 @@ public final class DocumentationServlet extends BaseServlet {
         /* Determines which extensions to use for standard web page outputs */
         this.extensionToWebPageTypeMap = new HashMap<String, WebPageType>();
         extensionToWebPageTypeMap.put("xhtml", WebPageType.MOZILLA);
-        extensionToWebPageTypeMap.put("htm", WebPageType.MATHPLAYER_HTML);
         extensionToWebPageTypeMap.put("xml", WebPageType.UNIVERSAL_STYLESHEET);
         extensionToWebPageTypeMap.put("cxml", WebPageType.CROSS_BROWSER_XHTML);
+        extensionToWebPageTypeMap.put("htm", WebPageType.MATHPLAYER_HTML);
+        extensionToWebPageTypeMap.put("html", WebPageType.PROCESSED_HTML);
     }
     
     @Override
@@ -227,21 +227,16 @@ public final class DocumentationServlet extends BaseServlet {
         else if (extension.equals("png")) {
             throw new SnuggleLogicException("PNG generation is done as a side-effect so shouldn't have been requested directly");
         }
-        else if (extension.equals("html")) {
-            /* Use JEuclid web page builder, with down-conversion */
-            String imageOutputDirectortyResourcePath = resourceBaseName;
-            String imageOutputBaseUrl = contextPath + servletPath + resourceBaseName;
-            resultFile = generateSnuggledFile(texSourceStream, texSourceResourcePath, null,
-                    contextPath, resourcePath, imageOutputDirectortyResourcePath, imageOutputBaseUrl);
-        }
         else {
-            /* Use SnuggleTeX standard web page builder */
+            /* Use SnuggleTeX standard web page builder (possibly with JEuclid stuff) */
             WebPageType webPageType = extensionToWebPageTypeMap.get(extension);
             if (webPageType==null) {
                 throw new ServletException("Resource extension " + extension + " not understood");
             } 
+            String imageOutputDirectortyResourcePath = resourceBaseName;
+            String imageOutputBaseUrl = contextPath + servletPath + resourceBaseName;
             resultFile = generateSnuggledFile(texSourceStream, texSourceResourcePath, webPageType,
-                    contextPath, resourcePath, null, null);
+                    contextPath, resourcePath, imageOutputDirectortyResourcePath, imageOutputBaseUrl);
         }
         return resultFile;
     }
@@ -258,33 +253,33 @@ public final class DocumentationServlet extends BaseServlet {
         session.parseInput(new SnuggleInput(texSourceStream, "Web resource at " + texSourceResourcePath));
         
         /* Work out SnuggleTeX options */
-        BaseWebPageOptions options;
-        if (imageOutputDirectoryResourcePath!=null && imageOutputBaseURL!=null) {
+        MathMLWebPageOptions options = new MathMLWebPageOptions();
+        options.setMathVariantMapping(true);
+        options.setAddingMathAnnotations(true);
+        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
+        options.setIndenting(true);
+        options.setPageType(webPageType);
+        List<DOMPostProcessor> postProcessors = options.getDOMPostProcessors();
+        if (webPageType==WebPageType.PROCESSED_HTML) {
             /* Create folder for storing MathML images. */
             File imageOutputDirectory = IOUtilities.ensureDirectoryCreated(mapResourcePath(imageOutputDirectoryResourcePath));
             ImageSavingCallback callback = new ImageSavingCallback(imageOutputDirectory, imageOutputBaseURL);
-            
-            JEuclidWebPageOptions jeuclidOptions = new JEuclidWebPageOptions();
-            setupCommonWebOptions(jeuclidOptions);
-            jeuclidOptions.setDOMPostProcessor(new DownConvertingPostProcessor());
-            jeuclidOptions.setSerializationMethod(SerializationMethod.XHTML);
-            jeuclidOptions.setImageSavingCallback(callback);
-            options = jeuclidOptions;
+ 
+            /* Add DownConverter and JEuclid step */
+            postProcessors.add(new DownConvertingPostProcessor());
+            postProcessors.add(new JEuclidMathMLPostProcessor(callback));
         }
         else {
-            MathMLWebPageOptions mathmlOptions = new MathMLWebPageOptions();
-            setupCommonWebOptions(mathmlOptions);
-            mathmlOptions.setPageType(webPageType);
-            mathmlOptions.setDOMPostProcessor(new UpConvertingPostProcessor());
-            
-            /* Point to our own version of the USS if required */
-            if (webPageType==WebPageType.UNIVERSAL_STYLESHEET) {
-                mathmlOptions.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
-            }
-            options = mathmlOptions;
+            /* Add UpConverter */
+            postProcessors.add(new UpConvertingPostProcessor());
         }
         
-        /* Set up stylesheeet to format the output */
+        /* Point to our own version of the USS if required */
+        if (webPageType==WebPageType.UNIVERSAL_STYLESHEET) {
+            options.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
+        }
+        
+        /* Set up stylesheet to format the output */
         Transformer stylesheet = getStylesheet(FORMAT_OUTPUT_XSLT_URI);
         stylesheet.setParameter("context-path", contextPath);
         stylesheet.setParameter("page-type", webPageType!=null ? webPageType.name() : null);
@@ -308,13 +303,6 @@ public final class DocumentationServlet extends BaseServlet {
         return outputFile;
     }
     
-    private void setupCommonWebOptions(BaseWebPageOptions options) {
-        options.setMathVariantMapping(true);
-        options.setAddingMathAnnotations(true);
-        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        options.setIndenting(true);
-    }
-
     /**
      * Implementation of {@link SimpleMathMLImageSavingCallback} that stores images in the
      * given output directory with the given base URL, using a very simple naming scheme.

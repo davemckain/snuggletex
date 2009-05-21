@@ -38,8 +38,10 @@ public interface DOMPostProcessor {
      * <p>
      * You should create a new Document and return it. The children of the root element will
      * end up being the Nodes added to the final DOM.
+     * <p>
+     * You MUST NOT modify the workDocument that is passed to you.
      */
-    Document postProcessDOM(Document workDocument, DOMOutputOptions options,
+    Document postProcessDOM(final Document workDocument, final DOMOutputOptions options,
             StylesheetManager stylesheetManager);
 
 }
