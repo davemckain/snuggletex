@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.OutputStream;
 
 import net.sourceforge.jeuclid.MutableLayoutContext;
 import net.sourceforge.jeuclid.converter.Converter;
@@ -70,27 +71,46 @@ public class JEuclidMathMLConversionVisitor {
     }
     
     protected void replaceMathMLIsland(Element mathMLElement) {
-        /* First we use JEuclid to create image rendition of Node and replace this element with
+        /* We use JEuclid to create image rendition of Node and replace this element with
          * an XHTML image link.
+         * 
+         * First we determine whether we're saving to File (first choice) or OutputStream.
          */
-        File imageFile = imageSavingCallback.getImageOutputFile(mathmlCounter);
+        File imageOutputFile = imageSavingCallback.getImageOutputFile(mathmlCounter);
+        Object imageOutputObject = imageOutputFile;
+        OutputStream imageOutputStream = null;
+        if (imageOutputFile==null) {
+            imageOutputStream = imageSavingCallback.getImageOutputStream(mathmlCounter);
+            imageOutputObject = imageOutputStream;
+            if (imageOutputStream==null) {
+                throw new IllegalArgumentException("Both getImageOutputFile() and getImageOutputStream() returned null");
+            }
+        }
         String contentType = imageSavingCallback.getImageContentType(mathmlCounter);
         MutableLayoutContext layoutContext = imageSavingCallback.getLayoutContext(mathmlCounter);
         Dimension imageDimension = null;
         try {
-            imageDimension = Converter.getInstance().convert(mathMLElement, imageFile, contentType, layoutContext);
-            if (imageDimension!=null) {
-                /* Let callback know that image has been saved successfully */
-                imageSavingCallback.imageSavingSucceeded(imageFile, mathmlCounter, contentType);
+            /* Call up JEuclid, saving to either File or Stream as determine above */
+            Converter converter = Converter.getInstance();
+            if (imageOutputFile!=null) {
+                imageDimension = converter.convert(mathMLElement, imageOutputFile, contentType, layoutContext);
             }
             else {
+                imageDimension = converter.convert(mathMLElement, imageOutputStream, contentType, layoutContext);
+            }
+            if (imageDimension!=null) {
+                /* Success - inform callback */
+                imageSavingCallback.imageSavingSucceeded(imageOutputObject, mathmlCounter, contentType);
+            }
+            else {
+                /* Failed */
                 imageDimension = new Dimension(0, 0);
-                imageSavingCallback.imageSavingFailed(imageFile, mathmlCounter, contentType, null);
+                imageSavingCallback.imageSavingFailed(imageOutputObject, mathmlCounter, contentType, null);
             }
         }
         catch (Exception e) {
             imageDimension = new Dimension(0, 0);
-            imageSavingCallback.imageSavingFailed(imageFile, mathmlCounter, contentType, e);
+            imageSavingCallback.imageSavingFailed(imageOutputObject, mathmlCounter, contentType, e);
         }
 
         /* Next we extract the SnuggleTeX annotation within the MathML element, if applicable, which contains the

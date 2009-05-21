@@ -6,10 +6,11 @@
 package uk.ac.ed.ph.snuggletex.jeuclid;
 
 import java.io.File;
-
-import org.w3c.dom.Document;
+import java.io.OutputStream;
 
 import net.sourceforge.jeuclid.MutableLayoutContext;
+
+import org.w3c.dom.Document;
 
 /**
  * Trivial callback interface used by {@link JEuclidMathMLConversionVisitor} to determine
@@ -42,13 +43,24 @@ public interface MathMLImageSavingCallback {
     String getImageContentType(int mathmlCounter);
     
     /**
-     * Implement to return the {@link File} that the given image should be saved to. This
-     * must be writable.
+     * Implement if you want the resulting image to be written to a {@link File} of your choice.
+     * Return null if you want the image to be written to the result of
+     * {@link #getImageOutputStream(int)} instead.
      * 
      * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
      */
     File getImageOutputFile(int mathmlCounter);
+    
+    /**
+     * Implement this if you want the resulting image to be written to an {@link OutputStream} of
+     * your choice. The method {@link #getImageOutputFile(int)} is checked first, so must return
+     * null in this case.
+     * 
+     * @param mathmlCounter identifies the position of the image within the document being processed,
+     *   which can be used to ensure unique file names.
+     */
+    OutputStream getImageOutputStream(int mathmlCounter);
     
     /**
      * Implement to return the URL String that will be put into the <tt>img</tt> <tt>src</tt>
@@ -72,21 +84,23 @@ public interface MathMLImageSavingCallback {
      * Called back once a MathML image has been saved successfully. Implementors can do anything they
      * need to do at this point.
      * 
-     * @param imageFile saved image File
+     * @param imageFileOrOutputStream {@link File} or {@link OutputStream} written
      * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
      * @param contentType content type of the saved image File
      */
-    void imageSavingSucceeded(File imageFile, int mathmlCounter, String contentType);
+    void imageSavingSucceeded(Object imageFileOrOutputStream, int mathmlCounter, String contentType);
     
     /**
      * Called back if MathML image could not be saved for some reason.
      * 
-     * @param imageFile saved image File
+     * @param imageFileOrOutputStream {@link File} or {@link OutputStream} that would have
+     *   been written if successful
      * @param mathmlCounter identifies the position of the image within the document being processed,
      *   which can be used to ensure unique file names.
      * @param contentType content type of the saved image File
      * @param exception cause of the failure, which may be null
      */
-    void imageSavingFailed(File imageFile, int mathmlCounter, String contentType, Throwable exception);
+    void imageSavingFailed(Object imageFileOrOutputStream, int mathmlCounter, String contentType,
+            Throwable exception);
 }

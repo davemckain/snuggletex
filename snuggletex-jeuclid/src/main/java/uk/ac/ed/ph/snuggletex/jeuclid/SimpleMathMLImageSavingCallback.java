@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.jeuclid;
 
 import java.io.File;
+import java.io.OutputStream;
 
 import net.sourceforge.jeuclid.MutableLayoutContext;
 import net.sourceforge.jeuclid.context.LayoutContextImpl;
@@ -74,10 +75,12 @@ public abstract class SimpleMathMLImageSavingCallback implements MathMLImageSavi
     
     public abstract File getImageOutputFile(int mathmlCounter);
     
+    public abstract OutputStream getImageOutputStream(int mathmlCounter);
+    
     public abstract String getImageURL(int mathmlCounter);
     
-    public void imageSavingSucceeded(File imageFile, int mathmlCounter, String contentType) {
+    public void imageSavingSucceeded(Object imageFileOrOutputStream, int mathmlCounter,
+            String contentType) {
         /* (Do nothing by default) */
     }
-
 }
