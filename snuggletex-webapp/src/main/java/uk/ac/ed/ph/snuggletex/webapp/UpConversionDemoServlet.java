@@ -48,7 +48,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
     private static final long serialVersionUID = 4376587500238353176L;
     
     /** Logger so that we can log what users are trying out to allow us to improve things */
-    private Logger log = LoggerFactory.getLogger(UpConversionDemoServlet.class);
+    private static Logger logger = LoggerFactory.getLogger(UpConversionDemoServlet.class);
     
     /** Default input to use when first showing the page */
     private static final String DEFAULT_INPUT = "\\frac{2x-y^2}{\\sin xy(x-2)}";
@@ -96,7 +96,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
         domOptions.setAddingMathAnnotations(true);
-        domOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
+        domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
         session.buildDOMSubtree(resultRoot);
         
         /* See if parsing succeeded and generated a single <math/> element. We'll only continue
@@ -148,15 +148,15 @@ public final class UpConversionDemoServlet extends BaseServlet {
         /* Log things nicely */
         if (rawInputLaTeX!=null) {
             if (errors.isEmpty()) {
-                log.info("Input: {}", inputLaTeX);
-                log.info("Final MathML: {}", parallelMathML);
+                logger.info("Input: {}", inputLaTeX);
+                logger.info("Final MathML: {}", parallelMathML);
             }
             else {
-                log.warn("Input: {}", inputLaTeX);
-                log.warn("Final MathML: {}", parallelMathML);
-                log.warn("Error count: {}", errors.size());
+                logger.warn("Input: {}", inputLaTeX);
+                logger.warn("Final MathML: {}", parallelMathML);
+                logger.warn("Error count: {}", errors.size());
                 for (InputError error : errors) {
-                    log.warn("Error: " + MessageFormatter.formatErrorAsString(error));
+                    logger.warn("Error: " + MessageFormatter.formatErrorAsString(error));
                 }
             }
         }
