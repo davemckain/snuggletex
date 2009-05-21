@@ -22,11 +22,10 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:sho="http://www.ph.ed.ac.uk/snuggletex/higher-order"
   xmlns:local="http://www.ph.ed.ac.uk/snuggletex/pmathml-enhancer"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs m s sho local"
+  exclude-result-prefixes="xs m s local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <xsl:import href="common.xsl"/>
