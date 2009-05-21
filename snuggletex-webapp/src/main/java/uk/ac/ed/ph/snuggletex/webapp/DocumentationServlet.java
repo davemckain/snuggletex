@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -334,19 +335,24 @@ public final class DocumentationServlet extends BaseServlet {
         }
         
         @Override
+        public OutputStream getImageOutputStream(int mathmlCounter) {
+            /* Not used here */
+            return null;
+        }
+        
+        @Override
         public String getImageURL(int mathmlCounter) {
             return imageOutputBaseURL + "/" + getImageName(mathmlCounter);
         }
-        
-        /**
-         * We just append the page base name with the image number, which will be unique
-         * so is fine for us.
-         */
+ 
         private String getImageName(int mathmlCounter) {
+            /* We just append the page base name with the image number, which will be unique
+             * so is fine for us.
+             */
             return "mathml-" + mathmlCounter + ".png";
         }
         
-        public void imageSavingFailed(File imageFile, int mathmlCounter, String contentType,
+        public void imageSavingFailed(Object imageOutputObject, int mathmlCounter, String contentType,
                 Throwable exception) {
             logger.warn("Image saving failed", exception);
         }
