@@ -5,7 +5,7 @@ $Id$
 
 Overrides format-output.xsl to add in functionality for
 demonstrating LaTeX -> Presentation MathML -> Content MathML -> Maxima
-up-covnersion process.
+up-conversion process.
 
 Copyright (c) 2009 University of Edinburgh.
 All Rights Reserved
