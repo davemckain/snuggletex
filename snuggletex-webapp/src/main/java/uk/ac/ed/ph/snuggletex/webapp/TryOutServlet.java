@@ -38,7 +38,7 @@ public final class TryOutServlet extends BaseServlet {
     private static final long serialVersionUID = 4376587500238353176L;
     
     /** Logger so that we can log what users are trying out to allow us to improve things */
-    private Logger log = LoggerFactory.getLogger(TryOutServlet.class);
+    private Logger logger = LoggerFactory.getLogger(TryOutServlet.class);
     
     /** Location of XSLT controlling page layout */
     public static final String TRYOUT_XSLT_LOCATION = "classpath:/tryout.xsl";
@@ -72,7 +72,7 @@ public final class TryOutServlet extends BaseServlet {
         }
         
         /* Parse the LaTeX */
-        SnuggleEngine engine = new SnuggleEngine();
+        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput(inputLaTeX, "Form Input");
         session.parseInput(input);
@@ -98,15 +98,15 @@ public final class TryOutServlet extends BaseServlet {
         if (rawInputLaTeX!=null) {
             List<InputError> errors = session.getErrors();
             if (errors.isEmpty()) {
-                log.info("Input:  {}", inputLaTeX);
-                log.info("Output: {}", xmlString);
+                logger.info("Input:  {}", inputLaTeX);
+                logger.info("Output: {}", xmlString);
             }
             else {
-                log.warn("Input:  {}" + inputLaTeX);
-                log.warn("Output: {}", xmlString);
-                log.warn("Errors: #{}", errors.size());
+                logger.warn("Input:  {}" + inputLaTeX);
+                logger.warn("Output: {}", xmlString);
+                logger.warn("Errors: #{}", errors.size());
                 for (InputError error : errors) {
-                    log.warn("Error:  " + MessageFormatter.formatErrorAsString(error));
+                    logger.warn("Error:  " + MessageFormatter.formatErrorAsString(error));
                 }
             }
         }

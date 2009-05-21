@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ContextInitialiser implements ServletContextListener {
     
-    private static final Logger log = LoggerFactory.getLogger(ContextInitialiser.class);
+    private static final Logger logger = LoggerFactory.getLogger(ContextInitialiser.class);
     
     public static final String CACHE_XSLT_PROPERTY_NAME = "caching.xslt";
     
@@ -42,7 +42,7 @@ public final class ContextInitialiser implements ServletContextListener {
         /* Create appropriate implementation of StylesheetCache, as specified by init param */
         boolean cacheXSLT = "true".equals(servletContext.getInitParameter(CACHE_XSLT_PROPERTY_NAME));
         StylesheetCache stylesheetCache = cacheXSLT ? new SimpleStylesheetCache() : new DoNothingStylesheetCache();
-        log.info("Created new StylesheetCache of type " + stylesheetCache.getClass());
+        logger.info("Created new StylesheetCache of type " + stylesheetCache.getClass());
         
         /* Create various other shared resources */
         servletContext.setAttribute(STYLESHEET_CACHE_ATTRIBUTE_NAME, stylesheetCache);
@@ -53,11 +53,11 @@ public final class ContextInitialiser implements ServletContextListener {
                 return XMLUtilities.createSaxonTransformerFactory();
             }
         });
-        log.info("Context initialised");
+        logger.info("Context initialised");
     }
     
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        log.info("Context destroyed");
+        logger.info("Context destroyed");
     }
 
 }
