@@ -234,7 +234,7 @@ public final class MathMLUtilities {
         
         /* Look for semantics child then annotation child with encoding set appropriately */
         Node search = mathElement.getFirstChild();
-        if (!isMathMLElement(search, "semantics")) {
+        if (search==null || !isMathMLElement(search, "semantics")) {
             /* Didn't get <semantics/> as first and only child so not parallel markup */
             return null;
         }
@@ -276,7 +276,7 @@ public final class MathMLUtilities {
         
         /* Look for semantics child then annotation child with encoding set appropriately */
         Node search = mathElement.getFirstChild();
-        if (!isMathMLElement(search, "semantics")) {
+        if (search==null || !isMathMLElement(search, "semantics")) {
             /* Didn't get <semantics/> as first and only child so not parallel markup */
             return null;
         }
@@ -339,7 +339,7 @@ public final class MathMLUtilities {
          */
         /* Look for semantics child then annotation child with encoding set appropriately */
         Node search = mathmlElement.getFirstChild();
-        if (!isMathMLElement(search, "semantics")) {
+        if (search==null || !isMathMLElement(search, "semantics")) {
             /* Didn't get <semantics/> as first and only child */
             return null;
         }
