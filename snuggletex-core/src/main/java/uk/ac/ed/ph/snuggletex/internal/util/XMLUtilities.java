@@ -186,16 +186,18 @@ public final class XMLUtilities {
      * will be a well-formed XML String.)
      *
      * @param node DOM Node to serialize.
+     * @param encoding desired encoding, if null then UTF-8 is used.
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
-    public static String serializeNode(final Node node, final boolean indent,
+    public static String serializeNode(final Node node, final String encoding, final boolean indent,
             final boolean omitXMLDeclaration) {
         StringWriter resultWriter = new StringWriter();
         try {
             Transformer serializer = createJAXPTransformerFactory().newTransformer();
             serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
+            serializer.setOutputProperty(OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8");
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
         }
         catch (Exception e) {

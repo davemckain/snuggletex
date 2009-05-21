@@ -56,9 +56,20 @@ public final class MathMLUtilities {
      * @param document DOM document to serialize
      */
     public static String serializeDocument(final Document document) {
-        return serializeNode(document, true, true);
+        return serializeNode(document, null, true, true);
     }
     
+    /**
+     * Convenience method that serializes the given DOM Document as a String, using the
+     * specified encoding, indenting the results and omitting the XML declaration,
+     * which is a reasonable way of serializing a MathML document.
+     *
+     * @param document DOM document to serialize
+     * @param encoding desired encoding, null is interpreted as UTF-8.
+     */
+    public static String serializeDocument(final Document document, final String encoding) {
+        return serializeNode(document, encoding, true, true);
+    }
     /**
      * Convenience method that serializes the given DOM Document as a String (encoded in UTF-8).
      * <p>
@@ -71,7 +82,24 @@ public final class MathMLUtilities {
      */
     public static String serializeDocument(final Document document, final boolean indent,
             final boolean omitXMLDeclaration) {
-        return serializeNode(document, indent, omitXMLDeclaration);
+        return serializeNode(document, null, indent, omitXMLDeclaration);
+    }
+    
+    /**
+     * Convenience method that serializes the given DOM Document as a String, using the
+     * specified encoding.
+     * <p>
+     * (This can be used in more general cases than MathML, through experienced programmers
+     * may want more control over what happens here.)
+     *
+     * @param document DOM element to serialize
+     * @param encoding desired encoding, null is interpreted as UTF-8.
+     * @param indent whether to indent the results or not
+     * @param omitXMLDeclaration whether to omit the XML declaration or not.
+     */
+    public static String serializeDocument(final Document document, final String encoding,
+            final boolean indent, final boolean omitXMLDeclaration) {
+        return serializeNode(document, encoding, indent, omitXMLDeclaration);
     }
     
     /**
@@ -82,7 +110,19 @@ public final class MathMLUtilities {
      * @param element DOM element to serialize
      */
     public static String serializeElement(final Element element) {
-        return serializeNode(element, true, true);
+        return serializeNode(element, null, true, true);
+    }
+    
+    /**
+     * Convenience method that serializes the given DOM Element as a String, using
+     * the given encoding, indenting the results and omitting the XML declaration,
+     * which is a reasonable way of serializing MathML.
+     *
+     * @param element DOM element to serialize
+     * @param encoding desired encoding, null is interpreted as UTF-8.
+     */
+    public static String serializeElement(final Element element, final String encoding) {
+        return serializeNode(element, encoding, true, true);
     }
     
     /**
@@ -97,7 +137,24 @@ public final class MathMLUtilities {
      */
     public static String serializeElement(final Element element, final boolean indent,
             final boolean omitXMLDeclaration) {
-        return serializeNode(element, indent, omitXMLDeclaration);
+        return serializeNode(element, null, indent, omitXMLDeclaration);
+    }
+    
+    /**
+     * Convenience method that serializes the given DOM Element as a String, using
+     * the given encoding
+     * <p>
+     * (This can be used in more general cases than MathML, through experienced programmers
+     * may want more control over what happens here.)
+     *
+     * @param element DOM element to serialize
+     * @param encoding desired encoding, null is interpreted as UTF-8.
+     * @param indent whether to indent the results or not
+     * @param omitXMLDeclaration whether to omit the XML declaration or not.
+     */
+    public static String serializeElement(final Element element, final String encoding,
+            final boolean indent, final boolean omitXMLDeclaration) {
+        return serializeNode(element, encoding, indent, omitXMLDeclaration);
     }
     
     /**
@@ -107,9 +164,9 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
-    private static String serializeNode(final Node node, final boolean indent,
-            final boolean omitXMLDeclaration) {
-        return XMLUtilities.serializeNode(node, indent, omitXMLDeclaration);
+    private static String serializeNode(final Node node, final String encoding,
+            final boolean indent, final boolean omitXMLDeclaration) {
+        return XMLUtilities.serializeNode(node, encoding, indent, omitXMLDeclaration);
     }
     
     //---------------------------------------------------------------------
