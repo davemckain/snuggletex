@@ -70,7 +70,15 @@ All Rights Reserved
   </servlet>
   <servlet>
     <description>
-      Servlet converting simple MathInput LaTeX inputs to a PNG image
+      Servlet converting simple Math mode LaTeX input to a Web Page
+    </description>
+    <servlet-name>MathInputDemoServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.MathInputDemoServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>
+      Servlet converting simple Math mode LaTeX inputs to a PNG image
     </description>
     <servlet-name>MathInputToImageServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.MathInputToImageServlet</servlet-class>
@@ -93,8 +101,8 @@ All Rights Reserved
     <url-pattern>/tryout.xml</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>TryOutServlet</servlet-name>
-    <url-pattern>/tryout.xml</url-pattern>
+    <servlet-name>MathInputDemoServlet</servlet-name>
+    <url-pattern>/MathInputDemo</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MathInputToImageServlet</servlet-name>
@@ -104,5 +112,4 @@ All Rights Reserved
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <url-pattern>/UpConversionDemo</url-pattern>
   </servlet-mapping>
-
 </web-app>

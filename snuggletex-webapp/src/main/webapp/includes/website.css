@@ -97,6 +97,7 @@ body#verbatimMode a.verbatimMode,
 body#commands a.commands,
 body#xmlCommands a.xmlCommands,
 body#xhtmlCommands a.xhtmlCommands,
+body#mathInputDemo a.mathInputDemo,
 body#upConversionDemo a.upConversionDemo,
 body#tryout a.tryout {
   color: #f25c69;
