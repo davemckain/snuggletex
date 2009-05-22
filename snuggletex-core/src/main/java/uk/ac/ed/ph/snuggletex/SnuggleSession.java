@@ -9,14 +9,13 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
-import uk.ac.ed.ph.snuggletex.internal.AbstractWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
-import uk.ac.ed.ph.snuggletex.internal.MathMLWebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
+import uk.ac.ed.ph.snuggletex.internal.WebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -25,7 +24,6 @@ import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +95,7 @@ public final class SnuggleSession implements SessionContext {
     /** Map of user-defined environments, keyed on name */
     private final Map<String, UserDefinedEnvironment> userEnvironmentMap;
     
+    /** All tokens currently completely parsed (and fixed) by this session */
     private final List<FlowToken> parsedTokens; 
     
     /**
@@ -347,23 +346,22 @@ public final class SnuggleSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, returning a DOM
      * {@link Document} Object.
      * <p>
-     * The provided {@link BaseWebPageOptions} Object is
+     * The provided {@link WebPageOutputOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
-     * Any XSLT stylesheet specified by {@link BaseWebPageOptions#getStylesheet()}
+     * Any XSLT stylesheet specified by {@link WebPageOutputOptions#getStylesheet()}
      * will have been applied to the result before it is returned. On the other hand, serialisation
-     * options in the {@link BaseWebPageOptions} (such as Content Type and encoding) 
+     * options in the {@link WebPageOutputOptions} (such as Content Type and encoding) 
      * will not have been applied when this method returns.
      * 
      * @return resulting Document if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error. 
      */
-    public Document createWebPage(final BaseWebPageOptions options) {
+    public Document createWebPage(final WebPageOutputOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
-            AbstractWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
-            return webBuilder.createWebPage(parsedTokens);
+            return new WebPageBuilder(this, options).createWebPage(parsedTokens);
         }
         catch (SnuggleParseException e) {
             return null;
@@ -374,13 +372,13 @@ public final class SnuggleSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      * <p>
-     * The provided {@link BaseWebPageOptions} Object is
+     * The provided {@link WebPageOutputOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * 
      * @return true if completed successfully, false if the process was terminated by an error in the
      *   input LaTeX and if the session was configured to fail on the first error. 
      */
-    public boolean writeWebPage(final BaseWebPageOptions options, final OutputStream outputStream)
+    public boolean writeWebPage(final WebPageOutputOptions options, final OutputStream outputStream)
             throws IOException {
         return writeWebPage(options, null, outputStream);
     }
@@ -389,7 +387,7 @@ public final class SnuggleSession implements SessionContext {
      * Builds a complete web page based on the currently parsed tokens, sending the results
      * to the given {@link OutputStream}.
      * <p>
-     * The provided {@link BaseWebPageOptions} Object is
+     * The provided {@link WebPageOutputOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
      * If the <tt>contentTypeSettable</tt> Object has a
@@ -403,13 +401,12 @@ public final class SnuggleSession implements SessionContext {
      * @throws SnuggleRuntimeException if calling <tt>setContentType()</tt> on the contentTypeSettable
      *   Object failed, with the underlying Exception wrapped up.
      */
-    public boolean writeWebPage(final BaseWebPageOptions options, final Object contentTypeSettable,
+    public boolean writeWebPage(final WebPageOutputOptions options, final Object contentTypeSettable,
             final OutputStream outputStream) throws IOException {
         ConstraintUtilities.ensureNotNull(options, "options");
         ConstraintUtilities.ensureNotNull(outputStream, "outputStream");
         try {
-            AbstractWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
-            webBuilder.writeWebPage(parsedTokens, contentTypeSettable, outputStream);
+            new WebPageBuilder(this, options).writeWebPage(parsedTokens, contentTypeSettable, outputStream);
             return true;
         }
         catch (SnuggleParseException e) {
@@ -419,50 +416,17 @@ public final class SnuggleSession implements SessionContext {
     
     /**
      * Calls the <tt>setContentType</tt> of the given Object to something appropriate for the
-     * given {@link BaseWebPageOptions}. This may be useful in some cases.
+     * given {@link WebPageOutputOptions}. This may be useful in some cases.
      * <p>
      * The main example for this would be passing a <tt>javax.servlet.http.HttpResponse</tt>
      * Object, which I want to avoid a compile-time dependency on.
      * 
-     * @see #writeWebPage(BaseWebPageOptions, Object, OutputStream)
+     * @see #writeWebPage(WebPageOutputOptions, Object, OutputStream)
      */
-    public void setWebPageContentType(final BaseWebPageOptions options, final Object contentTypeSettable) {
+    public void setWebPageContentType(final WebPageOutputOptions options, final Object contentTypeSettable) {
         ConstraintUtilities.ensureNotNull(options, "options");
         ConstraintUtilities.ensureNotNull(contentTypeSettable, "contentTypeSettable");
-        AbstractWebPageBuilder<?> webBuilder = createWebPageBuilder(options);
-        webBuilder.setWebPageContentType(contentTypeSettable);
-    }
-    
-    /**
-     * Creates the appropriate instance of {@link AbstractWebPageBuilder} that will build
-     * web pages supporting the given {@link BaseWebPageOptions} Object.
-     * 
-     * @param options
-     */
-    private AbstractWebPageBuilder<?> createWebPageBuilder(BaseWebPageOptions options) {
-        AbstractWebPageBuilder<?> result = null;
-        if (options instanceof MathMLWebPageOptions) {
-            result = new MathMLWebPageBuilder(this, (MathMLWebPageOptions) options);
-        }
-        else if (options.getClass().getName().equals("uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions")) {
-            /* Use reflection to instantiate as this is an "extension" as we don't want to
-             * hard-wire a dependency on it just in case it's not being used.
-             */
-            try {
-                Class<?> builderClass = Class.forName("uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageBuilder");
-                Class<?> optionsClass = Class.forName("uk.ac.ed.ph.snuggletex.jeuclid.JEuclidWebPageOptions");
-                Constructor<?> constructor = builderClass.getConstructor(SessionContext.class, optionsClass);
-                result = (AbstractWebPageBuilder<?>) constructor.newInstance(this, options);
-            }
-            catch (Exception e) {
-                throw new SnuggleRuntimeException("Could not load SnuggleTeX JEuclid Extensions - please check your ClassPath", e);
-            }
-        }
-        else {
-            throw new SnuggleRuntimeException("SnuggleTeX doesn't know how to build web pages using options of type "
-                    + options.getClass().getName());
-        }
-        return result;
+        new WebPageBuilder(this, options).setWebPageContentType(contentTypeSettable);
     }
     
     //---------------------------------------------

@@ -6,12 +6,13 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -78,10 +79,9 @@ public final class TryOutServlet extends BaseServlet {
         session.parseInput(input);
         
         /* Set up web output options */
-        MathMLWebPageOptions options = new MathMLWebPageOptions();
+        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.CROSS_BROWSER_XHTML);
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
-        options.setPageType(WebPageType.CROSS_BROWSER_XHTML);
         options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setTitle("SnuggleTeX - Try Out");
         options.setAddingTitleHeading(false); /* We'll put our own title in */

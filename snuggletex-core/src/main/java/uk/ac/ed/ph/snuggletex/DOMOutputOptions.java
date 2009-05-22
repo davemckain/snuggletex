@@ -5,8 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -113,13 +111,13 @@ public class DOMOutputOptions implements Cloneable {
      * 
      * @see DownConvertingPostProcessor
      */
-    private final List<DOMPostProcessor> domPostProcessors;
+    private DOMPostProcessor[] domPostProcessors;
     
     private LinkResolver linkResolver;
     
     public DOMOutputOptions() {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
-        this.domPostProcessors = new ArrayList<DOMPostProcessor>();
+        this.domPostProcessors = null;
         this.inliningCSS = false;
         this.addingMathAnnotations = false;
         this.inlineCSSProperties = null;
@@ -203,10 +201,14 @@ public class DOMOutputOptions implements Cloneable {
     }
     
     
-    public List<DOMPostProcessor> getDOMPostProcessors() {
+    public DOMPostProcessor[] getDOMPostProcessors() {
         return domPostProcessors;
     }
     
+    public void setDOMPostProcessors(DOMPostProcessor... domPostProcessors) {
+        this.domPostProcessors = domPostProcessors;
+    }
+
 
     public LinkResolver getLinkResolver() {
         return linkResolver;

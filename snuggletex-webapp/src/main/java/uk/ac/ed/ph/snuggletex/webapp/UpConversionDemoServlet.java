@@ -7,12 +7,13 @@ package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
@@ -169,11 +170,10 @@ public final class UpConversionDemoServlet extends BaseServlet {
          * we produced manually above, though this will actually be recreated using the standard
          * SnuggleTeX process.)
          */
-        MathMLWebPageOptions webOutputOptions = new MathMLWebPageOptions();
-        webOutputOptions.getDOMPostProcessors().add(new UpConvertingPostProcessor());
+        WebPageOutputOptions webOutputOptions = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.CROSS_BROWSER_XHTML);
+        webOutputOptions.setDOMPostProcessors(new UpConvertingPostProcessor());
         webOutputOptions.setMathVariantMapping(true);
         webOutputOptions.setAddingMathAnnotations(true);
-        webOutputOptions.setPageType(WebPageType.CROSS_BROWSER_XHTML);
         webOutputOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         webOutputOptions.setTitle("MathML Semantic Up-Conversion Demo");
         webOutputOptions.setAddingTitleHeading(false); /* We'll put our own title in */

@@ -38,8 +38,8 @@ public final class DOMBuildingController {
     
     public void buildDOMSubtree(final Element targetRoot, final List<FlowToken> fixedTokens)
             throws SnuggleParseException {
-        List<DOMPostProcessor> domPostProcessors = options.getDOMPostProcessors();
-        if (!domPostProcessors.isEmpty()) {
+        DOMPostProcessor[] domPostProcessors = options.getDOMPostProcessors();
+        if (domPostProcessors!=null && domPostProcessors.length > 0) {
             /* We run through each Post-Processor in turn, building a temporary "outputDocument"
              * and then using it as an input for the next stage. The final outputDocument is
              * used to decide what gets added into the target Document.
@@ -47,8 +47,8 @@ public final class DOMBuildingController {
             Document workDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
             Element workRoot = workDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root");
             workDocument.appendChild(workRoot);
-            for (int processorIndex=0, processorCount=domPostProcessors.size(); processorIndex<processorCount; processorIndex++) {
-                DOMPostProcessor domPostProcessor = domPostProcessors.get(processorIndex);
+            for (int processorIndex=0; processorIndex<domPostProcessors.length; processorIndex++) {
+                DOMPostProcessor domPostProcessor = domPostProcessors[processorIndex];
                 
                 /* Do raw DOM Building */
                 DOMBuilder domBuilder = new DOMBuilder(sessionContext, workRoot, options);
@@ -58,7 +58,7 @@ public final class DOMBuildingController {
                 Document outputDocument = domPostProcessor.postProcessDOM(workDocument, options, sessionContext.getStylesheetManager());
                 Element adoptRoot;
                 
-                if (processorIndex==processorCount-1) {
+                if (processorIndex==domPostProcessors.length - 1) {
                     /* This is the final step, so add to targetRoot */
                     adoptRoot = targetRoot;
                 }

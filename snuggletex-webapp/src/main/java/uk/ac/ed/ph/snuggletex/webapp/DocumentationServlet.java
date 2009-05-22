@@ -5,20 +5,17 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
-import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.MathMLWebPageOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
-import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidMathMLPostProcessor;
+import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidUtilities;
 import uk.ac.ed.ph.snuggletex.jeuclid.SimpleMathMLImageSavingCallback;
-import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.File;
@@ -252,30 +249,21 @@ public final class DocumentationServlet extends BaseServlet {
         session.parseInput(new SnuggleInput(macrosResource, "Web resource at " + MACROS_RESOURCE_LOCATION));
         session.parseInput(new SnuggleInput(texSourceStream, "Web resource at " + texSourceResourcePath));
         
-        /* Work out SnuggleTeX options */
-        MathMLWebPageOptions options = new MathMLWebPageOptions();
+        /* Work out basic SnuggleTeX options */
+        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
-        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setIndenting(true);
-        options.setPageType(webPageType);
-        List<DOMPostProcessor> postProcessors = options.getDOMPostProcessors();
         if (webPageType==WebPageType.PROCESSED_HTML) {
             /* Create folder for storing MathML images. */
             File imageOutputDirectory = IOUtilities.ensureDirectoryCreated(mapResourcePath(imageOutputDirectoryResourcePath));
             ImageSavingCallback callback = new ImageSavingCallback(imageOutputDirectory, imageOutputBaseURL);
- 
-            /* Add DownConverter and JEuclid step */
-            postProcessors.add(new DownConvertingPostProcessor());
-            postProcessors.add(new JEuclidMathMLPostProcessor(callback));
+            
+            /* Configure JEuclid post-processor, with down-conversion */
+            JEuclidUtilities.setupJEuclidPostProcessors(options, true, callback);
         }
-        else {
-            /* Add UpConverter */
-            postProcessors.add(new UpConvertingPostProcessor());
-        }
-        
-        /* Point to our own version of the USS if required */
-        if (webPageType==WebPageType.UNIVERSAL_STYLESHEET) {
+        else if (webPageType==WebPageType.UNIVERSAL_STYLESHEET) {
+            /* Point to our own version of the USS if required */
             options.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
         }
         

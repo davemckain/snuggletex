@@ -54,7 +54,7 @@ public class MathUpConversionPMathMLTests extends AbstractGoodMathTest {
     @Override
     protected DOMOutputOptions createDOMOutputOptions() {
         DOMOutputOptions result = super.createDOMOutputOptions();
-        result.getDOMPostProcessors().add(upconverter);
+        result.setDOMPostProcessors(upconverter);
         return result;
     }
     
