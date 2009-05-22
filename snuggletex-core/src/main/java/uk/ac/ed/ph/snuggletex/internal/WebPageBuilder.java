@@ -86,6 +86,11 @@ public final class WebPageBuilder {
         /* Do template-y stuff */
         WebPageType pageType = options.getWebPageType();
         if (pageType==WebPageType.MATHPLAYER_HTML) {
+            /* To trigger MathPlayer, we must declare the appropriate MathML prefix on the
+             * <html/> element. Then add an <object/> followed by the appropriate PI to
+             * the <head/> element. Getting any of this in the wrong order will fail
+             * to make MathPlayer work.
+             */
             Element object = document.createElementNS(Globals.XHTML_NAMESPACE, "object");
             object.setAttribute("id", "MathPlayer");
             object.setAttribute("classid", "clsid:32F66A20-7614-11D4-BD11-00104BD3F987");
@@ -98,7 +103,8 @@ public final class WebPageBuilder {
                     "namespace=\"" + options.getMathMLPrefix() + "\" implementation=\"#MathPlayer\" ?"));
         }
 
-        /* Add content type (this may be redone by the serializer but let's be safe */
+        /* Add content type <meta/> element. (The serializer might add another of these but let's
+         * be safe as we don't know what's going to happen at this point.) */
         Element meta = document.createElementNS(Globals.XHTML_NAMESPACE, "meta");
         meta.setAttribute("http-equiv", "Content-Type");
         meta.setAttribute("content", computeMetaContentType());
@@ -158,7 +164,9 @@ public final class WebPageBuilder {
         }
 
         if (options.isPrefixingMathML()) {
-            /* We'll try to explicitly set the MathML prefix on the root element */
+            /* We'll explicitly set the MathML prefix on the root element.
+             * (MathPlayer needs it to be declared here too.)
+             */
             html.setAttributeNS(Globals.XMLNS_NAMESPACE, "xmlns:" + options.getMathMLPrefix(), Globals.MATHML_NAMESPACE);
         }
         html.appendChild(head);
@@ -273,11 +281,12 @@ public final class WebPageBuilder {
         /* Decide on output method, using XSLT 2.0's "xhtml" method if requested and available,
          * falling back to "xml" otherwise.
          */
-        String methodName = serializationMethod.getName();
-        if (!XMLUtilities.supportsXSLT20(serializer)) {
-            methodName = SerializationMethod.XML.getName();
+        boolean xslt20 = XMLUtilities.supportsXSLT20(serializer);
+        SerializationMethod effectiveMethod = serializationMethod;
+        if (effectiveMethod==SerializationMethod.XHTML && !xslt20) {
+            effectiveMethod = SerializationMethod.XML;
         }
-        serializer.setOutputProperty(OutputKeys.METHOD, methodName);
+        serializer.setOutputProperty(OutputKeys.METHOD, effectiveMethod.getName());
 
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getWebPageType();
@@ -289,6 +298,12 @@ public final class WebPageBuilder {
         if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
             serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
             serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
+        }
+        if (xslt20 && serializationMethod!=SerializationMethod.XML) {
+            /* XSLT 2.0 allows us to explicitly stop serializer adding Content Type declaration,
+             * which is something we've already done here.
+             */
+            serializer.setOutputProperty("include-content-type", "no");
         }
         return serializer;
     }
@@ -302,7 +317,6 @@ public final class WebPageBuilder {
         ConstraintUtilities.ensureNotNull(options.getEncoding(), "WebPageOutputOptions.encoding");
         ConstraintUtilities.ensureNotNull(options.getContentType(), "WebPageOutputOptions.contentType");
     }
-    
     
     /**
      * Computes the appropriate "Content-Type" string to be specified as an HTTP Header. (Note
