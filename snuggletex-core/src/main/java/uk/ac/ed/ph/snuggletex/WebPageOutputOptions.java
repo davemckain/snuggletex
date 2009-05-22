@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.internal.WebPageBuilder;
+import static uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities.concat;
 
 import javax.xml.transform.Transformer;
 
@@ -13,11 +13,12 @@ import javax.xml.transform.Transformer;
  * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleSession}
  * (e.g. {@link SnuggleSession#createWebPage(WebPageOutputOptions)}).
- * 
- * FIXME: Complete this, mentioning the {@link WebPageOutputOptionsTemplates} class as well.
- * FIXME: Check field JavaDoc too... defaults have changed since 1.0.
- * FIXME: Add check to {@link WebPageBuilder} to ensure that certain fields are not null.
- * FIXME: Document which fields are required to have a value.
+ * <p>
+ * You will generally want to use
+ * {@link WebPageOutputOptionsTemplates#createWebPageOptions(WebPageType)}
+ * to create pre-configured instances of these Objects, which can then be tweaked as desired.
+ * But you can also create and configure {@link WebPageOutputOptions} from scratch if you
+ * know exactly what you want to do.
  * 
  * @see WebPageOutputOptionsTemplates
  *
@@ -36,6 +37,7 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         
         /** 
          * Mozilla-compatible output. XHTML + MathML; no XML declaration; no DOCTYPE.
+         * <p>
          * This is intended to be served as <tt>application/xhtml+xml</tt> with
          * encoding declared via HTTP header and <tt>meta</tt> element.
          * <p>
@@ -46,9 +48,11 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         MOZILLA,
         
         /**
-         * "Cross-browser" XHTML + MathML; has XML declaration and DOCTYPE declaration;
-         * served as <tt>application/xhtml+xml</tt> with <tt>charset</tt> declared only
-         * in <tt>meta</tt> element in order to appease MathPlayer.
+         * "Cross-browser" XHTML + MathML; has XML declaration and DOCTYPE declaration.
+         * The <tt>charset</tt> is declared only in the <tt>meta</tt> element in order
+         * to appease MathPlayer.
+         * <p>
+         * Intended to be served as <tt>application/xhtml+xml</tt>
          * <p>
          * Works on both Mozilla and IE6/7 (<strong>provided</strong> MathPlayer has been installed).
          * This will display wrongly on IE6/7 if MathPlayer is not installed.
@@ -60,8 +64,9 @@ public class WebPageOutputOptions extends DOMOutputOptions {
 
         
         /**
-         * HTML + MathML intended for Internet Explorer 6/7 with the MathPlayer plug-in: served
-         * as <tt>text/html</tt>.
+         * HTML + MathML intended for Internet Explorer 6/7 with the MathPlayer plug-in.
+         * <p>
+         * Intended to be served as <tt>text/html</tt>.
          * <p>
          * This only works on IE clients with the MathPlayer plug-in preinstalled,
          * but is a good option if that's your target audience.
@@ -74,11 +79,12 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         // The following require further configuration
         
         /**
-         * "Cross-browser" XHTML + MathML suitable for Mozilla and Internet Explorer 6/7, using
-         * the client-side Universal StyleSheet XSLT to accommodate the two cases, prompting
+         * "Cross-browser" XHTML + MathML suitable for Mozilla and Internet Explorer 6/7.
+         * Intended to be used in conjunction with the client-side Universal StyleSheet XSLT
+         * to accommodate the two cases, prompting
          * for the download of MathPlayer on IE6/7 if it is not already installed.
          * <p>
-         * This is served with an XML declaration but no DOCTYPE declaration.
+         * Page is created with an XML declaration but no DOCTYPE declaration.
          * <p>
          * The <strong>pref:renderer</strong> attribute on the <tt>html</tt> element will be set
          * to <tt>mathplayer-dl</tt>.
@@ -92,17 +98,16 @@ public class WebPageOutputOptions extends DOMOutputOptions {
          * 
          * <h2>Notes</h2>
          * 
-         * SnuggleTeX ships with a slightly fixed version of the USS that works in IE7
-         * that you can use if you like.
-         * 
-         * FIXME: No it doesn't! Resolve this!!!
+         * The SnuggleTeX source distribution contains a slightly fixed version of the
+         * USS that works in IE7 that you can use if you like.
          */
         UNIVERSAL_STYLESHEET,
         
         /**
          * XHTML + MathML containing one or more processing instructions designed to invoke
-         * client-side XSLT. Served as <tt>application/xhtml+xml</tt> with no XML declaration
-         * and no DOCTYPE.
+         * client-side XSLT. No XML declaration and no DOCTYPE.
+         * <p>
+         * Intended to be served as <tt>application/xhtml+xml</tt>.
          * <p>
          * Combining this with the Universal Math Stylesheet or something similar can give
          * good cross-browser results.
@@ -110,7 +115,9 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         CLIENT_SIDE_XSLT_STYLESHEET,
         
         /**
-         * HTML deemed suitable for use by any User Agent. This is delivered as <tt>text/html</tt>.
+         * HTML deemed suitable for use by any User Agent. 
+         * <p>
+         * Intended to be served as <tt>text/html</tt>.
          * <p>
          * You will have to use a suitable {@link DOMPostProcessor} to convert any MathML islands
          * into other forms. (E.g. replace by an applet, replace by images, ...)
@@ -146,27 +153,68 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         }
     }
     
-    /** Desired "type" of web page to be constructed. */
+    /** Desired "type" of web page to be constructed. Must not be null. */
     private WebPageType webPageType;
     
     /**
-     * JAXP {@link Transformer} representing an optional XSLT stylesheet that
-     * will be applied to the resulting web page once it has been built but
-     * before it is serialised. This can be useful if you want to add in headers
-     * and footers to the resulting XHTML web page.
+     * {@link SerializationMethod} to use when generating the final output.
+     * Default is {@link SerializationMethod#XML}.
+     * This must not be null.
      * <p>
-     * Remember that the XHTML is all in its correct namespace so you will need
-     * to write your stylesheet appropriately. Ensure that any XHTML you
-     * generate is also in the correct namespace; it will later be converted to
-     * no-namespace HTML if required by the serialisation process.
-     * <p>
-     * <strong>NOTE:</strong> Source documents may contain Processing
-     * Instructions (e.g. to invoke MathPlayer) so these must be handled as
-     * appropriate.
-     * <p>
-     * If null, then no stylesheet is applied.
+     * Note that {@link SerializationMethod#XHTML} is only supported properly if you are using
+     * an XSLT 2.0 processor; otherwise it reverts to {@link SerializationMethod#XML}
      */
-    private Transformer stylesheet;
+    private SerializationMethod serializationMethod;
+    
+    /** 
+     * MIME type for the resulting page.
+     * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_CONTENT_TYPE}.
+     * This must not be null.
+     */
+    private String contentType;
+    
+    /** 
+     * Encoding for the resulting page.
+     * Default is {@link WebPageOutputOptionsTemplates#DEFAULT_ENCODING}.
+     * Must not be null.
+     */
+    private String encoding;
+    
+    /** 
+     * Language code for the resulting page.
+     * Default is <tt>en</tt>.
+     * May be set to null
+     */
+    private String lang;
+    
+    /** 
+     * Title for the resulting page.
+     * Default is null.
+     * If null, then no title is added.
+     */
+    private String title;
+    
+    /**
+     * Indicates whether page title should be inserted at the start of the web page
+     * body as an XHTML <tt>h1</tt> element. This has no effect if title is null.
+     */
+    private boolean addingTitleHeading;
+    
+    /**
+     * Whether to indent the resulting web page or not.
+     * (This depends on how clever the underlying XSLT engine will be!)
+     * Default is false.
+     */
+    private boolean indenting;
+    
+    /**
+     * Set to include SnuggleTeX-related CSS as a <tt>style</tt> element within the resulting
+     * page. If you choose not to do this, you probably want to put <tt>snuggletex.css</tt>
+     * somewhere accessible and pass its location in {@link #clientSideXSLTStylesheetURLs}.
+     * <p>
+     * Default is true, as that's the simplest way of getting up to speed quickly.
+     */
+    private boolean includingStyleElement;
     
     /** 
      * Array of relative URLs specifying client-side CSS stylesheets to be specified in the
@@ -194,50 +242,33 @@ public class WebPageOutputOptions extends DOMOutputOptions {
      */
     private String[] clientSideXSLTStylesheetURLs;
     
-    /** Title for the resulting page. If null, then no title is output. */
-    private String title;
-    
-    /** Language code for the resulting page. Default is <tt>en</tt> */
-    private String lang;
-    
-    /** Encoding for the resulting page. Default is <tt>UTF-8</tt> */
-    private String encoding;
-    
-    /** 
-     * MIME type for the resulting page. This is generally ignored and set by SnuggleTeX
-     * as appropriate for the type of page being generated.
-     */
-    private String contentType;
-    
     /**
-     * Indicates whether page title should be inserted at the start of the web page
-     * body as an XHTML <tt>h1</tt> element. This has no effect if title is null.
-     */
-    private boolean addingTitleHeading;
-    
-    /**
-     * Whether to indent the resulting web page or not. (This depends on how clever the underlying
-     * XSLT engine will be!)
-     */
-    private boolean indenting;
-    
-    /**
-     * Sets the {@link SerializationMethod} to use when generating the final output.
+     * Optional JAXP {@link Transformer}s representing XSLT stylesheet(s) that
+     * will be applied to the resulting web page once it has been built but
+     * before it is serialised. This can be useful if you want to add in headers
+     * and footers to the resulting XHTML web page.
      * <p>
-     * Note that {@link SerializationMethod#XHTML} is only supported properly if you are using
-     * an XSLT 2.0 processor; otherwise it reverts to {@link SerializationMethod#XML}
+     * Remember that the XHTML is all in its correct namespace so you will need
+     * to write your stylesheet appropriately. Ensure that any further XHTML you
+     * generate is also in the correct namespace; it will later be converted to
+     * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>NOTE:</strong> Source documents may contain Processing
+     * Instructions (e.g. to invoke MathPlayer) so these must be handled as
+     * appropriate.
+     * <p>
+     * If null or empty, then no stylesheet is applied.
      */
-    private SerializationMethod serializationMethod;
+    private Transformer[] stylesheets;
     
-
     public WebPageOutputOptions() {
         super();
+        this.contentType = WebPageOutputOptionsTemplates.DEFAULT_CONTENT_TYPE;
         this.webPageType = WebPageType.MOZILLA;
         this.serializationMethod = SerializationMethod.XML;
-        this.encoding = "UTF-8";
-        this.lang = "en";
-        this.cssStylesheetURLs = null;
-        this.clientSideXSLTStylesheetURLs = null;
+        this.encoding = WebPageOutputOptionsTemplates.DEFAULT_ENCODING;
+        this.lang = WebPageOutputOptionsTemplates.DEFAULT_LANG;
+        this.includingStyleElement = true;
     }
     
     
@@ -248,50 +279,14 @@ public class WebPageOutputOptions extends DOMOutputOptions {
     public void setWebPageType(WebPageType webPageType) {
         this.webPageType = webPageType;
     }
-
     
-    public Transformer getStylesheet() {
-        return stylesheet;
+    
+    public SerializationMethod getSerializationMethod() {
+        return serializationMethod;
     }
     
-    public void setStylesheet(Transformer stylesheet) {
-        this.stylesheet = stylesheet;
-    }
-
-
-    public String[] getCSSStylesheetURLs() {
-        return cssStylesheetURLs;
-    }
-    
-    public void setCSSStylesheetURLs(String... cssStylesheetURLs) {
-        this.cssStylesheetURLs = cssStylesheetURLs;
-    }
-    
-    
-    public String[] getClientSideXSLTStylesheetURLs() {
-        return clientSideXSLTStylesheetURLs;
-    }
-    
-    public void setClientSideXSLTStylesheetURLs(String... clientSideXSLTStylesheetURLs) {
-        this.clientSideXSLTStylesheetURLs = clientSideXSLTStylesheetURLs;
-    }
-    
-    
-    public String getLang() {
-        return lang;
-    }
-    
-    public void setLang(String lang) {
-        this.lang = lang;
-    }
-
-
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
+    public void setSerializationMethod(SerializationMethod serializationMethod) {
+        this.serializationMethod = serializationMethod;
     }
 
     
@@ -310,6 +305,24 @@ public class WebPageOutputOptions extends DOMOutputOptions {
     
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+    
+
+    public String getLang() {
+        return lang;
+    }
+    
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     
@@ -330,14 +343,51 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         this.indenting = identing;
     }
 
-
-    public SerializationMethod getSerializationMethod() {
-        return serializationMethod;
+    
+    public boolean isIncludingStyleElement() {
+        return includingStyleElement;
     }
     
-    public void setSerializationMethod(SerializationMethod serializationMethod) {
-        this.serializationMethod = serializationMethod;
+    public void setIncludingStyleElement(boolean includingStyleElement) {
+        this.includingStyleElement = includingStyleElement;
+    }
+
+
+    public String[] getCSSStylesheetURLs() {
+        return cssStylesheetURLs;
     }
     
+    public void setCSSStylesheetURLs(String... cssStylesheetURLs) {
+        this.cssStylesheetURLs = cssStylesheetURLs;
+    }
+    
+    public void addCSSStylesheetURLs(String... cssStylesheetURLs) {
+        this.cssStylesheetURLs = concat(this.cssStylesheetURLs, cssStylesheetURLs, String.class);
+    }
+    
+    
+    public String[] getClientSideXSLTStylesheetURLs() {
+        return clientSideXSLTStylesheetURLs;
+    }
+    
+    public void setClientSideXSLTStylesheetURLs(String... clientSideXSLTStylesheetURLs) {
+        this.clientSideXSLTStylesheetURLs = clientSideXSLTStylesheetURLs;
+    }
+    
+    public void addClientSideXSLTStylesheetURLs(String... clientSideXSLTStylesheetURLs) {
+        this.clientSideXSLTStylesheetURLs = concat(this.clientSideXSLTStylesheetURLs, clientSideXSLTStylesheetURLs, String.class);
+    }
 
+
+    public Transformer[] getStylesheets() {
+        return stylesheets;
+    }
+    
+    public void setStylesheets(Transformer... stylesheets) {
+        this.stylesheets = stylesheets;
+    }
+    
+    public void addStylesheets(Transformer... stylesheets) {
+        this.stylesheets = concat(this.stylesheets, stylesheets, Transformer.class);
+    }
 }

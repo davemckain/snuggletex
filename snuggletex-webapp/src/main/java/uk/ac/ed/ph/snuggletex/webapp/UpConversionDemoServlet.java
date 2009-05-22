@@ -193,7 +193,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpconverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
-        webOutputOptions.setStylesheet(viewStylesheet);
+        webOutputOptions.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {

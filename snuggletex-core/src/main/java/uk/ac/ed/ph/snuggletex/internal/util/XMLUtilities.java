@@ -229,4 +229,12 @@ public final class XMLUtilities {
         }
         return resultWriter.toString();
     }
+    
+    public static boolean isXMLName(String string) {
+        return string!=null && string.matches("[a-zA-Z_:][a-zA-Z0-9_:.-]*");
+    }
+    
+    public static boolean isXMLNCName(String string) {
+        return string!=null && string.matches("[a-zA-Z_][a-zA-Z0-9_.-]*");
+    }
 }

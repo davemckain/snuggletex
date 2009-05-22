@@ -349,7 +349,7 @@ public final class SnuggleSession implements SessionContext {
      * The provided {@link WebPageOutputOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
      * <p>
-     * Any XSLT stylesheet specified by {@link WebPageOutputOptions#getStylesheet()}
+     * Any XSLT stylesheet specified by {@link WebPageOutputOptions#getStylesheets()}
      * will have been applied to the result before it is returned. On the other hand, serialisation
      * options in the {@link WebPageOutputOptions} (such as Content Type and encoding) 
      * will not have been applied when this method returns.

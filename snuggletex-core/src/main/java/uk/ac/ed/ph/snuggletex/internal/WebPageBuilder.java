@@ -10,6 +10,8 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -50,7 +52,9 @@ public final class WebPageBuilder {
         this.options = options;
     }
     
+
     public final Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
+        checkOptions();
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         
         /* Add in any client-side XSLT */
@@ -113,9 +117,16 @@ public final class WebPageBuilder {
             head.appendChild(titleElement);
         }
         
-        /* CSS will either go via a <link href="..."/> if specified or will be put inline using
-         * <style/> and the default CSS.
-         */
+        /* Maybe add <style>...</style> section */
+        if (options.isIncludingStyleElement()) {
+            Element style = document.createElementNS(Globals.XHTML_NAMESPACE, "style");
+            style.setAttribute("type", "text/css");
+            Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
+            style.appendChild(document.createTextNode(CSSUtilities.writeStylesheet(cssProperties)));
+            head.appendChild(style);
+        }
+        
+        /* Add any external CSS links */
         String[] cssStylesheetURLs = options.getCSSStylesheetURLs();
         if (cssStylesheetURLs!=null) {
             Element link;
@@ -126,14 +137,6 @@ public final class WebPageBuilder {
                 head.appendChild(link);
             }
         }
-        else {
-            /* No CSS link specified, so we'll embed stylesheet inline */
-            Element style = document.createElementNS(Globals.XHTML_NAMESPACE, "style");
-            style.setAttribute("type", "text/css");
-            Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
-            style.appendChild(document.createTextNode(CSSUtilities.writeStylesheet(cssProperties)));
-            head.appendChild(style);
-        }
         
         /* Create finished document */
         Element html = document.createElementNS(Globals.XHTML_NAMESPACE, "html");
@@ -143,13 +146,17 @@ public final class WebPageBuilder {
             html.setAttributeNS(Globals.MATHML_PREF_NAMESPACE, "pref:renderer", "mathplayer-dl");
         }
         
-        /* Set language either as 'xml:lang' or plain old 'lang' */
-        if (pageType==WebPageType.MATHPLAYER_HTML || pageType==WebPageType.PROCESSED_HTML) {
-            html.setAttribute("lang", options.getLang());
+        String lang = options.getLang();
+        if (lang!=null) {
+            /* Set language either as 'xml:lang' or plain old 'lang' */
+            if (pageType==WebPageType.MATHPLAYER_HTML || pageType==WebPageType.PROCESSED_HTML) {
+                html.setAttribute("lang", lang);
+            }
+            else {
+                html.setAttributeNS(Globals.XML_NAMESPACE, "xml:lang", lang);
+            }
         }
-        else {
-            html.setAttributeNS(Globals.XML_NAMESPACE, "xml:lang", options.getLang());
-        }
+
         if (options.isPrefixingMathML()) {
             /* We'll try to explicitly set the MathML prefix on the root element */
             html.setAttributeNS(Globals.XMLNS_NAMESPACE, "xmlns:" + options.getMathMLPrefix(), Globals.MATHML_NAMESPACE);
@@ -159,16 +166,17 @@ public final class WebPageBuilder {
         document.appendChild(html);
         
         /* Apply any extra XSLT specified in the options */
-        Transformer stylesheet = options.getStylesheet();
-        if (stylesheet!=null) {
-            DOMSource input = new DOMSource(document);
-            document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-            DOMResult output = new DOMResult(document);
-            try {
-                stylesheet.transform(input, output);
-            }
-            catch (TransformerException e) {
-                throw new SnuggleRuntimeException("Could not apply stylesheet " + stylesheet);
+        Transformer[] stylesheets = options.getStylesheets();
+        if (!ObjectUtilities.isNullOrEmpty(stylesheets)) {
+            for (Transformer stylesheet : stylesheets) {
+                DOMSource input = new DOMSource(document);
+                document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+                try {
+                    stylesheet.transform(input, new DOMResult(document));
+                }
+                catch (TransformerException e) {
+                    throw new SnuggleRuntimeException("Could not apply stylesheet " + stylesheets);
+                }
             }
         }
         return document;
@@ -185,6 +193,7 @@ public final class WebPageBuilder {
      *   property set if provided. 
      */
     public final void setWebPageContentType(Object contentTypeSettable) {
+        checkOptions();
         try {
             Method setterMethod = contentTypeSettable.getClass().getMethod("setContentType",
                     new Class<?>[] { String.class });
@@ -284,13 +293,22 @@ public final class WebPageBuilder {
         return serializer;
     }
     
-    //------------------------------------------------------------
+    /**
+     * Checks that required fields in {@link WebPageOutputOptions} have been set.
+     */
+    private void checkOptions() {
+        ConstraintUtilities.ensureNotNull(options.getWebPageType(), "WebPageOutputOptions.webPageType");
+        ConstraintUtilities.ensureNotNull(options.getSerializationMethod(), "WebPageOutputOptions.serializationMethod");
+        ConstraintUtilities.ensureNotNull(options.getEncoding(), "WebPageOutputOptions.encoding");
+        ConstraintUtilities.ensureNotNull(options.getContentType(), "WebPageOutputOptions.contentType");
+    }
+    
     
     /**
      * Computes the appropriate "Content-Type" string to be specified as an HTTP Header. (Note
      * that MathPlayer only sniffs a limited number of Content Types.)
      */
-    public String computeContentTypeHeader() {
+    private String computeContentTypeHeader() {
         String result;
         if (options.getWebPageType()==WebPageType.CROSS_BROWSER_XHTML) {
             /* MathPlayer can only handle application/xhtml+xml without a "charset" clause */
@@ -308,7 +326,7 @@ public final class WebPageBuilder {
      * 
      * @see #computeContentTypeHeader()
      */
-    public String computeMetaContentType() {
+    private String computeMetaContentType() {
         return options.getContentType() + "; charset=" + options.getEncoding();
     }
 }

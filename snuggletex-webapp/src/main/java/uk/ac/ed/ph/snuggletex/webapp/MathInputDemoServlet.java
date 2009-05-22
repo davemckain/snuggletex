@@ -165,7 +165,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
         viewStylesheet.setParameter("result-mathml", resultMathML);
-        webOutputOptions.setStylesheet(viewStylesheet);
+        webOutputOptions.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {

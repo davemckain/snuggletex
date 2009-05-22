@@ -142,9 +142,15 @@ public final class DocumentationServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         /* Determine which resource to serve up, and how it's going to be served */
+        /* Work out what is to be served using the file extension to determine what to do */
         String resourcePath = request.getPathInfo();
-        String[] splitResourcePath = splitResourcePath(resourcePath);
-        String extension = splitResourcePath[1];
+        int lastDotPosition = resourcePath.lastIndexOf(".");
+        if (lastDotPosition==-1) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not locate '.' in resourcePath " + resourcePath);
+            return;
+        }
+        String resourceBaseName = resourcePath.substring(0, lastDotPosition);
+        String extension = resourcePath.substring(lastDotPosition+1);
         File resourceFile = mapResourcePath(resourcePath);
         
         /* Make sure content type is known */
@@ -160,7 +166,8 @@ public final class DocumentationServlet extends BaseServlet {
          * 2. Cached resource doesn't already exist (or caching is turned off)
          */
         if (!"png".equals(extension) && (!resourceFile.exists() || !caching)) {
-            resourceFile = generateResource(resourcePath, request.getContextPath(), request.getServletPath());
+            resourceFile = generateResource(resourcePath, resourceBaseName, extension,
+                    request.getContextPath(), request.getServletPath());
             if (resourceFile==null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Documentation page does not exist");
                 return;
@@ -171,17 +178,6 @@ public final class DocumentationServlet extends BaseServlet {
         response.setContentType(contentType);
         response.setContentLength((int) resourceFile.length());
         IOUtilities.transfer(new FileInputStream(resourceFile), response.getOutputStream(), true, false);
-    }
-    
-    private String[] splitResourcePath(final String resourcePath) throws ServletException {
-        /* Work out what is to be served using the file extension to determine what to do */
-        int lastDotPosition = resourcePath.lastIndexOf(".");
-        if (lastDotPosition==-1) {
-            throw new ServletException("Could not locate '.' in resourcePath " + resourcePath);
-        }
-        String resourceBaseName = resourcePath.substring(0, lastDotPosition);
-        String extension = resourcePath.substring(lastDotPosition+1);
-        return new String[] { resourceBaseName, extension };
     }
     
     /**
@@ -195,22 +191,19 @@ public final class DocumentationServlet extends BaseServlet {
      * Generates the documentation resource at the given path.
      * 
      * @return resulting File, or null if the source TeX file for this resource couldn't be
-     *   located.
+     *   located or if the file extension couldn't be understood.
      */
-    private File generateResource(final String resourcePath, final String contextPath,
-            final String servletPath)
+    private File generateResource(final String resourcePath, final String resourceBaseName,
+            final String extension, final String contextPath, final String servletPath)
             throws ServletException, IOException {
-        logger.info("Generating Resource at " + resourcePath);
+        logger.info("Generating Resource at {}", resourcePath);
         
-        /* Work out what is to be served using the file extension to determine what to do */
-        String[] splitResourcePath = splitResourcePath(resourcePath);
-        String resourceBaseName = splitResourcePath[0];
-        String extension = splitResourcePath[1];
+        /* Locate TeX source */
         String texSourceName = resourceBaseName + ".tex";
         String texSourceResourcePath = TEX_SOURCE_BASE_RESOURCE + texSourceName;
         InputStream texSourceStream = getServletContext().getResourceAsStream(texSourceResourcePath);
         if (texSourceStream==null) {
-            logger.info("Could not locate source resource at " + texSourceResourcePath);
+            logger.info("Could not locate source resource at {}", texSourceResourcePath);
             return null;
         }
         
@@ -228,7 +221,8 @@ public final class DocumentationServlet extends BaseServlet {
             /* Use SnuggleTeX standard web page builder (possibly with JEuclid stuff) */
             WebPageType webPageType = extensionToWebPageTypeMap.get(extension);
             if (webPageType==null) {
-                throw new ServletException("Resource extension " + extension + " not understood");
+                logger.info("Resource extension {} not understood", extension);
+                return null;
             } 
             String imageOutputDirectortyResourcePath = resourceBaseName;
             String imageOutputBaseUrl = contextPath + servletPath + resourceBaseName;
@@ -270,8 +264,8 @@ public final class DocumentationServlet extends BaseServlet {
         /* Set up stylesheet to format the output */
         Transformer stylesheet = getStylesheet(FORMAT_OUTPUT_XSLT_URI);
         stylesheet.setParameter("context-path", contextPath);
-        stylesheet.setParameter("page-type", webPageType!=null ? webPageType.name() : null);
-        options.setStylesheet(stylesheet);
+        stylesheet.setParameter("page-type", webPageType!=WebPageType.PROCESSED_HTML ? webPageType.name() : null);
+        options.setStylesheets(stylesheet);
         
         /* Generate output file */
         File outputFile = IOUtilities.ensureFileCreated(mapResourcePath(outputResourcePath));

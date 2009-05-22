@@ -5,13 +5,14 @@
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
  * Some random "macros" for doing common Object-based tasks.
  *
- * (This is copied from <tt>ph-commons-util</tt>.)
+ * (This is copied from <tt>ph-commons-util</tt>, though now has a couple of extra things in it.)
  * 
  * @author  David McKain
  * @version $Revision$
@@ -42,6 +43,32 @@ public final class ObjectUtilities {
      */
     public static boolean nullSafeEquals(Object o1, Object o2) {
         return (o1==o2) || (o1!=null && o1.equals(o2));
+    }
+    
+    public static boolean isNullOrEmpty(Object[] array) {
+        return array==null || array.length==0;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <E> E[] concat(final E[] array1, final E[] array2, final Class<E> itemClass) {
+        boolean array1Empty = isNullOrEmpty(array1);
+        boolean array2Empty = isNullOrEmpty(array2);
+        if (array1Empty && array2Empty) {
+            return (E[]) Array.newInstance(itemClass, 0);
+        }
+        else if (array1Empty) {
+            return array2;
+        }
+        else if (array2Empty) {
+            return array1;
+        }
+        else {
+            /* (This is not nice but gets over the problem of creating generic arrays) */
+            E[] result = (E[]) Array.newInstance(itemClass, array1.length + array2.length);
+            System.arraycopy(array1, 0, result, 0, array1.length);
+            System.arraycopy(array2, 0, result, array1.length, array2.length);
+            return result;
+        }
     }
 
     /**

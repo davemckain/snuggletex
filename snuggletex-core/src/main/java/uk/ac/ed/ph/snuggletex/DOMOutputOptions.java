@@ -5,6 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
+
 import java.util.Properties;
 
 /**
@@ -73,13 +76,20 @@ public class DOMOutputOptions implements Cloneable {
     private Properties inlineCSSProperties;
 
     /**
-     * Set to true if you want MathML element names to be prefixed. If false, then the default
+     * Set to true if you want MathML element names to be prefixed.
+     * If false, then the default
      * namespace is changed on each MathML element.
+     * <p>
+     * Default is false.
      */
     private boolean prefixingMathML;
     
     /**
-     * Prefix to use when prefixing MathML element names.
+     * Prefix to use when prefixing MathML element names. Only used if
+     * {@link #prefixingMathML} is true and ignored if prefix is null.
+     * <p>
+     * Default is <tt>m</tt>.
+     * Must be non-null and a valid NCName.
      */
     private String mathMLPrefix;
     
@@ -113,6 +123,10 @@ public class DOMOutputOptions implements Cloneable {
      */
     private DOMPostProcessor[] domPostProcessors;
     
+    /**
+     * Optional helper to "resolve" (i.e. munge) any XHTML links found during page creation.
+     * This may be useful if generating a set of hyperlinked pages.
+     */
     private LinkResolver linkResolver;
     
     public DOMOutputOptions() {
@@ -179,14 +193,9 @@ public class DOMOutputOptions implements Cloneable {
         return mathMLPrefix;
     }
 
-    /**
-     * FIXME: This doesn't currently check that the prefix is a valid NCName!
-     * 
-     * @param mathMLPrefix
-     */
     public void setMathMLPrefix(String mathMLPrefix) {
-        if (mathMLPrefix==null || mathMLPrefix.length()==0) {
-            throw new IllegalArgumentException("MathML prefix must be at least 1 character long");
+        if (!XMLUtilities.isXMLNCName(mathMLPrefix)) {
+            throw new IllegalArgumentException("MathML prefix must be a valid NCName");
         }
         this.mathMLPrefix = mathMLPrefix;
     }
@@ -207,6 +216,10 @@ public class DOMOutputOptions implements Cloneable {
     
     public void setDOMPostProcessors(DOMPostProcessor... domPostProcessors) {
         this.domPostProcessors = domPostProcessors;
+    }
+    
+    public void addDOMPostProcessors(DOMPostProcessor... domPostProcessors) {
+        this.domPostProcessors = ObjectUtilities.concat(this.domPostProcessors, domPostProcessors, DOMPostProcessor.class);
     }
 
 

@@ -115,7 +115,7 @@ public final class TryOutServlet extends BaseServlet {
         Transformer stylesheet = getStylesheet(TRYOUT_XSLT_LOCATION);
         stylesheet.setParameter("context-path", request.getContextPath());
         stylesheet.setParameter("latex-input", inputLaTeX);
-        options.setStylesheet(stylesheet);
+        options.setStylesheets(stylesheet);
         
         /* Generate and serve the resulting web page */
         try {

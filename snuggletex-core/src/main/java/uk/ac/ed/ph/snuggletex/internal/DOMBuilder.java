@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
@@ -735,7 +736,7 @@ public final class DOMBuilder {
         /* Check name. This is easy since our input is good old ASCII so the XML Name production
          * simplifies to the regexp below...
          */
-        if (!rawName.matches("[a-zA-Z_:][a-zA-Z0-9_:.-]*")) {
+        if (!XMLUtilities.isXMLName(rawName)) {
             /* Error: Bad XML Name */
             appendOrThrowError(parentElement, nameToken, ErrorCode.TDEX03, rawName);
             return null;
