@@ -186,11 +186,17 @@ All Rights Reserved
     </xsl:copy>
   </xsl:template>
 
-  <!-- Leave out SnuggleTeX metadata -->
-  <xsl:template match="s:*"/>
-
+  <!-- Deep Copy MathML -->
   <xsl:template match="m:math">
     <xsl:copy-of select="."/>
   </xsl:template>
+
+  <!-- Keep Processing Instructions -->
+  <xsl:template match="processing-instruction()">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+
+  <!-- Leave out SnuggleTeX metadata -->
+  <xsl:template match="s:*"/>
 
 </xsl:stylesheet>
