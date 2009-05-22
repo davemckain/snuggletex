@@ -23,7 +23,7 @@ All Rights Reserved
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
-  exclude-result-prefixes="m s xs">
+  exclude-result-prefixes="s m xs">
 
   <xsl:output method="xhtml"/>
 
@@ -39,26 +39,17 @@ All Rights Reserved
   <!-- Extract page title as first <h2/> heading -->
   <xsl:variable name="title" select="string(/html/body/h2[1])" as="xs:string"/>
 
-  <xsl:template match="html">
-    <html xml:lang="en" lang="en">
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </html>
-  </xsl:template>
-
   <xsl:template match="head">
     <head>
-      <!-- Copy any PIs added earlier in the process -->
-      <xsl:copy-of select="processing-instruction()"/>
-      <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
-      <!-- Copy any existing <meta/> elements -->
-      <xsl:apply-templates select="meta"/>
+      <!-- Copy anything already added by SnuggleTeX -->
+      <xsl:copy-of select="node()"/>
       <meta name="description" content="SnuggleTeX Documentation" />
       <meta name="author" content="David McKain" />
       <meta name="publisher" content="The University of Edinburgh" />
       <link rel="stylesheet" href="{$context-path}/includes/core.css" />
       <link rel="stylesheet" href="{$context-path}/includes/website.css" />
       <link rel="stylesheet" href="{$context-path}/includes/snuggletex.css" />
+      <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
     </head>
   </xsl:template>
 
