@@ -23,6 +23,7 @@ All Rights Reserved
   <!-- Import basic formatting stylesheet -->
   <xsl:import href="format-output.xsl"/>
 
+  <xsl:param name="mathml-capable" as="xs:boolean" required="yes"/>
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
   <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
   <xsl:param name="parsing-errors" as="element(s:error)*"/>
@@ -72,9 +73,16 @@ All Rights Reserved
   -->
   <xsl:template match="body" mode="handle-successful-input">
     <h3>MathML rendered by your browser</h3>
-    <div class="result">
-      <xsl:copy-of select="node()"/>
-    </div>
+    <xsl:choose>
+      <xsl:when test="$mathml-capable">
+        <div class="result">
+          <xsl:copy-of select="node()"/>
+        </div>
+      </xsl:when>
+      <xsl:otherwise>
+        (Your browser cannot display MathML.)
+      </xsl:otherwise>
+    </xsl:choose>
 
     <h3>MathML source</h3>
     <pre class="result">
