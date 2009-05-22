@@ -9,11 +9,22 @@ $Id$
 
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:html="http://www.w3.org/1999/xhtml"
-  exclude-result-prefixes="html">
+  xmlns:h="http://www.w3.org/1999/xhtml"
+  exclude-result-prefixes="h">
+
+  <xsl:template match="h:html">
+    <html>
+      <!-- Keep top-level MathML declaration, if made -->
+      <xsl:copy-of select="namespace::*[string(.)='http://www.w3.org/1998/Math/MathML']"/>
+      <!-- Keep non-XML attributes -->
+      <xsl:copy-of select="@*[not(starts-with(name(),'xml:'))]"/>
+      <!-- Descend -->
+      <xsl:apply-templates/>
+    </html>
+  </xsl:template>
 
   <!-- Replace XHTML elements with corresponding variants in no namespace -->
-  <xsl:template match="html:*">
+  <xsl:template match="h:*">
     <xsl:element name="{local-name()}">
       <xsl:copy-of select="@*[not(starts-with(name(),'xml:'))]"/>
       <xsl:apply-templates/>
