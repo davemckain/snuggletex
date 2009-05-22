@@ -162,6 +162,15 @@ public final class UpConversionDemoServlet extends BaseServlet {
             }
         }
         
+        /* Decide what type of page to output based on UserAgent, following
+         * same logic as MathInputDemoServlet
+         */
+        WebPageType webPageType= chooseBestWebPageType(request);
+        boolean mathMLCapable = webPageType!=null;
+        if (webPageType==null) {
+            webPageType = WebPageType.PROCESSED_HTML;
+        }
+        
         /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
          * even though most of the interesting page content is going to be fed in as stylesheet
          * parameters.
@@ -170,17 +179,17 @@ public final class UpConversionDemoServlet extends BaseServlet {
          * we produced manually above, though this will actually be recreated using the standard
          * SnuggleTeX process.)
          */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.CROSS_BROWSER_XHTML);
+        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         options.setDOMPostProcessors(new UpConvertingPostProcessor());
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
-        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setIndenting(true);
         options.setIncludingStyleElement(false);
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("context-path", request.getContextPath());
+        viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);

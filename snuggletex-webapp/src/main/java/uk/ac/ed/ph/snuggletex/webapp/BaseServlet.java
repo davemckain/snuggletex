@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -86,5 +88,26 @@ abstract class BaseServlet extends HttpServlet {
         serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         serializer.setOutputProperty(OutputKeys.ENCODING, "US-ASCII");
         return serializer;
+    }
+    
+    /**
+     * Convenience method which picks the most appropriate MathML-based {@link WebPageType}
+     * for the current UserAgent, returning null if the UserAgent does not appear to support
+     * MathML.
+     * 
+     * @param request
+     */
+    protected WebPageType chooseBestWebPageType(final HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        WebPageType result = null;
+        if (userAgent!=null) {
+            if (userAgent.contains("MathPlayer ")) {
+                result  = WebPageType.MATHPLAYER_HTML;
+            }
+            else if (userAgent.contains("Gecko/")) {
+                result  = WebPageType.MOZILLA;
+            }
+        }
+        return result ;
     }
 }

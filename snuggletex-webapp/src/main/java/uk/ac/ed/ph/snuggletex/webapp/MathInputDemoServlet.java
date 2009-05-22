@@ -143,22 +143,13 @@ public final class MathInputDemoServlet extends BaseServlet {
         }
         
         /* Decide what type of page to output based on UserAgent */
-        String userAgent = request.getHeader("User-Agent");
-        WebPageType webPageType= null;
-        boolean mathMLCapable = true;
-        if (userAgent!=null) {
-            if (userAgent.contains("MathPlayer ")) {
-                webPageType = WebPageType.MATHPLAYER_HTML;
-            }
-            else if (userAgent.contains("Gecko/")) {
-                webPageType = WebPageType.MOZILLA;
-            }
-        }
+        WebPageType webPageType= chooseBestWebPageType(request);
+        boolean mathMLCapable = webPageType!=null;
+        
+        /* If UserAgent can't handle MathML then we'll use HTML output and get the XSLT
+         * to replace the MathML with a reference to an image rendition of it.
+         */
         if (webPageType==null) {
-            /* UserAgent can't handle MathML so we'll use HTML output and get the XSLT
-             * to replace the MathML with a reference to an image rendition of it.
-             */
-            mathMLCapable = false;
             webPageType = WebPageType.PROCESSED_HTML;
         }
         
@@ -195,4 +186,6 @@ public final class MathInputDemoServlet extends BaseServlet {
             throw new ServletException("Unexpected Exception", e);
         }
     }
+    
+
 }
