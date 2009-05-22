@@ -248,6 +248,7 @@ public final class DocumentationServlet extends BaseServlet {
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setIndenting(true);
+        options.setIncludingStyleElement(false);
         if (webPageType==WebPageType.PROCESSED_HTML) {
             /* Create folder for storing MathML images. */
             File imageOutputDirectory = IOUtilities.ensureDirectoryCreated(mapResourcePath(imageOutputDirectoryResourcePath));

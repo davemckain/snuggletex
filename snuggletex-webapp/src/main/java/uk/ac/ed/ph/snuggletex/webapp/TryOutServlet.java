@@ -83,13 +83,8 @@ public final class TryOutServlet extends BaseServlet {
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        options.setTitle("SnuggleTeX - Try Out");
-        options.setAddingTitleHeading(false); /* We'll put our own title in */
         options.setIndenting(true);
-        options.setCSSStylesheetURLs(
-                request.getContextPath() + "/includes/physics.css",
-                request.getContextPath() + "/includes/snuggletex.css"
-        );
+        options.setIncludingStyleElement(false);
         
         /* Create output for logging purposes */
         String xmlString = session.buildXMLString(options);

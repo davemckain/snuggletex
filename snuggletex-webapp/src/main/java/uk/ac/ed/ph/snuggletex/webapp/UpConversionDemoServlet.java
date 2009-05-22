@@ -170,17 +170,13 @@ public final class UpConversionDemoServlet extends BaseServlet {
          * we produced manually above, though this will actually be recreated using the standard
          * SnuggleTeX process.)
          */
-        WebPageOutputOptions webOutputOptions = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.CROSS_BROWSER_XHTML);
-        webOutputOptions.setDOMPostProcessors(new UpConvertingPostProcessor());
-        webOutputOptions.setMathVariantMapping(true);
-        webOutputOptions.setAddingMathAnnotations(true);
-        webOutputOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        webOutputOptions.setTitle("MathML Semantic Up-Conversion Demo");
-        webOutputOptions.setAddingTitleHeading(false); /* We'll put our own title in */
-        webOutputOptions.setIndenting(true);
-        webOutputOptions.setCSSStylesheetURLs(
-                request.getContextPath() + "/includes/physics.css"
-        );
+        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.CROSS_BROWSER_XHTML);
+        options.setDOMPostProcessors(new UpConvertingPostProcessor());
+        options.setMathVariantMapping(true);
+        options.setAddingMathAnnotations(true);
+        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
+        options.setIndenting(true);
+        options.setIncludingStyleElement(false);
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
@@ -193,11 +189,11 @@ public final class UpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpconverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
-        webOutputOptions.setStylesheets(viewStylesheet);
+        options.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(webOutputOptions, response, response.getOutputStream());
+            session.writeWebPage(options, response, response.getOutputStream());
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);
