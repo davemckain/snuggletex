@@ -76,6 +76,8 @@ public final class MathInputDemoServlet extends BaseServlet {
         else {
             inputLaTeX = DEFAULT_INPUT;
         }
+        /* Read in other parameters */
+        boolean addMathAnnotations = request.getParameter("annotate")!=null;
         
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
@@ -91,9 +93,9 @@ public final class MathInputDemoServlet extends BaseServlet {
         resultDocument.appendChild(resultRoot);
         DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
-        domOptions.setAddingMathAnnotations(true);
+        domOptions.setAddingMathAnnotations(addMathAnnotations);
         domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
-        session.buildDOMSubtree(resultRoot);
+        session.buildDOMSubtree(resultRoot, domOptions);
         
         /* See if parsing succeeded and generated a single <math/> element. We'll only continue
          * up-converting if this happened.
@@ -153,8 +155,9 @@ public final class MathInputDemoServlet extends BaseServlet {
             }
         }
         if (webPageType==null) {
-            /* UserAgent can't handle MathML so we'll use HTML output and actually strip out
-             * the MathML from the output. */
+            /* UserAgent can't handle MathML so we'll use HTML output and get the XSLT
+             * to replace the MathML with a reference to an image rendition of it.
+             */
             mathMLCapable = false;
             webPageType = WebPageType.PROCESSED_HTML;
         }
@@ -167,25 +170,26 @@ public final class MathInputDemoServlet extends BaseServlet {
          * we produced manually above, though this will actually be recreated using the standard
          * SnuggleTeX process.)
          */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
-        options.setMathVariantMapping(true);
-        options.setAddingMathAnnotations(true);
-        options.setIndenting(true);
-        options.setIncludingStyleElement(false);
+        WebPageOutputOptions webOptions = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
+        webOptions.setMathVariantMapping(true);
+        webOptions.setAddingMathAnnotations(addMathAnnotations);
+        webOptions.setIndenting(true);
+        webOptions.setIncludingStyleElement(false);
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("context-path", request.getContextPath());
         viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
+        viewStylesheet.setParameter("add-annotations", Boolean.valueOf(addMathAnnotations));
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
         viewStylesheet.setParameter("result-mathml", resultMathML);
-        options.setStylesheets(viewStylesheet);
+        webOptions.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(options, response, response.getOutputStream());
+            session.writeWebPage(webOptions, response, response.getOutputStream());
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);

@@ -98,7 +98,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         domOptions.setMathVariantMapping(true);
         domOptions.setAddingMathAnnotations(true);
         domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
-        session.buildDOMSubtree(resultRoot);
+        session.buildDOMSubtree(resultRoot, domOptions);
         
         /* See if parsing succeeded and generated a single <math/> element. We'll only continue
          * up-converting if this happened.
