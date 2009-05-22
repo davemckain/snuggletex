@@ -183,7 +183,7 @@ public final class WebPageBuilder {
                     stylesheet.transform(input, new DOMResult(document));
                 }
                 catch (TransformerException e) {
-                    throw new SnuggleRuntimeException("Could not apply stylesheet " + stylesheets);
+                    throw new SnuggleRuntimeException("Could not apply stylesheet " + stylesheet);
                 }
             }
         }
