@@ -50,8 +50,12 @@ All Rights Reserved
       <link rel="stylesheet" href="{$context-path}/includes/website.css" />
       <link rel="stylesheet" href="{$context-path}/includes/snuggletex.css" />
       <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
+      <xsl:apply-templates select="." mode="extra-head"/>
     </head>
   </xsl:template>
+
+  <!-- Empty template that importes can implement to add stuff to <head/> -->
+  <xsl:template match="head" mode="extra-head"/>
 
   <xsl:template match="body">
     <body id="{$pageId}">

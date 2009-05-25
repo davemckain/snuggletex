@@ -22,6 +22,7 @@ All Rights Reserved
 
   <!-- Import basic formatting stylesheet -->
   <xsl:import href="format-output.xsl"/>
+  <xsl:import href="demo-utilities.xsl"/>
 
   <xsl:param name="mathml-capable" as="xs:boolean" required="yes"/>
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
@@ -60,7 +61,6 @@ All Rights Reserved
         <label for="annotate">Annotate MathML with input LaTeX</label>
       </div>
     </form>
-
     <xsl:choose>
       <xsl:when test="$is-bad-input">
         <!-- Bad input -->
@@ -111,43 +111,18 @@ All Rights Reserved
     </pre>
   </xsl:template>
 
-  <!--
-  Show SnuggleTeX failure details.
-  -->
+  <!-- Show SnuggleTeX failure details. -->
   <xsl:template match="body" mode="handle-failed-input">
     <h3>Result: LaTeX Errors in Input</h3>
     <p>
       The input you entered contained LaTeX errors as follows:
     </p>
-    <table class="failures">
-      <thead>
-        <tr>
-          <th>Error Code</th>
-          <th>Message</th>
-        </tr>
-      </thead>
-      <tbody>
-        <xsl:for-each select="$parsing-errors">
-          <tr>
-            <td>
-              <xsl:call-template name="make-error-code-link">
-                <xsl:with-param name="error-code" select="@code"/>
-              </xsl:call-template>
-            </td>
-            <td>
-              <pre>
-                <xsl:value-of select="."/>
-              </pre>
-            </td>
-          </tr>
-        </xsl:for-each>
-      </tbody>
-    </table>
+    <xsl:call-template name="format-parsing-errors">
+      <xsl:with-param name="parsing-errors" select="$parsing-errors"/>
+    </xsl:call-template>
   </xsl:template>
 
-  <!--
-  Show bad input details
-  -->
+  <!-- Show bad input details -->
   <xsl:template match="body" mode="handle-bad-input">
     <h3>Result: Bad Input</h3>
     <p>
@@ -155,13 +130,4 @@ All Rights Reserved
     </p>
   </xsl:template>
 
-  <xsl:template name="make-error-code-link">
-    <xsl:param name="error-code" as="xs:string"/>
-    <a href="{$context-path}/documentation/error-codes.html#{$error-code}">
-      <xsl:value-of select="$error-code"/>
-    </a>
-  </xsl:template>
-
-
 </xsl:stylesheet>
-
