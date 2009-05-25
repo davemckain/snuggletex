@@ -13,6 +13,8 @@ import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -23,6 +25,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Standalone utility class for "up-converting" MathML Documents created by either SnuggleTeX
@@ -132,18 +136,39 @@ public class MathMLUpConverter {
         }
         return resultDocument;
     }
-    
-    public Document upConvertASCIIMathML(final Document document, final Map<String, Object> upConversionOptions) {
+
+    public Document upConvertASCIIMathML(final Document asciiMathMLDocument, final Map<String, Object> upConversionOptions) {
         /* First of all we convert the ASCIIMathML into something equivalent to SnuggleTeX output */
         Document fixedDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             Templates fixerStylesheet = stylesheetManager.getStylesheet(ASCIIMATH_FIXER_XSL_LOCATION, true);
-            fixerStylesheet.newTransformer().transform(new DOMSource(document), new DOMResult(fixedDocument));
+            fixerStylesheet.newTransformer().transform(new DOMSource(asciiMathMLDocument), new DOMResult(fixedDocument));
         }
         catch (TransformerException e) {
             throw new SnuggleRuntimeException("ASCIIMathML fixing step failed", e);
         }
         /* Then do the normal SnuggleTeX up-conversion */
         return upConvertSnuggleTeXMathML(fixedDocument, upConversionOptions);
+    }
+
+    /**
+     * Convenience method to up-convert ASCIIMathML, passed as a String. This is the kind of thing
+     * you'd normally extract from the browser's DOM using JavaScript to pass to this code.
+     * 
+     * @param rawASCIIMathML
+     * @param upConversionOptions
+     */
+    public Document upConvertASCIIMathML(final String rawASCIIMathML, final Map<String, Object> upConversionOptions) {
+        Document inputDocument;
+        try {
+            inputDocument = XMLUtilities.createNSAwareDocumentBuilder().parse(new InputSource(new StringReader(rawASCIIMathML)));
+        }
+        catch (SAXException e) {
+            throw new SnuggleRuntimeException("Could not parse ASCIIMathML", e);
+        }
+        catch (IOException e) {
+            throw new SnuggleRuntimeException("Unexpected Exception reading ASCIIMathML String data", e);
+        }
+        return upConvertASCIIMathML(inputDocument, upConversionOptions);
     }
 }

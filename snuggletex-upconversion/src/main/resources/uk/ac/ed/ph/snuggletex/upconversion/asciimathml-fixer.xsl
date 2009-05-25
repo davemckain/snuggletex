@@ -52,6 +52,15 @@ All Rights Reserved
     <xsl:apply-templates/>
   </xsl:template>
 
+  <!--
+  ASCIIMath often outputs empty operators when it expects input that
+  never actually occurs. I'm going to strip this off, even though there
+  may be hidden nasties lurking behind this approach...
+  -->
+  <xsl:template match="mo[.='']">
+    <!-- Remove -->
+  </xsl:template>
+
   <!-- ***************************************************************
 
   Fence balanced parentheses where possible. ASCIIMath outputs the
