@@ -41,15 +41,11 @@ All Rights Reserved
 
   <xsl:template match="head">
     <xsl:apply-imports/>
+    <script type="text/javascript" src="{$context-path}/includes/jquery.js"></script>
+    <script type="text/javascript">var $j = jQuery.noConflict();</script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathML.js"></script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLeditor.js"></script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLcustomisations.js"></script>
-    <script type="text/javascript"><![CDATA[
-      function updatePreview() {
-        AMdisplayQuoted('asciiMathInput','preview',true);
-      }
-      window.onload = updatePreview;
-    ]]></script>
   </xsl:template>
 
   <xsl:template match="body" mode="make-content">
@@ -61,16 +57,21 @@ All Rights Reserved
       of this while you type. Hit <tt>Go!</tt> to see the resulting outputs, which take
       the MathML produced by ASCIIMathML and do stuff to it.
     </p>
-    <form method="post" onsubmit="submitMathML('preview', 'asciiMathML')">
+    <form method="post">
       ASCIIMath Input:
-      <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"
-        onkeyup="updatePreview()" />
-      <input type="hidden" id="asciiMathML" name="asciiMathML" />
-      <input type="submit" value="Go!" />
+      <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"/>
+      <input type="hidden" id="asciiMathML" name="asciiMathML"/>
+      <input type="submit" value="Go!"/>
     </form>
     <div class="result">
       Live Preview: <div id="preview"><xsl:text> </xsl:text></div>
     </div>
+    <!-- Wire up the form to the preview box -->
+    <script type="text/javascript">
+      $j(document).ready(function() {
+        setupASCIIMathMLInput('asciiMathInput', 'asciiMathML', 'preview');
+      });
+    </script>
 
     <xsl:if test="not($is-new-form)">
       <xsl:apply-templates select="." mode="handle-successful-input"/>
