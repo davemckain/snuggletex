@@ -967,6 +967,24 @@ A \cup B \setminus C
 \setminus
 <setdiff/>
 ====
+## Comma operator
+a,b
+<list>
+  <ci>a</ci>
+  <ci>b</ci>
+</list>
+====
+x_{1,2}
+<ci>
+  <msub>
+    <mi>x</mi>
+    <mfenced open='' close=''>
+      <mn>1</mn>
+      <mn>2</mn>
+    </mfenced>
+  </msub>
+</ci>
+====
 ## Other functions
 \Re x
 <apply>

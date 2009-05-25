@@ -35,7 +35,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- ************************************************************ -->
 
   <!-- Entry Point -->
-  <xsl:template name="s:cmathml-to-maxima">
+  <xsl:template name="s:cmathml-to-maxima" as="node()*">
     <xsl:param name="elements" as="item()*"/>
     <xsl:apply-templates select="$elements" mode="cmathml-to-maxima"/>
   </xsl:template>
@@ -572,9 +572,50 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:copy-of select="local:map-identifier(., string(.))"/>
   </xsl:template>
 
-  <!-- Map subscripts in a reasonable way -->
-  <xsl:template match="ci[count(node())=1 and msub]" mode="cmathml-to-maxima" as="node()">
-    <xsl:copy-of select="local:map-identifier(., concat(msub/*[1], '_', msub/*[2]))"/>
+  <!-- Map subscripts in a reasonable (but rather limited) way -->
+  <xsl:template match="ci[count(node())=1 and msub]" mode="cmathml-to-maxima" as="node()+">
+    <!-- Drill down into the subscripts (which are PMathML!) -->
+    <xsl:apply-templates select="msub" mode="ci-subscripted">
+      <xsl:with-param name="ci" select="."/>
+    </xsl:apply-templates>
+  </xsl:template>
+
+  <xsl:template match="msub[*[1][self::mi]]" mode="ci-subscripted" as="node()+">
+    <xsl:param name="ci" as="element(ci)"/>
+    <xsl:copy-of select="local:map-identifier($ci, string(*[1]))"/>
+    <xsl:text>[</xsl:text>
+    <xsl:apply-templates select="*[2]" mode="ci-subscripted">
+      <xsl:with-param name="ci" select="$ci"/>
+    </xsl:apply-templates>
+    <xsl:text>]</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="mn" mode="ci-subscripted" as="node()+">
+    <xsl:param name="ci" as="element(ci)"/>
+    <xsl:copy-of select="node()"/>
+  </xsl:template>
+
+  <xsl:template match="mi" mode="ci-subscripted" as="node()">
+    <xsl:param name="ci" as="element(ci)"/>
+    <xsl:copy-of select="local:map-identifier($ci, string(.))"/>
+  </xsl:template>
+
+  <xsl:template match="mfenced" mode="ci-subscripted" as="node()+">
+    <xsl:param name="ci" as="element(ci)"/>
+    <xsl:for-each select="*">
+      <xsl:apply-templates select="." mode="ci-subscripted">
+        <xsl:with-param name="ci" select="$ci"/>
+      </xsl:apply-templates>
+      <xsl:if test="position()!=last()">
+        <xsl:text>,</xsl:text>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template match="*" mode="ci-subscripted" as="node()">
+    <xsl:param name="ci" as="element(ci)"/>
+    <!-- Fail: cannot create subscripted variable -->
+    <xsl:copy-of select="s:make-error('UMEG04', $ci, ())"/>
   </xsl:template>
 
   <!-- Don't know what to do in other cases -->

@@ -919,6 +919,13 @@ All Rights Reserved
     </xsl:call-template>
   </xsl:template>
 
+  <!-- Treat a,b,c with no opener and closer as a list -->
+  <xsl:template match="mfenced[$s:assume-square-list and @open='' and @close='']" mode="pmathml-to-cmathml" as="element(list)">
+    <list>
+      <xsl:apply-templates mode="pmathml-to-cmathml"/>
+    </list>
+  </xsl:template>
+
   <xsl:template match="mfenced[@open='(' and @close=')' and count(*)=1]" mode="pmathml-to-cmathml" as="element()*">
     <!-- Treat this as (...), which basically means we treat the content as a single group -->
     <xsl:call-template name="local:process-group">
@@ -1033,6 +1040,13 @@ All Rights Reserved
     </ci>
   </xsl:template>
 
+  <!-- We'll allow the same as above if it has a fence as its second argument -->
+  <xsl:template match="msub[*[2][self::mfenced] and *[1][self::mi or self::mn or self::msub]]" mode="pmathml-to-cmathml" as="element(ci)">
+    <ci>
+      <xsl:copy-of select="."/>
+    </ci>
+  </xsl:template>
+
   <!-- Special units created using the \units{...} macro -->
   <xsl:template match="mi[@class='MathML-Unit']" mode="pmathml-to-cmathml" as="element(semantics)">
     <semantics definitionURL="http://www.ph.ed.ac.uk/snuggletex/units">
@@ -1072,8 +1086,8 @@ All Rights Reserved
 
   <!-- Fallback for unsupported MathML elements -->
   <xsl:template match="*" mode="pmathml-to-cmathml" as="element(s:fail)">
-    <!-- Failure: no support for this element -->
-    <xsl:copy-of select="s:make-error('UCEG00', ., (local-name()))"/>
+    <!-- Failure: cannot up-convert this presentation MathML element -->
+    <xsl:copy-of select="s:make-error('UCEG00', ., ())"/>
   </xsl:template>
 
 </xsl:stylesheet>

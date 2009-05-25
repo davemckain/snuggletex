@@ -25,7 +25,13 @@ x
 ====
 ## Demonstrates flattening subscripted identifiers for Maxima
 x_1
-x_1
+x[1]
+====
+1_x
+!UMEG04
+====
+x_{1,2}
+x[1,2]
 ====
 ## @ is currently treated as an identfier, which has no Maxima form
 @
@@ -345,6 +351,11 @@ union(A, intersection(B, C))
 ====
 A \cup B \setminus C
 union(A, setdifference(B, C))
+====
+## Comma operator
+## (This is maybe not the best output form...)
+a,b
+[a, b]
 ====
 ## Other functions
 \Re x

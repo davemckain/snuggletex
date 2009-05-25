@@ -605,6 +605,22 @@ A \cup B \setminus C
   <mi>C</mi>
 </mrow>
 ====
+## Comma operator
+a,b
+<mfenced open='' close=''>
+  <mi>a</mi>
+  <mi>b</mi>
+</mfenced>
+====
+x_{1,2}
+<msub>
+  <mi>x</mi>
+  <mfenced open='' close=''>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mfenced>
+</msub>
+====
 ## Other functions
 \Re x
 <mi>&#x211c;</mi>

@@ -130,7 +130,7 @@ All Rights Reserved
   this won't make sense further in the up-conversion process
   -->
   <xsl:variable name="local:infix-operators" as="xs:string+"
-    select="('&#x2228;', '&#x2227;',
+    select="(',', '&#x2228;', '&#x2227;',
              $local:relation-characters,
              '&#x2216;', '&#x222a;', '&#x2229;',
              '+', '-',
@@ -216,6 +216,12 @@ All Rights Reserved
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <!-- Infix Operator Grouping -->
+      <xsl:when test="$elements[local:is-matching-infix-mo(., (','))]">
+        <!-- Comma operator, which we'll convert into an fence with empty opener and closer -->
+        <xsl:call-template name="local:group-infix-comma">
+          <xsl:with-param name="elements" select="$elements"/>
+        </xsl:call-template>
+      </xsl:when>
       <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2228;'))]">
         <!-- Logical Or -->
         <xsl:call-template name="local:group-associative-infix-mo">
@@ -330,6 +336,29 @@ All Rights Reserved
     <xsl:param name="match" as="xs:string+"/>
     <xsl:sequence select="boolean(local:is-infix-operator-application($element) and $element=$match)"/>
   </xsl:function>
+
+  <!-- Groups the infix comma operator -->
+  <xsl:template name="local:group-infix-comma" as="element()*">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <mfenced open="" close="">
+      <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-infix-mo(., ',')">
+        <xsl:choose>
+          <xsl:when test="current-grouping-key()">
+            <!-- This is the comma operator, which we will ignore -->
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="s:maybe-wrap-in-mrow">
+              <xsl:with-param name="elements" as="element()*">
+                <xsl:call-template name="local:process-group">
+                  <xsl:with-param name="elements" select="current-group()"/>
+                </xsl:call-template>
+              </xsl:with-param>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each-group>
+    </mfenced>
+  </xsl:template>
 
   <!-- Groups an associative infix <mo/> operator -->
   <xsl:template name="local:group-associative-infix-mo" as="element()*">
@@ -711,15 +740,37 @@ All Rights Reserved
     </xsl:copy>
   </xsl:template>
 
-  <!-- Container elements with unrestricted content -->
-  <xsl:template match="mrow|msqrt" mode="enhance-pmathml" as="element()">
+  <!-- We'll strip <mrow/> if it ends up containing a single child element -->
+  <xsl:template match="mrow" mode="enhance-pmathml" as="element()">
     <!-- Process contents as normal -->
     <xsl:variable name="processed-contents" as="element()*">
       <xsl:call-template name="local:process-group">
         <xsl:with-param name="elements" select="*"/>
       </xsl:call-template>
     </xsl:variable>
-    <!-- If contents consists of a single <mrow/>, strip it off and descend down -->
+    <xsl:choose>
+      <xsl:when test="count($processed-contents)=1">
+        <xsl:copy-of select="$processed-contents"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <mrow>
+          <xsl:copy-of select="$processed-contents"/>
+        </mrow>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!--
+  Container elements with unrestricted content. If these end up containing
+  a single <mrow/> then we'll just ignore it and pull in its children
+  -->
+  <xsl:template match="msqrt" mode="enhance-pmathml" as="element()">
+    <!-- Process contents as normal -->
+    <xsl:variable name="processed-contents" as="element()*">
+      <xsl:call-template name="local:process-group">
+        <xsl:with-param name="elements" select="*"/>
+      </xsl:call-template>
+    </xsl:variable>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:choose>
