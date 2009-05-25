@@ -54,7 +54,7 @@ All Rights Reserved
     </description>
     <servlet-name>DocumentationServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.DocumentationServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <load-on-startup>0</load-on-startup>
     <init-param>
       <param-name>caching</param-name>
       <param-value>false</param-value>
@@ -86,10 +86,18 @@ All Rights Reserved
   </servlet>
   <servlet>
     <description>
-      Demonstrates the Up-conversion process
+      Demonstrates the Up-conversion process for SnuggleTeX input
     </description>
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionDemoServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>
+      Demonstrates the Up-conversion process for ASCIIMathML input
+    </description>
+    <servlet-name>ASCIIMathMLUpConversionDemoServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.ASCIIMathMLUpConversionDemoServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
@@ -111,5 +119,9 @@ All Rights Reserved
   <servlet-mapping>
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <url-pattern>/UpConversionDemo</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ASCIIMathMLUpConversionDemoServlet</servlet-name>
+    <url-pattern>/ASCIIMathMLUpConversionDemo</url-pattern>
   </servlet-mapping>
 </web-app>

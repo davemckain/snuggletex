@@ -119,6 +119,7 @@ All Rights Reserved
               <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
               <li><a class="mathInputDemo" href="{$context-path}/MathInputDemo">Simple Math Input Demo</a></li>
               <li><a class="upConversionDemo" href="{$context-path}/UpConversionDemo">MathML Semantic Up-Conversion Demo</a></li>
+              <li><a class="asciiMathMLUpConversionDemo" href="{$context-path}/ASCIIMathMLUpConversionDemo">ASCIIMathML Up-Conversion Demo</a></li>
             </ul>
 
             <h2>External Links</h2>

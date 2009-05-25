@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Servlet demonstrating the up-conversion process on user-entered MATH mode
- * inputs.
+ * SnuggleTeX input.
  * 
  * @author  David McKain
  * @version $Revision:158 $
@@ -108,7 +108,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         Element mathElement = null;
         String parallelMathML = null;
         String pMathMLInitial = null;
-        String pMathMLUpconverted = null;
+        String pMathMLUpConverted = null;
         String cMathML = null;
         String maximaInput = null;
         List<Element> parsingErrors = null;
@@ -133,9 +133,9 @@ public final class UpConversionDemoServlet extends BaseServlet {
             Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathElement.getOwnerDocument(), upConversionOptions);
             mathElement = (Element) upConvertedMathDocument.getDocumentElement().getFirstChild();
             parallelMathML = MathMLUtilities.serializeElement(mathElement, "ASCII");
-            pMathMLUpconverted = MathMLUtilities.serializeElement(MathMLUtilities.extractFirstSemanticsBranch(mathElement), "ASCII");
+            pMathMLUpConverted = MathMLUtilities.serializeElement(MathMLUtilities.extractFirstSemanticsBranch(mathElement), "ASCII");
             NodeList cMathMLElement = MathMLUtilities.extractAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
-            cMathML = cMathMLElement!=null ? MathMLUtilities.serializeElement((Element) cMathMLElement.item(0), "ASCII") : null;
+            cMathML = cMathMLElement!=null && cMathMLElement.getLength()>0 ? MathMLUtilities.serializeElement((Element) cMathMLElement.item(0), "ASCII") : null;
             maximaInput = MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         }
         else {
@@ -195,7 +195,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
         viewStylesheet.setParameter("parallel-mathml", parallelMathML);
         viewStylesheet.setParameter("pmathml-initial", pMathMLInitial);
-        viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpconverted);
+        viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpConverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
         options.setStylesheets(viewStylesheet);

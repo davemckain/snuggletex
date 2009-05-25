@@ -4,7 +4,7 @@
 $Id$
 
 Overrides format-output.xsl to add in functionality for
-demonstrating LaTeX -> Presentation MathML -> Content MathML -> Maxima
+demonstrating ASCIIMathML -> Presentation MathML -> Content MathML -> Maxima
 up-conversion process.
 
 Copyright (c) 2009 University of Edinburgh.
@@ -24,51 +24,57 @@ All Rights Reserved
   <!-- Import basic formatting stylesheet -->
   <xsl:import href="format-output.xsl"/>
 
-  <xsl:param name="mathml-capable" as="xs:boolean" required="yes"/>
-  <xsl:param name="latex-input" as="xs:string" required="yes"/>
-  <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
-  <xsl:param name="parsing-errors" as="element(s:error)*"/>
+  <xsl:param name="is-new-form" as="xs:boolean" required="yes"/>
+  <xsl:param name="ascii-math-input" as="xs:string?" select="'e^(i pi)+1 = 0'"/>
+  <xsl:param name="ascii-math-output" as="xs:string?"/>
+  <xsl:param name="parallel-mathml-element" as="element()?"/>
   <xsl:param name="parallel-mathml" as="xs:string?"/>
-  <xsl:param name="pmathml-initial" as="xs:string?"/>
   <xsl:param name="pmathml-upconverted" as="xs:string?"/>
   <xsl:param name="cmathml" as="xs:string?"/>
   <xsl:param name="maxima-input" as="xs:string?"/>
 
   <!-- Override page ID -->
-  <xsl:variable name="pageId" select="'upConversionDemo'" as="xs:string"/>
+  <xsl:variable name="pageId" select="'asciiMathMLUpConversionDemo'" as="xs:string"/>
 
   <!-- Override title -->
-  <xsl:variable name="title" select="'MathML Semantic Up-Conversion Demo'" as="xs:string"/>
+  <xsl:variable name="title" select="'ASCIIMathML Up-Conversion Demo'" as="xs:string"/>
+
+  <xsl:template match="head">
+    <xsl:apply-imports/>
+    <script type="text/javascript" src="{$context-path}/includes/ASCIIMathML.js"></script>
+    <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLeditor.js"></script>
+    <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLcustomisations.js"></script>
+    <script type="text/javascript"><![CDATA[
+      function updatePreview() {
+        AMdisplayQuoted('asciiMathInput','preview',true);
+      }
+      window.onload = updatePreview;
+    ]]></script>
+  </xsl:template>
 
   <xsl:template match="body" mode="make-content">
     <h2><xsl:value-of select="$title"/></h2>
 
-    <!-- Now do input form -->
-    <h3>Input</h3>
+    <!-- Input Form -->
     <p>
-      Enter a LaTeX math mode expression
-      into the box below and hit <tt>Go!</tt> to see the resulting outputs.
+      Enter some ASCIIMathML into the box below. You should see a real time preview
+      of this while you type. Hit <tt>Go!</tt> to see the resulting outputs, which take
+      the MathML produced by ASCIIMathML and do stuff to it.
     </p>
-    <form method="POST" id="inputForm">
-        LaTeX Math Mode Input: \[ <input id="input" name="input" type="text" value="{$latex-input}"/> \]
-        <input type="submit" value="Go!" />
-        <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />
+    <form method="post" onsubmit="submitMathML('preview', 'asciiMathML')">
+      ASCIIMath Input:
+      <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"
+        onkeyup="updatePreview()" />
+      <input type="hidden" id="asciiMathML" name="asciiMathML" />
+      <input type="submit" value="Go!" />
     </form>
+    <div class="result">
+      Live Preview: <div id="preview"><xsl:text> </xsl:text></div>
+    </div>
 
-    <xsl:choose>
-      <xsl:when test="$is-bad-input">
-        <!-- Bad input -->
-        <xsl:apply-templates select="." mode="handle-bad-input"/>
-      </xsl:when>
-      <xsl:when test="exists($parsing-errors)">
-        <!-- SnuggleTeX Parsing Error(s) -->
-        <xsl:apply-templates select="." mode="handle-failed-input"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <!-- Successful Parsing -->
-        <xsl:apply-templates select="." mode="handle-successful-input"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:if test="not($is-new-form)">
+      <xsl:apply-templates select="." mode="handle-successful-input"/>
+    </xsl:if>
   </xsl:template>
 
   <!--
@@ -77,31 +83,9 @@ All Rights Reserved
   possibility that up-conversion has not been entirely successful.
   -->
   <xsl:template match="body" mode="handle-successful-input">
-    <xsl:choose>
-      <xsl:when test="$mathml-capable">
-        <h3>MathML Output (rendered by your browser)</h3>
-        <div class="result">
-          <xsl:copy-of select="node()"/>
-        </div>
-      </xsl:when>
-      <xsl:otherwise>
-        <h3>MathML Output (converted to an image)</h3>
-        <p>
-          (Your browser does not support MathML so SnuggleTeX has converted the result
-          to an image instead.)
-        </p>
-        <div class="result">
-          <div class="mathml-math">
-            <img src="{$context-path}/MathInputToImage.png?input={encode-for-uri($latex-input)}"
-              alt="{$latex-input}" />
-          </div>
-        </div>
-      </xsl:otherwise>
-    </xsl:choose>
-
-    <h3>Raw Presentation MathML</h3>
+    <h3>Raw ASCIIMathML Output</h3>
     <pre class="result">
-      <xsl:value-of select="$pmathml-initial"/>
+      <xsl:value-of select="$ascii-math-output"/>
     </pre>
 
     <h3>Enhanced Presentation MathML</h3>
@@ -110,7 +94,7 @@ All Rights Reserved
     </pre>
 
     <h3>Content MathML</h3>
-    <xsl:variable name="content-failures" as="element(s:fail)*" select="m:math/m:semantics/m:annotation-xml[@encoding='MathML-Content-upconversion-failures']/*"/>
+    <xsl:variable name="content-failures" as="element(s:fail)*" select="$parallel-mathml-element/m:semantics/m:annotation-xml[@encoding='MathML-Content-upconversion-failures']/*"/>
     <xsl:choose>
       <xsl:when test="exists($content-failures)">
         <p>
@@ -129,7 +113,7 @@ All Rights Reserved
     </xsl:choose>
 
     <h3>Maxima Input Form</h3>
-    <xsl:variable name="maxima-failures" as="element(s:fail)*" select="m:math/m:semantics/m:annotation-xml[@encoding='Maxima-upconversion-failures']/*"/>
+    <xsl:variable name="maxima-failures" as="element(s:fail)*" select="$parallel-mathml-element/m:semantics/m:annotation-xml[@encoding='Maxima-upconversion-failures']/*"/>
     <xsl:choose>
       <xsl:when test="exists($content-failures)">
         <p>
@@ -198,56 +182,11 @@ All Rights Reserved
     </table>
   </xsl:template>
 
-  <!--
-  Show SnuggleTeX failure details.
-  -->
-  <xsl:template match="body" mode="handle-failed-input">
-    <h3>Result: LaTeX Errors in Input</h3>
-    <p>
-      The input you entered contained LaTeX errors as follows:
-    </p>
-    <table class="failures">
-      <thead>
-        <tr>
-          <th>Error Code</th>
-          <th>Message</th>
-        </tr>
-      </thead>
-      <tbody>
-        <xsl:for-each select="$parsing-errors">
-          <tr>
-            <td>
-              <xsl:call-template name="make-error-code-link">
-                <xsl:with-param name="error-code" select="@code"/>
-              </xsl:call-template>
-            </td>
-            <td>
-              <pre>
-                <xsl:value-of select="."/>
-              </pre>
-            </td>
-          </tr>
-        </xsl:for-each>
-      </tbody>
-    </table>
-  </xsl:template>
-
-  <!--
-  Show bad input details
-  -->
-  <xsl:template match="body" mode="handle-bad-input">
-    <h3>Result: Bad Input</h3>
-    <p>
-      Sorry, your input was not successfully parsed as Math Mode input.
-    </p>
-  </xsl:template>
-
   <xsl:template name="make-error-code-link">
     <xsl:param name="error-code" as="xs:string"/>
     <a href="{$context-path}/documentation/error-codes.html#{$error-code}">
       <xsl:value-of select="$error-code"/>
     </a>
   </xsl:template>
-
 
 </xsl:stylesheet>
