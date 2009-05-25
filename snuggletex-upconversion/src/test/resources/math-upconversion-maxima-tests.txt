@@ -400,6 +400,14 @@ exp
 {}+{}
 operator("+")
 ====
+## 2 multiplied by nothing
+2{}
+!UMEOP0
+====
+## This is not be best error here, but will do for the time being
+^2
+!UMEOP0
+====
 ## Likewise. (This is currently the only way of obtaining operator("^"))
 {}^{}
 operator("^")

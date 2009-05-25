@@ -299,10 +299,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:message terminate="yes">
-              Operator <xsl:value-of select="$operator/local-name()"/> cannot
-              be used in a unary context.
-            </xsl:message>
+            <xsl:copy-of select="s:make-error('UMEOP0', ., ($operator))"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>

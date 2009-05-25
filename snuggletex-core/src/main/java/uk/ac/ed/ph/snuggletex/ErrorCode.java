@@ -125,7 +125,8 @@ public enum ErrorCode {
     UMEG02(),
     UMEG03(),
     UMEG04(),
-    UMEFX0()
+    UMEFX0(),
+    UMEOP0()
     
     ;
 }
