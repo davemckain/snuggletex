@@ -152,17 +152,31 @@ All Rights Reserved
     <xsl:sequence select="boolean($element[self::mo])"/>
   </xsl:function>
 
-  <!-- Tests whether the given element is an <mo/> infix operator as listed above -->
+  <!--
+  Tests whether the given element is an <mo/> infix operator as listed above
+  -->
   <xsl:function name="local:is-infix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="local:is-operator($element) and $element=$local:infix-operators"/>
   </xsl:function>
 
-  <!-- Additionally tests that the given element is applied in infix context -->
-  <xsl:function name="local:is-infix-operator-application" as="xs:boolean">
+  <!--
+  Tests that the given element is an <mo/> infix operator that doesn't immediately
+  follow another operator.
+  -->
+  <xsl:function name="local:is-leading-infix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
     <xsl:sequence select="local:is-infix-operator($element) and not(exists($previous) and local:is-operator($previous))"/>
+  </xsl:function>
+
+  <!--
+  Tests whether the given element is a particular leading infix operator
+  -->
+  <xsl:function name="local:is-matching-leading-infix-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:param name="match" as="xs:string+"/>
+    <xsl:sequence select="boolean(local:is-leading-infix-operator($element) and $element=$match)"/>
   </xsl:function>
 
   <xsl:function name="local:is-factorial-operator" as="xs:boolean">
@@ -215,84 +229,82 @@ All Rights Reserved
   <xsl:template name="local:process-group" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
-      <!-- Infix Operator Grouping -->
-      <xsl:when test="$elements[local:is-matching-infix-mo(., (','))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., (','))]">
         <!-- Comma operator, which we'll convert into an fence with empty opener and closer -->
         <xsl:call-template name="local:group-infix-comma">
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2228;'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('&#x2228;'))]">
         <!-- Logical Or -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('&#x2228;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2227;'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('&#x2227;'))]">
         <!-- Logical And -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('&#x2227;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., $local:relation-characters)]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., $local:relation-characters)]">
         <!-- Relations are all kept at the same precedence level -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="$local:relation-characters"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x222a;'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('&#x222a;'))]">
         <!-- Set Union -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('&#x222a;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2229;'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('&#x2229;'))]">
         <!-- Set Intersection -->
         <xsl:call-template name="local:group-left-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('&#x2229;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('&#x2216;'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('&#x2216;'))]">
         <!-- Set Difference -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('&#x2216;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('+'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('+'))]">
         <!-- Addition -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('+')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., ('-'))]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., ('-'))]">
         <!-- Subtraction -->
         <xsl:call-template name="local:group-left-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="('-')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., $local:explicit-multiplication-characters)]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., $local:explicit-multiplication-characters)]">
         <!-- Explicit Multiplication, detected in various ways -->
         <xsl:call-template name="local:group-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="$local:explicit-multiplication-characters"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-infix-mo(., $local:explicit-division-characters)]">
+      <xsl:when test="$elements[local:is-matching-leading-infix-operator(., $local:explicit-division-characters)]">
         <!-- Explicit Division -->
         <xsl:call-template name="local:group-left-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="match" select="$local:explicit-division-characters"/>
         </xsl:call-template>
       </xsl:when>
-      <!-- Other Groupings -->
       <xsl:when test="$elements[self::mspace]">
         <!-- Any <mspace/> is kept but interpreted as an implicit multiplication as well -->
         <xsl:call-template name="local:handle-mspace-group">
@@ -327,21 +339,11 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <!--
-  Tests whether the given element is a particular <mo/> applied strictly
-  in infix fashion
-  -->
-  <xsl:function name="local:is-matching-infix-mo" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:param name="match" as="xs:string+"/>
-    <xsl:sequence select="boolean(local:is-infix-operator-application($element) and $element=$match)"/>
-  </xsl:function>
-
   <!-- Groups the infix comma operator -->
   <xsl:template name="local:group-infix-comma" as="element()*">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <mfenced open="" close="">
-      <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-infix-mo(., ',')">
+      <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-leading-infix-operator(., ',')">
         <xsl:choose>
           <xsl:when test="current-grouping-key()">
             <!-- This is the comma operator, which we will ignore -->
@@ -364,7 +366,7 @@ All Rights Reserved
   <xsl:template name="local:group-associative-infix-mo" as="element()*">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="match" as="xs:string+" required="yes"/>
-    <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-infix-mo(., $match)">
+    <xsl:for-each-group select="$elements" group-adjacent="local:is-matching-leading-infix-operator(., $match)">
       <xsl:choose>
         <xsl:when test="current-grouping-key()">
           <!-- Copy the matching operator -->
@@ -387,7 +389,7 @@ All Rights Reserved
   <xsl:template name="local:group-left-associative-infix-mo" as="element()*">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="match" as="xs:string+" required="yes"/>
-    <xsl:variable name="operators" select="$elements[local:is-matching-infix-mo(., $match)]" as="element()+"/>
+    <xsl:variable name="operators" select="$elements[local:is-matching-leading-infix-operator(., $match)]" as="element()+"/>
     <xsl:variable name="operator-count" select="count($operators)" as="xs:integer"/>
     <xsl:choose>
       <xsl:when test="$operator-count != 1">
