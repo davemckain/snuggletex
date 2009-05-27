@@ -1,0 +1,183 @@
+\pageId{browserRequirements}
+
+\section*{MathML Semantic Up-Conversion}
+
+To write about...
+
+\begin{itemize}
+\item Failure handling
+\item Conventions followed
+\end{itemize}
+
+\subsection*{Presentation MathML Enhancement}
+
+The first part of the up-conversion process takes the rather flat MathML normally
+output by SnuggleTeX and creates ``enhanced'' presentation MathML that displays in the
+same way whilst having a structure that is more amenable to further processing,
+such as conversion to Content MathML and other forms.
+
+Generally speaking, the improvements made are as follows:
+
+\begin{itemize}
+\item Precedence of infix operators is inferred, as described below, using
+\verb|<mrow/>| to house inferred arguments.
+\item Implicit multiplications are inferred, using \verb|<mo>&InvisibleTimes;</mo>|
+to represent this in the resulting MathML.
+\item Applications of known functions like \verb|sin| are inferred, using
+\verb|<mo>&ApplyFunction;</mo>| to represent this.
+\end{itemize}
+
+\textbf{TODO:} Talk about conventions followed.
+
+\begin{tabular}{|c|l|}
+\hline
+Test & Result \\
+\hline
+Infix $,$ & Grouped into a \verb|<mfenced>| with empty opener and closer \\
+Infix $\vee$ & Associative Grouping \\
+Infix $\wedge$ & Associative Grouping \\
+Infix relation operator(s) & Associative Grouping (all at same level) \\
+Infix $\cup$ & Associative Grouping \\
+Infix $\cap$ & Associative Grouping \\
+Infix $\setminus$ & Left-associative Grouping \\
+Infix $+$ & Associative Grouping \\
+Infix $-$ & Left-associative Grouping \\
+Infix $*$, $\times$ and $\cdot$ & Associative Grouping (all at same level) \\
+Infix $/$ and $\div$ & Left-associative Grouping \\
+Space characters & Treated as explicit multiplication, grouped associatively \\
+Any infix operator in unary context & Operator ``appplied'' by wrapping in \verb|<mrow/>| \\
+No Infix Operator present & Apply into subgroups (as defined below) and apply implicit product \\
+Atom & Kept as-is \\
+\hline
+\end{tabular}
+
+\subsubsection*{No Infix Operator Handling}
+
+This is split into subgroups starting with elements satisfying
+any of the following:
+
+\begin{itemize}
+\item The first sibling in a group
+\item The first sibling following an \verb|<mfenced/>|
+\item The first of one or more prefix operator or function siblings
+\item The first non-postfix operator after one or more postfix operator siblings
+\end{itemize}
+
+For example, the LaTeX source:
+
+\begin{verbatim}
+xy \sin 2x \sin\cos 2x!
+\end{verbatim}
+
+would identify 3 subgroups: \verb|xy|, \verb|\sin 2x| and \verb|\sin\cos 2x!|.
+
+The rules for handling these subgroups are listed below. The results of these
+are turned into an implicit product using \verb|<mo>&InvisibleTimes;</mo>|.
+
+\subsubsection*{Subgroup Handling}
+
+\begin{itemize}
+\item Firstly, any prefix functions (e.g. \verb|\sin|) and operators (e.g. \verb|\lnot|)
+are applied recursively from left to right to everything following.
+
+So, \verb|\sin\cos 2ax!| is handled as it if were \verb|\sin(\cos(2ax!))|.
+
+\item Once all prefix functions and operators have been applied, any postfix operators
+attached to whatever is remaining are applied from right to left. (Note however
+that the factorial operator is handled specially so that it only gets applied
+to the last token, so that \verb|2ax!| is treated as \verb|2a(x!)|, which fits in
+with common conventions.)
+
+\item Finally, everything between the prefix and postfix parts are treated as an
+implicit multiplication.
+\end{itemize}
+
+For example, the result of this work on \verb|\sin\cos 2ax!| is the equivalent of
+\verb|\sin(\cos(2 \cdot a \cdot x!))|.
+
+\subsection*{Conversion to Content MathML}
+
+The second step in the up-conversion process takes the enhanced Presentation MathML
+and attempts to convert it into Content MathML.
+
+\subsubsection*{Configurable Assumptions}
+
+\begin{itemize}
+\item Whether $e$ should be treated as the exponential number or not.
+\item Whether $i$ should be treated as the imaginary number.
+\item Whether $\pi$ should be treated as the number $3.141592\ldots$.
+\item Whether $(\ldots)$ should be assumed to delimit a vector or not.
+\item Whether $[\ldots]$ should be assumed to delimit a list or not.
+\item Whether $\{\ldots\}$ should be assumed to delimit a set or not.
+\end{itemize}
+
+\subsubsection*{Supported Operators}
+
+\begin{tabular}{|c|c|c|}
+\hline
+LaTeX operator & Application & Content MathML element \\
+\hline
+\verb|\vee| & n-ary & \verb|or| \\
+\verb|\wedge| & n-ary & \verb|and| \\
+Any mix of relation operators & binary, applied in adjacent pairs & See below \\
+\verb|\cup| & n-ary & \verb|union| \\
+\verb|\cap| & n-ary & \verb|intersect| \\
+\verb|\setminus| & binary & \verb|setdiff| \\
+\verb|+| & unary or n-ary & \verb|plus| \\
+\verb|-| & unary or binary & \verb|minus| \\
+Any multiplication & n-ary & \verb|times| \\
+Any division & binary & \verb|times| \\
+\verb|!| & unary & \verb|factorial| \\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\item
+Operators may be left ``unapplied'', e.g. a raw input of \verb|+|
+would result in \verb|<plus/>| with no enclosing
+\verb|<apply/>|.
+
+\item
+Failures will be registered if an operator is used in an inappropriate
+context.
+\end{itemize}
+
+\subsubsection*{Supported Relation Operators}
+
+\begin{tabular}{|c|c|}
+\hline
+LaTeX operator & Content MathML element \\
+\hline
+\verb|=| & \verb|<eq/>| \\
+\verb|\not=| & \verb|<neq/>| \\
+\verb|<| & \verb|<lt/>| \\
+\verb|\not<| & \verb|<not>...<lt/>...</not>| \\
+\verb|>| & \verb|<gt/>| \\
+\verb|\not>| & \verb|<not>...<gt/>...</not>| \\
+\verb|\leq| & \verb|<leq/>| \\
+\verb|\not\leq| & \verb|<not>...<leq/>...</not>| \\
+\verb|\geq| & \verb|<geq/>| \\
+\verb|\not\geq| & \verb|<not>...<geq/>...</not>| \\
+\verb|\equiv| & \verb|<equivalent/>| \\
+\verb|\not\equiv| & \verb|<not>...<equivalent/>...</not>| \\
+\verb|\approx| & \verb|<approx/>| \\
+\verb|\not\approx| & \verb|<not>...<approx/>...</not>| \\
+\verb.|. & \verb|<factorof/>| \\
+\verb.\not|. & \verb|<not>...<factorof/>...</not>| \\
+\verb|\in| & \verb|<in/>| \\
+\verb|\not\in| & \verb|<notin/>| \\
+\hline
+\end{tabular}
+
+\subsubsection*{Supported Functions}
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+LaTeX function & Arity & Invertible & Content MathML element \\
+\hline
+\verb|\sin| & unary & Yes & \verb|sin| or \verb|arcsin| \\
+\verb|\min| & n-ary & No & \verb|min| \\
+$\ldots$ & & & \\
+\hline
+\end{tabular}
+
