@@ -30,7 +30,6 @@ public enum MathMLOperator {
     
     LESS_THAN_OR_OPEN_ANGLE_BRACKET(INFIX, "<"),
     GREATER_THAN_OR_CLOSE_ANGLE_BRACKET(INFIX, ">"),
-
     
     OPEN_BRACKET(PREFIX, "("),
     CLOSE_BRACKET(POSTFIX, ")"),
@@ -86,11 +85,11 @@ public enum MathMLOperator {
     PROD(PREFIX, "\u220f", true),
     COPROD(PREFIX, "\u2210", true),
     SUM(PREFIX, "\u2211", true),
-    CIRC(INFIX, "\u2218"),
-    BULLET(INFIX, "\u2219"),
     MP(INFIX, "\u2213"),
     SETMINUS(INFIX, "\u2216"),
     AST(INFIX, "\u2217"),
+    CIRC(INFIX, "\u2218"),
+    BULLET(INFIX, "\u2219"),
     PROPTO(INFIX, "\u221d"),
     MID(INFIX, "\u2223"),
     NOT_MID(INFIX, "\u2224"),
