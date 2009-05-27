@@ -25,6 +25,7 @@ All Rights Reserved
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <xsl:import href="common.xsl"/>
+  <xsl:strip-space elements="m:*"/>
 
   <!-- ************************************************************ -->
 
@@ -36,16 +37,124 @@ All Rights Reserved
   <xsl:param name="s:assume-square-list" select="true()" as="xs:boolean"/>
 
   <!-- ************************************************************ -->
-  <!-- TODO: A reasonable amount of what follows is shared with pmathml-enhancer.xsl -->
 
-  <xsl:strip-space elements="m:*"/>
+  <!--
+  Handy utility function for checking whether an element is an <mo/>
+  -->
+  <xsl:function name="local:is-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($element[self::mo])"/>
+  </xsl:function>
+
+  <!-- ************************************************************ -->
+
+  <!--
+  Sequence of all "standard" (i.e. non-relation) operators that we support.
+
+  These will match incoming MathML of the form <mo>c</mo> where c is a character in @inputs.
+  Doing it like this allows us to easily cope with having multiple input forms for the same
+  operator.
+
+  The corresponding @output attribute specifies the name of the resulting Content MathML
+  element that will be created.
+
+  The pmathml-enhancer.xsl stylesheet will have grouped these in a suitable precedence order
+  already.
+  -->
+  <xsl:variable name="local:supported-standard-operators" as="element(local:operator)+">
+    <local:operator inputs="+" output="plus" nary="true" allow-unary="true"/>
+    <local:operator inputs="-" output="minus" nary="false" allow-unary="true"/>
+    <local:operator inputs="*&#xd7;&#x22c5;&#x2062;" output="times" nary="true" allow-unary="false"/>
+    <local:operator inputs="/&#xf7;" output="divide" nary="false" allow-unary="false"/>
+    <local:operator inputs="&#x2228;" output="or" nary="true" allow-unary="false"/>
+    <local:operator inputs="&#x2227;" output="and" nary="true" allow-unary="false"/>
+    <local:operator inputs="&#x222a;" output="union" nary="true" allow-unary="false"/>
+    <local:operator inputs="&#x2229;" output="intersect" nary="true" allow-unary="false"/>
+    <local:operator inputs="&#x2216;" output="setdiff" nary="false" allow-unary="false"/>
+  </xsl:variable>
+
+  <xsl:variable name="local:standard-operator-characters" as="xs:string"
+    select="string-join($local:supported-standard-operators/@inputs, '')"/>
+
+  <xsl:function name="local:is-standard-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean(local:is-operator($element) and contains($local:standard-operator-characters, string($element)))"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-matching-standard-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:param name="operator" as="element(local:operator)"/>
+    <xsl:sequence select="boolean(local:is-operator($element) and contains($operator/@inputs, string($element)))"/>
+  </xsl:function>
+
+  <!-- ************************************************************ -->
+
+  <!--
+  Sequence of all supported relation operators.
+
+  This includes support for negating operators using <not/>, if required.
+  -->
+  <xsl:variable name="local:supported-relation-operators" as="element(local:operator)+">
+    <local:operator input="=" output="eq"/>
+    <local:operator input="&#x2260;" output="neq"/>
+    <local:operator input="&lt;" input-negated="&#x226e;" output="lt"/>
+    <local:operator input="&gt;" input-negated="&#x226f;" output="gt"/>
+    <local:operator input="&#x2264;" input-negated="&#x2270;" output="leq"/>
+    <local:operator input="&#x2265;" input-negated="&#x2271;" output="geq"/>
+    <local:operator input="&#x2261;" input-negated="&#x2262;" output="equivalent"/>
+    <local:operator input="&#x2248;" input-negated="&#x2249;" output="approx"/>
+    <local:operator input="|" input-negated="&#x2224;" output="factorof"/>
+    <local:operator input="&#x2208;" output="in"/>
+    <local:operator input="&#x2209;" output="notin"/>
+    <!--
+    TODO: The following outputs are often represented by different input characters.
+    Might be good to parametrise these.
+    -->
+    <local:operator input="&#x2282;" output="prsubset"/>
+    <local:operator input="&#x2284;" output="notprsubset"/>
+    <local:operator input="&#x2286;" output="subset"/>
+    <local:operator input="&#x2288;" output="notsubset"/>
+    <local:operator input="&#x2192;" output="tendsto"/>
+    <local:operator input="&#x21d2;" output="implies"/>
+  </xsl:variable>
+
+  <xsl:function name="local:is-relation-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="local:is-operator($element)
+      and ($local:supported-relation-operators[@input=string($element)]
+        or $local:supported-relation-operators[@input-negated=string($element)])"/>
+  </xsl:function>
+
+  <!-- ************************************************************ -->
+
+  <xsl:variable name="local:prefix-operators" as="element(local:operator)+">
+    <local:operator input="&#xac;" output="not"/>
+  </xsl:variable>
+
+  <xsl:function name="local:get-prefix-operator" as="element(local:operator)?">
+    <xsl:param name="string" as="xs:string"/>
+    <xsl:sequence select="$local:prefix-operators[@input=$string]"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-prefix-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="local:is-operator($element)
+      and exists(local:get-prefix-operator(string($element)))"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-factorial-operator" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:sequence select="boolean($element[self::mo and .='!'])"/>
+  </xsl:function>
+
+  <!-- ************************************************************ -->
 
   <!--
   All supported functions, input as <mi>@input</mi> etc.
   and output using Content MathML elements named according to the
   @output attribute.
   -->
-  <xsl:variable name="local:supported-function-dictionary" as="element(local:function)+">
+  <xsl:variable name="local:supported-functions" as="element(local:function)+">
     <local:function input="sin" output="sin" inverse-output="arcsin"/>
     <local:function input="cos" output="cos" inverse-output="arccos"/>
     <local:function input="tan" output="tan" inverse-output="arctan"/>
@@ -83,13 +192,13 @@ All Rights Reserved
 
   <xsl:function name="local:is-supported-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mi] and $local:supported-function-dictionary[@input=string($element)])"/>
+    <xsl:sequence select="boolean($element[self::mi] and $local:supported-functions[@input=string($element)])"/>
   </xsl:function>
 
   <xsl:function name="local:get-supported-function" as="element(local:function)?">
     <xsl:param name="element" as="element()"/>
     <xsl:sequence select="if ($element[self::mi])
-      then $local:supported-function-dictionary[@input=string($element)]
+      then $local:supported-functions[@input=string($element)]
       else ()"/>
   </xsl:function>
 
@@ -99,80 +208,6 @@ All Rights Reserved
       or $element[self::msup and local:is-supported-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]
       or $element[self::msubsup and *[1][self::mi and .='log']]"/>
-  </xsl:function>
-
-  <xsl:variable name="local:explicit-multiplication-characters" as="xs:string+"
-    select="('*', '&#xd7;', '&#x22c5;')"/>
-
-  <xsl:variable name="local:implicit-multiplication-characters" as="xs:string+"
-    select="('&#x2062;')"/>
-
-  <xsl:variable name="local:multiplication-characters" as="xs:string+"
-    select="($local:explicit-multiplication-characters,
-             $local:implicit-multiplication-characters)"/>
-
-  <xsl:variable name="local:explicit-division-characters" as="xs:string+"
-    select="('/', '&#xf7;')"/>
-
-  <xsl:variable name="local:prefix-operators" as="element(local:operator)+">
-    <local:operator input="&#xac;" output="not"/>
-  </xsl:variable>
-
-  <!--
-  Mappings of <mi/> element contents to Content MathML relation operators,
-  including support for negating operators by combining with a <not/> element
-  where appropriate.
-  -->
-  <xsl:variable name="local:relation-operators" as="element(local:operator)+">
-    <local:operator input="=" output="eq"/>
-    <local:operator input="&#x2260;" output="neq"/>
-    <local:operator input="&lt;" input-negated="&#x226e;" output="lt"/>
-    <local:operator input="&gt;" input-negated="&#x226f;" output="gt"/>
-    <local:operator input="&#x2264;" input-negated="&#x2270;" output="leq"/>
-    <local:operator input="&#x2265;" input-negated="&#x2271;" output="geq"/>
-    <local:operator input="&#x2261;" input-negated="&#x2262;" output="equivalent"/>
-    <local:operator input="&#x2248;" input-negated="&#x2249;" output="approx"/>
-    <local:operator input="|" input-negated="&#x2224;" output="factorof"/>
-    <local:operator input="&#x2208;" output="in"/>
-    <local:operator input="&#x2209;" output="notin"/>
-    <!--
-    TODO: The following outputs are often represented by different input characters.
-    Might be good to parametrise these.
-    -->
-    <local:operator input="&#x2282;" output="prsubset"/>
-    <local:operator input="&#x2284;" output="notprsubset"/>
-    <local:operator input="&#x2286;" output="subset"/>
-    <local:operator input="&#x2288;" output="notsubset"/>
-    <local:operator input="&#x2192;" output="tendsto"/>
-    <local:operator input="&#x21d2;" output="implies"/>
-  </xsl:variable>
-
-  <xsl:function name="local:is-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo])"/>
-  </xsl:function>
-
-  <xsl:function name="local:is-relation-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="local:is-operator($element)
-      and ($local:relation-operators[@input=string($element)]
-        or $local:relation-operators[@input-negated=string($element)])"/>
-  </xsl:function>
-
-  <xsl:function name="local:get-prefix-operator" as="xs:string?">
-    <xsl:param name="string" as="xs:string"/>
-    <xsl:sequence select="$local:prefix-operators[@input=$string]/@output"/>
-  </xsl:function>
-
-  <xsl:function name="local:is-prefix-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="local:is-operator($element)
-      and exists(local:get-prefix-operator(string($element)))"/>
-  </xsl:function>
-
-  <xsl:function name="local:is-factorial-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo and .='!'])"/>
   </xsl:function>
 
   <!-- ************************************************************ -->
@@ -197,91 +232,33 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$elements[not(self::mspace)]"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2228;'))]">
-        <!-- Logical Or -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x2228;')"/>
-          <xsl:with-param name="cmathml-name" select="'or'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2227;'))]">
-        <!-- Logical And -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x2227;')"/>
-          <xsl:with-param name="cmathml-name" select="'and'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
-        </xsl:call-template>
+      <xsl:when test="$elements[local:is-standard-operator(.)]">
+        <!--
+        Group contains a standard operator. We'll pull off the first one
+        (remember that precedence has already been established) and create an
+        appropriate Content MathML construct from that.
+        -->
+        <xsl:variable name="first-standard-operator" as="element(local:operator)"
+          select="$local:supported-standard-operators[some $e in $elements satisfies local:is-matching-standard-operator($e, .)][1]"/>
+        <xsl:choose>
+          <xsl:when test="$first-standard-operator/@nary='true'">
+            <xsl:call-template name="local:handle-standard-nary-operator">
+              <xsl:with-param name="elements" select="$elements"/>
+              <xsl:with-param name="operator" select="$first-standard-operator"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="local:handle-standard-binary-operator">
+              <xsl:with-param name="elements" select="$elements"/>
+              <xsl:with-param name="operator" select="$first-standard-operator"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:when test="$elements[local:is-relation-operator(.)]">
         <!-- (Possibly mixed) Relation Operators -->
-        <xsl:call-template name="local:handle-relation-operators">
+        <xsl:call-template name="local:handle-supported-relation-operators">
           <xsl:with-param name="elements" select="$elements"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('&#x222a;'))]">
-        <!-- Set Union -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x222a;')"/>
-          <xsl:with-param name="cmathml-name" select="'union'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2229;'))]">
-        <!-- Set Intersection -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x2229;')"/>
-          <xsl:with-param name="cmathml-name" select="'intersect'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('&#x2216;'))]">
-        <!-- Set Difference -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x2216;')"/>
-          <xsl:with-param name="cmathml-name" select="'setdiff'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('+'))]">
-        <!-- Addition -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('+')"/>
-          <xsl:with-param name="cmathml-name" select="'plus'"/>
-          <xsl:with-param name="allow-as-prefix" select="true()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., ('-'))]">
-        <!-- Subtraction -->
-        <xsl:call-template name="local:handle-binary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('-')"/>
-          <xsl:with-param name="cmathml-name" select="'minus'"/>
-          <xsl:with-param name="allow-as-prefix" select="true()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., $local:multiplication-characters)]">
-        <!-- Explicit or Implicit multiplication -->
-        <xsl:call-template name="local:handle-nary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="$local:multiplication-characters"/>
-          <xsl:with-param name="cmathml-name" select="'times'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[local:is-matching-operator(., $local:explicit-division-characters)]">
-        <!-- Division -->
-        <xsl:call-template name="local:handle-binary-operator">
-          <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="$local:explicit-division-characters"/>
-          <xsl:with-param name="cmathml-name" select="'divide'"/>
-          <xsl:with-param name="allow-as-prefix" select="false()"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[1][local:is-supported-function-construct(.)]">
@@ -303,7 +280,7 @@ All Rights Reserved
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="count($elements)=1">
-        <!-- "Atom" -->
+        <!-- Non-function and non-operator "Atom" -->
         <xsl:apply-templates select="$elements[1]" mode="pmathml-to-cmathml"/>
       </xsl:when>
       <xsl:when test="empty($elements)">
@@ -316,41 +293,34 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <!-- Tests whether the given element is a <mo/> applied infix -->
-  <xsl:function name="local:is-matching-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:param name="match" as="xs:string+"/>
-    <xsl:sequence select="boolean(local:is-operator($element) and $element=$match)"/>
-  </xsl:function>
-
   <!--
-  n-ary infix operator, such as '+', optionally allowed to be used in a prefix context.
+  n-ary standard operator, such as '+', optionally allowed to be used in a unary context.
 
   This will have been grouped appropriately by the pmathml-enhancer.xsl stylesheet
   so supported legal expressions will always be of one of the following forms:
 
   1. n1 op1 n2 op2 ... nk (usual infix form)
   2. op (unapplied operator)
-  3. op n (if the operator may also be used in prefix context)
+  3. op n (if the operator may also be used in unary context)
 
   We need to be careful to handle unapplied operators and illegal
-  prefix/postfix applications.
+  unary applications.
   -->
-  <xsl:template name="local:handle-nary-operator" as="element()+">
+  <xsl:template name="local:handle-standard-nary-operator" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="match" as="xs:string+" required="yes"/>
-    <xsl:param name="cmathml-name" as="xs:string" required="yes"/>
-    <xsl:param name="allow-as-prefix" as="xs:boolean" select="false()"/>
+    <xsl:param name="operator" as="element(local:operator)" required="yes"/>
+    <xsl:variable name="cmathml-name" as="xs:string" select="$operator/@output"/>
+    <xsl:variable name="allow-unary" as="xs:boolean" select="$operator/@allow-unary='true'"/>
     <xsl:choose>
-      <xsl:when test="count($elements)=1 and local:is-matching-operator($elements[1], $match)">
+      <xsl:when test="count($elements)=1 and local:is-matching-standard-operator($elements[1], $operator)">
         <!-- Unapplied operator -->
         <xsl:element name="{$cmathml-name}"/>
       </xsl:when>
-      <xsl:when test="count($elements)=2 and local:is-matching-operator($elements[1], $match)
+      <xsl:when test="count($elements)=2 and local:is-matching-standard-operator($elements[1], $operator)
           and not(local:is-operator($elements[2]))">
         <!-- Prefix context -->
         <xsl:choose>
-          <xsl:when test="not($allow-as-prefix)">
+          <xsl:when test="not($allow-unary)">
             <!-- Fail: operator is not a prefix operator -->
             <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
           </xsl:when>
@@ -378,7 +348,7 @@ All Rights Reserved
               <xsl:when test="$i mod 2 = 1">
                 <!-- Odd position, so expecting operand -->
                 <xsl:choose>
-                  <xsl:when test="local:is-matching-operator(., $match)">
+                  <xsl:when test="local:is-matching-standard-operator(., $operator)">
                     <!-- Fail: (as above) -->
                     <xsl:copy-of select="s:make-error('UCEOP1', $elements, ($cmathml-name))"/>
                   </xsl:when>
@@ -392,7 +362,7 @@ All Rights Reserved
               </xsl:when>
               <xsl:otherwise>
                 <!-- Even position, so expecting operator -->
-                <xsl:if test="not(local:is-matching-operator(., $match))">
+                <xsl:if test="not(local:is-matching-standard-operator(., $operator))">
                   <!-- Fail: (as above) -->
                   <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
                 </xsl:if>
@@ -415,6 +385,71 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
+  <!--
+  Binary (and possibly unary) operator, such as '-' or '/'.
+
+  Supported legal expressions will always be of one of the following forms:
+
+  1. n1 op n2 (infix form)
+  2. op (unapplied operator)
+  3. op n (if the operator may also be used in unary (prefix) context)
+
+  -->
+  <xsl:template name="local:handle-standard-binary-operator" as="element()">
+    <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:param name="operator" as="element(local:operator)" required="yes"/>
+    <xsl:variable name="cmathml-name" as="xs:string" select="$operator/@output"/>
+    <xsl:variable name="allow-unary" as="xs:boolean" select="$operator/@allow-unary='true'"/>
+    <xsl:variable name="operators" as="element(mo)+" select="$elements[local:is-matching-standard-operator(., $operator)]"/>
+    <xsl:variable name="operator-count" as="xs:integer" select="count($operators)"/>
+    <xsl:choose>
+      <xsl:when test="count($elements)=1 and local:is-matching-standard-operator($elements[1], $operator)">
+        <!-- Unapplied operator -->
+        <xsl:element name="{$cmathml-name}"/>
+      </xsl:when>
+      <xsl:when test="count($elements)=2 and local:is-matching-standard-operator($elements[1], $operator)
+          and not(local:is-operator($elements[2]))">
+        <!-- Unary/prefix context -->
+        <xsl:choose>
+          <xsl:when test="not($allow-unary)">
+            <!-- Fail: operator is not a prefix operator -->
+            <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Legal prefix/unary application -->
+            <apply>
+              <xsl:element name="{$cmathml-name}"/>
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$elements[2]"/>
+              </xsl:call-template>
+            </apply>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:when test="count($elements) &gt; 3">
+        <!-- Fail: n-ary with n>2 not allowed -->
+        <xsl:copy-of select="s:make-error('UCEOP3', $elements, ($cmathml-name))"/>
+      </xsl:when>
+      <xsl:when test="count($elements) &lt; 3 or $elements[position()!=2][local:is-operator(.)] or not($elements[2][local:is-matching-standard-operator(., $operator)])">
+        <!-- Fail: bad grouping for binary operator -->
+        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ($cmathml-name))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- This is type (1) as outlined above -->
+        <apply>
+          <xsl:element name="{$cmathml-name}"/>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="$elements[1]"/>
+          </xsl:call-template>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="$elements[3]"/>
+          </xsl:call-template>
+        </apply>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
 
   <!--
   Mix of (positive) relation operators, such as '=', '<', '>'.
@@ -449,7 +484,7 @@ All Rights Reserved
   FIXME: Need to cope with negative operators, which need to generatate
   corresponding notted operators in the output.
   -->
-  <xsl:template name="local:handle-relation-operators" as="element()+">
+  <xsl:template name="local:handle-supported-relation-operators" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:variable name="element-count" as="xs:integer" select="count($elements)"/>
     <xsl:choose>
@@ -521,14 +556,14 @@ All Rights Reserved
 
   <!--
   Helper for the above template that creates the appropriate CMathML relation operator
-  corresponding to the given <mi/>, wrapping in <not/> if required
+  corresponding to the given <mo/>, wrapping in <not/> if required
   -->
   <xsl:function name="local:create-relation-element" as="element()">
-    <xsl:param name="mi" as="element()"/>
+    <xsl:param name="mo" as="element(mo)"/>
     <xsl:param name="arguments" as="element()*"/>
-    <xsl:variable name="positive-native" as="xs:string?" select="$local:relation-operators[@input=string($mi)]/@output"/>
-    <xsl:variable name="negated-native" as="xs:string?" select="$local:relation-operators[@input-negated=string($mi)]/@output-negated"/>
-    <xsl:variable name="negated-synthetic" as="xs:string?" select="$local:relation-operators[@input-negated=string($mi)]/@output"/>
+    <xsl:variable name="positive-native" as="xs:string?" select="$local:supported-relation-operators[@input=string($mo)]/@output"/>
+    <xsl:variable name="negated-native" as="xs:string?" select="$local:supported-relation-operators[@input-negated=string($mo)]/@output-negated"/>
+    <xsl:variable name="negated-synthetic" as="xs:string?" select="$local:supported-relation-operators[@input-negated=string($mo)]/@output"/>
     <xsl:choose>
       <xsl:when test="exists($positive-native) or exists($negated-native)">
         <xsl:variable name="output-native" as="xs:string" select="($positive-native, $negated-native)[1]"/>
@@ -572,71 +607,6 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
-
-
-  <!--
-  Binary (and possibly unary) operator, such as '-' or '/'.
-
-  Supported legal expressions will always be of one of the following forms:
-
-  1. n1 op n2 (infix form)
-  2. op (unapplied operator)
-  3. op n (if the operator may also be used in unary (prefix) context)
-
-  -->
-  <xsl:template name="local:handle-binary-operator" as="element()">
-    <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="match" as="xs:string+" required="yes"/>
-    <xsl:param name="cmathml-name" as="xs:string" required="yes"/>
-    <xsl:param name="allow-as-prefix" as="xs:boolean" select="false()"/>
-    <xsl:variable name="operators" select="$elements[local:is-matching-operator(., $match)]" as="element()+"/>
-    <xsl:variable name="operator-count" select="count($operators)" as="xs:integer"/>
-    <xsl:choose>
-      <xsl:when test="count($elements)=1 and local:is-matching-operator($elements[1], $match)">
-        <!-- Unapplied operator -->
-        <xsl:element name="{$cmathml-name}"/>
-      </xsl:when>
-      <xsl:when test="count($elements)=2 and local:is-matching-operator($elements[1], $match)
-          and not(local:is-operator($elements[2]))">
-        <!-- Unary/prefix context -->
-        <xsl:choose>
-          <xsl:when test="not($allow-as-prefix)">
-            <!-- Fail: operator is not a prefix operator -->
-            <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <!-- Legal prefix/unary application -->
-            <apply>
-              <xsl:element name="{$cmathml-name}"/>
-              <xsl:call-template name="local:process-group">
-                <xsl:with-param name="elements" select="$elements[2]"/>
-              </xsl:call-template>
-            </apply>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
-      <xsl:when test="count($elements) &gt; 3">
-        <!-- Fail: n-ary with n>2 not allowed -->
-        <xsl:copy-of select="s:make-error('UCEOP3', $elements, ($cmathml-name))"/>
-      </xsl:when>
-      <xsl:when test="count($elements) &lt; 3 or $elements[position()!=2][local:is-operator(.)] or not($elements[2][local:is-matching-operator(., $match)])">
-        <!-- Fail: bad grouping for binary operator -->
-        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ($cmathml-name))"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <!-- This is type (1) as outlined above -->
-        <apply>
-          <xsl:element name="{$cmathml-name}"/>
-          <xsl:call-template name="local:process-group">
-            <xsl:with-param name="elements" select="$elements[1]"/>
-          </xsl:call-template>
-          <xsl:call-template name="local:process-group">
-            <xsl:with-param name="elements" select="$elements[3]"/>
-          </xsl:call-template>
-        </apply>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
 
   <!--
   Group containing a supported function, say 'f'.
@@ -744,7 +714,7 @@ All Rights Reserved
       1 or more elements giving computed function form (e.g. <sin/>, <apply><power><sin/><cn>2</cn></power></apply> ...)
       OR s:fail
     </local:cmathml>
-    <local:function ... /> (as pulled from $local:supported-function-dictionary)
+    <local:function ... /> (as pulled from $local:supported-functions)
   </local:function-mapping>
 
   This slightly complex output helps the caller handle unary and nary applications.
@@ -797,7 +767,7 @@ All Rights Reserved
               <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
             </logbase>
           </local:cmathml>
-          <xsl:copy-of select="$local:supported-function-dictionary[.[@input='log']]"/>
+          <xsl:copy-of select="$local:supported-functions[.[@input='log']]"/>
         </local:function-mapping>
       </xsl:when>
       <xsl:when test="$operator-element[self::msubsup
@@ -818,7 +788,7 @@ All Rights Reserved
               <xsl:apply-templates select="$operator-element/*[3]" mode="pmathml-to-cmathml"/>
             </apply>
           </local:cmathml>
-          <xsl:copy-of select="$local:supported-function-dictionary[.[@input='log']]"/>
+          <xsl:copy-of select="$local:supported-functions[.[@input='log']]"/>
         </local:function-mapping>
       </xsl:when>
       <xsl:when test="$operator-element[self::mi]">
@@ -850,9 +820,9 @@ All Rights Reserved
   <xsl:template name="local:handle-prefix-group" as="element()">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <!-- Get Content MathML element corresponding to this operator -->
-    <xsl:variable name="prefix-operator" as="xs:string" select="local:get-prefix-operator($elements[1])"/>
+    <xsl:variable name="prefix-operator" as="element(local:operator)" select="local:get-prefix-operator($elements[1])"/>
     <xsl:variable name="cmathml-operator" as="element()">
-      <xsl:element name="{$prefix-operator}"/>
+      <xsl:element name="{$prefix-operator/@output}"/>
     </xsl:variable>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
@@ -985,7 +955,7 @@ All Rights Reserved
     </apply>
   </xsl:template>
 
-  <!-- (Optional) Treat $e^x$ as exponential -->
+  <!-- (Optional) Treat $e^.$ as exponential -->
   <xsl:template match="msup[*[1][self::mi and .='e' and $s:assume-exponential-e]]" mode="pmathml-to-cmathml" as="element(apply)">
     <apply>
       <exp/>

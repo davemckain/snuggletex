@@ -182,8 +182,8 @@ a/b/c
   <ci>x</ci>
 </apply>
 ====
-###################################
-# More complex tests
+####################################
+## More complex tests
 2\alpha
 <apply>
   <times/>
@@ -647,9 +647,6 @@ x==
 !UCEOP4
 ====
 ==
-!UCEOP4
-====
-=+
 !UCEOP4
 ====
 =!
