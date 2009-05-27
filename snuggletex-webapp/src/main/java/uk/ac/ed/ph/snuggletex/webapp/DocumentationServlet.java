@@ -12,6 +12,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidUtilities;
@@ -245,6 +246,7 @@ public final class DocumentationServlet extends BaseServlet {
         
         /* Work out basic SnuggleTeX options */
         WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
+        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setIndenting(true);
