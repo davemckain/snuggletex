@@ -103,12 +103,12 @@ and attempts to convert it into Content MathML.
 \subsubsection*{Configurable Assumptions}
 
 \begin{itemize}
-\item Whether $e$ should be treated as the exponential number or not.
-\item Whether $i$ should be treated as the imaginary number.
-\item Whether $\pi$ should be treated as the number $3.141592\ldots$.
-\item Whether $(\ldots)$ should be assumed to delimit a vector or not.
-\item Whether $[\ldots]$ should be assumed to delimit a list or not.
-\item Whether $\{\ldots\}$ should be assumed to delimit a set or not.
+\item Whether \verb|e| should be treated as the exponential number or not.
+\item Whether \verb|i| should be treated as the imaginary number.
+\item Whether \verb|\pi| should be treated as the number $3.141592\ldots$.
+\item Whether \verb|( ... )|verb should be assumed to delimit a vector or not.
+\item Whether \verb|[ ... ]| should be assumed to delimit a list or not.
+\item Whether \verb|\{ ... \}| should be assumed to delimit a set or not.
 \end{itemize}
 
 \subsubsection*{Supported Operators}
@@ -117,17 +117,18 @@ and attempts to convert it into Content MathML.
 \hline
 LaTeX operator & Application & Content MathML element \\
 \hline
-\verb|\vee| & n-ary & \verb|or| \\
-\verb|\wedge| & n-ary & \verb|and| \\
-Any mix of relation operators & binary, applied in adjacent pairs & See below \\
-\verb|\cup| & n-ary & \verb|union| \\
-\verb|\cap| & n-ary & \verb|intersect| \\
-\verb|\setminus| & binary & \verb|setdiff| \\
 \verb|+| & unary or n-ary & \verb|plus| \\
 \verb|-| & unary or binary & \verb|minus| \\
 Any multiplication & n-ary & \verb|times| \\
 Any division & binary & \verb|times| \\
-\verb|!| & unary & \verb|factorial| \\
+\verb|\vee| & n-ary & \verb|or| \\
+\verb|\wedge| & n-ary & \verb|and| \\
+\verb|\cup| & n-ary & \verb|union| \\
+\verb|\cap| & n-ary & \verb|intersect| \\
+\verb|\setminus| & binary & \verb|setdiff| \\
+\verb|\lnot| & unary (prefix) & \verb|not| \\
+\verb|!| & unary (postfix) & \verb|factorial| \\
+Any mix of relation operators & binary, applied in adjacent pairs & See below \\
 \hline
 \end{tabular}
 
@@ -169,6 +170,20 @@ LaTeX operator & Content MathML element \\
 \hline
 \end{tabular}
 
+\begin{itemize}
+\item
+  Relation operators will be paired up earlier in the up-conversion
+  process. Where there are two or more relations together, each pairing
+  becomes an operand of an enclosing logical \verb|and| when
+  converting to Content MathML. So a LaTeX input like \verb|1<x \leq 2| will
+  result in the same output as \verb|(1<x) \land (x \leq 2)|.
+
+\item
+  Note that this pairing is still done for inputs like \verb|a=b=c|,
+  even though they could also have been converted to an $n$-ary application of
+  the \verb|<eq/>| operator.
+\end{itemize}
+
 \subsubsection*{Supported Functions}
 
 \begin{tabular}{|c|c|c|c|}
@@ -176,8 +191,203 @@ LaTeX operator & Content MathML element \\
 LaTeX function & Arity & Invertible & Content MathML element \\
 \hline
 \verb|\sin| & unary & Yes & \verb|sin| or \verb|arcsin| \\
+\verb|\cos| & unary & Yes & \verb|cos| or \verb|arccos| \\
+\verb|\tan| & unary & Yes & \verb|tan| or \verb|arctan| \\
+\verb|\sec| & unary & Yes & \verb|csc| or \verb|arcsec| \\
+\verb|\cot| & unary & Yes & \verb|cot| or \verb|arccot| \\
+\verb|\sin| & unary & Yes & \verb|sinh| or \verb|arcsinh| \\
+\verb|\cos| & unary & Yes & \verb|cosh| or \verb|arccosh| \\
+\verb|\tan| & unary & Yes & \verb|tanh| or \verb|arctanh| \\
+\verb|\sec| & unary & Yes & \verb|sech| or \verb|arcsech| \\
+\verb|\csc| & unary & Yes & \verb|csch| or \verb|arccsch| \\
+\verb|\cot| & unary & Yes & \verb|coth| or \verb|arccoth| \\
+\verb|\arcsin| & unary & No & \verb|arcsin| \\
+\verb|\arccos| & unary & No & \verb|arccos| \\
+\verb|\arctan| & unary & No & \verb|arctan| \\
+\verb|\arcsec| & unary & No & \verb|arcsec| \\
+\verb|\arccsc| & unary & No & \verb|arccsc| \\
+\verb|\arccot| & unary & No & \verb|arccot| \\
+\verb|\arcsinh| & unary & No & \verb|arcsinh| \\
+\verb|\arccosh| & unary & No & \verb|arccosh| \\
+\verb|\arctanh| & unary & No & \verb|arctanh| \\
+\verb|\arcsech| & unary & No & \verb|arcsech| \\
+\verb|\arccsch| & unary & No & \verb|arccsch| \\
+\verb|\arccoth| & unary & No & \verb|arccoth| \\
+\verb|\ln| & unary & No & \verb|ln| \\
+\verb|\log| & unary & No & \verb|log| \\
+\verb|\exp| & unary & No & \verb|exp| \\
+\verb|\det| & unary & No & \verb|determinant| \\
+\verb|\gcd| & n-ary & No & \verb|gcd| \\
+\verb|\lcm| & n-ary & No & \verb|lcm| \\
+\verb|\max| & n-ary & No & \verb|max| \\
 \verb|\min| & n-ary & No & \verb|min| \\
+\verb|\Re| & n-ary & No & \verb|imaginary| \\
+\verb|\Im| & n-ary & No & \verb|real| \\
 $\ldots$ & & & \\
 \hline
 \end{tabular}
 
+\begin{itemize}
+\item
+  For all functions, constructs like \verb|\cos^n x| is
+  interpreted as ``cosine $x$ raised to the power of $n$''
+  where $n$ is either an identifier or a number greater than
+  or equal to $1$.
+
+\item
+  For functions listed as Invertible in the table above,
+  the up-conversion process interprets constructs like
+  \verb|\sin^{-1} x| as the ``inverse sin of $x$''
+  and would result in \verb|<apply><arcsin/><ci>x</ci></apply>|.
+  A failure will be noted if constructs like these are
+  used on functions which do not support this.
+
+\item
+  For the $\log$ function, an input like \verb|\log_a x|
+  is interpreted as ``logarithm to base $a$ of $x$''.
+\end{itemize}
+
+\subsubsection*{Supported Symbols}
+
+\begin{tabular}{|c|c|}
+\hline
+LaTeX symbol & Content MathML interpretation \\
+\hline
+\verb|\emptyset| & \verb|<emptyset/>| \\
+\verb|\infty| & \verb|<infinity/>| \\
+\hline
+\end{tabular}
+
+\subsubsection*{Other Supported Constructs}
+
+\begin{itemize}
+
+\item
+  Powers are supported in the expected way. The special case of \verb|e^x|
+  is optionally treated as \verb|\exp x|.
+
+\item
+  Square and $n$th roots are supported using the familiar LaTeX
+  constructs \verb|\sqrt{x}| and \verb|\sqrt[n]{x}|.
+
+\item
+  Subscripted identifiers like \verb|x_1|, \verb|x_{1,2}|
+  and \verb|a_{x_y}| are supported and are kept as presentation MathML wrapped
+  inside a \verb|<ci/>| container element.
+
+\item
+  SnuggleTeX includes a custom macro called \verb|\units| that can be used
+  to denote that its argument represent units. The result of up-converting
+  this is a \verb|<csymbol/>| element.
+
+\end{itemize}
+
+\subsection*{Conversion to Maxima Input}
+
+\begin{itemize}
+\item
+  The Maxima input form is created from the Content MathML form. As a result,
+  if the conversion to Content MathML fails then so will the conversion to
+  Maxima.
+
+\item
+  Not all inputs that can be successfully converted to Content MathML can
+  be further converted into Maxima input form.
+\end{itemize}
+
+\subsubsection*{Supported Identifiers}
+
+MathML generally allows arbitrary Unicode characters to be used as identifier
+names whereas Maxima only uses ASCII. In terms of LaTeX input, this means that
+idenfiers input as \verb|\something| are only supported if we have identifier a
+means to convert these into a Maxima input form.
+
+The identifiers supported so far are:
+
+\begin{tabular}{|c|c|}
+\hline
+LaTeX input & Maxima form \\
+\hline
+\verb|\alpha| & \%alpha \\
+\verb|\beta| & \%beta \\
+\verb|\gamma| & \%gamma \\
+\verb|\delta| & \%delta \\
+\verb|\epsilon| & \%epsilon \\
+\verb|\zeta| & \%zeta \\
+\verb|\eta| & \%eta \\
+\verb|\theta| & \%theta \\
+\verb|\iota| & \%iota \\
+\verb|\kappa| & \%kappa \\
+\verb|\lambda| & \%lambda \\
+\verb|\mu| & \%mu \\
+\verb|\nu| & \%nu \\
+\verb|\xi| & \%xi \\
+\verb|\pi| & \%pi \\
+\verb|\rho| & \%rho \\
+\verb|\sigma| & \%sigma \\
+\verb|\tau| & \%tau \\
+\verb|\upsilon| & \%upsilon \\
+\verb|\phi| & \%phi \\
+\verb|\chi| & \%chi \\
+\verb|\psi| & \%psi \\
+\verb|\omega| & \%omega \\
+\verb|\Gamma| & \%Gamma \\
+\verb|\Delta| & \%Delta \\
+\verb|\Theta| & \%Theta \\
+\verb|\Lambda| & \%Lambda \\
+\verb|\Xi| & \%Xi \\
+\verb|\Pi| & \%Pi \\
+\verb|\Sigma| & \%Sigma \\
+\verb|\Upsilon| & \%Upsilon \\
+\verb|\Phi| & \%Phi \\
+\verb|\Psi| & \%Psi \\
+\verb|\Omega| & \%Omega \\
+\hline
+\hline
+\end{tabular}
+
+The LaTeX inputs \verb|e| and \verb|i| are converted to \verb|%e|
+and \verb|%i| respectively if the Content MathML up-conversion
+was configured to interpret them in this way.
+
+\subsubsection*{Supported Functions}
+
+All functions supported by the Content MathML up-conversion are supported
+here, with the exception of \verb|\log| as Maxima only supports natural
+logarithms.
+
+\subsubsection*{Supported Operators}
+
+All of the operators supported by the Content MathML process are
+supported, with the exception of the following relations:
+
+\begin{itemize}
+  \item \verb|\equiv|
+  \item \verb|\not\equiv|
+  \item \verb|\approx|
+  \item \verb|\not\approx|
+  \item \verb.|.
+  \item \verb.\not|.
+  \item \verb|\in|
+  \item \verb|\not\in|
+\end{itemize}
+
+Maxima does not allow ``unapplied'' operators symbols, so a LaTeX input
+of the form \verb|+| generates a result of the form \verb|operator("+")|
+as a placeholder for this. Similarly, \verb|\not=| results in
+\verb|operator("not=")| for want of anything better.
+The name of the resulting function is configurable.
+
+\subsubsection*{Other Supported Constructs}
+
+\begin{itemize}
+\item
+  Units entered using the special SnuggleTeX \verb|\units| macro, such as
+  \verb|\units{kg}| generate a Maxima form like \verb|units("kg")|, which
+  is similar to how we handle unapplied operators. (Again, the name of
+  the resulting function is configurable.)
+
+\item
+  Subscripted identifiers are converted to a suitable Maxima form if
+  deemed possible.
+\end{itemize}
