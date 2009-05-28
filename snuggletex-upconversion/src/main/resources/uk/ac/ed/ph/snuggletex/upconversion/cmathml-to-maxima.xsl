@@ -402,7 +402,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
       <xsl:when test="count($arguments)=1 and $function/@require-nary='true'">
-        <!-- Fail: function must be used in n-ary context -->
+        <!-- Fail: function cannot be used in a unary context -->
         <xsl:copy-of select="s:make-error('UMEFX0', ., ($function/@maxima-function))"/>
       </xsl:when>
       <xsl:otherwise>
