@@ -15,7 +15,7 @@ import javax.xml.transform.Transformer;
  * (e.g. {@link SnuggleSession#createWebPage(WebPageOutputOptions)}).
  * <p>
  * You will generally want to use
- * {@link WebPageOutputOptionsTemplates#createWebPageOptions(WebPageType)}
+ * {@link WebPageOutputOptionsTemplates#createWebPageOptions(WebPageOutputOptions.WebPageType)}
  * to create pre-configured instances of these Objects, which can then be tweaked as desired.
  * But you can also create and configure {@link WebPageOutputOptions} from scratch if you
  * know exactly what you want to do.
