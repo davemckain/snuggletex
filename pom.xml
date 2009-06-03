@@ -156,7 +156,8 @@ All Rights Reserved
           <author>true</author>
           <version>true</version>
           <use>true</use>
-          <docencoding>UTF-8</docencoding>
+          <encoding>UTF-8</encoding>
+          <linksource>true</linksource>
           <windowtitle>SnuggleTeX API Documentation</windowtitle>
           <doctitle>SnuggleTeX API Documentation</doctitle>
           <bottom><![CDATA[

@@ -137,6 +137,12 @@ All Rights Reserved
             <resource>
               <directory>${project.build.directory}/extras</directory>
             </resource>
+            <resource>
+              <directory>../target/site</directory>
+              <includes>
+                <include>apidocs/**</include>
+              </includes>
+            </resource>
           </webResources>
         </configuration>
       </plugin>

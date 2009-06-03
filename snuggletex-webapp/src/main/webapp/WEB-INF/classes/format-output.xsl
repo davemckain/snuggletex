@@ -105,7 +105,7 @@ All Rights Reserved
               <li><a class="errorCodes" href="{$context-path}/documentation/error-codes.html">SnuggleTeX Error Codes</a></li>
               <li><a class="configuration" href="{$context-path}/documentation/configuration.html">Configuration</a></li>
               <li><a class="upconversion" href="{$context-path}/documentation/upconversion.html">Up-Conversion</a></li>
-              <li><a class="projects" href="{$context-path}/javadoc/"><b>XXXX</b> API Documentation</a></li>
+              <li><a class="projects" href="{$context-path}/apidocs/">API Documentation</a></li>
             </ul>
 
             <h2>LaTeX Guide</h2>
