@@ -1,0 +1,40 @@
+<!--
+
+Assembly descriptor for the basic SnuggleTeX bundle
+containing just the core SnuggleTeX JAR.
+
+$Id$
+
+Copyright (c) 2009 The University of Edinburgh
+All Rights Reserved
+
+-->
+<assembly>
+  <id>basic</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <moduleSets>
+    <moduleSet>
+      <includes>
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-core</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/</outputDirectory>
+        <includeDependencies>false</includeDependencies>
+        <unpack>false</unpack>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
+  <files>
+    <file>
+      <source>LICENSE.txt</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+    <file>
+      <source>README.txt</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+  </files>
+</assembly>

@@ -100,17 +100,21 @@ All Rights Reserved
   <scm>
     <connection>scm:svn:https://snuggletex.svn.sourceforge.net/svnroot/snuggletex</connection>
   </scm>
-  <!-- This next bit is obviously temporary until we sort out exactly where to deploy to -->
   <distributionManagement>
     <snapshotRepository>
+      <!-- (This might change soon) -->
       <id>www.ph.ed.ac.uk-snapshots</id>
       <url>file:///Disk/lust3/maven2</url>
     </snapshotRepository>
+    <site>
+      <!-- (This will change once we release 1.1.0) -->
+      <id>www.ph.ed.ac.uk-site</id>
+      <url>file:///Home/dmckain/WWW/snuggletex</url>
+    </site>
   </distributionManagement>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.5</source>
@@ -118,14 +122,12 @@ All Rights Reserved
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <version>2.1</version>
         <executions>
@@ -138,26 +140,67 @@ All Rights Reserved
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assemble/src.xml</descriptor>
+            <descriptor>src/assemble/basic.xml</descriptor>
+            <descriptor>src/assemble/full.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>cim</report>
+              <!-- (Hanging due to a bad dependency URL) -->
+              <!--
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>dependency-management</report>
+              -->
+              <report>help</report>
+              <report>index</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>mailing-list</report>
+              <report>plugin-management</report>
+              <report>plugins</report>
+              <report>project-team</report>
+              <report>scm</report>
+              <report>summary</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <inherited>false</inherited>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>aggregate</report>
+            </reports>
+            <inherited>false</inherited>
+          </reportSet>
+        </reportSets>
         <configuration>
+          <!--
+          Hmmm... I seem to have to set this, even though it's deprecated.
+          See MJAVADOC-230 in the Maven JIRA.
+          -->
+          <aggregate>true</aggregate>
           <linksource>yes</linksource>
           <show>private</show>
           <author>true</author>
           <version>true</version>
           <use>true</use>
           <encoding>UTF-8</encoding>
-          <linksource>true</linksource>
+          <docencoding>UTF-8</docencoding>
           <windowtitle>SnuggleTeX API Documentation</windowtitle>
           <doctitle>SnuggleTeX API Documentation</doctitle>
           <bottom><![CDATA[
@@ -167,6 +210,15 @@ All Rights Reserved
           ]]></bottom>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
     </plugins>
-  </build>
+  </reporting>
 </project>

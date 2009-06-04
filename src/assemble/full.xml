@@ -1,5 +1,16 @@
+<!--
+
+Assembly descriptor for the full SnuggleTeX bundle
+containing sources and dependencies.
+
+$Id$
+
+Copyright (c) 2009 The University of Edinburgh
+All Rights Reserved
+
+-->
 <assembly>
-  <id>src-with-dependencies</id>
+  <id>full</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -16,7 +27,18 @@
         <includeDependencies>true</includeDependencies>
         <unpack>false</unpack>
       </binaries>
-      <sources/>
+      <sources>
+      </sources>
     </moduleSet>
   </moduleSets>
+  <files>
+    <file>
+      <source>LICENSE.txt</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+    <file>
+      <source>README.txt</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+  </files>
 </assembly>
