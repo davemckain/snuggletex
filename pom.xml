@@ -69,7 +69,11 @@ All Rights Reserved
     </dependency>
   </dependencies>
   <name>SnuggleTeX</name>
-  <url>http://www.ph.ed.ac.uk/snuggletex/</url>
+  <url>http://snuggletex.sourceforge.net</url>
+  <description>
+    SnuggleTeX is a free and open-source Java library for converting LaTeX to XML
+    (usually XHTML + MathML).
+  </description>
   <inceptionYear>2008</inceptionYear>
   <organization>
     <name>The University of Edinburgh</name>
@@ -98,8 +102,14 @@ All Rights Reserved
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:https://snuggletex.svn.sourceforge.net/svnroot/snuggletex</connection>
+    <connection>scm:svn:https://snuggletex.svn.sourceforge.net/svnroot/snuggletex/trunk</connection>
+    <developerConnection>scm:svn:https://snuggletex.svn.sourceforge.net/svnroot/snuggletex/trunk</developerConnection>
+    <url>http://snuggletex.svn.sourceforge.net/svnroot/snuggletex/trunk</url>
   </scm>
+  <issueManagement>
+    <system>sourceforge</system>
+    <url>http://sourceforge.net/tracker/?group_id=221375</url>
+  </issueManagement>
   <distributionManagement>
     <snapshotRepository>
       <!-- (This might change soon) -->
@@ -107,9 +117,13 @@ All Rights Reserved
       <url>file:///Disk/lust3/maven2</url>
     </snapshotRepository>
     <site>
-      <!-- (This will change once we release 1.1.0) -->
-      <id>www.ph.ed.ac.uk-site</id>
+      <id>temp-local</id>
       <url>file:///Home/dmckain/WWW/snuggletex</url>
+      <!-- FIXME: Uncomment when ready to go live on sourceforge -->
+      <!--
+      <id>sourceforge.net</id>
+      <url>scp://shell.sourceforge.net/home/groups/s/sn/snuggletex/htdocs</url>
+      -->
     </site>
   </distributionManagement>
   <build>
@@ -157,7 +171,7 @@ All Rights Reserved
         <reportSets>
           <reportSet>
             <reports>
-              <report>cim</report>
+              <!--UNUSED <report>cim</report> -->
               <!-- (Hanging due to a bad dependency URL) -->
               <!--
               <report>dependencies</report>
@@ -168,7 +182,7 @@ All Rights Reserved
               <report>index</report>
               <report>issue-tracking</report>
               <report>license</report>
-              <report>mailing-list</report>
+              <!-- UNUSED <report>mailing-list</report>-->
               <report>plugin-management</report>
               <report>plugins</report>
               <report>project-team</report>
@@ -218,6 +232,12 @@ All Rights Reserved
       </plugin>
       <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-changelog-plugin</artifactId>
       </plugin>
     </plugins>
   </reporting>
