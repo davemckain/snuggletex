@@ -112,8 +112,12 @@ All Rights Reserved
     <url>http://sourceforge.net/tracker/?group_id=221375</url>
   </issueManagement>
   <distributionManagement>
-    <snapshotRepository>
+    <repository>
       <!-- (This might change soon) -->
+      <id>www.ph.ed.ac.uk-releases</id>
+      <url>file:///Disk/lust3/maven2</url>
+    </repository>
+    <snapshotRepository>
       <id>www.ph.ed.ac.uk-snapshots</id>
       <url>file:///Disk/lust3/maven2</url>
     </snapshotRepository>
