@@ -4,31 +4,78 @@
 
 \begin{itemize}
 
-  \item \href[Download]{http://sourceforge.net/project/showfiles.php?group_id=221375}
-        one of the latest binaries ZIP distribution of SnuggleTeX from
-        SourceForge.net. There are two binaries available:
+  \item
+    \href[Download]{http://sourceforge.net/project/showfiles.php?group_id=221375}
+    one of the SnuggleTeX ZIP distributions from SourceForge.net.
+    As of SnuggleTeX 1.1.0, these comes in two flavours:
 
-        \begin{enumerate}
-          \item \verb|snuggletex-n.n.n.zip| is a minimal binary containing
-                everything you need for SnuggleTeX's core functionality.
+    \begin{enumerate}
+      \item \verb|snuggletex-n.n.n-basic.zip| is a basic binary distribution containing
+        everything you need for SnuggleTeX's core functionality, allowing
+        you to convert LaTeX to XHTML/MathML. No further JAR files
+        are required for this.
 
-          \item \verb|snuggletex-with-extensions-n.n.n.zip| contains extensions
-                for generating legacy ``HTML + image'' output, including required
-                required third party JARs.
-        \end{enumerate}
+      \item \verb|snuggletex-n.n.n-full.zip| is the full distribution containing
+        all SnuggleTeX modules, all required dependencies and the project sources.
+        Use this one if you want to do convert LaTeX to XHTML+images, or use
+        the up-conversion module to generate Content MathML and/or Maxima syntax.
+        Always use this distribution if you wish to use this additional
+        functionality.
+    \end{enumerate}
 
-        You can also download a source distribution and compile up yourself, if you
-        are that way inclined.
-
-  \item Inside the binary distributions, you should find \verb|snuggletex.jar|,
-        which is a Java archive containing everything you need to use SnuggleTeX.
-        There is also a \verb|src.zip| with the source code for convenience ---
-        if you are using an IDE such as Eclipse then you may attach the source
-        code to the SnuggleTeX JAR to make it easy to peek in to the source
-        code whenever you need to.
-
-  \item Ensure that \verb|snuggletex.jar| is in the ClassPath when compiling
-        and running any code that uses SnuggleTeX. (Exactly how you do this depends
-        on your development environment.)
+  \item See the table below for a guide of which JARs you will need for
+    the main types of SnuggleTeX activity.
 
 \end{itemize}
+
+\subsection*{List of JARs}
+
+{\bf Note:} All of the JARs in the full SnuggleTeX distribution
+will have version numbers in their names. I have omitted these in
+the table below.
+
+\begin{tabular}{|c|c|l|l|l|}
+\hline
+Activity &
+Suggested Distribution &
+Required at Compile Time &
+Required at Run Time &
+Optional at Run Time \\
+\hline
+Convert LaTeX to basic XHTML+MathML
+as either DOM or simple web pages &
+Basic &
+snuggletex-core.jar &
+snuggletex-core.jar &
+saxon9.jar\newline saxon9-dom.jar \\
+\hline
+Additionally generate Content MathML and/or Maxima input\newline
+or convert the output from ASCIIMathML to Content MathML &
+Full &
+snuggletex-core.jar\newline
+snuggletex-upconversion.jar &
+snuggletex-core.jar\newline
+snuggletex-upconversion.jar\newline
+saxon9-jar\newline
+saxon9-dom.jar \\
+\hline
+Generate legacy XHTML+images web pages &
+Full &
+snuggletex-core.jar\newline
+snuggletex-jeuclid.jar &
+snuggletex-core.jar\newline
+snuggletex-jeuclid.jar\newline
+jeuclid-core.jar\newline
+batik-dom.jar\newline
+batik-ext.jar\newline
+batik-util.jar\newline
+batik-xml.jar\newline
+commons-iojar\newline %
+commons-logging.jar\newline
+xml-apis.jar (not needed for Java 6 and above)\newline %
+xml-apis-ext.jar\newline
+xmlgraphics-commons.jar &
+saxon9.jar\newline
+saxon9-dom.jar \\
+\hline
+\end{tabular}

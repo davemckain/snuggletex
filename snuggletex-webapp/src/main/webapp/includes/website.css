@@ -42,16 +42,18 @@
 }
 
 #navinner ul {
-  margin: 0;
+  margin: 0 0 1.5em 0;
   padding: 0;
   list-style-type: none;
-  margin-bottom: 33px;
+}
+
+#navinner ul ul {
+  margin: 0 0 0 1em;
 }
 
 #navinner li {
   margin: 0;
   padding: 0;
-  font-size: 95%;
 }
 
 #navinner a:link, #navinner a:visited {
@@ -69,40 +71,11 @@
   text-decoration: none;
 }
 
-/************************************************************/
-
-/* The next style makes the "current" page active. This is a
-   common CSS technique whereby we give the body an id corresponding
-   to a page, which is then matched to each style. This is quite
-   handy for static content */
-
-body#overview a.overview,
-body#features a.features,
-body#usecases a.usecases,
-body#releasenotes a.releasenotes,
-body#requirements a.requirements,
-body#browserRequirements a.browserRequirements,
-body#gettingstarted a.gettingstarted,
-body#minexample a.minexample,
-body#usageoverview a.usageoverview,
-body#inputs a.inputs,
-body#outputs a.outputs,
-body#configuration a.configuration,
-body#errors a.errors,
-body#errorCodes a.errorCodes,
-body#samples a.samples,
-body#textMode a.textMode,
-body#mathMode a.mathMode,
-body#verbatimMode a.verbatimMode,
-body#commands a.commands,
-body#xmlCommands a.xmlCommands,
-body#xhtmlCommands a.xhtmlCommands,
-body#mathInputDemo a.mathInputDemo,
-body#upConversionDemo a.upConversionDemo,
-body#tryout a.tryout {
+#navinner a.selected {
   color: #f25c69;
   font-weight: bold;
 }
+
 
 /************************************************************/
 

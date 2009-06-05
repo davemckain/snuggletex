@@ -30,6 +30,14 @@ import javax.xml.transform.TransformerFactory;
 abstract class BaseServlet extends HttpServlet {
     
     private static final long serialVersionUID = -2577813908466694931L;
+    
+    public String ensureGetContextInitParam(String propertyName) throws ServletException {
+        String result = getServletContext().getInitParameter(propertyName);
+        if (result==null) {
+            throw new ServletException("Context init-param " + propertyName + " is not set");
+        }
+        return result;
+    }
 
     /**
      * Helper that reads in a resource from the webapp hierarchy, throwing a {@link ServletException}
@@ -67,19 +75,27 @@ abstract class BaseServlet extends HttpServlet {
     /**
      * Compiles the XSLT stylesheet at the given location within the webapp,
      * using {@link ClassPathURIResolver} to locate the stylesheet and anything it wants to import.
+     * <p>
+     * It also sets some core parameters based on certain properties set for the webapp.
      * 
+     * @param request Request being processed (so we can pass the context path to the XSLT)
      * @param classPathUri location of XSLT to compile.
      * 
      * @return resulting {@link Templates} representing the compiled stylesheet.
      * @throws ServletException if XSLT could not be found or could not be compiled.
      */
-    protected Transformer getStylesheet(String classPathUri) throws ServletException {
+    protected Transformer getStylesheet(HttpServletRequest request, String classPathUri) throws ServletException {
+        Transformer result;
         try {
-            return getStylesheetManager().getStylesheet(classPathUri).newTransformer();
+            result = getStylesheetManager().getStylesheet(classPathUri).newTransformer();
         }
         catch (TransformerConfigurationException e) {
             throw new ServletException("Could not create Transformer from Templates", e);
         }
+        result.setParameter("context-path", request.getContextPath());
+        result.setParameter("snuggletex-version", ensureGetContextInitParam(ContextInitialiser.SNUGGLETEX_VERSION_PROPERTY_NAME));
+        result.setParameter("maven-site-url", ensureGetContextInitParam(ContextInitialiser.MAVEN_SITE_URL_PROPERTY_NAME));
+        return result;
     }
 
     protected Transformer createSerializer() throws TransformerConfigurationException {

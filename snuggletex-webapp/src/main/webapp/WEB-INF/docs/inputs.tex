@@ -1,6 +1,6 @@
 \pageId{inputs}
 
-\section*{Inputs - the \verb|SnuggleInput| Object}
+\section*{Parsing LaTeX Inputs}
 
 A \verb|SnuggleInput| Object acts as a placeholder for a source of LaTeX
 input. There are a number of different constructors that let you pull in LaTeX
@@ -12,13 +12,13 @@ characters to live in the ASCII subset of Unicode.  Characters outside this
 range will be replaced with (useless) alternatives and reported as a
 \href[\verb|TTEG02|]{error-codes.html#TTEG02} error.
 
-Given a \verb|SnuggleSession| called \verb|session| and a \verb|SnuggleInput|
-called \verb|input|, you can instruct SnuggleTeX to parse it with:
-\begin{verbatim}session.parseInput(input);\end{verbatim}
+Given a \verb|SnuggleSession| called \verb|snuggleSession| and a \verb|SnuggleInput|
+called \verb|snuggleInput|, you can instruct SnuggleTeX to parse it with:
+\begin{verbatim}snuggleSession.parseInput(snuggleInput);\end{verbatim}
 You can parse as many \verb|SnuggleInput|s as you like; they will be treated like one
-big continuous input. However, each \verb|SnuggleInput| should be balanced in the sense that any
-open environments or braces must be closed within the same input, otherwise errors will
-be reported.
+big continuous sequential input. However, each \verb|SnuggleInput| should be
+balanced in the sense that any open environments or braces must be closed
+within the same input, otherwise errors will be reported.
 
 The \verb|parseInput()| method returns \verb|false| if parsing was terminated because
 the \verb|SnuggleSession| was configured to stop on the first LaTeX error and a LaTeX

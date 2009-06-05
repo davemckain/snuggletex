@@ -168,8 +168,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         webOptions.setIncludingStyleElement(false);
         
         /* Create XSLT to generate the resulting page */
-        Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("context-path", request.getContextPath());
+        Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("add-annotations", Boolean.valueOf(addMathAnnotations));

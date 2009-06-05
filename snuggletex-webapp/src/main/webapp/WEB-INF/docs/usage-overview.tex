@@ -12,7 +12,7 @@ An instance of a \verb|SnuggleEngine| is thread-safe and can be used
 to perform as many conversions as you like. It houses a number of defaults,
 options, command and environment definitions that can be set if you want to
 perform a number of very similar conversion processes (which is quite common).
-See the \href[API Docs]{../javadoc/} for more information.
+See the \href[API Docs]{maven://apidocs/} for more information.
 
 Despite its heavy-weight name, creating and setting up a \verb|SnuggleEngine|
 is not expensive so don't worry about it!
@@ -38,7 +38,7 @@ This creates a fresh job using the current default settings in your
 \href[Inputs]{inputs.html}, \href[Error Reporting]{error-reporting.html}
 and \href[Outputs]{outputs.html} to do whatever it is you want to do.
 
-See the \href[Minimal Example]{minimal-example.html} for a simple working
+See the \href[First Example]{minimal-example.html} for a simple working
 example of how everything comes together.
 
 You can discard a \verb|SnuggleSession| once it has done everything
@@ -53,11 +53,10 @@ to reuse inputs containing definitions of commands and environments. You can
 do this with:
 
 \begin{verbatim}SnuggleSnapshot snapshot = session.createSnapshot();
+
 // ... later on ...
+
 SnuggleSession refriedSession = snapshot.createSession();
 // refriedSession will have the same parsing state as your
 // sesion did when you took the snapshot
 \end{verbatim}
-
-
-

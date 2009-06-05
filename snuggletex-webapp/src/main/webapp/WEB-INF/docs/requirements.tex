@@ -2,16 +2,14 @@
 
 \section*{Software Requirements}
 
-\subsection*{Overview}
-
 \begin{itemize}
 
   \item SnuggleTeX requires at least Java 1.5.0, as it makes use of many of the
         nice language features that were added to Java 1.5.
 
-  \item The SnuggleTeX "core" functionality currently has no dependencies on
+  \item The core SnuggleTeX functionality has no dependencies on
         any other Java libraries so is easy to integrate into Java projects. The
-        standard binary distribution contains the SnuggleTeX core.
+        ``basic'' distribution contains the SnuggleTeX core.
 
   \item For generating web pages, we recommend the excellent
         \href[SAXON]{http://saxon.sourceforge.net} XSLT processor
@@ -19,39 +17,14 @@
         it is certainly not essential. A recent binary of SAXON is included in
         the full and source distributions of SnuggleTeX.
 
-  \item The extension for generating legacy XHTML + images requires the
-        \href[JEuclid]{http://jeuclid.sourceforge.net}
-        library, which has a number of dependencies on other libraries. A
-        minimal set of those sufficient to generate PNG images is included in
+  \item The module for generating legacy XHTML + images requires some
+        JAR files from the \href[JEuclid]{http://jeuclid.sourceforge.net}
+        project, which has a number of dependencies on other libraries. A
+        suitable set of JARs sufficient to generate PNG images is included in
         the full SnuggleTeX distribution.
 
-  \item The SnuggleTeX source distribution includes
-        \href[JUnit4]{http://www.junit.org} and
-        \href[EasyMock]{http://www.easymock.org} libraries
-        for running the SnuggleTeX test suite.
-
+  \item The module for generating Content MathML and/or Maxima syntax requires
+        the SAXON 9.x processor as it uses XSLT 2.0 to convert the raw Presentation
+        MathML produced by SnuggleTeX into other forms. This is included in the
+        full SnuggleTeX distribution.
 \end{itemize}
-
-\subsection*{List of JARs}
-
-\begin{tabular}{|c|l|l|}
-\hline
-Activity &
-Required &
-Optional \\
-\hline
-Using SnuggleTeX to generate DOM and/or XHTML+MathML web pages &
-snuggletex.jar &
-saxon9.jar, saxon9-dom.jar \\
-\hline
-Using SnuggleTeX to generate legacy XHTML+images web pages &
-snuggletex.jar, batik-dom.jar, batik-ext.jar, batik-util.jar, batik-xml.jar, commons-io-1.3.1.jar, %
-commons-logging-1.1.jar, jeuclid-core-3.1.1.jar, xml-apis.jar (not needed for Java 6 and above), %
- xml-apis-ext.jar, xmlgraphics-commons-1.3.jar &
-saxon9.jar, saxon9-dom.jar \\
-\hline
-Building SnuggleTeX, running the test suite and building the web application &
-All of the above, plus: easymock.jar, junit-4.4.jar, servlet-api.jar &
-saxon9.jar, saxon9-dom.jar \\
-\hline
-\end{tabular}

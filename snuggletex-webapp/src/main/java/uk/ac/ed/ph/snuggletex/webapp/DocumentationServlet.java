@@ -167,8 +167,7 @@ public final class DocumentationServlet extends BaseServlet {
          * 2. Cached resource doesn't already exist (or caching is turned off)
          */
         if (!"png".equals(extension) && (!resourceFile.exists() || !caching)) {
-            resourceFile = generateResource(resourcePath, resourceBaseName, extension,
-                    request.getContextPath(), request.getServletPath());
+            resourceFile = generateResource(request, resourcePath, resourceBaseName, extension);
             if (resourceFile==null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Documentation page does not exist");
                 return;
@@ -194,8 +193,8 @@ public final class DocumentationServlet extends BaseServlet {
      * @return resulting File, or null if the source TeX file for this resource couldn't be
      *   located or if the file extension couldn't be understood.
      */
-    private File generateResource(final String resourcePath, final String resourceBaseName,
-            final String extension, final String contextPath, final String servletPath)
+    private File generateResource(final HttpServletRequest request, final String resourcePath,
+            final String resourceBaseName, final String extension)
             throws ServletException, IOException {
         logger.info("Generating Resource at {}", resourcePath);
         
@@ -226,15 +225,16 @@ public final class DocumentationServlet extends BaseServlet {
                 return null;
             } 
             String imageOutputDirectortyResourcePath = resourceBaseName;
-            String imageOutputBaseUrl = contextPath + servletPath + resourceBaseName;
-            resultFile = generateSnuggledFile(texSourceStream, texSourceResourcePath, webPageType,
-                    contextPath, resourcePath, imageOutputDirectortyResourcePath, imageOutputBaseUrl);
+            String imageOutputBaseUrl = request.getContextPath() + request.getServletPath() + resourceBaseName;
+            resultFile = generateSnuggledFile(request, texSourceStream, texSourceResourcePath,
+                    webPageType, resourcePath, imageOutputDirectortyResourcePath, imageOutputBaseUrl);
         }
         return resultFile;
     }
     
-    private File generateSnuggledFile(final InputStream texSourceStream, final String texSourceResourcePath,
-            final WebPageType webPageType, final String contextPath, final String outputResourcePath,
+    private File generateSnuggledFile(final HttpServletRequest request,
+            final InputStream texSourceStream, final String texSourceResourcePath,
+            final WebPageType webPageType, final String outputResourcePath,
             final String imageOutputDirectoryResourcePath, final String imageOutputBaseURL)
             throws ServletException, IOException {
         /* Parse macros.tex and source resource */
@@ -261,12 +261,11 @@ public final class DocumentationServlet extends BaseServlet {
         }
         else if (webPageType==WebPageType.UNIVERSAL_STYLESHEET) {
             /* Point to our own version of the USS if required */
-            options.setClientSideXSLTStylesheetURLs(contextPath + "/includes/pmathml.xsl");
+            options.setClientSideXSLTStylesheetURLs(request.getContextPath() + "/includes/pmathml.xsl");
         }
         
         /* Set up stylesheet to format the output */
-        Transformer stylesheet = getStylesheet(FORMAT_OUTPUT_XSLT_URI);
-        stylesheet.setParameter("context-path", contextPath);
+        Transformer stylesheet = getStylesheet(request, FORMAT_OUTPUT_XSLT_URI);
         stylesheet.setParameter("page-type", webPageType!=WebPageType.PROCESSED_HTML ? webPageType.name() : null);
         options.setStylesheets(stylesheet);
         

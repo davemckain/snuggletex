@@ -28,19 +28,20 @@ There are three classes of Errors that can be encountered when using SnuggleTeX:
 \subsection*{Input LaTeX Errors}
 
 By default, a \verb|SnuggleSession| keeps going whenever it detects bad or
-invalid LaTeX during parsing, in much the same way that LaTeX can run.
+invalid LaTeX during parsing, in much the same way that LaTeX can often
+continue running.
 (Obviously, the results you get from after the point the error occurred
 may not be particularly useful.)
 
-It is also possible to tell SnuggleTeX to "fail fast" and stop on the first error
+It is also possible to tell SnuggleTeX to ``fail fast'' and stop on the first error
 encountered with:
-\begin{verbatim}session.getConfiguration().setFailingFast(true)\end{verbatim}
-In this case, \verb|session.parseInput()| returns false if parsing was
+\begin{verbatim}snuggleSession.getConfiguration().setFailingFast(true)\end{verbatim}
+In this case, \verb|snuggleSession.parseInput()| returns false if parsing was
 terminated by an error and true if parsing was completed successfully for
 a given Input.
 
 You can call:
-\begin{verbatim}session.getErrors();\end{verbatim}
+\begin{verbatim}snuggleSession.getErrors();\end{verbatim}
 at any time to get a \verb|List| of \verb|InputError| Objects representing each
 LaTeX error detected by the \verb|SnuggleSession| so far.
 
@@ -58,7 +59,5 @@ The \verb|MessageFormatter| class has some convenience methods for nicely format
 these error messages in various ways.
 
 It is also possible to "inline" errors into the resulting XML outputs by
-calling:
-\begin{verbatim}DOMOutputOptions.setErrorOutputOptions(...)\end{verbatim}
-You can choose between not including errors (the default),
-SnuggleTeX-namespaced XML error elements or pre-formatted XHTML elements.
+calling the \verb|setErrorOutputOptions(...)| on a \verb|DOMOutputOptions|
+or \verb|WebPageOutputOptions| Object.

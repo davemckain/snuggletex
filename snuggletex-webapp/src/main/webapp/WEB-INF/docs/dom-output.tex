@@ -1,0 +1,38 @@
+\pageId{outputs}
+
+\section*{Building a DOM}
+
+SnuggleTeX can either append Nodes to an existing DOM, or return a DOM
+\verb|NodeList| within a newly created \verb|Document|.
+
+\subsection*{Usage}
+
+\begin{itemize}
+  \item
+    Call \verb|snuggleSession.buildDOMSubtree(Element)|
+    or \verb|snuggleSession.buildDOMSubtree(Element, DOMOutputOptions)|
+    to append the resulting XML to an existing \verb|Element|'s children.
+
+  \item
+    Call \verb|snuggleSession.buildDOMSubtree()|
+    or \verb|snuggleSession.buildDOMSubtree(DOMOutputOptions)|
+    to create a new \verb|Document| and return a \verb|NodeList| representing
+    your converted LaTeX inputs.
+\end{itemize}
+
+You can configure exactly how this works using a \verb|DOMOutputOptions| Object,
+which is a simple JavaBean that lets you control aspects such as:
+
+\begin{itemize}
+  \item Prefixing of MathML elements;
+  \item Whether to annotate MathML with the LaTeX input;
+  \item Whether and how to report LaTeX errors within the XML output;
+  \item How to remap any URLs discovered in documents (e.g. with the \verb|\href| command);
+  \item Whether to inline CSS using \verb|style| attributes. (This can be useful if your XML
+    is going to end up inside some kind of XML application that doesn't support user-specified
+    CSS stylesheets.)
+  \item Whether you want to ``post-process'' the newly created DOM \verb|Node|s before they
+    added to the final tree.
+\end{itemize}
+
+Have a look at the API documentation for \verb|DOMOutputOptions| for more information.

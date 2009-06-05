@@ -31,6 +31,8 @@ public final class ContextInitialiser implements ServletContextListener {
     private static final Logger logger = LoggerFactory.getLogger(ContextInitialiser.class);
     
     public static final String CACHE_XSLT_PROPERTY_NAME = "caching.xslt";
+    public static final String SNUGGLETEX_VERSION_PROPERTY_NAME = "snuggletex.version";
+    public static final String MAVEN_SITE_URL_PROPERTY_NAME = "maven.site.url";
     
     public static final String STYLESHEET_MANAGER_ATTRIBUTE_NAME = "stylesheetManager";
     public static final String STYLESHEET_CACHE_ATTRIBUTE_NAME = "stylesheetCache";
@@ -59,5 +61,4 @@ public final class ContextInitialiser implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         logger.info("Context destroyed");
     }
-
 }

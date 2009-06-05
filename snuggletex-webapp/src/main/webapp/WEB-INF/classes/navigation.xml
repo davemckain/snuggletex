@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!--
+
+$Id$
+
+Stylesheet to soup up the raw output from the SnuggleTeX
+process to make a nice web page.
+
+This adds in the rest of the <head/> stuff, standard headers & footers
+and the navigation menu.
+
+Relative links are fixed up so they are relative to the supplied
+context-path.
+
+Copyright (c) 2009 University of Edinburgh.
+All Rights Reserved
+
+-->
+<navigation xmlns="http://www.ph.ed.ac.uk/snuggletex">
+  <section name="About SnuggleTeX">
+    <node id="overview" href="/documentation/overview.html" name="Overview"/>
+    <node id="features" href="/documentation/features.html" name="Features"/>
+    <node id="usecases" href="/documentation/use-cases.html" name="Why Use SnuggleTeX?"/>
+    <node id="releasenotes" href="/documentation/release-notes.html" name="Release Notes"/>
+  </section>
+  <section name="Demos &amp; Samples">
+    <node id="mathInputDemo" href="/MathInputDemo" name="Simple Math Input Demo"/>
+    <node id="tryout" href="/tryout.xml" name="Full LaTeX Input Demo (requires Firefox or IE6/7 with MathPlayer)"/>
+    <node id="upConversionDemo" href="/UpConversionDemo" name="MathML Semantic Up-Conversion Demo"/>
+    <node id="asciiMathMLUpConversionDemo" href="/ASCIIMathMLUpConversionDemo" name="ASCIIMathML Up-Conversion Demo"/>
+    <node id="samples" href="/documentation/latex-samples.html" name="Web Output Samples"/>
+  </section>
+  <section name="User Guide">
+    <node id="requirements" href="/documentation/requirements.html" name="Software Requirements"/>
+    <node id="gettingstarted" href="/documentation/getting-started.html" name="Getting Started"/>
+    <node id="minexample" href="/documentation/minimal-example.html" name="First Example"/>
+    <node id="usageoverview" href="/documentation/usage-overview.html" name="Usage Overview"/>
+    <node id="inputs" href="/documentation/inputs.html" name="Parsing LaTeX Inputs"/>
+    <node id="outputs" href="/documentation/outputs.html" name="Building XML/XHTML/MathML Outputs">
+      <node id="xmlStringOutput" href="/documentation/string-output.html" name="XML Strings"/>
+      <node id="domOutput" href="/documentation/dom-output.html" name="Building a DOM"/>
+      <node id="webOutput" href="/documentation/web-output.html" name="Creating Web Pages"/>
+      <node id="browserRequirements" href="/documentation/browser-requirements.html" name="Browser Requirements"/>
+    </node>
+    <node id="configuration" href="/documentation/configuration.html" name="Configuration"/>
+    <node id="errors" href="/documentation/error-reporting.html" name="Error Reporting">
+      <node id="errorCodes" href="/documentation/error-codes.html" name="SnuggleTeX Error Codes"/>
+    </node>
+    <node id="supportedLaTeX" href="/documentation/supported-latex.html" name="Supported LaTeX">
+      <node id="textMode" href="/documentation/text-mode.html" name="Basic Text Mode Commands"/>
+      <node id="mathMode" href="/documentation/math-mode.html" name="Basic Math Mode Commands"/>
+      <node id="verbatimMode" href="/documentation/verbatim-mode.html" name="Verbatim Mode"/>
+      <node id="commands" href="/documentation/commands.html" name="Defining Commands &amp; Environments"/>
+      <node id="xhtmlCommands" href="/documentation/xhtml-commands.html" name="XHTML-related Commands"/>
+      <node id="xmlCommands" href="/documentation/xml-commands.html" name="XML-related Commands"/>
+    </node>
+    <!-- This one needs fleshed out. Also need to document ASCIIMathML -->
+    <node id="upconversion" href="/documentation/upconversion.html" name="Up-Conversion to Content MathML (Experimental)"/>
+    <node id="projects" href="maven://apidocs/index.html" name="API Documentation"/>
+    <node id="crossref" href="maven://xref/index.html" name="Source Code Cross-Reference"/>
+  </section>
+  <section name="SnuggleTeX Project Links">
+    <node href="http://sourceforge.net/project/showfiles.php?group_id=221375" name="Download from SourceForge.net"/>
+    <node href="http://sourceforge.net/projects/snuggletex/" name="SnuggleTeX on SourceForge.net"/>
+    <node href="http://snuggletex.sourceforge.net/maven/" name="SnuggleTeX Maven Reports"/>
+    <node href="https://www.wiki.ed.ac.uk/display/Physics/SnuggleTeX" name="SnuggleTeX Wiki"/>
+  </section>
+</navigation>

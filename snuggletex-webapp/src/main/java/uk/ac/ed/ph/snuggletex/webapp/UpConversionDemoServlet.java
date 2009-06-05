@@ -187,8 +187,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         options.setIncludingStyleElement(false);
         
         /* Create XSLT to generate the resulting page */
-        Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("context-path", request.getContextPath());
+        Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));

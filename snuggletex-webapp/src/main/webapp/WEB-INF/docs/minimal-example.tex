@@ -1,8 +1,9 @@
 \pageId{minexample}
 
-\section*{Minimal Example}
+\section*{First Example}
 
-Look at the \verb|MinimalExample.java| file in the full binary distribution.
+Look at the \href[\verb|MinimalExample.java|]{maven://xref/uk/ac/ed/ph/snuggletex/samples/MinimalExample.html}
+file in the full binary distribution.
 This demonstrates a very simple example of calling up SnuggleTeX:
 
 \begin{verbatim}
@@ -24,13 +25,14 @@ For this particular input, the resulting XML fragment consists of a single MathM
 
 You can run this on the command line with:
 
-\begin{verbatim}java -classpath snuggletex.jar \
+\begin{verbatim}java -classpath snuggletex-core-n.n.n.jar \
 uk.ac.ed.ph.snuggletex.extensions.samples.MinimalExample\end{verbatim}
 
-(This assumes that \verb|snuggletex.jar| is in the current directory; you will
-of course need to provide a path if it is not.)
+(This assumes that \verb|snuggletex-core-n.n.n.jar| is in the current directory; you will
+of course need to provide a path if it is not. You should also substitute
+\verb|n.n.n| for the actual version number attached to your SnuggleTeX JAR.)
 
-You should get something like:
+Once run, you should get an output like:
 
 \begin{verbatim}
 Input $$1+2=3$$ was converted to:

@@ -2,28 +2,48 @@
 
 \section*{Release Notes}
 
-\subsection*{Version 1.1 [HEAD] (In Development)}
+\subsection*{Version 1.1.0-beta1 [r38?] (06/06/09)}
 
 \begin{itemize}
 
-  \item Migrated to Saxon 9.1.0.5
+  \item Project now uses the Maven management and comprehension tool. SnuggleTeX
+    is now split into 4 sub-modules: \verb|snuggletex-core|, \verb|snuggletex-jeuclid|,
+    \verb|snuggletex-upconversion| and \verb|snuggletex-webapp|.
 
-  \item Renamed internal \verb|DOMBuilderFacade| as \verb|DOMBuildingController|.
+  \item \verb|snuggletex.jar| is now split into 3 distribution JARs.
 
-  \item Added new \verb|domPostProcessor| property to \verb|DOMOutputOptions| that
-    allows you to hook in a class that will post-process the raw DOM produced
-    by SnuggleTeX.
+  \item Upgraded depedencies SAXON and JEuclid to versions 9.1.0.6 and 3.1.5
+    respectively.
 
-  \item The \verb|downConverting| property of \verb|DOMOutputOptions| has been removed.
-    The same functionality is now invoked by registering an instance of
-    \verb|DownConvertingPostProcessor| as a \verb|domPostProcessor|, as described
-    above.
+  \item Added experimental up-conversion module that attempts to convert the raw
+    Presentation MathML produced by SnuggleTeX into Content MathML and/or Maxima
+    input form, providing the raw MathML is suitably simple and obeys certain
+    heuristic conventions.
 
   \item SnuggleTeX now does a better job of attempting to pair up parentheses in
     mathematical expressions. This is now done by default and works even for unbalanced
     brackets, which are implicitly balanced against the start/end of the current group
     as appropriate. (Note however that unbalanced brackets are not output using
     MathML \verb|mfenced| elements.)
+
+  \item Comments are now completely discarded during parsing and not kept in the
+    parse tree. This fixes an issue with using them in places that the parse tree
+    could not support.
+
+  \item Added new \verb|DOMPostProcessor| class that is passed to \verb|DOMOutputOptions|
+    and allows you to hook in a class that will post-process the raw DOM produced
+    by SnuggleTeX.
+
+  \item The \verb|downConverting| property of \verb|DOMOutputOptions| has been removed.
+    The same functionality is now invoked by registering an instance of
+    \verb|DownConvertingPostProcessor| as a \verb|DOMPostProcessor|, as described
+    above.
+
+  \item Renamed internal \verb|DOMBuilderFacade| as \verb|DOMBuildingController|.
+
+  \item Added new \verb|MathMLUtilities| with some convenience methods for working with MathML
+    documents, including simple methods for parsing and serializing MathML
+    documents, and extracting annotations.
 
   \item Added utility class \verb|ClassPathURIResolver| that makes it easy to locate
     XSLT \verb|Source| Objects via the ClassLoader. Existing classes which do this kind of
@@ -32,14 +52,17 @@
   \item Removed the \verb|inferringMathStructure| property from \verb|SnuggleConfiguration|.
     This functionality is provided (and extended) in the new up-conversion extension.
 
-  \item Up-conversion functionality is currently being worked on as an extension.
+  \item The old \verb|AbstractWebPageOptions| class and its 2 concrete sublcasses have
+    been replaced by a single \verb|WebPageOutputOptions|. A helper class called
+    \verb|WebPageOutputOptionsTemplate| makes it easier to create suitably-configured
+    instances of these options from specified \verb|WebPageType|s.
 
-  \item Added new \verb|MathMLUtilities| with some convenience methods for working with MathML
-    documents, including simple methods for parsing and serializing MathML
-    documents, and extracting annotations.
+  \item JEuclid-based outputs are now obtained by using the \verb|JEuclidUtilities|
+    helper class to construct a suitable \verb|WebPageOutputOptions| that is set up
+    to perform the JEuclid magic automatically. Note that you will need to ensure that
+    \verb|snuggletex-jeuclid.jar| is in your ClassPath here.
 
-  \item Moved \verb|AbstractWebPageOptions| to top level package and renamed as
-    \verb|BaseWebPageOptions|.
+  \item Added extra demos to the SnuggleTeX webapp and rearranged/improved documentation.
 
 \end{itemize}
 

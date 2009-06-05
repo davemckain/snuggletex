@@ -27,17 +27,21 @@ All Rights Reserved
 
   <xsl:output method="xhtml"/>
 
-  <!-- Need to pass webapp context path so as to locate images and stuff -->
+  <xsl:param name="snuggletex-version" as="xs:string" required="yes"/>
+  <xsl:param name="maven-site-url" as="xs:string" required="yes"/>
   <xsl:param name="context-path" as="xs:string" required="yes"/>
 
   <!-- Optional "page type" text to display within page -->
   <xsl:param name="page-type" as="xs:string?" required="no"/>
 
-  <!-- Extract page ID as first <s:pageId/> element -->
+  <!-- Extract page ID as first <s:pageId/> element. (Overridden by importers where necessary) -->
   <xsl:variable name="pageId" select="string(/html/body/s:pageId[1])" as="xs:string"/>
 
   <!-- Extract page title as first <h2/> heading -->
   <xsl:variable name="title" select="string(/html/body/h2[1])" as="xs:string"/>
+
+  <!-- Navigation scheme -->
+  <xsl:variable name="navigation" select="document('navigation.xml')/s:navigation/s:section" as="element(s:section)+"/>
 
   <xsl:template match="head">
     <head>
@@ -74,7 +78,7 @@ All Rights Reserved
         </tr>
       </table>
       <h1 id="location">
-        <a href="{$context-path}">SnuggleTeX (1.1-SNAPSHOT)</a>
+        <a href="{$context-path}">SnuggleTeX (<xsl:value-of select="$snuggletex-version"/>)</a>
       </h1>
       <div id="content">
         <div id="skipnavigation">
@@ -82,56 +86,8 @@ All Rights Reserved
         </div>
         <div id="navigation">
           <div id="navinner">
-            <!-- Standard Navigation -->
-            <h2>About SnuggleTeX</h2>
-            <ul>
-              <li><a class="overview" href="{$context-path}/documentation/overview.html">Overview</a></li>
-              <li><a class="features" href="{$context-path}/documentation/features.html">Features</a></li>
-              <li><a class="usecases" href="{$context-path}/documentation/use-cases.html">Use Cases</a></li>
-              <li><a class="releasenotes" href="{$context-path}/documentation/release-notes.html">Release Notes</a></li>
-              <li><a href="http://sourceforge.net/project/showfiles.php?group_id=221375">Download from SourceForge.net</a></li>
-            </ul>
-
-            <h2>User Guide</h2>
-            <ul>
-              <li><a class="requirements" href="{$context-path}/documentation/requirements.html">Software Requirements</a></li>
-              <li><a class="browserRequirements" href="{$context-path}/documentation/browser-requirements.html">Browser Requirements</a></li>
-              <li><a class="gettingstarted" href="{$context-path}/documentation/getting-started.html">Getting Started</a></li>
-              <li><a class="usageoverview" href="{$context-path}/documentation/usage-overview.html">Usage Overview</a></li>
-              <li><a class="minexample" href="{$context-path}/documentation/minimal-example.html">Minimal Example</a></li>
-              <li><a class="inputs" href="{$context-path}/documentation/inputs.html">Inputs</a></li>
-              <li><a class="outputs" href="{$context-path}/documentation/outputs.html">Outputs</a></li>
-              <li><a class="errors" href="{$context-path}/documentation/error-reporting.html">Error Reporting</a></li>
-              <li><a class="errorCodes" href="{$context-path}/documentation/error-codes.html">SnuggleTeX Error Codes</a></li>
-              <li><a class="configuration" href="{$context-path}/documentation/configuration.html">Configuration</a></li>
-              <li><a class="upconversion" href="{$context-path}/documentation/upconversion.html">Up-Conversion</a></li>
-              <li><a class="projects" href="{$context-path}/apidocs/">API Documentation</a></li>
-            </ul>
-
-            <h2>LaTeX Guide</h2>
-            <ul>
-              <li><a class="textMode" href="{$context-path}/documentation/text-mode.html">Basic Text Mode Commands</a></li>
-              <li><a class="mathMode" href="{$context-path}/documentation/math-mode.html">Basic Math Mode Commands</a></li>
-              <li><a class="verbatimMode" href="{$context-path}/documentation/verbatim-mode.html">Verbatim Mode</a></li>
-              <li><a class="commands" href="{$context-path}/documentation/commands.html">Defining Commands &amp; Environments</a></li>
-              <li><a class="xhtmlCommands" href="{$context-path}/documentation/xhtml-commands.html">XHTML-related Commands</a></li>
-              <li><a class="xmlCommands" href="{$context-path}/documentation/xml-commands.html">XML-related Commands</a></li>
-            </ul>
-
-            <h2>Demos and Samples</h2>
-            <ul>
-              <li><a class="samples" href="{$context-path}/documentation/latex-samples.html">Web Output Samples</a></li>
-              <li><a class="tryout" href="{$context-path}/tryout.xml">Try Out (requires Firefox or IE6/7 with MathPlayer)</a></li>
-              <li><a class="mathInputDemo" href="{$context-path}/MathInputDemo">Simple Math Input Demo</a></li>
-              <li><a class="upConversionDemo" href="{$context-path}/UpConversionDemo">MathML Semantic Up-Conversion Demo</a></li>
-              <li><a class="asciiMathMLUpConversionDemo" href="{$context-path}/ASCIIMathMLUpConversionDemo">ASCIIMathML Up-Conversion Demo</a></li>
-            </ul>
-
-            <h2>External Links</h2>
-            <ul>
-              <li><a href="http://sourceforge.net/projects/snuggletex/">SnuggleTeX on SourceForge.net</a></li>
-              <li><a href="https://www.wiki.ed.ac.uk/display/Physics/SnuggleTeX">SnuggleTeX Wiki</a></li>
-            </ul>
+            <!-- Build navigation -->
+            <xsl:apply-templates select="$navigation" mode="make-navigation"/>
           </div>
         </div>
         <div id="maincontent">
@@ -143,7 +99,7 @@ All Rights Reserved
       </div>
       <div id="copyright">
         <p>
-          SnuggleTeX Release 1.1-SNAPSHOT &#x2014;
+          SnuggleTeX Release <xsl:value-of select="$snuggletex-version"/> &#x2014;
           <a href="{$context-path}/documentation/release-notes.html">Release Notes</a>
           <br />
           Copyright &#xa9; 2009
@@ -159,6 +115,32 @@ All Rights Reserved
         </p>
       </div>
     </body>
+  </xsl:template>
+
+  <!-- Builds section in navigation panel -->
+  <xsl:template match="s:section" mode="make-navigation">
+    <h2><xsl:value-of select="@name"/></h2>
+    <ul>
+      <xsl:apply-templates select="s:node" mode="make-navigation"/>
+    </ul>
+  </xsl:template>
+
+  <!-- Builds navigation item in panel -->
+  <xsl:template match="s:node" mode="make-navigation">
+    <li>
+      <a href="{s:fix-href(@href)}">
+        <xsl:if test="@id=$pageId">
+          <xsl:attribute name="class">selected</xsl:attribute>
+        </xsl:if>
+        <xsl:value-of select="@name"/>
+        <xsl:if test="descendant-or-self::s:node[@id=$pageId]">
+          <!-- Current page is deeper, so show it as well -->
+          <ul>
+            <xsl:apply-templates select="s:node" mode="make-navigation"/>
+          </ul>
+        </xsl:if>
+      </a>
+    </li>
   </xsl:template>
 
   <xsl:template match="body" mode="make-content">
@@ -183,6 +165,14 @@ All Rights Reserved
     </xsl:copy>
   </xsl:template>
 
+  <!-- Do vaguely exciting things to hyperlinks -->
+  <xsl:template match="a[@href]">
+    <a href="{s:fix-href(@href)}">
+      <xsl:copy-of select="@*[not(local-name()='href')]"/>
+      <xsl:apply-templates/>
+    </a>
+  </xsl:template>
+
   <!-- Deep Copy MathML -->
   <xsl:template match="m:math">
     <xsl:copy-of select="."/>
@@ -195,5 +185,11 @@ All Rights Reserved
 
   <!-- Leave out SnuggleTeX metadata -->
   <xsl:template match="s:*"/>
+
+  <xsl:function name="s:fix-href" as="xs:string">
+    <xsl:param name="href" as="xs:string"/>
+    <xsl:sequence select="if (starts-with($href, 'maven://')) then concat($maven-site-url, substring-after($href, 'maven://'))
+      else if (starts-with($href, '/')) then concat($context-path, $href) else $href"/>
+  </xsl:function>
 
 </xsl:stylesheet>

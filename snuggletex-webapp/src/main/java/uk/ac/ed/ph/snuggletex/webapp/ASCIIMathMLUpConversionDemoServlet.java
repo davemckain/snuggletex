@@ -110,8 +110,7 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         session.parseInput(new SnuggleInput("", "Dummy Input"));
         
         /* Create XSLT to generate the resulting page */
-        Transformer viewStylesheet = getStylesheet(DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("context-path", request.getContextPath());
+        Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
         viewStylesheet.setParameter("is-new-form", Boolean.valueOf(isNewForm));
         if (!isNewForm) {
             viewStylesheet.setParameter("ascii-math-input", asciiMathInput);
