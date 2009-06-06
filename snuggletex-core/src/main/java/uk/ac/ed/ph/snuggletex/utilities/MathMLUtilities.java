@@ -385,7 +385,7 @@ public final class MathMLUtilities {
      */
     public static Document isolateFirstBranch(final Element mathElement) {
         Element firstSemantics = extractFirstSemanticsBranch(mathElement);
-        return firstSemantics!=null ? isolateDescendent(mathElement, firstSemantics) : null;
+        return firstSemantics!=null ? isolateDescendant(mathElement, firstSemantics) : null;
     }
     
     /**
@@ -400,7 +400,7 @@ public final class MathMLUtilities {
     public static Document isolateFirstBranch(final UnwrappedParallelMathMLDOM unwrappedDOM) {
         ConstraintUtilities.ensureNotNull(unwrappedDOM, "UnwrappedParallelMathMLDOM");
         Element firstSemantics = unwrappedDOM.getFirstBranch();
-        return firstSemantics!=null ? isolateDescendent(unwrappedDOM.getMathElement(), firstSemantics) : null;
+        return firstSemantics!=null ? isolateDescendant(unwrappedDOM.getMathElement(), firstSemantics) : null;
     }
     
     /**
@@ -431,7 +431,7 @@ public final class MathMLUtilities {
      */
     public static Document isolateAnnotationXML(final Element mathElement, final String encodingAttribute) {
         NodeList annotationContents = extractAnnotationXML(mathElement, encodingAttribute);
-        return annotationContents!=null ? isolateDescendent(mathElement, annotationContents) : null;
+        return annotationContents!=null ? isolateDescendant(mathElement, annotationContents) : null;
     }
     
     /**
@@ -446,16 +446,16 @@ public final class MathMLUtilities {
     public static Document isolateAnnotationXML(final UnwrappedParallelMathMLDOM unwrappedDOM, final String encodingAttribute) {
         ConstraintUtilities.ensureNotNull(unwrappedDOM, "UnwrappedParallelMathMLDOM");
         NodeList annotationContents = unwrappedDOM.getXmlAnnotations().get(encodingAttribute);
-        return annotationContents!=null ? isolateDescendent(unwrappedDOM.getMathElement(), annotationContents) : null;
+        return annotationContents!=null ? isolateDescendant(unwrappedDOM.getMathElement(), annotationContents) : null;
     }
     
-    private static Document isolateDescendent(final Element mathElement, final NodeList descendents) {
+    private static Document isolateDescendant(final Element mathElement, final NodeList descendants) {
         Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element resultMathElement = (Element) mathElement.cloneNode(false);
         result.adoptNode(resultMathElement);
         result.appendChild(resultMathElement);
-        for (int i=0, size=descendents.getLength(); i<size; i++) {
-            Node annotationNode = descendents.item(i);
+        for (int i=0, size=descendants.getLength(); i<size; i++) {
+            Node annotationNode = descendants.item(i);
             Node annotationNodeCopy = annotationNode.cloneNode(true);
             result.adoptNode(annotationNodeCopy);
             resultMathElement.appendChild(annotationNodeCopy);
@@ -463,13 +463,13 @@ public final class MathMLUtilities {
         return result;
     }
     
-    private static Document isolateDescendent(final Element mathElement, final Element descendent) {
+    private static Document isolateDescendant(final Element mathElement, final Element descendant) {
         Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element resultMathElement = (Element) mathElement.cloneNode(false);
         result.adoptNode(resultMathElement);
         result.appendChild(resultMathElement);
         
-        Element firstSemanticElementCopy = (Element) descendent.cloneNode(true);
+        Element firstSemanticElementCopy = (Element) descendant.cloneNode(true);
         result.adoptNode(firstSemanticElementCopy);
         resultMathElement.appendChild(firstSemanticElementCopy);
         return result;
