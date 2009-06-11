@@ -89,9 +89,9 @@ All Rights Reserved
   </licenses>
   <developers>
     <developer>
-      <id>dmckain</id>
+      <id>davemckain</id>
       <name>David McKain</name>
-      <email>david.mckain@ed.ac.uk</email>
+      <email>david.mckain&#xa0;[at]&#xa0;ed.ac.uk</email>
       <url>http://www.ph.ed.ac.uk/~dmckain/</url>
       <organization>School of Physics and Astronomy, University of Edinburgh</organization>
       <organizationUrl>http://www.ph.ed.ac.uk</organizationUrl>
@@ -244,6 +244,16 @@ All Rights Reserved
       </plugin>
       <plugin>
         <artifactId>maven-changelog-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-changes-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
     </plugins>
   </reporting>

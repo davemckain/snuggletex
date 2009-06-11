@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+
+Changes since 1.1.0-beta1 are now recorded here...
+
+See http://maven.apache.org/plugins/maven-changes-plugin/changes.html
+for a guide to how this works.
+
+$Id$
+
+Copyright (c) 2009 The University of Edinburgh
+All Rights Reserved
+
+-->
+<document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>Changes Report (from 1.1.0-beta1 onwards)</title>
+    <author email="david.mckain&#xa0;[at]&#xa0;ed.ac.uk">David McKain</author>
+  </properties>
+  <body>
+    <release version="1.1.0-beta2" date="TBC" description="">
+    </release>
+    <release version="1.1.0-beta1" date="2009-06-08">
+      <action dev="davemckain" type="update">
+        See old release notes at http://www.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
+      </action>
+    </release>
+    <release version="1.0.1" date="2009-01-09">
+      <action dev="davemckain" type="update">
+        See old release notes at http://www.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
+      </action>
+    </release>
+    <release version="1.0.0" date="2008-08-18">
+      <action dev="davemckain" type="update">
+        See old release notes at http://www.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
+      </action>
+    </release>
+  </body>
+</document>
