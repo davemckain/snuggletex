@@ -2,20 +2,26 @@
 
 \section*{First Example}
 
-Look at the \href[\verb|MinimalExample.java|]{maven://xref/uk/ac/ed/ph/snuggletex/samples/MinimalExample.html}
+Look at the \href[\verb|MinimalExample.java|]{maven://xref/uk/ac/ed/ph/snuggletex/samples/MinimalExample.html}.
+(The source for this is available in the ``full'' binary distribution if you want to
+compile this yourself.)
 file in the full binary distribution.
 This demonstrates a very simple example of calling up SnuggleTeX:
 
 \begin{verbatim}
+/* Create vanilla SnuggleEngine and new SnuggleSession */
 SnuggleEngine engine = new SnuggleEngine();
 SnuggleSession session = engine.createSession();
 
+/* Parse some very basic Math Mode input */
 SnuggleInput input = new SnuggleInput("$$1+2=3$$");
 session.parseInput(input);
-String xmlString = session.buildXMLString();
 
+/* Convert the results to an XML String, which in this case will
+ * be a single MathML <math>...</math> element. */
+String xmlString = session.buildXMLString();
 System.out.println("Input " + input.getString()
-    + " was converted to:\n" + xmlString);
+        + " was converted to:\n" + xmlString);
 \end{verbatim}
 
 This block of code converts the LaTeX String \verb|$$1+2=3$$| to a simple XML

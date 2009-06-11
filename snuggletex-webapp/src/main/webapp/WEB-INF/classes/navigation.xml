@@ -18,9 +18,9 @@ All Rights Reserved
 -->
 <navigation xmlns="http://www.ph.ed.ac.uk/snuggletex">
   <section name="About SnuggleTeX">
-    <node id="overview" href="/documentation/overview.html" name="Overview"/>
-    <node id="features" href="/documentation/features.html" name="Features"/>
+    <node id="overview" href="/documentation/overview.html" name="Overview &amp; Features"/>
     <node id="usecases" href="/documentation/use-cases.html" name="Why Use SnuggleTeX?"/>
+    <node id="license" href="/documentation/license.html" name="License"/>
     <node id="releasenotes" href="/documentation/release-notes.html" name="Release Notes"/>
   </section>
   <section name="Demos &amp; Samples">
@@ -62,7 +62,7 @@ All Rights Reserved
   <section name="SnuggleTeX Project Links">
     <node href="http://sourceforge.net/project/showfiles.php?group_id=221375" name="Download from SourceForge.net"/>
     <node href="http://sourceforge.net/projects/snuggletex/" name="SnuggleTeX on SourceForge.net"/>
-    <node href="http://snuggletex.sourceforge.net/maven/" name="SnuggleTeX Maven Reports"/>
+    <node href="http://snuggletex.sourceforge.net/maven/" name="SnuggleTeX Maven Developer Reports"/>
     <node href="https://www.wiki.ed.ac.uk/display/Physics/SnuggleTeX" name="SnuggleTeX Wiki"/>
   </section>
 </navigation>

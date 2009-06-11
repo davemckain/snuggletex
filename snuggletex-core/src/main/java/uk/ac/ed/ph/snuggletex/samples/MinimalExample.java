@@ -23,13 +23,17 @@ import java.io.IOException;
 public final class MinimalExample {
     
     public static void main(String[] args) throws IOException {
+        /* Create vanilla SnuggleEngine and new SnuggleSession */
         SnuggleEngine engine = new SnuggleEngine();
         SnuggleSession session = engine.createSession();
         
+        /* Parse some very basic Math Mode input */
         SnuggleInput input = new SnuggleInput("$$1+2=3$$");
         session.parseInput(input);
-        String xmlString = session.buildXMLString();
         
+        /* Convert the results to an XML String, which in this case will
+         * be a single MathML <math>...</math> element. */
+        String xmlString = session.buildXMLString();
         System.out.println("Input " + input.getString()
                 + " was converted to:\n" + xmlString);
     }
