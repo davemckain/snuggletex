@@ -51,8 +51,12 @@ All Rights Reserved
       <meta name="author" content="David McKain" />
       <meta name="publisher" content="The University of Edinburgh" />
       <link rel="stylesheet" href="{$context-path}/includes/core.css" />
-      <link rel="stylesheet" href="{$context-path}/includes/website.css" />
+      <link rel="stylesheet" href="{$context-path}/includes/webapp.css" />
       <link rel="stylesheet" href="{$context-path}/includes/snuggletex.css" />
+      <link rel="stylesheet" href="{$context-path}/includes/jquery-ui-1.7.2.custom.css" />
+      <script type="text/javascript" src="{$context-path}/includes/jquery.js"></script>
+      <script type="text/javascript" src="{$context-path}/includes/jquery-ui-1.7.2.custom.js"></script>
+      <script type="text/javascript" src="{$context-path}/includes/webapp.js"></script>
       <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
       <xsl:apply-templates select="." mode="extra-head"/>
     </head>
@@ -91,7 +95,15 @@ All Rights Reserved
           </div>
         </div>
         <div id="maincontent">
+          <!-- Create empty container for popups -->
+          <div id="popup"></div>
+
+          <!-- Do main content -->
           <div id="maininner">
+
+            <!-- Mess around -->
+            <a class="dialog" href="/snuggletex/">Test!</a>
+
             <!-- Generate page content -->
             <xsl:apply-templates select="." mode="make-content"/>
           </div>

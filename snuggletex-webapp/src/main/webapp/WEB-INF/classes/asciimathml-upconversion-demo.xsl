@@ -40,9 +40,6 @@ All Rights Reserved
   <xsl:variable name="title" select="'ASCIIMathML Up-Conversion Demo'" as="xs:string"/>
 
   <xsl:template match="head" mode="extra-head">
-    <xsl:apply-imports/>
-    <script type="text/javascript" src="{$context-path}/includes/jquery.js"></script>
-    <script type="text/javascript">var $j = jQuery.noConflict();</script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathML.js"></script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLeditor.js"></script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLcustomisations.js"></script>
@@ -68,7 +65,7 @@ All Rights Reserved
     </div>
     <!-- Wire up the form to the preview box -->
     <script type="text/javascript">
-      $j(document).ready(function() {
+      $(document).ready(function() {
         setupASCIIMathMLInput('asciiMathInput', 'asciiMathML', 'preview');
       });
     </script>

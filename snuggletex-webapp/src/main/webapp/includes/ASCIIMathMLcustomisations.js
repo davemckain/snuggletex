@@ -1,5 +1,12 @@
 /*
- * FIXME: Document this!
+ * Provides basic code for managing ASCIIMathML input widgets
+ *
+ * IMPORTANT NOTE:
+ *
+ * This code uses jQuery. If you want to use this code with another
+ * library that defines a $(...) function - e.g. prototype - then
+ * you will need to look into jQuery.noConflict() and make sure
+ * you load JS in the correct order.
  *
  * Requirements:
  *
@@ -48,7 +55,7 @@ function updatePreview(mathModeInput, previewElementId) {
 var inputTextByIdMap = {};
 
 function updatePreviewIfChanged(inputBoxId, previewElementId) {
-    var inputSelector = $j("#" + inputBoxId);
+    var inputSelector = $("#" + inputBoxId);
     var newValue = inputSelector.get(0).value;
     var oldValue = inputTextByIdMap[inputBoxId];
     if (oldValue==null || newValue!=oldValue) {
@@ -68,11 +75,11 @@ function extractMathML(previewElementId, formElementId) {
 
 function setupASCIIMathMLInput(inputBoxId, mathmlFieldId, previewElementId) {
     /* Set up submit handler for the form */
-    $j("#" + inputBoxId).closest("form").bind("submit", function(evt) {
+    $("#" + inputBoxId).closest("form").bind("submit", function(evt) {
         extractMathML(previewElementId, mathmlFieldId);
         return true;
     });
-    var inputSelector = $j("#" + inputBoxId);
+    var inputSelector = $("#" + inputBoxId);
     var initialInput = inputSelector.get(0).value;
 
     /* Set up initial preview */
