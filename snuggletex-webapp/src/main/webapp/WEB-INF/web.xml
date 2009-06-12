@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-Web Deployment Descriptor for the SnuggleTeX Demo Application
+Web Deployment Descriptor for the SnuggleTeX Demo & Documentation Webapp
 
 $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
 
@@ -80,6 +80,14 @@ All Rights Reserved
   </servlet>
   <servlet>
     <description>
+      Produces page fragments demonstrating Up-conversion examples
+    </description>
+    <servlet-name>UpConversionExampleFragmentServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionExampleFragmentServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>
       Demonstrates the Up-conversion process for ASCIIMathML input
     </description>
     <servlet-name>ASCIIMathMLUpConversionDemoServlet</servlet-name>
@@ -105,6 +113,10 @@ All Rights Reserved
   <servlet-mapping>
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <url-pattern>/UpConversionDemo</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>UpConversionExampleFragmentServlet</servlet-name>
+    <url-pattern>/UpConversionExampleFragment</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ASCIIMathMLUpConversionDemoServlet</servlet-name>

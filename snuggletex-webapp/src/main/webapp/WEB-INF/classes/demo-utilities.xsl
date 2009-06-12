@@ -86,14 +86,12 @@ All Rights Reserved
     </table>
   </xsl:template>
 
-
   <xsl:template name="make-error-code-link">
     <xsl:param name="error-code" as="xs:string"/>
     <a href="{$context-path}/documentation/error-codes.html#{$error-code}">
       <xsl:value-of select="$error-code"/>
     </a>
   </xsl:template>
-
 
 </xsl:stylesheet>
 

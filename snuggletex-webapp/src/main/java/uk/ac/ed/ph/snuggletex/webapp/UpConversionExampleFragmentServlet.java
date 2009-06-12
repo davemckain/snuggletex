@@ -10,10 +10,7 @@ import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
@@ -21,6 +18,7 @@ import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +26,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,24 +37,22 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Servlet demonstrating the up-conversion process on user-entered MATH mode
- * SnuggleTeX input.
+ * Variant of {@link UpConversionDemoServlet} that demonstrates a page fragment
+ * containing similar results. This is used for showing examples inside DHTML dialog
+ * boxes.
  * 
  * @author  David McKain
  * @version $Revision:158 $
  */
-public final class UpConversionDemoServlet extends BaseServlet {
+public final class UpConversionExampleFragmentServlet extends BaseServlet {
     
     private static final long serialVersionUID = 4376587500238353176L;
     
     /** Logger so that we can log what users are trying out to allow us to improve things */
-    private static Logger logger = LoggerFactory.getLogger(UpConversionDemoServlet.class);
-    
-    /** Default input to use when first showing the page */
-    private static final String DEFAULT_INPUT = "\\frac{2x-y^2}{\\sin xy(x-2)}";
+    private static Logger logger = LoggerFactory.getLogger(UpConversionExampleFragmentServlet.class);
     
     /** Location of XSLT controlling page layout */
-    private static final String DISPLAY_XSLT_LOCATION = "classpath:/upconversion-demo.xsl";
+    private static final String DISPLAY_XSLT_LOCATION = "classpath:/upconversion-example-fragment.xsl";
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -61,24 +60,15 @@ public final class UpConversionDemoServlet extends BaseServlet {
         doRequest(request, response);
     }
     
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doRequest(request, response);
-    }
-    
     private void doRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        /* Read in input LaTeX, using some placeholder text if nothing was provided */
+        /* Read in input LaTeX, which must be provided */
         String rawInputLaTeX = request.getParameter("input");
-        String inputLaTeX;
-        if (rawInputLaTeX!=null) {
-            /* Normalise any input space */
-            inputLaTeX = rawInputLaTeX.replaceAll("\\s+", " ");
+        if (rawInputLaTeX==null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No input provided");
+            return;
         }
-        else {
-            inputLaTeX = DEFAULT_INPUT;
-        }
+        String inputLaTeX = rawInputLaTeX.replaceAll("\\s+", " ");
         
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
@@ -86,8 +76,8 @@ public final class UpConversionDemoServlet extends BaseServlet {
         SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
         session.parseInput(input);
         
-        /* Create raw DOM, without any up-conversion for the time being. I've done this
-         * so that we can show how much the PMathML hopefully improves after up-conversion!
+        /* The next bit is exactly the same as with the full servlet.
+         * FIXME: Refactor this better!
          */
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element resultRoot = resultDocument.createElement("root");
@@ -144,49 +134,19 @@ public final class UpConversionDemoServlet extends BaseServlet {
             badInput = true;
         }
         
-        /* Log things nicely */
-        if (rawInputLaTeX!=null) {
-            if (errors.isEmpty()) {
-                logger.info("Input: {}", inputLaTeX);
-                logger.info("Final MathML: {}", parallelMathML);
-            }
-            else {
-                logger.warn("Input: {}", inputLaTeX);
-                logger.warn("Final MathML: {}", parallelMathML);
-                logger.warn("Error count: {}", errors.size());
-                for (InputError error : errors) {
-                    logger.warn("Error: " + MessageFormatter.formatErrorAsString(error));
-                }
+        /* Only log failures, as this would normally be caused by bad documentation but could
+         * also be due to a clever clogs user! */
+        if (!errors.isEmpty()) {
+            logger.error("Input: {}", inputLaTeX);
+            logger.error("Final MathML: {}", parallelMathML);
+            logger.error("Error count: {}", errors.size());
+            for (InputError error : errors) {
+                logger.error("Error: " + MessageFormatter.formatErrorAsString(error));
             }
         }
         
-        /* Decide what type of page to output based on UserAgent, following
-         * same logic as MathInputDemoServlet
-         */
-        WebPageType webPageType= chooseBestWebPageType(request);
-        boolean mathMLCapable = webPageType!=null;
-        if (webPageType==null) {
-            webPageType = WebPageType.PROCESSED_HTML;
-        }
-        
-        /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
-         * even though most of the interesting page content is going to be fed in as stylesheet
-         * parameters.
-         * 
-         * (The actual content passed to the XSLT here will be the final MathML Document that
-         * we produced manually above, though this will actually be recreated using the standard
-         * SnuggleTeX process.)
-         */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
-        options.setDOMPostProcessors(upConvertingPostProcessor);
-        options.setMathVariantMapping(true);
-        options.setAddingMathAnnotations(true);
-        options.setIndenting(true);
-        options.setIncludingStyleElement(false);
-        
-        /* Create XSLT to generate the resulting page */
+        /* Next, we just fire the resulting MathML element at a stylesheet */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
@@ -195,14 +155,14 @@ public final class UpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpConverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
-        options.setStylesheets(viewStylesheet);
         
-        /* Generate and serve the resulting web page */
+
+        response.setContentType("text/html");
         try {
-            session.writeWebPage(options, response, response.getOutputStream());
+            viewStylesheet.transform(new StreamSource(new StringReader(parallelMathML)), new StreamResult(response.getOutputStream()));
         }
-        catch (Exception e) {
-            throw new ServletException("Unexpected Exception", e);
+        catch (TransformerException e) {
+            throw new ServletException("Could not transform result", e);
         }
     }
 }

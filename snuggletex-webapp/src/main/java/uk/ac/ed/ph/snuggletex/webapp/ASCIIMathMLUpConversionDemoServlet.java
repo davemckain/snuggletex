@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * Servlet demonstrating the up-conversion process on MathML generated
@@ -79,9 +78,9 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         Document upConvertedMathDocument = upConverter.upConvertASCIIMathML(asciiMathOutput, upConversionOptions);
         Element mathElement = upConvertedMathDocument.getDocumentElement(); /* NB: Document is <math/> here */
         String parallelMathML = MathMLUtilities.serializeElement(mathElement, "ASCII");
-        String pMathMLUpConverted = MathMLUtilities.serializeElement(MathMLUtilities.extractFirstSemanticsBranch(mathElement), "ASCII");
-        NodeList cMathMLElement = MathMLUtilities.extractAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
-        String cMathML = cMathMLElement!=null && cMathMLElement.getLength()>0 ? MathMLUtilities.serializeElement((Element) cMathMLElement.item(0), "ASCII") : null;
+        String pMathMLUpConverted = MathMLUtilities.serializeDocument(MathMLUtilities.isolateFirstSemanticsBranch(mathElement), "ASCII");
+        Document cMathMLDocument = MathMLUtilities.isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
+        String cMathML = cMathMLDocument!=null ? MathMLUtilities.serializeDocument(cMathMLDocument, "ASCII") : null;
         String maximaInput = MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         
         logger.info("ASCIIMathML Input: {}", asciiMathInput);
