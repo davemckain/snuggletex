@@ -383,13 +383,13 @@ public final class MathMLUtilities {
      * @throws IllegalArgumentException if passed null or the given element is not a
      *   <tt>math</tt> element.
      */
-    public static Document isolateFirstBranch(final Element mathElement) {
+    public static Document isolateFirstSemanticsBranch(final Element mathElement) {
         Element firstSemantics = extractFirstSemanticsBranch(mathElement);
         return firstSemantics!=null ? isolateDescendant(mathElement, firstSemantics) : null;
     }
     
     /**
-     * Version of {@link #isolateFirstBranch(Element)} that works on an
+     * Version of {@link #isolateFirstSemanticsBranch(Element)} that works on an
      * {@link UnwrappedParallelMathMLDOM}.
      * 
      * @return new MathML Document with the given structure or null if the given wrapper has
@@ -397,7 +397,7 @@ public final class MathMLUtilities {
      *   
      * @throws IllegalArgumentException if passed null.
      */
-    public static Document isolateFirstBranch(final UnwrappedParallelMathMLDOM unwrappedDOM) {
+    public static Document isolateFirstSemanticsBranch(final UnwrappedParallelMathMLDOM unwrappedDOM) {
         ConstraintUtilities.ensureNotNull(unwrappedDOM, "UnwrappedParallelMathMLDOM");
         Element firstSemantics = unwrappedDOM.getFirstBranch();
         return firstSemantics!=null ? isolateDescendant(unwrappedDOM.getMathElement(), firstSemantics) : null;
