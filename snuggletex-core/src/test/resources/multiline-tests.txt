@@ -432,3 +432,10 @@ There\ldots
 <p>Hello&#x2026;</p>
 <p>There&#x2026;</p>
 ====
+## Regression: bug handing comments introduced when changing comment behaviour for 1.1.0-beta1
+%
+%
+Hello
+----
+Hello
+====

@@ -380,6 +380,9 @@ public final class LaTeXTokeniser {
      *   {@link ModeState#foundTerminator}.)
      */
     private FlowToken readNextToken() throws SnuggleParseException {
+//        /* Uncomment these lines when debugging the tokeniser. This is often
+//         * sufficient to work out what is going wrong... honest!
+//         */
 //        System.out.println("rNT: position=" + position
 //                + ", length=" + workingDocument.length()
 //                + ", tokMode=" + currentModeState.tokenisationMode
@@ -388,13 +391,13 @@ public final class LaTeXTokeniser {
 //                + ", envsOpen=" + openEnvironmentStack
 //                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
         
-        /* In MATH Mode, we skip over any leading whitespace and comments; in other modes we skip
+        /* In MATH Mode, we skip over any leading whitespace and comments; in TEXT modes we skip
          * over any comments */
         if (currentModeState.latexMode==LaTeXMode.MATH) {
             skipOverCommentsAndWhitespace();
         }
-        else {
-            skipOverComment();
+        else if (currentModeState.latexMode!=LaTeXMode.VERBATIM) {
+            skipOverComments();
         }
         
         /* See if we are at our required terminator or at the end of the document */
@@ -2206,6 +2209,22 @@ public final class LaTeXTokeniser {
             }
             else if (Character.isWhitespace(c)) {
                 position++;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Advances the current position past any comments and/or whitespace, including newlines.
+     */
+    private void skipOverComments() {
+        int c;
+        while (position<workingDocument.length()) {
+            c = workingDocument.charAt(position);
+            if (c=='%') {
+                skipOverComment();
             }
             else {
                 break;

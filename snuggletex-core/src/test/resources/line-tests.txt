@@ -493,3 +493,7 @@ a
 {\rm }
 <span class="rm"/>
 ====
+## Regression: Fixes bug XXXXX
+\verb|%|
+<tt class="verb">%</tt>
+====
