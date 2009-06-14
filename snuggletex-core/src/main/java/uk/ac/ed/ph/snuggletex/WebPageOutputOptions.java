@@ -222,11 +222,8 @@ public class WebPageOutputOptions extends DOMOutputOptions {
      * <p>
      * The URLs are used as-is; the caller should have ensured they make sense in advance!
      * <p>
-     * If used, the caller should normally ensure that one of these URLs corresponds to the
-     * stylesheet for SnuggleTeX.
-     * <p>
-     * If not used, then CSS will be specified within a <tt>style</tt> element in the resulting
-     * page.
+     * The caller can use this to specify the location of <tt>snuggletex.css</tt>, as well
+     * as any other required stylesheets.
      */
     private String[] cssStylesheetURLs;
     

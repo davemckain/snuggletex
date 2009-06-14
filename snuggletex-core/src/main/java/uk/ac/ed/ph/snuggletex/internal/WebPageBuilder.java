@@ -123,15 +123,6 @@ public final class WebPageBuilder {
             head.appendChild(titleElement);
         }
         
-        /* Maybe add <style>...</style> section */
-        if (options.isIncludingStyleElement()) {
-            Element style = document.createElementNS(Globals.XHTML_NAMESPACE, "style");
-            style.setAttribute("type", "text/css");
-            Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
-            style.appendChild(document.createTextNode(CSSUtilities.writeStylesheet(cssProperties)));
-            head.appendChild(style);
-        }
-        
         /* Add any external CSS links */
         String[] cssStylesheetURLs = options.getCSSStylesheetURLs();
         if (cssStylesheetURLs!=null) {
@@ -142,6 +133,15 @@ public final class WebPageBuilder {
                 link.setAttribute("href", url);
                 head.appendChild(link);
             }
+        }
+        
+        /* Maybe add <style>...</style> section. */
+        if (options.isIncludingStyleElement()) {
+            Element style = document.createElementNS(Globals.XHTML_NAMESPACE, "style");
+            style.setAttribute("type", "text/css");
+            Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
+            style.appendChild(document.createTextNode(CSSUtilities.writeStylesheet(cssProperties)));
+            head.appendChild(style);
         }
         
         /* Create finished document */
