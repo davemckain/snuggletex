@@ -84,7 +84,6 @@
   border-right: 1px dotted #f2d7da;
   border-bottom: 1px dotted #f2d7da;
   background-color: white;
-  text-align: justify;
 }
 
 #maininner {
@@ -119,7 +118,19 @@
   color: #736667;
 }
 
+#popup {
+  display: none;
+}
+
 /************************************************************/
+
+.warning {
+  background-color: #f2d7da;
+  border: 2px solid red;
+  padding: 0.5em;
+  margin: 0.5em 0;
+  -moz-border-radius: 1em;
+}
 
 pre.verbatim {
   background-color: #f2d7da;
@@ -153,11 +164,6 @@ table.failures td {
 
 table.failures td pre {
   text-align: left;
-}
-
-div.tryoutOutput {
-  background-color: #f2d7da;
-  padding: 0.5em;
 }
 
 address {

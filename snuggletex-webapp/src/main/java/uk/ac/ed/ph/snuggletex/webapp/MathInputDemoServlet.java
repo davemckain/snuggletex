@@ -1,4 +1,4 @@
-/* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
+/* $Id:FullLaTeXInputDemoServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -76,8 +77,6 @@ public final class MathInputDemoServlet extends BaseServlet {
         else {
             inputLaTeX = DEFAULT_INPUT;
         }
-        /* Read in other parameters */
-        boolean addMathAnnotations = request.getParameter("annotate")!=null;
         
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
@@ -93,7 +92,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         resultDocument.appendChild(resultRoot);
         DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
-        domOptions.setAddingMathAnnotations(addMathAnnotations);
+        domOptions.setAddingMathAnnotations(true);
         domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
         session.buildDOMSubtree(resultRoot, domOptions);
         
@@ -163,20 +162,31 @@ public final class MathInputDemoServlet extends BaseServlet {
          */
         WebPageOutputOptions webOptions = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         webOptions.setMathVariantMapping(true);
-        webOptions.setAddingMathAnnotations(addMathAnnotations);
+        webOptions.setAddingMathAnnotations(true);
         webOptions.setIndenting(true);
         webOptions.setIncludingStyleElement(false);
         
+        /* If browser can't handle MathML, we'll add post-processors to down-convert
+         * simple expressions to XHTML + CSS and replace the remaining MathML islands
+         * with dynamically generated images.
+         */
+        if (webPageType==WebPageType.PROCESSED_HTML) {
+            webOptions.setDOMPostProcessors(
+                    new DownConvertingPostProcessor(),
+                    new MathMLToImageLinkPostProcessor(request.getContextPath())
+            );
+        }
+        
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
-        viewStylesheet.setParameter("add-annotations", Boolean.valueOf(addMathAnnotations));
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
         viewStylesheet.setParameter("result-mathml", resultMathML);
         webOptions.setStylesheets(viewStylesheet);
-        
+       
         /* Generate and serve the resulting web page */
         try {
             session.writeWebPage(webOptions, response, response.getOutputStream());
@@ -185,6 +195,4 @@ public final class MathInputDemoServlet extends BaseServlet {
             throw new ServletException("Unexpected Exception", e);
         }
     }
-    
-
 }

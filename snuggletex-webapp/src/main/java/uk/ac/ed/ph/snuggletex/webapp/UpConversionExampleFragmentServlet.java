@@ -1,4 +1,4 @@
-/* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
+/* $Id:FullLaTeXInputDemoServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -10,7 +10,10 @@ import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
@@ -18,7 +21,6 @@ import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +144,38 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
             }
         }
         
-        /* Next, we just fire the resulting MathML element at a stylesheet */
+        /* Decide what type of page to output based on UserAgent, following
+         * same logic as MathInputDemoServlet
+         */
+        WebPageType webPageType= chooseBestWebPageType(request);
+        boolean mathMLCapable = webPageType!=null;
+        if (webPageType==null) {
+            webPageType = WebPageType.PROCESSED_HTML;
+        }
+        
+        /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
+         * even though most of the interesting page content is going to be fed in as stylesheet
+         * parameters.
+         * 
+         * (The actual content passed to the XSLT here will be the final MathML Document that
+         * we produced manually above, though this will actually be recreated using the standard
+         * SnuggleTeX process.)
+         * 
+         * (NOTE: Actually, we're going to throw away most of the resulting web page completely
+         * but following this process makes sure everything is the same as the page it's going
+         * to be embedded into, which is probably a good thing here.)
+         */
+        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
+        options.setDOMPostProcessors(upConvertingPostProcessor);
+        options.setMathVariantMapping(true);
+        options.setAddingMathAnnotations(true);
+        options.setIndenting(true);
+        options.setIncludingStyleElement(false);
+        
+        /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
+        viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
@@ -155,14 +184,14 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpConverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
+        options.setStylesheets(viewStylesheet);
         
-
-        response.setContentType("text/html");
+        /* Generate and serve the resulting web page */
         try {
-            viewStylesheet.transform(new StreamSource(new StringReader(parallelMathML)), new StreamResult(response.getOutputStream()));
+            session.writeWebPage(options, response, response.getOutputStream());
         }
-        catch (TransformerException e) {
-            throw new ServletException("Could not transform result", e);
+        catch (Exception e) {
+            throw new ServletException("Unexpected Exception", e);
         }
     }
 }

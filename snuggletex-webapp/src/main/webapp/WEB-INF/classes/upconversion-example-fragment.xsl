@@ -21,11 +21,6 @@ All Rights Reserved
 
   <xsl:import href="demo-utilities.xsl"/>
 
-  <!-- FIXME: These should move to a base stylesheet as they're needed everywhere -->
-  <xsl:param name="snuggletex-version" as="xs:string" required="yes"/>
-  <xsl:param name="maven-site-url" as="xs:string" required="yes"/>
-  <xsl:param name="context-path" as="xs:string" required="yes"/>
-
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
   <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
   <xsl:param name="parsing-errors" as="element(s:error)*"/>
@@ -35,6 +30,7 @@ All Rights Reserved
   <xsl:param name="cmathml" as="xs:string?"/>
   <xsl:param name="maxima-input" as="xs:string?"/>
 
+  <!-- (We're going to throw away most of the surrounding HTML here!) -->
   <xsl:template match="/">
     <div class="exampleResult">
       <xsl:choose>
@@ -55,6 +51,11 @@ All Rights Reserved
   </xsl:template>
 
   <xsl:template name="handle-successful-input">
+    <h3>Initial Presentation MathML</h3>
+    <pre class="result">
+      <xsl:value-of select="$pmathml-initial"/>
+    </pre>
+
     <h3>Enhanced Presentation MathML</h3>
     <pre class="result">
       <xsl:value-of select="$pmathml-upconverted"/>

@@ -4,7 +4,7 @@
 $Id$
 
 Overrides format-output.xsl to add in functionality for
-the "try out" page.
+the full LaTeX input demo.
 
 Copyright (c) 2009 University of Edinburgh.
 All Rights Reserved
@@ -12,33 +12,29 @@ All Rights Reserved
 -->
 <xsl:stylesheet version="2.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:h="http://www.w3.org/1999/xhtml"
-  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  exclude-result-prefixes="h xs">
+  xmlns:m="http://www.w3.org/1998/Math/MathML"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xpath-default-namespace="http://www.w3.org/1999/xhtml"
+  exclude-result-prefixes="m xs">
 
-  <!-- Import basic formatting stylesheet -->
+  <xsl:import href="demo-utilities.xsl"/>
   <xsl:import href="format-output.xsl"/>
 
   <!-- Override page ID -->
-  <xsl:variable name="pageId" select="'tryout'" as="xs:string"/>
-
-  <!-- Override title -->
-  <xsl:variable name="title" select="'Try Out'" as="xs:string"/>
+  <xsl:variable name="pageId" select="'fullLaTeXInputDemo'" as="xs:string"/>
 
   <!-- LaTeX input - this will be put into a textarea -->
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
 
-  <xsl:template match="h:body" mode="make-content">
-    <h2><xsl:value-of select="$title"/></h2>
-
-    <!-- Now do input form -->
+  <xsl:template match="body" mode="make-content">
+    <!-- Do input form -->
     <h3>Input</h3>
     <p>
       Enter some LaTeX into the box below and hit <tt>Go!</tt> to see the resulting
       XHTML+MathML.
     </p>
-    <form method="POST" action="{$context-path}/tryout.xml" id="inputForm">
+    <form method="POST" id="inputForm">
       <textarea id="input" name="input" style="width:100%" rows="20">
         <xsl:value-of select="$latex-input"/>
       </textarea>
@@ -48,7 +44,8 @@ All Rights Reserved
 
     <!-- Output -->
     <h3>Output </h3>
-    <div class="tryoutOutput">
+    <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+    <div class="result">
       <xsl:copy-of select="node()"/>
     </div>
   </xsl:template>

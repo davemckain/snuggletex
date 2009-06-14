@@ -1,4 +1,4 @@
-/* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
+/* $Id:FullLaTeXInputDemoServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -184,9 +185,21 @@ public final class UpConversionDemoServlet extends BaseServlet {
         options.setIndenting(true);
         options.setIncludingStyleElement(false);
         
+        /* If browser can't handle MathML, we'll add post-processors to down-convert
+         * simple expressions to XHTML + CSS and replace the remaining MathML islands
+         * with dynamically generated images.
+         */
+        if (webPageType==WebPageType.PROCESSED_HTML) {
+            options.setDOMPostProcessors(
+                    new DownConvertingPostProcessor(),
+                    new MathMLToImageLinkPostProcessor(request.getContextPath())
+            );
+        }
+        
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);

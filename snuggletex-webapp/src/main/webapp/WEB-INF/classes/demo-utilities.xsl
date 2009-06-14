@@ -3,7 +3,7 @@
 
 $Id: asciimathml-upconversion-demo.xsl 370 2009-05-25 16:32:05Z davemckain $
 
-Some handy utility templats used by the various demos.
+Some handy utility templates used by the various demos.
 
 Copyright (c) 2009 University of Edinburgh.
 All Rights Reserved
@@ -18,6 +18,33 @@ All Rights Reserved
   xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
   exclude-result-prefixes="xs m s mu">
+
+  <xsl:import href="base.xsl"/>
+
+  <xsl:param name="is-mathml-capable" as="xs:boolean" required="yes"/>
+  <xsl:param name="is-internet-explorer" as="xs:boolean" required="yes"/>
+
+  <xsl:template name="maybe-make-mathml-legacy-output-warning">
+    <xsl:if test="not($is-mathml-capable)">
+      <div class="warning">
+        <p>
+          Your browser does not support MathML so we have converted any MathML in this
+          page to either XHTML + CSS or images.
+        </p>
+        <p>
+          (Note: this statement will not necessarily be true if you are viewing
+          a cached or proxied version of this page, e.g. within the Google cache or
+          something similar. In this case, try viewing the page directly if you can.)
+        </p>
+        <xsl:if test="$is-internet-explorer">
+          <p>
+            You are using Internet Explorer, so you might want to consider installing
+            the MathPlayer plugin, which will add in support for MathML.
+          </p>
+        </xsl:if>
+      </div>
+    </xsl:if>
+  </xsl:template>
 
   <xsl:template name="format-parsing-errors">
     <xsl:param name="parsing-errors" as="element(s:error)+"/>

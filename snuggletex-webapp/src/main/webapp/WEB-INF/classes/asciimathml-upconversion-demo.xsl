@@ -36,9 +36,6 @@ All Rights Reserved
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'asciiMathMLUpConversionDemo'" as="xs:string"/>
 
-  <!-- Override title -->
-  <xsl:variable name="title" select="'ASCIIMathML Up-Conversion Demo'" as="xs:string"/>
-
   <xsl:template match="head" mode="extra-head">
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathML.js"></script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLeditor.js"></script>
@@ -46,33 +43,51 @@ All Rights Reserved
   </xsl:template>
 
   <xsl:template match="body" mode="make-content">
-    <h2><xsl:value-of select="$title"/></h2>
+    <xsl:choose>
+      <xsl:when test="not($is-mathml-capable)">
+        <div class="warning">
+          <p>
+            This demo requires you to be using a browser capable of handling
+            MathML, such as Firefox or Internet Explorer with the MathPlayer plugin.
+          </p>
+          <xsl:if test="$is-internet-explorer">
+            <p>
+              As you currently appear to be using Internet Explorer, you might
+              want to install the MathPlayer plugin.
+            </p>
+          </xsl:if>
+        </div>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Input Form -->
+        <h3>Input</h3>
+        <p>
+          Enter some ASCIIMathML into the box below. You should see a real time preview
+          of this while you type. Hit <tt>Go!</tt> to see the resulting outputs, which take
+          the MathML produced by ASCIIMathML and do interesting things to it.
+        </p>
+        <form method="post">
+          ASCIIMath Input:
+          <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"/>
+          <input type="hidden" id="asciiMathML" name="asciiMathML"/>
+          <input type="submit" value="Go!"/>
+        </form>
+        <h3>Live Preview</h3>
+        <div class="result">
+          <div id="preview"><xsl:text> </xsl:text></div>
+        </div>
+        <!-- Wire up the form to the preview box -->
+        <script type="text/javascript">
+          $(document).ready(function() {
+            setupASCIIMathMLInput('asciiMathInput', 'asciiMathML', 'preview');
+          });
+        </script>
 
-    <!-- Input Form -->
-    <p>
-      Enter some ASCIIMathML into the box below. You should see a real time preview
-      of this while you type. Hit <tt>Go!</tt> to see the resulting outputs, which take
-      the MathML produced by ASCIIMathML and do stuff to it.
-    </p>
-    <form method="post">
-      ASCIIMath Input:
-      <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"/>
-      <input type="hidden" id="asciiMathML" name="asciiMathML"/>
-      <input type="submit" value="Go!"/>
-    </form>
-    <div class="result">
-      Live Preview: <div id="preview"><xsl:text> </xsl:text></div>
-    </div>
-    <!-- Wire up the form to the preview box -->
-    <script type="text/javascript">
-      $(document).ready(function() {
-        setupASCIIMathMLInput('asciiMathInput', 'asciiMathML', 'preview');
-      });
-    </script>
-
-    <xsl:if test="not($is-new-form)">
-      <xsl:apply-templates select="." mode="handle-successful-input"/>
-    </xsl:if>
+        <xsl:if test="not($is-new-form)">
+          <xsl:apply-templates select="." mode="handle-successful-input"/>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!--

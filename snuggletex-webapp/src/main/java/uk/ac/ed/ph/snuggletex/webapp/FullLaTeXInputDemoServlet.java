@@ -1,10 +1,11 @@
-/* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
+/* $Id:FullLaTeXInputDemoServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -34,18 +35,16 @@ import org.slf4j.LoggerFactory;
  * @author  David McKain
  * @version $Revision:158 $
  */
-public final class TryOutServlet extends BaseServlet {
+public final class FullLaTeXInputDemoServlet extends BaseServlet {
     
     private static final long serialVersionUID = 4376587500238353176L;
-    
-    /** Logger so that we can log what users are trying out to allow us to improve things */
-    private Logger logger = LoggerFactory.getLogger(TryOutServlet.class);
+    private Logger logger = LoggerFactory.getLogger(FullLaTeXInputDemoServlet.class);
     
     /** Location of XSLT controlling page layout */
-    public static final String TRYOUT_XSLT_LOCATION = "classpath:/tryout.xsl";
+    private static final String DISPLAY_XSLT_LOCATION = "classpath:/full-latex-input-demo.xsl";
     
     /** Location of default input to use when visiting the page for the first time */
-    public static final String DEFAULT_INPUT_LOCATION = "/WEB-INF/tryout-default.tex";
+    private static final String DEFAULT_INPUT_LOCATION = "/WEB-INF/full-latex-input-demo-default.tex";
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -78,19 +77,39 @@ public final class TryOutServlet extends BaseServlet {
         SnuggleInput input = new SnuggleInput(inputLaTeX, "Form Input");
         session.parseInput(input);
         
+        /* Decide what type of page to output based on UserAgent */
+        WebPageType webPageType= chooseBestWebPageType(request);
+        boolean mathMLCapable = webPageType!=null;
+        
+        /* If UserAgent can't handle MathML then we'll use HTML output and get the XSLT
+         * to replace the MathML with a reference to an image rendition of it.
+         */
+        if (webPageType==null) {
+            webPageType = WebPageType.PROCESSED_HTML;
+        }
+        
         /* Set up web output options */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.CROSS_BROWSER_XHTML);
+        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         options.setMathVariantMapping(true);
         options.setAddingMathAnnotations(true);
         options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setIndenting(true);
         options.setIncludingStyleElement(false);
         
-        /* Create output for logging purposes */
-        String xmlString = session.buildXMLString(options);
+        /* If browser can't handle MathML, we'll add post-processors to down-convert
+         * simple expressions to XHTML + CSS and replace the remaining MathML islands
+         * with dynamically generated images.
+         */
+        if (webPageType==WebPageType.PROCESSED_HTML) {
+            options.setDOMPostProcessors(
+                    new DownConvertingPostProcessor(),
+                    new MathMLToImageLinkPostProcessor(request.getContextPath())
+            );
+        }
         
         /* Log things nicely */
         if (rawInputLaTeX!=null) {
+            String xmlString = session.buildXMLString(options);
             List<InputError> errors = session.getErrors();
             if (errors.isEmpty()) {
                 logger.info("Input:  {}", inputLaTeX);
@@ -107,9 +126,11 @@ public final class TryOutServlet extends BaseServlet {
         }
         
         /* Create XSLT to generate the resulting page */
-        Transformer stylesheet = getStylesheet(request, TRYOUT_XSLT_LOCATION);
-        stylesheet.setParameter("latex-input", inputLaTeX);
-        options.setStylesheets(stylesheet);
+        Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
+        viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
+        viewStylesheet.setParameter("latex-input", inputLaTeX);
+        options.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {

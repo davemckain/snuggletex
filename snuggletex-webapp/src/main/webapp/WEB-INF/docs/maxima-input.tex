@@ -1,0 +1,110 @@
+\pageId{maxima}
+
+\begin{itemize}
+\item
+  The Maxima input form is created from the Content MathML form. As a result,
+  if the conversion to Content MathML fails then so will the conversion to
+  Maxima.
+
+\item
+  Not all inputs that can be successfully converted to Content MathML can
+  be further converted into Maxima input form.
+\end{itemize}
+
+\subsection*{Supported Identifiers}
+
+MathML generally allows arbitrary Unicode characters to be used as identifier
+names whereas Maxima only uses ASCII. In terms of LaTeX input, this means that
+idenfiers input as \verb|\something| are only supported if we have identifier a
+means to convert these into a Maxima input form.
+
+The identifiers supported so far are:
+
+\begin{tabular}{|c|c|}
+\hline
+LaTeX input & Maxima form \\
+\hline
+\verb|\alpha| & \%alpha \\
+\verb|\beta| & \%beta \\
+\verb|\gamma| & \%gamma \\
+\verb|\delta| & \%delta \\
+\verb|\epsilon| & \%epsilon \\
+\verb|\zeta| & \%zeta \\
+\verb|\eta| & \%eta \\
+\verb|\theta| & \%theta \\
+\verb|\iota| & \%iota \\
+\verb|\kappa| & \%kappa \\
+\verb|\lambda| & \%lambda \\
+\verb|\mu| & \%mu \\
+\verb|\nu| & \%nu \\
+\verb|\xi| & \%xi \\
+\verb|\pi| & \%pi \\
+\verb|\rho| & \%rho \\
+\verb|\sigma| & \%sigma \\
+\verb|\tau| & \%tau \\
+\verb|\upsilon| & \%upsilon \\
+\verb|\phi| & \%phi \\
+\verb|\chi| & \%chi \\
+\verb|\psi| & \%psi \\
+\verb|\omega| & \%omega \\
+\verb|\Gamma| & \%Gamma \\
+\verb|\Delta| & \%Delta \\
+\verb|\Theta| & \%Theta \\
+\verb|\Lambda| & \%Lambda \\
+\verb|\Xi| & \%Xi \\
+\verb|\Pi| & \%Pi \\
+\verb|\Sigma| & \%Sigma \\
+\verb|\Upsilon| & \%Upsilon \\
+\verb|\Phi| & \%Phi \\
+\verb|\Psi| & \%Psi \\
+\verb|\Omega| & \%Omega \\
+\hline
+\hline
+\end{tabular}
+
+The LaTeX inputs \verb|e| and \verb|i| are converted to \%e
+and \%i respectively if the Content MathML up-conversion
+was configured to interpret them in this way.
+
+\subsection*{Supported Functions}
+
+All functions supported by the Content MathML up-conversion are supported
+here, with the exception of \verb|\log| as Maxima only supports natural
+logarithms.
+
+\subsection*{Supported Operators}
+
+All of the operators supported by the Content MathML process are
+supported, with the exception of the following relations:
+
+\begin{itemize}
+  \item \verb|\equiv|
+  \item \verb|\not\equiv|
+  \item \verb|\approx|
+  \item \verb|\not\approx|
+  \item \verb.|.
+  \item \verb.\not|.
+  \item \verb|\in|
+  \item \verb|\not\in|
+\end{itemize}
+
+Maxima does not allow ``unapplied'' operators symbols, so a LaTeX input
+of the form \verb|+| generates a result of the form \verb|operator("+")|
+as a placeholder for this. Similarly, \verb|\not=| results in
+\verb|operator("not=")| for want of anything better.
+The name of the resulting function is configurable.
+
+\subsection*{Other Supported Constructs}
+
+\begin{itemize}
+\item
+  Units entered using the special SnuggleTeX \verb|\units| macro, such as
+  \verb|\units{kg}| generate a Maxima form like \verb|units("kg")|, which
+  is similar to how we handle unapplied operators. (Again, the name of
+  the resulting function is configurable.)
+
+\item
+  Subscripted identifiers are converted to a suitable Maxima form if
+  deemed possible.
+\end{itemize}
+

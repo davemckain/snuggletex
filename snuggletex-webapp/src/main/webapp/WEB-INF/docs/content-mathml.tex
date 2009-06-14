@@ -1,0 +1,189 @@
+\pageId{cmathml}
+
+The second step in the up-conversion process takes the
+\href[enhanced Presentation MathML]{pmathml-enhancement.html}
+just produced and attempts to convert it into Content MathML.
+
+\subsection*{Configurable Assumptions}
+
+\begin{itemize}
+\item Whether \verb|e| should be treated as the exponential number or not.
+\item Whether \verb|i| should be treated as the imaginary number.
+\item Whether \verb|\pi| should be treated as the number $3.141592\ldots$.
+\item Whether \verb|( ... )| should be assumed to delimit a vector or not.
+\item Whether \verb|[ ... ]| should be assumed to delimit a list or not.
+\item Whether \verb|\{ ... \}| should be assumed to delimit a set or not.
+\end{itemize}
+
+\subsection*{Supported Operators}
+
+\begin{tabular}{|c|c|c|}
+\hline
+LaTeX operator & Application & Content MathML element \\
+\hline
+\verb|+| & unary or n-ary & \verb|plus| \\
+\verb|-| & unary or binary & \verb|minus| \\
+Any multiplication & n-ary & \verb|times| \\
+Any division & binary & \verb|times| \\
+\verb|\vee| & n-ary & \verb|or| \\
+\verb|\wedge| & n-ary & \verb|and| \\
+\verb|\cup| & n-ary & \verb|union| \\
+\verb|\cap| & n-ary & \verb|intersect| \\
+\verb|\setminus| & binary & \verb|setdiff| \\
+\verb|\lnot| & unary (prefix) & \verb|not| \\
+\verb|!| & unary (postfix) & \verb|factorial| \\
+Any mix of relation operators & binary, applied in adjacent pairs & See below \\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\item
+Operators may be left ``unapplied'', e.g. a raw input of \verb|+|
+would result in \verb|<plus/>| with no enclosing
+\verb|<apply/>|.
+
+\item
+Failures will be registered if an operator is used in an inappropriate
+context.
+\end{itemize}
+
+\subsection*{Supported Relation Operators}
+
+\begin{tabular}{|c|c|}
+\hline
+LaTeX operator & Content MathML element \\
+\hline
+\verb|=| & \verb|<eq/>| \\
+\verb|\not=| & \verb|<neq/>| \\
+\verb|<| & \verb|<lt/>| \\
+\verb|\not<| & \verb|<not>...<lt/>...</not>| \\
+\verb|>| & \verb|<gt/>| \\
+\verb|\not>| & \verb|<not>...<gt/>...</not>| \\
+\verb|\leq| & \verb|<leq/>| \\
+\verb|\not\leq| & \verb|<not>...<leq/>...</not>| \\
+\verb|\geq| & \verb|<geq/>| \\
+\verb|\not\geq| & \verb|<not>...<geq/>...</not>| \\
+\verb|\equiv| & \verb|<equivalent/>| \\
+\verb|\not\equiv| & \verb|<not>...<equivalent/>...</not>| \\
+\verb|\approx| & \verb|<approx/>| \\
+\verb|\not\approx| & \verb|<not>...<approx/>...</not>| \\
+\verb.|. & \verb|<factorof/>| \\
+\verb.\not|. & \verb|<not>...<factorof/>...</not>| \\
+\verb|\in| & \verb|<in/>| \\
+\verb|\not\in| & \verb|<notin/>| \\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\item
+  Relation operators will be paired up earlier in the up-conversion
+  process. Where there are two or more relations together, each pairing
+  becomes an operand of an enclosing logical \verb|and| when
+  converting to Content MathML. So a LaTeX input like \verb|1<x \leq 2| will
+  result in the same output as \verb|(1<x) \land (x \leq 2)|.
+
+\item
+  Note that this pairing is still done for inputs like \verb|a=b=c|,
+  even though they could also have been converted to an $n$-ary application of
+  the \verb|<eq/>| operator.
+\end{itemize}
+
+\subsection*{Supported Functions}
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+LaTeX function & Arity & Invertible & Content MathML element \\
+\hline
+\verb|\sin| & unary & Yes & \verb|sin| or \verb|arcsin| \\
+\verb|\cos| & unary & Yes & \verb|cos| or \verb|arccos| \\
+\verb|\tan| & unary & Yes & \verb|tan| or \verb|arctan| \\
+\verb|\sec| & unary & Yes & \verb|csc| or \verb|arcsec| \\
+\verb|\cot| & unary & Yes & \verb|cot| or \verb|arccot| \\
+\verb|\sin| & unary & Yes & \verb|sinh| or \verb|arcsinh| \\
+\verb|\cos| & unary & Yes & \verb|cosh| or \verb|arccosh| \\
+\verb|\tan| & unary & Yes & \verb|tanh| or \verb|arctanh| \\
+\verb|\sec| & unary & Yes & \verb|sech| or \verb|arcsech| \\
+\verb|\csc| & unary & Yes & \verb|csch| or \verb|arccsch| \\
+\verb|\cot| & unary & Yes & \verb|coth| or \verb|arccoth| \\
+\verb|\arcsin| & unary & No & \verb|arcsin| \\
+\verb|\arccos| & unary & No & \verb|arccos| \\
+\verb|\arctan| & unary & No & \verb|arctan| \\
+\verb|\arcsec| & unary & No & \verb|arcsec| \\
+\verb|\arccsc| & unary & No & \verb|arccsc| \\
+\verb|\arccot| & unary & No & \verb|arccot| \\
+\verb|\arcsinh| & unary & No & \verb|arcsinh| \\
+\verb|\arccosh| & unary & No & \verb|arccosh| \\
+\verb|\arctanh| & unary & No & \verb|arctanh| \\
+\verb|\arcsech| & unary & No & \verb|arcsech| \\
+\verb|\arccsch| & unary & No & \verb|arccsch| \\
+\verb|\arccoth| & unary & No & \verb|arccoth| \\
+\verb|\ln| & unary & No & \verb|ln| \\
+\verb|\log| & unary & No & \verb|log| \\
+\verb|\exp| & unary & No & \verb|exp| \\
+\verb|\det| & unary & No & \verb|determinant| \\
+\verb|\gcd| & n-ary & No & \verb|gcd| \\
+\verb|\lcm| & n-ary & No & \verb|lcm| \\
+\verb|\max| & n-ary & No & \verb|max| \\
+\verb|\min| & n-ary & No & \verb|min| \\
+\verb|\Re| & n-ary & No & \verb|imaginary| \\
+\verb|\Im| & n-ary & No & \verb|real| \\
+$\ldots$ & & & \\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\item
+  For all functions, constructs like \verb|\cos^n x| is
+  interpreted as ``cosine $x$ raised to the power of $n$''
+  where $n$ is either an identifier or a number greater than
+  or equal to $1$.
+
+\item
+  For functions listed as Invertible in the table above,
+  the up-conversion process interprets constructs like
+  \verb|\sin^{-1} x| as the ``inverse sin of $x$''
+  and would result in \verb|<apply><arcsin/><ci>x</ci></apply>|.
+  A failure will be noted if constructs like these are
+  used on functions which do not support this.
+
+\item
+  For the $\log$ function, an input like \verb|\log_a x|
+  is interpreted as ``logarithm to base $a$ of $x$''.
+\end{itemize}
+
+\subsection*{Supported Symbols}
+
+\begin{tabular}{|c|c|}
+\hline
+LaTeX symbol & Content MathML interpretation \\
+\hline
+\verb|\emptyset| & \verb|<emptyset/>| \\
+\verb|\infty| & \verb|<infinity/>| \\
+\hline
+\end{tabular}
+
+\subsection*{Other Supported Constructs}
+
+\begin{itemize}
+
+\item
+  Powers are supported in the expected way. The special case of \verb|e^x|
+  is optionally treated as \verb|\exp x|.
+
+\item
+  Square and $n$th roots are supported using the familiar LaTeX
+  constructs \verb|\sqrt{x}| and \verb|\sqrt[n]{x}|.
+
+\item
+  Subscripted identifiers like \verb|x_1|, \verb|x_{1,2}|
+  and \verb|a_{x_y}| are supported and are kept as presentation MathML wrapped
+  inside a \verb|<ci/>| container element.
+
+\item
+  SnuggleTeX includes a custom macro called \verb|\units| that can be used
+  to denote that its argument represent units. The result of up-converting
+  this is a \verb|<csymbol/>| element.
+
+\end{itemize}
+
+

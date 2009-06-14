@@ -25,7 +25,6 @@ All Rights Reserved
   <xsl:import href="format-output.xsl"/>
   <xsl:import href="demo-utilities.xsl"/>
 
-  <xsl:param name="mathml-capable" as="xs:boolean" required="yes"/>
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
   <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
   <xsl:param name="parsing-errors" as="element(s:error)*"/>
@@ -38,13 +37,8 @@ All Rights Reserved
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'upConversionDemo'" as="xs:string"/>
 
-  <!-- Override title -->
-  <xsl:variable name="title" select="'MathML Semantic Up-Conversion Demo'" as="xs:string"/>
-
   <xsl:template match="body" mode="make-content">
-    <h2><xsl:value-of select="$title"/></h2>
-
-    <!-- Now do input form -->
+    <!-- Do input form -->
     <h3>Input</h3>
     <p>
       Enter a LaTeX math mode expression
@@ -77,27 +71,11 @@ All Rights Reserved
   possibility that up-conversion has not been entirely successful.
   -->
   <xsl:template match="body" mode="handle-successful-input">
-    <xsl:choose>
-      <xsl:when test="$mathml-capable">
-        <h3>MathML Output (rendered by your browser)</h3>
-        <div class="result">
-          <xsl:copy-of select="node()"/>
-        </div>
-      </xsl:when>
-      <xsl:otherwise>
-        <h3>MathML Output (converted to an image)</h3>
-        <p>
-          (Your browser does not support MathML so SnuggleTeX has converted the result
-          to an image instead.)
-        </p>
-        <div class="result">
-          <div class="mathml-math">
-            <img src="{$context-path}/MathInputToImage.png?input={encode-for-uri($latex-input)}"
-              alt="{$latex-input}" />
-          </div>
-        </div>
-      </xsl:otherwise>
-    </xsl:choose>
+    <h3>MathML Rendering</h3>
+    <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+    <div class="result">
+      <xsl:copy-of select="node()"/>
+    </div>
 
     <h3>Raw Presentation MathML</h3>
     <pre class="result">

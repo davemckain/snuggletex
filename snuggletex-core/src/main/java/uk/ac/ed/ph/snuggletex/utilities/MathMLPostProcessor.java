@@ -14,7 +14,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * FIXME: Document this!
+ * Convenient base for {@link DOMPostProcessor}s that might want to do interesting
+ * things to MathML islands.
  *
  * @author  David McKain
  * @version $Revision$

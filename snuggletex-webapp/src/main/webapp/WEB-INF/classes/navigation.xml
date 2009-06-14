@@ -25,7 +25,7 @@ All Rights Reserved
   </section>
   <section name="Demos &amp; Samples">
     <node id="mathInputDemo" href="/MathInputDemo" name="Simple Math Input Demo"/>
-    <node id="tryout" href="/tryout.xml" name="Full LaTeX Input Demo (requires Firefox or IE6/7 with MathPlayer)"/>
+    <node id="fullLaTeXInputDemo" href="/FullLaTeXInputDemo" name="Full LaTeX Input Demo"/>
     <node id="upConversionDemo" href="/UpConversionDemo" name="MathML Semantic Up-Conversion Demo"/>
     <node id="asciiMathMLUpConversionDemo" href="/ASCIIMathMLUpConversionDemo" name="ASCIIMathML Up-Conversion Demo"/>
     <node id="samples" href="/documentation/latex-samples.html" name="Web Output Samples"/>
@@ -33,12 +33,13 @@ All Rights Reserved
   <section name="User Guide">
     <node id="requirements" href="/documentation/requirements.html" name="Software Requirements"/>
     <node id="gettingstarted" href="/documentation/getting-started.html" name="Getting Started"/>
-    <node id="minexample" href="/documentation/minimal-example.html" name="First Example"/>
-    <node id="usageoverview" href="/documentation/usage-overview.html" name="Usage Overview"/>
+    <node id="firstExample" href="/documentation/first-example.html" name="First Example"/>
+    <node id="basicUsage" href="/documentation/basic-usage.html" name="Basic Usage"/>
     <node id="inputs" href="/documentation/inputs.html" name="Parsing LaTeX Inputs"/>
-    <node id="outputs" href="/documentation/outputs.html" name="Building XML/XHTML/MathML Outputs">
+    <node id="outputs" href="/documentation/outputs.html" name="Creating XML/XHTML/MathML Outputs">
       <node id="xmlStringOutput" href="/documentation/string-output.html" name="XML Strings"/>
       <node id="domOutput" href="/documentation/dom-output.html" name="Building a DOM"/>
+      <!-- FIXME: Need to add something about CSS here. Make sure the minimal ZIP includes snuggletex.css... -->
       <node id="webOutput" href="/documentation/web-output.html" name="Creating Web Pages"/>
       <node id="browserRequirements" href="/documentation/browser-requirements.html" name="Browser Requirements"/>
     </node>
@@ -54,8 +55,14 @@ All Rights Reserved
       <node id="xhtmlCommands" href="/documentation/xhtml-commands.html" name="XHTML-related Commands"/>
       <node id="xmlCommands" href="/documentation/xml-commands.html" name="XML-related Commands"/>
     </node>
-    <!-- This one needs fleshed out. Also need to document ASCIIMathML -->
-    <node id="upconversion" href="/documentation/upconversion.html" name="Up-Conversion to Content MathML (Experimental)"/>
+    <node id="advanced" href="/documentation/advanced-usage.html" name="Advanced Usage"/>
+    <node id="upconversion" href="/documentation/semantic-upconversion.html" name="Semantic Up-Conversion">
+      <node id="pmathmlEnhancement" href="/documentation/pmathml-enhancement.html" name="Enhanced Presentation MathML"/>
+      <node id="cmathml" href="/documentation/content-mathml.html" name="Generating Content MathML"/>
+      <node id="maxima" href="/documentation/maxima-input.html" name="Generating Maxima Input"/>
+      <node id="upconversionUsage" href="/documentation/upconversion-usage.html" name="Up-Conversion Usage"/>
+      <!-- Also need to document ASCIIMathML -->
+    </node>
     <node id="projects" href="maven://apidocs/index.html" name="API Documentation"/>
     <node id="crossref" href="maven://xref/index.html" name="Source Code Cross-Reference"/>
   </section>

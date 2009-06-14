@@ -32,6 +32,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple demo servlet that accepts some (displaymath mode) input and serves up an image rendition
  * of the result.
+ * <p>
+ * This is useful for creating legacy outputs for dynamically created pages.
+ * (I.e. not the documentation pages.)
  *
  * @author  David McKain
  * @version $Revision$
@@ -39,7 +42,6 @@ import org.slf4j.LoggerFactory;
 public final class MathInputToImageServlet extends BaseServlet {
 
     private static final long serialVersionUID = 2349962200011540329L;
-    
     private static final Logger logger = LoggerFactory.getLogger(MathInputToImageServlet.class);
     
     @Override
@@ -49,16 +51,15 @@ public final class MathInputToImageServlet extends BaseServlet {
     
     private void doRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        /* Read in input LaTeX */
+        /* Read in input LaTeX, which is assumed to contain appropriate Math mode delimiters */
         String inputLaTeX = request.getParameter("input");
         if (inputLaTeX==null || inputLaTeX.trim().length()==0) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Empty input");
         }
-        
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
         SnuggleSession session = engine.createSession();
-        SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
+        SnuggleInput input = new SnuggleInput(inputLaTeX, "Form Input");
         session.parseInput(input);
         
         /* We'll save the image to a temporary File */
@@ -66,7 +67,7 @@ public final class MathInputToImageServlet extends BaseServlet {
         ImageSavingCallback callback = new ImageSavingCallback(tempFile);
         try {
             /* Set up appropriate web output options */
-            WebPageOutputOptions options = JEuclidUtilities.createWebPageOptions(true, callback);
+            WebPageOutputOptions options = JEuclidUtilities.createWebPageOptions(false, callback);
             options.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
             options.setMathVariantMapping(true);
             options.setAddingMathAnnotations(false);
@@ -130,7 +131,7 @@ public final class MathInputToImageServlet extends BaseServlet {
         
         @Override
         public OutputStream getImageOutputStream(int mathmlCounter) {
-            /* Ignore anything but 1st image */
+            /* (Not used here) */
             return new NullOutputStream();
         }
 

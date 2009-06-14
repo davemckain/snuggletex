@@ -25,11 +25,8 @@ All Rights Reserved
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
   exclude-result-prefixes="s m xs">
 
+  <xsl:import href="base.xsl"/>
   <xsl:output method="xhtml"/>
-
-  <xsl:param name="snuggletex-version" as="xs:string" required="yes"/>
-  <xsl:param name="maven-site-url" as="xs:string" required="yes"/>
-  <xsl:param name="context-path" as="xs:string" required="yes"/>
 
   <!-- Optional "page type" text to display within page -->
   <xsl:param name="page-type" as="xs:string?" required="no"/>
@@ -37,11 +34,14 @@ All Rights Reserved
   <!-- Extract page ID as first <s:pageId/> element. (Overridden by importers where necessary) -->
   <xsl:variable name="pageId" select="string(/html/body/s:pageId[1])" as="xs:string"/>
 
-  <!-- Extract page title as first <h2/> heading -->
-  <xsl:variable name="title" select="string(/html/body/h2[1])" as="xs:string"/>
-
   <!-- Navigation scheme -->
   <xsl:variable name="navigation" select="document('navigation.xml')/s:navigation/s:section" as="element(s:section)+"/>
+
+  <!-- This page as a "node" in the navigation tree -->
+  <xsl:variable name="node" select="$navigation//s:node[@id=$pageId]" as="element(s:node)"/>
+
+  <!-- Extract page title from navigation -->
+  <xsl:variable name="title" select="$node/@name" as="xs:string"/>
 
   <xsl:template match="head">
     <head>
@@ -101,8 +101,8 @@ All Rights Reserved
           <!-- Do main content -->
           <div id="maininner">
 
-            <!-- Mess around -->
-            <a class="dialog" href="/snuggletex/">Test!</a>
+            <!-- Add page title -->
+            <h2><xsl:value-of select="$title"/></h2>
 
             <!-- Generate page content -->
             <xsl:apply-templates select="." mode="make-content"/>
@@ -195,8 +195,26 @@ All Rights Reserved
     <xsl:copy-of select="."/>
   </xsl:template>
 
-  <!-- Leave out SnuggleTeX metadata -->
-  <xsl:template match="s:*"/>
+  <!-- Leave out SnuggleTeX pageId -->
+  <xsl:template match="s:pageId"/>
+
+  <!-- Up-conversion examples -->
+  <xsl:template match="s:upConversionExample">
+    <!-- NB: Author uses \verb|...| to wrap input, which will have replaced spaces with nbsp, so need to undo
+    when producing the form to pass back as SnuggleTeX input -->
+    <!-- FIXME: Need to URI encode this as '+' is not being treated correctly!!! -->
+    <xsl:variable name="input" select="encode-for-uri(replace(., '&#xa0;', ' '))" as="xs:string"/>
+    <a class="dialog" title="{.}" href="{$context-path}/UpConversionExampleFragment?input={$input}">
+      Example: <xsl:value-of select="."/>
+    </a>
+  </xsl:template>
+
+  <!-- Fail if any other s:* element gets through, as I'm not expecting that to happen -->
+  <xsl:template match="s:*">
+    <xsl:message terminate="yes">
+      Unexpected element <xsl:copy-of select="."/>
+    </xsl:message>
+  </xsl:template>
 
   <xsl:function name="s:fix-href" as="xs:string">
     <xsl:param name="href" as="xs:string"/>

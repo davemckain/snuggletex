@@ -24,9 +24,7 @@ All Rights Reserved
   <xsl:import href="format-output.xsl"/>
   <xsl:import href="demo-utilities.xsl"/>
 
-  <xsl:param name="mathml-capable" as="xs:boolean" required="yes"/>
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
-  <xsl:param name="add-annotations" as="xs:boolean" required="yes"/>
   <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
   <xsl:param name="parsing-errors" as="element(s:error)*"/>
   <xsl:param name="result-mathml" as="xs:string?"/>
@@ -34,12 +32,7 @@ All Rights Reserved
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'mathInputDemo'" as="xs:string"/>
 
-  <!-- Override title -->
-  <xsl:variable name="title" select="'Simple Math Input Demo'" as="xs:string"/>
-
   <xsl:template match="body" mode="make-content">
-    <h2><xsl:value-of select="$title"/></h2>
-
     <!-- Now do input form -->
     <h3>Input</h3>
     <p>
@@ -51,14 +44,6 @@ All Rights Reserved
         LaTeX Math Mode Input: \[ <input id="input" name="input" type="text" value="{$latex-input}"/> \]
         <input type="submit" value="Go!" />
         <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />
-      </div>
-      <div>
-        <input type="checkbox" id="annotate" name="annotate">
-          <xsl:if test="$add-annotations">
-            <xsl:attribute name="checked">checked</xsl:attribute>
-          </xsl:if>
-        </input>
-        <label for="annotate">Annotate MathML with input LaTeX</label>
       </div>
     </form>
     <xsl:choose>
@@ -83,27 +68,11 @@ All Rights Reserved
   possibility that up-conversion has not been entirely successful.
   -->
   <xsl:template match="body" mode="handle-successful-input">
-    <xsl:choose>
-      <xsl:when test="$mathml-capable">
-        <h3>MathML Output (rendered by your browser)</h3>
-        <div class="result">
-          <xsl:copy-of select="node()"/>
-        </div>
-      </xsl:when>
-      <xsl:otherwise>
-        <h3>MathML Output (converted to an image)</h3>
-        <p>
-          (Your browser does not support MathML so SnuggleTeX has converted the result
-          to an image instead.)
-        </p>
-        <div class="result">
-          <div class="mathml-math">
-            <img src="{$context-path}/MathInputToImage.png?input={encode-for-uri($latex-input)}"
-              alt="{$latex-input}" />
-          </div>
-        </div>
-      </xsl:otherwise>
-    </xsl:choose>
+    <h3>Output (rendered by your browser)</h3>
+    <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+    <div class="result">
+      <xsl:copy-of select="node()"/>
+    </div>
 
     <h3>MathML Source</h3>
     <pre class="result">

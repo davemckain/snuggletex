@@ -42,7 +42,8 @@ import org.xml.sax.SAXException;
  * You will need the following in your ClassPath:
  * 
  * <ul>
- *   <li>snuggletex.jar</li> (Also needed at compile time)
+ *   <li>snuggletex-core.jar</li>
+ *   <li>snuggletex-upconversion.jar</li>
  *   <li>saxon9.jar, saxon9-dom.jar</li> (These are required as the conversion process uses XSLT 2.0)
  * </ul>
  * 

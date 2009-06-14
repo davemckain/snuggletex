@@ -40,7 +40,6 @@ All Rights Reserved
     </description>
     <servlet-name>DocumentationServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.DocumentationServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
     <init-param>
       <param-name>caching</param-name>
       <param-value>false</param-value>
@@ -48,11 +47,10 @@ All Rights Reserved
   </servlet>
   <servlet>
     <description>
-      Processes and displays user-submitted input for demonstration purposes
+      Processes and displays user-submitted full LaTeX input
     </description>
-    <servlet-name>TryOutServlet</servlet-name>
-    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.TryOutServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <servlet-name>FullLaTeXInputDemoServlet</servlet-name>
+    <servlet-class>uk.ac.ed.ph.snuggletex.webapp.FullLaTeXInputDemoServlet</servlet-class>
   </servlet>
   <servlet>
     <description>
@@ -60,7 +58,6 @@ All Rights Reserved
     </description>
     <servlet-name>MathInputDemoServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.MathInputDemoServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <description>
@@ -68,7 +65,6 @@ All Rights Reserved
     </description>
     <servlet-name>MathInputToImageServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.MathInputToImageServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <description>
@@ -76,7 +72,6 @@ All Rights Reserved
     </description>
     <servlet-name>UpConversionDemoServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionDemoServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <description>
@@ -84,7 +79,6 @@ All Rights Reserved
     </description>
     <servlet-name>UpConversionExampleFragmentServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.UpConversionExampleFragmentServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <description>
@@ -92,15 +86,14 @@ All Rights Reserved
     </description>
     <servlet-name>ASCIIMathMLUpConversionDemoServlet</servlet-name>
     <servlet-class>uk.ac.ed.ph.snuggletex.webapp.ASCIIMathMLUpConversionDemoServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>DocumentationServlet</servlet-name>
     <url-pattern>/documentation/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>TryOutServlet</servlet-name>
-    <url-pattern>/tryout.xml</url-pattern>
+    <servlet-name>FullLaTeXInputDemoServlet</servlet-name>
+    <url-pattern>/FullLaTeXInputDemo</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MathInputDemoServlet</servlet-name>

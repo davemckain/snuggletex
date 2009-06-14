@@ -23,6 +23,9 @@
 
 /************************************************************/
 
+/* Reset the default (blue) MathML colour chosen by ASCIIMathML */
+var mathcolor = "";
+
 /**
  * Hacked version of AMdisplay() from ASCIIMathMLeditor.js that allows
  * us to specify which element to display the resulting MathML

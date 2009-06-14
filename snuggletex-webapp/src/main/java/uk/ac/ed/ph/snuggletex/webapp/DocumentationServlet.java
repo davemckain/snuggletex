@@ -100,7 +100,7 @@ public final class DocumentationServlet extends BaseServlet {
         /* Set up base directory */
         if (baseDirectory==null) {
             try {
-                baseDirectory = File.createTempFile("snuggetex-", ".dir");
+                baseDirectory = File.createTempFile("snuggletex-", ".dir");
             }
             catch (IOException e) {
                 throw new ServletException("Could not create initial tempfile for storing documentation", e);

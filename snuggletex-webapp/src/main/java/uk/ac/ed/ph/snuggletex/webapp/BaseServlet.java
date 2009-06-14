@@ -124,6 +124,16 @@ abstract class BaseServlet extends HttpServlet {
                 result  = WebPageType.MOZILLA;
             }
         }
-        return result ;
+        return result;
+    }
+    
+    protected boolean isMathMLCapable(final HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        return userAgent!=null && (userAgent.contains("MathPlayer ") || userAgent.contains("Gecko/"));
+    }
+    
+    protected boolean isInternetExplorer(final HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        return userAgent!=null && userAgent.contains("MSIE");
     }
 }

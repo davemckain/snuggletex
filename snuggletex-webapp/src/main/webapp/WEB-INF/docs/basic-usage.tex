@@ -1,6 +1,4 @@
-\pageId{usageoverview}
-
-\section*{Usage Overview}
+\pageId{basicUsage}
 
 \subsection*{The \verb|SnuggleEngine|}
 
@@ -38,25 +36,8 @@ This creates a fresh job using the current default settings in your
 \href[Inputs]{inputs.html}, \href[Error Reporting]{error-reporting.html}
 and \href[Outputs]{outputs.html} to do whatever it is you want to do.
 
-See the \href[First Example]{minimal-example.html} for a simple working
+See the \href[First Example]{first-example.html} for a simple working
 example of how everything comes together.
 
 You can discard a \verb|SnuggleSession| once it has done everything
-you need. Note that a \verb|SnuggleSession| is \emph{not} thread safe.
-
-\subsection*{Using \verb|SnugleSnapshot|s}
-
-It is possible to create a ``snaphsot'' of the state
-of a \verb|SnuggleSession|, allowing you to recreate a fresh
-session having the same state later on. This is very useful if you want
-to reuse inputs containing definitions of commands and environments. You can
-do this with:
-
-\begin{verbatim}SnuggleSnapshot snapshot = session.createSnapshot();
-
-// ... later on ...
-
-SnuggleSession refriedSession = snapshot.createSession();
-// refriedSession will have the same parsing state as your
-// sesion did when you took the snapshot
-\end{verbatim}
+you need. (Note that a \verb|SnuggleSession| is \emph{not} thread safe.)

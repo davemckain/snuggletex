@@ -1,4 +1,4 @@
-/* $Id:TryOutServlet.java 158 2008-07-31 10:48:14Z davemckain $
+/* $Id:FullLaTeXInputDemoServlet.java 158 2008-07-31 10:48:14Z davemckain $
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -110,6 +110,8 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
+        viewStylesheet.setParameter("is-mathml-capable", isMathMLCapable(request));
+        viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("is-new-form", Boolean.valueOf(isNewForm));
         if (!isNewForm) {
             viewStylesheet.setParameter("ascii-math-input", asciiMathInput);

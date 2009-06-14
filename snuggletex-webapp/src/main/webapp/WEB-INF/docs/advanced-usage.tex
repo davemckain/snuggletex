@@ -1,0 +1,32 @@
+\pageId{advanced}
+\subsection*{Using a \verb|SnuggleSnapshot|}
+
+It is possible to create a ``snaphsot'' of the state
+of a \verb|SnuggleSession|, allowing you to recreate a fresh
+session having the same state later on. This is very useful if you want
+to reuse ``macro definition'' inputs that define commands and environments. You can
+do this with:
+
+\begin{verbatim}SnuggleSnapshot snapshot = session.createSnapshot();
+
+// ... later on ...
+
+SnuggleSession refriedSession = snapshot.createSession();
+// refriedSession will have the same parsing state as your
+// sesion did when you took the snapshot
+\end{verbatim}
+
+\subsection*{Using a \verb|StylesheetCache|}
+
+Some of SnuggleTeX's processing --- in particular the
+\href[Semantic Up-Conversion]{semantic-upconversion.html}
+processes --- use XSLT to do the work. In order to make this
+as performant as possible, SnuggleTeX includes a simple
+interface called \verb|StylesheetCache| supporting basic
+caching of stylesheets, as well as a trivial hash-based
+implementation called \verb|SimpleStylesheetCache|. If your
+own application uses XSLT and does its own caching, you should
+be able to create your own implementation of \verb|StylesheetCache|
+that uses your own caching mechanism. In those cases, use the
+constructors for certain SnuggleTeX objects that take an implementation
+of \verb|StylesheetCache|.
