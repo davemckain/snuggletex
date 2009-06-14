@@ -154,9 +154,9 @@ All Rights Reserved
             '&#x2228;' (: \vee :),
             '&#x2227;' (: \wedge :),
             $local:relation-characters,
-            '&#x2216;' (: \setminus :),
             '&#x222a;' (: \cup :),
             '&#x2229;' (: \cap :),
+            '&#x2216;' (: \setminus :),
             '+', '-',
             $local:explicit-multiplication-characters,
             $local:explicit-division-characters
@@ -449,8 +449,12 @@ All Rights Reserved
           </xsl:call-template>
         </mrow>
         <xsl:copy-of select="$last-operator"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$after-last-operator"/>
+        <xsl:call-template name="s:maybe-wrap-in-mrow">
+          <xsl:with-param name="elements" as="element()">
+            <xsl:call-template name="local:process-group">
+              <xsl:with-param name="elements" select="$after-last-operator"/>
+            </xsl:call-template>
+          </xsl:with-param>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
@@ -459,13 +463,25 @@ All Rights Reserved
         <xsl:variable name="operator" select="$operators[1]" as="element()"/>
         <xsl:variable name="left-operand" select="$elements[. &lt;&lt; $operator]" as="element()*"/>
         <xsl:variable name="right-operand" select="$elements[. &gt;&gt; $operator]" as="element()*"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$left-operand"/>
-        </xsl:call-template>
+        <xsl:if test="exists($left-operand)">
+          <xsl:call-template name="s:maybe-wrap-in-mrow">
+            <xsl:with-param name="elements" as="element()*">
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$left-operand"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
         <xsl:copy-of select="$operator"/>
-        <xsl:call-template name="local:process-group">
-          <xsl:with-param name="elements" select="$right-operand"/>
-        </xsl:call-template>
+        <xsl:if test="exists($right-operand)">
+          <xsl:call-template name="s:maybe-wrap-in-mrow">
+            <xsl:with-param name="elements" as="element()*">
+              <xsl:call-template name="local:process-group">
+                <xsl:with-param name="elements" select="$right-operand"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

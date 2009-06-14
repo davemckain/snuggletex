@@ -596,6 +596,15 @@ A \cup B \cap C
   <mi>C</mi>
 </mrow>
 ====
+A \setminus x+B
+<mi>A</mi>
+<mo>&#x2216;</mo>
+<mrow>
+  <mi>x</mi>
+  <mo>+</mo>
+  <mi>B</mi>
+</mrow>
+====
 A \cup B \setminus C
 <mi>A</mi>
 <mo>&#x222a;</mo>
