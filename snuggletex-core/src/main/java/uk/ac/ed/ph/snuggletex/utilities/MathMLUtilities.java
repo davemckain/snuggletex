@@ -70,6 +70,7 @@ public final class MathMLUtilities {
     public static String serializeDocument(final Document document, final String encoding) {
         return serializeNode(document, encoding, true, true);
     }
+    
     /**
      * Convenience method that serializes the given DOM Document as a String (encoded in UTF-8).
      * <p>
@@ -196,8 +197,8 @@ public final class MathMLUtilities {
     public static boolean isMathMLElement(final Node node, final String localName) {
         ConstraintUtilities.ensureNotNull(node, "Node");
         return node.getNodeType()==ELEMENT_NODE
-            && Globals.MATHML_NAMESPACE.equals(node.getNamespaceURI())
-            && localName==null || localName.equals(node.getLocalName());
+            && node.getNamespaceURI().equals(Globals.MATHML_NAMESPACE)
+            && (localName==null || localName.equals(node.getLocalName()));
     }
     
     public static void ensureMathMLContainer(final Element mathElement) {

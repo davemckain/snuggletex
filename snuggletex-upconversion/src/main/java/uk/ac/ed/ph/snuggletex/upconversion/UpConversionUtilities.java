@@ -5,8 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
 
+import static uk.ac.ed.ph.snuggletex.SnuggleConstants.SNUGGLETEX_NAMESPACE;
+
 import uk.ac.ed.ph.snuggletex.ErrorCode;
-import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -48,7 +49,7 @@ public final class UpConversionUtilities {
      */
     public static UpConversionFailure extractUpConversionFailure(final Element sFailElement) {
         ConstraintUtilities.ensureNotNull(sFailElement, "sFailElement");
-        if (!(sFailElement.getNamespaceURI().equals(SnuggleConstants.SNUGGLETEX_NAMESPACE) && sFailElement.getLocalName().equals("fail"))) {
+        if (!(SNUGGLETEX_NAMESPACE.equals(sFailElement.getNamespaceURI()) && sFailElement.getLocalName().equals("fail"))) {
             throw new IllegalArgumentException("Element is not an <s:fail/> element");
         }
         /* Yay! This is one of our <s:fail/> elements. First extract ErrorCode */
@@ -68,7 +69,7 @@ public final class UpConversionUtilities {
         for (int i=0, size=childNodes.getLength(); i<size; i++) {
             child = childNodes.item(i);
             if (child.getNodeType()==Node.ELEMENT_NODE) {
-                if (!child.getNamespaceURI().equals(SnuggleConstants.SNUGGLETEX_NAMESPACE)) {
+                if (!SNUGGLETEX_NAMESPACE.equals(child.getNamespaceURI())) {
                     throw new SnuggleLogicException("Didn't expect child of <s:fail/> in namespace " + child.getNamespaceURI());
                 }
                 if (child.getLocalName().equals("arg")) {
@@ -119,7 +120,7 @@ public final class UpConversionUtilities {
      * @param resultBuilder
      */
     private static void walkDOM(Element searchElement, List<UpConversionFailure> resultBuilder) {
-        if (searchElement.getNamespaceURI().equals(SnuggleConstants.SNUGGLETEX_NAMESPACE) && searchElement.getLocalName().equals("fail")) {
+        if (SNUGGLETEX_NAMESPACE.equals(searchElement.getNamespaceURI()) && searchElement.getLocalName().equals("fail")) {
             resultBuilder.add(extractUpConversionFailure(searchElement));
         }
         else {
