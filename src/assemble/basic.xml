@@ -25,6 +25,18 @@ All Rights Reserved
         <includeDependencies>false</includeDependencies>
         <unpack>false</unpack>
       </binaries>
+      <sources>
+        <includeModuleDirectory>false</includeModuleDirectory>
+        <fileSets>
+          <fileSet>
+            <directory>target</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+              <include>snuggletex.css</include>
+            </includes>
+          </fileSet>
+        </fileSets>
+      </sources>
     </moduleSet>
   </moduleSets>
   <files>
