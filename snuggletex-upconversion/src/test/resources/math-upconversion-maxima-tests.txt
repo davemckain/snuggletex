@@ -162,6 +162,9 @@ x^(1 / 2)
 \sin x\,y
 sin(x) * y
 ====
+\sin\cos x
+sin(cos(x))
+====
 \frac{-b+\sqrt{b^2-4ac}}{2a}
 ((-b) + sqrt(((b^2) - (4 * a * c)))) / (2 * a)
 ====

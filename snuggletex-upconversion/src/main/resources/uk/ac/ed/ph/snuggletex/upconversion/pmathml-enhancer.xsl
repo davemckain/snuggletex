@@ -563,8 +563,12 @@ All Rights Reserved
         <!-- Add an "Apply Function" operator -->
         <mo>&#x2061;</mo>
         <!-- Process the rest recursively -->
-        <xsl:call-template name="local:apply-prefix-functions-and-operators">
-          <xsl:with-param name="elements" select="$after-first-element"/>
+        <xsl:call-template name="s:maybe-wrap-in-mrow">
+          <xsl:with-param name="elements" as="element()+">
+            <xsl:call-template name="local:apply-prefix-functions-and-operators">
+              <xsl:with-param name="elements" select="$after-first-element"/>
+            </xsl:call-template>
+          </xsl:with-param>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="local:is-prefix-operator($first-element)">

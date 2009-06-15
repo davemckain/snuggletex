@@ -350,6 +350,15 @@ x\,y\,z
   <ci>z</ci>
 </apply>
 ====
+\sin\cos x
+<apply>
+  <sin/>
+  <apply>
+    <cos/>
+    <ci>x</ci>
+  </apply>
+</apply>
+====
 ## Note how this is different from \sin xy
 \sin x\,y
 <apply>

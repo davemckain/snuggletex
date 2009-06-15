@@ -251,6 +251,15 @@ x\,y\,z
 <mo>&#x2062;</mo>
 <mi>z</mi>
 ====
+\sin \cos x
+<mi>sin</mi>
+<mo>&#x2061;</mo>
+<mrow>
+  <mi>cos</mi>
+  <mo>&#x2061;</mo>
+  <mi>x</mi>
+</mrow>
+====
 #########################
 # Tests various "empty" cases
 \frac{}{}
