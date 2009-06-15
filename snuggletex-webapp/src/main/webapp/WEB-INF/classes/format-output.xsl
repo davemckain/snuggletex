@@ -101,8 +101,18 @@ All Rights Reserved
           <!-- Do main content -->
           <div id="maininner">
 
-            <!-- Add page title -->
-            <h2><xsl:value-of select="$title"/></h2>
+            <!-- Add page title, and maybe a box about page types -->
+            <h2>
+              <xsl:value-of select="$title"/>
+            </h2>
+            <xsl:if test="exists($page-type)">
+              <div class="note">
+                <strong>NOTE:</strong>
+                This particular rendition of this page has been generated using the
+                <xsl:value-of select="$page-type"/>
+                Web Page Type.
+              </div>
+            </xsl:if>
 
             <!-- Generate page content -->
             <xsl:apply-templates select="." mode="make-content"/>
@@ -157,16 +167,6 @@ All Rights Reserved
 
   <xsl:template match="body" mode="make-content">
     <xsl:apply-templates/>
-  </xsl:template>
-
-  <!-- Maybe soup up the first heading with information about the page type -->
-  <xsl:template match="body/h2[1]">
-    <h2>
-      <xsl:apply-templates/>
-      <xsl:if test="$page-type">
-        (<xsl:value-of select="$page-type"/>)
-      </xsl:if>
-    </h2>
   </xsl:template>
 
   <!-- Copy all other HTML as-is -->

@@ -1,26 +1,25 @@
 \pageId{browserRequirements}
 
-\subsection*{\href[XHTML + MathML Web Page Outputs]{outputs.html#mathml}}
-
-If you use SnuggleTeX to produce XHTML + MathML web pages, the resulting
-pages will only be viewable on browsers capable of displaying MathML.
+If you use SnuggleTeX to produce \href[XHTML + MathML Web
+Pages]{web-page-types.html}, the resulting pages will only be viewable on
+browsers capable of displaying MathML.
 
 As you will probably know, most browsers in the Mozilla family (e.g.\
 Firefox) support and display MathML natively so are in many ways the best
 options. (However, the quality of MathML rendering has regressed to some
 degree in the recently-released Firefox 3, which is a little disappointing.)
 
-Internet Explorer 6/7 can be targeted very well using the freely available
-MathPlayer plug-in, which does a very nice job of displaying MathML. As of
-writing, other browsers do not yet support MathML natively so if you need
-to target them, you should consider using the Legacy XHTML + images
-\href[output]{outputs.html} option that SnuggleTeX provides as an optional
-extension.
+Internet Explorer 6 and above can be targeted very well using the freely
+available \href[MathPlayer]{http://www.dessci.com/en/products/mathplayer/}
+plug-in, which does a very nice job of displaying MathML. 
 
-As you will see on the \href[output]{outputs.html} page, SnuggleTeX offers
-a number of ``templates'' that target specific MathML-capable browsers in
-various ways. Each has its own pros and cons and you will need to pick
-the one that suits your target audience best.
+Other browsers do not yet support MathML natively so if you need to target
+them, you should consider \href[Creating Legacy Web Pages]{legacy-web-pages.html}.
+
+As you will see on the \href[MathML Web Page Types]{web-page-types.html} page,
+SnuggleTeX offers a number of pre-defined templates that target specific
+MathML-capable browsers in various ways. Each has its own pros and cons and you
+will need to pick the one that suits your target audience best.
 
 The following table might help:
 
@@ -29,11 +28,11 @@ The following table might help:
 Target Audience & Suggestions \\
 \hline
 Firefox only &
-Use the \href[\verb|MOZILLA|]{outputs.html#mozilla} page type. %
+Use the \href[\verb|MOZILLA|]{web-page-types.html#mozilla} page type. %
 This is the most efficient way of displaying MathML on these browsers. \\
 \hline
 IE only with MathPlayer pre-installed &
-Use the \href[\verb|MATHPLAYER_HTML|]{outputs.html#mathplayer} page type. %
+Use the \href[\verb|MATHPLAYER_HTML|]{web-page-types.html#mathplayer} page type. %
 This is the most efficient option in this case, %
 but will \emph{not} work if your clients do not %
 already have MathPlayer installed. \\
@@ -41,31 +40,23 @@ already have MathPlayer installed. \\
 IE only, not sure if MathPlayer is installed &
 If you know that your clients have sufficient privileges and ability to be able to %
 install MathPlayer, then you could use the %
-\href[\verb|UNIVERSAL_STYLESHEET|]{outputs.html#uss} option %
+\href[\verb|UNIVERSAL_STYLESHEET|]{web-page-types.html#uss} option %
 as that will prompt for installation of MathPlayer if required. %
 Otherwise, it might be safer to serve up legacy content, as described below. \\
 \hline
 Firefox and IE with MathPlayer pre-installed &
-The \href[\verb|CROSS_BROWSER_XHTML|]{outputs.html#crossbrowser} page type %
+The \href[\verb|CROSS_BROWSER_XHTML|]{web-page-types.html#crossbrowser} page type %
 is your best bet here, though %
-you could also use \href[\verb|UNIVERAL_STYLESHEET|]{outputs.html#uss}. \\
+you could also use \href[\verb|UNIVERAL_STYLESHEET|]{web-page-types.html#uss}. \\
 \hline
 Firefox and IE &
 As above, if your clients can install MathPlayer then use the %
-\href[\verb|UNIVERSAL_STYLESHEET|]{outputs.html#uss} type. %
+\href[\verb|UNIVERSAL_STYLESHEET|]{web-page-types.html#uss} type. %
 Otherwise, it might be safer %
-to serve up legacy content, as described below. \\
+to serve up \href[Legacy Web Pages]{legacy-web-pages.html} instead. \\
 \hline
-All browsers &
-Your safest bet in this case is to give up trying MathML and %
-serve legacy content, as described below. \\
+All browsers, Search Engines &
+Your safest bet in this case is to give up trying to serve MathML and %
+use SnuggleTeX to create \href[Legacy Web Pages]{legacy-web-pages.html} instead. \\
 \hline
 \end{tabular}
-
-\subsection*{\href[Legacy XHTML + Images Web Page Outputs]{outputs.html#legacy}}
-
-These outputs are fairly typical ``XHTML'' traditionaly (mis-)served as
-\verb|text/html|, meaning that pretty much all (graphical) browsers will
-display this perfectly well. Any image elements created to represent
-mathematics have an \verb|alt| attribute added containing the SnuggleTeX input
-that created the mathematics.

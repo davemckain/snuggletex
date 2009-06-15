@@ -36,12 +36,12 @@ All Rights Reserved
     <node id="firstExample" href="/documentation/first-example.html" name="First Example"/>
     <node id="basicUsage" href="/documentation/basic-usage.html" name="Basic Usage"/>
     <node id="inputs" href="/documentation/inputs.html" name="Parsing LaTeX Inputs"/>
-    <node id="outputs" href="/documentation/outputs.html" name="Creating XML/XHTML/MathML Outputs">
-      <node id="xmlStringOutput" href="/documentation/string-output.html" name="XML Strings"/>
-      <node id="domOutput" href="/documentation/dom-output.html" name="Building a DOM"/>
-      <!-- FIXME: Need to add something about CSS here. Make sure the minimal ZIP includes snuggletex.css... -->
-      <node id="webOutput" href="/documentation/web-output.html" name="Creating Web Pages"/>
-      <node id="browserRequirements" href="/documentation/browser-requirements.html" name="Browser Requirements"/>
+    <node id="domOutput" href="/documentation/dom-output.html" name="Creating XML/DOM Outputs"/>
+    <node id="webOutput" href="/documentation/web-output.html" name="Creating Web Pages">
+      <node id="webPageTypes" href="/documentation/web-page-types.html" name="XHTML+MathML Web Page Types"/>
+      <node id="browserRequirements" href="/documentation/browser-requirements.html" name="MathML Browser Requirements"/>
+      <node id="legacyWebPages" href="/documentation/legacy-web-pages.html" name="Creating Legacy Web Pages"/>
+      <node id="stylesheets" href="/documentation/stylesheets.html" name="CSS Stylesheet Notes"/>
     </node>
     <node id="configuration" href="/documentation/configuration.html" name="Configuration"/>
     <node id="errors" href="/documentation/error-reporting.html" name="Error Reporting">

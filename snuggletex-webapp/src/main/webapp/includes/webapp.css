@@ -137,7 +137,7 @@ pre.verbatim {
   padding: 0.5em;
 }
 
-.result {
+.note, .result {
   -moz-border-radius: 1em;
   background-color: #dad7f2;
   padding: 0.5em;
