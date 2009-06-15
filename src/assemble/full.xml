@@ -30,6 +30,23 @@ All Rights Reserved
       <sources>
       </sources>
     </moduleSet>
+    <moduleSet>
+      <includes>
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-core</include>
+      </includes>
+      <sources>
+        <includeModuleDirectory>false</includeModuleDirectory>
+        <fileSets>
+          <fileSet>
+            <directory>target</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+              <include>snuggletex.css</include>
+            </includes>
+          </fileSet>
+        </fileSets>
+      </sources>
+    </moduleSet>
   </moduleSets>
   <files>
     <file>
