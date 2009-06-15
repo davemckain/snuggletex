@@ -62,7 +62,8 @@ All Rights Reserved
     </pre>
 
     <h3>Content MathML</h3>
-    <xsl:variable name="content-failures" as="element(s:fail)*" select="/m:math/m:semantics/m:annotation-xml[@encoding='MathML-Content-upconversion-failures']/*"/>
+    <xsl:variable name="mathml" as="element(m:math)" select="//m:math[1]"/>
+    <xsl:variable name="content-failures" as="element(s:fail)*" select="$mathml/m:semantics/m:annotation-xml[@encoding='MathML-Content-upconversion-failures']/*"/>
     <xsl:choose>
       <xsl:when test="exists($content-failures)">
         <p>
@@ -81,7 +82,7 @@ All Rights Reserved
     </xsl:choose>
 
     <h3>Maxima Input Form</h3>
-    <xsl:variable name="maxima-failures" as="element(s:fail)*" select="/m:math/m:semantics/m:annotation-xml[@encoding='Maxima-upconversion-failures']/*"/>
+    <xsl:variable name="maxima-failures" as="element(s:fail)*" select="$mathml/m:semantics/m:annotation-xml[@encoding='Maxima-upconversion-failures']/*"/>
     <xsl:choose>
       <xsl:when test="exists($content-failures)">
         <p>

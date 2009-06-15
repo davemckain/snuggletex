@@ -61,6 +61,7 @@ All Rights Reserved
       <node id="cmathml" href="/documentation/content-mathml.html" name="Generating Content MathML"/>
       <node id="maxima" href="/documentation/maxima-input.html" name="Generating Maxima Input"/>
       <node id="upconversionUsage" href="/documentation/upconversion-usage.html" name="Up-Conversion Usage"/>
+      <node id="upconversionFailures" href="/documentation/upconversion-failures.html" name="Up-Conversion Failure Handling"/>
       <!-- Also need to document ASCIIMathML -->
     </node>
     <node id="projects" href="maven://apidocs/index.html" name="API Documentation"/>
