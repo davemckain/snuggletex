@@ -38,9 +38,10 @@ operators in MATH mode.
 
 \textbf{NOTE:} The default view of this page (with the \verb|.html|
 file extension) is actually the \href[Legacy Web Pages]{legacy-web-pages.html}
-output!
+output! If you want to see MathML versions of this page, look at the
+\href[Web Output Samples]{latex-samples.html} page for details.
 
-\section{Entering and Leaving MATH Mode}
+\subsection*{Entering and Leaving MATH Mode}
 
 SnuggleTeX supports the usual LaTeX commands for entering and leaving
 MATH mode:
@@ -61,7 +62,9 @@ all produce inline mathematics, whereas:
 all produce "display" mathematics. The \verb|eqnarray| and \verb|eqnarray*|
 environments also enter MATH mode.
 
-\section{Basic Mathematics}
+SnuggleTeX also supports the \verb|\ensuremath{...}| command.
+
+\subsection*{Basic Mathematics}
 
 \begin{ndemotable}
 \minout{-5.32} & \note{Simple number. (Currently SnuggleTeX only understands UK number
@@ -73,14 +76,13 @@ environments also enter MATH mode.
 \minout{\frac{x+1}{3-y}} & \note{New style fractions} \\
 \minout{x^2} & \note{Simple superscript example} \\
 \minout{x^{2^{y-z}}} & \note{Complex superscript example} \\
-\minout{(x_1, x_2)} & \note{Subscript example. Note also that SnuggleTeX can
-  be asked to attempt to pair up naturally matching brackets where possible.} \\
+\minout{(x_1, x_2)} & \note{Subscript example.} \\
 \minout{x_1^2} & \note{Mix of subscripts and superscripts} \\
 \minout{\sqrt{x}} & \note{Square roots} \\
 \minout{\sqrt[n]{x}} & \note{$n^\mathrm{th}$ roots} \\
 \end{ndemotable}
 
-\section*{Greek Letters}
+\subsection*{Greek Letters}
 
 As is normal here, note that commands are only required for upper case letters
 if there is no standard roman alphabet equivalent.
@@ -125,7 +127,7 @@ Input & Result & Input & Result \\
 \end{tabular}
 \end{center}
 
-\section*{Mathematical Functions}
+\subsection*{Mathematical Functions}
 
 % Math-mode demo line
 \newcommand{\mdemo}[1]{\minout{#1} \\}
@@ -165,7 +167,7 @@ Input & Result & Input & Result \\
 \mdemo{\tanh x}
 \end{demotable}
 
-\section*{Ellipses}
+\subsection*{Ellipses}
 
 \begin{demotable}
 \mdemo{\cdots}
@@ -173,7 +175,7 @@ Input & Result & Input & Result \\
 \mdemo{\ddots}
 \end{demotable}
 
-\section*{Spacing}
+\subsection*{Spacing}
 
 Note that MathML-enabled browsers don't support spacing particularly well.
 You can also use the \verb|\hspace| command to enter specific amounts of spacing.
@@ -188,7 +190,7 @@ You can also use the \verb|\hspace| command to enter specific amounts of spacing
 \mdemo{a\hspace{3.0em}b}
 \end{demotable}
 
-\section*{Variable-sized symbols}
+\subsection*{Variable-sized symbols}
 
 Note that some of the more exotic operators may require extra fonts installed.
 
@@ -223,7 +225,7 @@ Note that some of the more exotic operators may require extra fonts installed.
 \vdemo{\biguplus}
 \end{dmdemotable}
 
-\section*{Binary Operators}
+\subsection*{Binary Operators}
 
 As with LaTeX, we support the \verb|\not| command to negate certain operators. Only
 the ones listed in the table below are supported.
@@ -324,7 +326,7 @@ SnuggleTeX also supports \verb|\stackrel| to make stacked operators:
 \mdemo{1 \stackrel{2}{+} y}
 \end{demotable}
 
-\section*{Arrows}
+\subsection*{Arrows}
 
 \begin{demotable}
 \mdemo{\leftarrow}
@@ -360,7 +362,7 @@ SnuggleTeX also supports \verb|\stackrel| to make stacked operators:
 \mdemo{\nwarrow}
 \end{demotable}
 
-\section*{Miscellaneous Maths Symbols}
+\subsection*{Miscellaneous Maths Symbols}
 
 \begin{demotable}
 \mdemo{\aleph}
@@ -399,7 +401,7 @@ SnuggleTeX also supports \verb|\stackrel| to make stacked operators:
 \verb_$ \| $_ & $\|$ \\
 \end{demotable}
 
-\section*{Mathematical Accents}
+\subsection*{Mathematical Accents}
 
 Some of these do not work particularly well in some cases, so it is wise to check the
 results on all of the browsers that you need to support!
@@ -433,7 +435,7 @@ results on all of the browsers that you need to support!
 \mademo{\underline}
 \end{mademotable}
 
-\section*{Stretchy Parentheses}
+\subsection*{Stretchy Parentheses}
 
 \newcommand{\mpdemo}[2]{\minout{\left#1 x \right#2} & \minout{\left#1 \frac{1}{1+\frac{1}{1+x}} \right#2} \\ }
 \newenvironment{mptable}
@@ -456,7 +458,7 @@ results on all of the browsers that you need to support!
 \mpdemo{<}{>}
 \end{mptable}
 
-\section*{Math Fonts}
+\subsection*{Math Fonts}
 
 These LaTeX commands apply a particular mathematical style to their arguments. Note
 that some styles are not supported well by some browsers.
@@ -470,7 +472,7 @@ that some styles are not supported well by some browsers.
 \mfdemo{\mathtt}
 \end{demotable}
 
-\section*{Text inside Maths}
+\subsection*{Text inside Maths}
 
 SnuggleTeX supports the traditional \verb|\mbox| command to enter LR mode from
 within MATH mode. It also supports \verb|\textrm| and friends.
@@ -487,7 +489,7 @@ within MATH mode. It also supports \verb|\textrm| and friends.
 \mdemo{1\emph{ if $x=3$}}
 \end{demotable}
 
-\section*{Mathematical Structures}
+\subsection*{Mathematical Structures}
 
 \begin{ndemotable}
 \bigdminout{\left(
@@ -508,7 +510,7 @@ within MATH mode. It also supports \verb|\textrm| and friends.
   \\
 \end{ndemotable}
 
-\section*{Variant Characters}
+\subsection*{Variant Characters}
 
 This is one area of MathML which cause practical issues in browsers, usually due to a lack
 of fonts. By default, SnuggleTeX adds \texttt{mathvariant} attributes to the MathML whenever

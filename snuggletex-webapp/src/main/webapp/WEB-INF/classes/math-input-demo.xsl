@@ -36,12 +36,18 @@ All Rights Reserved
     <!-- Now do input form -->
     <h3>Input</h3>
     <p>
-      Enter a LaTeX math mode expression
-      into the box below and hit <tt>Go!</tt> to see the resulting output and MathML.
+      This demo lets you enter some math mode LaTeX for SnuggleTeX to convert into
+      MathML and display back to you
+      (either as MathML or images if your browser doesn't support
+      MathML).
     </p>
-    <form method="POST" id="inputForm">
+    <p>
+      Simply enter a LaTeX math mode expression into the box below and hit
+      <tt>Go!</tt> to see the resulting output and MathML.
+    </p>
+    <form method="post" class="input">
       <div>
-        LaTeX Math Mode Input: \[ <input id="input" name="input" type="text" value="{$latex-input}"/> \]
+        LaTeX Math Mode Input: <input id="input" name="input" type="text" value="{$latex-input}"/>
         <input type="submit" value="Go!" />
         <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />
       </div>
@@ -68,13 +74,13 @@ All Rights Reserved
   possibility that up-conversion has not been entirely successful.
   -->
   <xsl:template match="body" mode="handle-successful-input">
-    <h3>Output (rendered by your browser)</h3>
+    <h3>Output (as rendered by your browser)</h3>
     <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
     <div class="result">
       <xsl:copy-of select="node()"/>
     </div>
 
-    <h3>MathML Source</h3>
+    <h3>Resulting MathML</h3>
     <pre class="result">
       <xsl:value-of select="$result-mathml"/>
     </pre>

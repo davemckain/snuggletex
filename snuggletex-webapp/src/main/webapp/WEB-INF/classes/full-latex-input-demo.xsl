@@ -31,15 +31,19 @@ All Rights Reserved
     <!-- Do input form -->
     <h3>Input</h3>
     <p>
-      Enter some LaTeX into the box below and hit <tt>Go!</tt> to see the resulting
-      XHTML+MathML.
+      This demo lets you enter a chunk of LaTeX for SnuggleTeX to convert into
+      XHTML and MathML.
     </p>
-    <form method="POST" id="inputForm">
-      <textarea id="input" name="input" style="width:100%" rows="20">
+    <p>
+      Simply enter some LaTeX into the box below and hit <tt>Go!</tt> to see
+      the results.
+    </p>
+    <form method="post" class="input">
+      <textarea id="inputBox" name="input" style="width:100%" rows="20">
         <xsl:value-of select="$latex-input"/>
       </textarea>
       <input type="submit" value="Go!" />
-      <input type="button" value="Clear Form" onclick="document.getElementById('input').value=''" />
+      <input type="button" value="Clear Form" onclick="document.getElementById('inputBox').value=''" />
     </form>
 
     <!-- Output -->

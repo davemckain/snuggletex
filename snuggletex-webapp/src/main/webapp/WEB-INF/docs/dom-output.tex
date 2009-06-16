@@ -13,20 +13,21 @@ The simplest outputs that SnuggleTeX can create are low-level XML/DOM-based outp
     transmit the resulting XML to other pieces or software.
 
   \item
-    Call \verb|snuggleSession.buildDOMSubtree(Element)|
-    or \verb|snuggleSession.buildDOMSubtree(Element, DOMOutputOptions)|
-    to append the resulting XML to an existing \verb|Element|'s children.
-    This might be useful if you are integrating SnuggleTeX into some other activity
-    that builds a DOM.
+    Call one of the \verb|snuggleSession.buildDOMSubtree()|
+    methods to append the resulting XML to an existing \verb|Element|'s
+    children.  This might be useful if you are integrating SnuggleTeX into some
+    other activity that builds a DOM.
 
   \item
-    Call \verb|snuggleSession.buildDOMSubtree()|
-    or \verb|snuggleSession.buildDOMSubtree(DOMOutputOptions)|
-    to create a new \verb|Document| and return a \verb|NodeList| representing
-    your converted LaTeX inputs. (Note that SnuggleTeX will wrap these Nodes
-    within a special root \verb|Element| within the \verb|Document|.)
+    Call one of the \verb|snuggleSession.buildDOMSubtree()|
+    methods to create a new \verb|Document| and return a \verb|NodeList|
+    representing your converted LaTeX inputs. (Note that SnuggleTeX will wrap
+    these Nodes within a special root \verb|Element| within the
+    \verb|Document|.)
 
 \end{itemize}
+
+\subsection*{Configuration}
 
 You can configure exactly how this works using a \verb|DOMOutputOptions| Object,
 which is a simple JavaBean that lets you control details such as:

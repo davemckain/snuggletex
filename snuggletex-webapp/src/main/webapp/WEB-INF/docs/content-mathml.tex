@@ -28,7 +28,7 @@ We hope to improve these features for SnuggleTeX 1.2.
 
 \begin{tabular}{|c|c|c|c|}
 \hline
-LaTeX operator & Application & Content MathML element & Example \\
+LaTeX operator & Application & Content MathML element & Live Example \\
 \hline
 \verb|+| & unary or n-ary & \verb|<plus/>| & \ue{\verb|x+1|} \\
 \verb|-| & unary or binary & \verb|<minus/>| & \ue{\verb|-a-b|} \\
@@ -64,7 +64,7 @@ context.
 
 \begin{tabular}{|c|c|c|}
 \hline
-LaTeX operator & Content MathML element & Example \\
+LaTeX operator & Content MathML element & Live Example \\
 \hline
 \verb|=| & \verb|<eq/>| & \ue{\verb|x=1|} \\
 \verb|\not=| & \verb|<neq/>| & \ue{\verb|x\not=a|} \\
@@ -80,8 +80,8 @@ LaTeX operator & Content MathML element & Example \\
 \verb|\not\equiv| & \verb|<not>...<equivalent/>...</not>| & \ue{\verb|a\not\equiv b|} \\
 \verb|\approx| & \verb|<approx/>| & \ue{\verb|x\approx 1|} \\
 \verb|\not\approx| & \verb|<not>...<approx/>...</not>| & \ue{\verb|x\not\approx 1|} \\
-\verb.|. & \verb|<factorof/>| & \ue{\verb.a|b.} \\
-\verb.\not|. & \verb|<not>...<factorof/>...</not>| & \ue{\verb.a\not|b.} \\
+\verb|\mid| & \verb|<factorof/>| & \ue{\verb|a\mid b|} \\
+\verb|\not\mid| & \verb|<not>...<factorof/>...</not>| & \ue{\verb|a\not\mid b|} \\
 \verb|\in| & \verb|<in/>| & \ue{\verb|a\in A|} \\
 \verb|\not\in| & \verb|<notin/>| & \ue{\verb|a\not\in A|} \\
 \hline
@@ -107,7 +107,7 @@ LaTeX operator & Content MathML element & Example \\
 
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-LaTeX function & Arity & Invertible & Content MathML element & Example \\
+LaTeX function & Arity & Invertible & Content MathML element & Live Example \\
 \hline
 \verb|\sin| & unary & Yes & \verb|<sin/>| or \verb|<arcsin/>| & \ue{\verb|\sin x|} \\
 \verb|\cos| & unary & Yes & \verb|<cos/>| or \verb|<arccos/>| & \ue{\verb|\cos^{-1} 0|} \\
@@ -178,7 +178,7 @@ $\ldots$ & & & \\
 
 \begin{tabular}{|c|c|c|}
 \hline
-LaTeX symbol & Content MathML interpretation & Example \\
+LaTeX symbol & Content MathML interpretation & Live Example \\
 \hline
 \verb|\emptyset| & \verb|<emptyset/>| & \ue{\verb|A=\emptyset|} \\
 \verb|\infty| & \verb|<infinity/>| & \ue{\verb|x<\infty|} \\

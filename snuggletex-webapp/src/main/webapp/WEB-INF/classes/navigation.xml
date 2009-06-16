@@ -43,7 +43,6 @@ All Rights Reserved
       <node id="legacyWebPages" href="/documentation/legacy-web-pages.html" name="Creating Legacy Web Pages"/>
       <node id="stylesheets" href="/documentation/stylesheets.html" name="CSS Stylesheet Notes"/>
     </node>
-    <node id="configuration" href="/documentation/configuration.html" name="Configuration"/>
     <node id="errors" href="/documentation/error-reporting.html" name="Error Reporting">
       <node id="errorCodes" href="/documentation/error-codes.html" name="SnuggleTeX Error Codes"/>
     </node>
@@ -57,7 +56,7 @@ All Rights Reserved
     </node>
     <node id="advanced" href="/documentation/advanced-usage.html" name="Advanced Usage"/>
     <node id="upconversion" href="/documentation/semantic-upconversion.html" name="Semantic Up-Conversion">
-      <node id="pmathmlEnhancement" href="/documentation/pmathml-enhancement.html" name="Enhanced Presentation MathML"/>
+      <node id="pmathmlEnhancement" href="/documentation/pmathml-enhancement.html" name="Presentation MathML Enhancement"/>
       <node id="cmathml" href="/documentation/content-mathml.html" name="Generating Content MathML"/>
       <node id="maxima" href="/documentation/maxima-input.html" name="Generating Maxima Input"/>
       <node id="upconversionUsage" href="/documentation/upconversion-usage.html" name="Up-Conversion Usage"/>

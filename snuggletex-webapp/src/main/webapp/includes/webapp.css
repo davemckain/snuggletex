@@ -1,9 +1,8 @@
-/************************************************************/
-/* Main stylesheet for SnuggleTeX                           */
-/*                                                          */
-/* (This is just a slightly tweaked version of the one we   */
-/* use for the e-Learning microsite.)                       */
-/************************************************************/
+/*
+ * Main stylesheet for the SnuggleTeX webapp
+ *
+ * $Id$
+ */
 
 #content {
   padding: 0;
@@ -21,7 +20,7 @@
 #navigation {
   float: right;
   width: 27%;
-  font-size: small;
+  font-size: 80%;
   background-color: #f2d7da;
 }
 
@@ -33,8 +32,9 @@
   color: #f25c69;
   padding: 0;
   border-bottom: 1px solid #f25c69;
-  margin: 0 0 0.5em 0;
-  font: normal bold 130% Verdana,Sans-Serif;
+  margin: 0 0 0.2em 0;
+  font-weight: bold;
+  font-size: 120%;
 }
 
 #navinner h2 a:link, #navinner h2 a:visited {
@@ -72,7 +72,7 @@
 }
 
 #navinner a.selected {
-  color: #f25c69;
+  color: #f25c69 !important;
   font-weight: bold;
 }
 
@@ -81,9 +81,9 @@
 
 #maincontent {
   margin: 0 27% 0 0;
-  border-right: 1px dotted #f2d7da;
-  border-bottom: 1px dotted #f2d7da;
   background-color: white;
+  border: 1px solid white;
+  font-size: 90%;
 }
 
 #maininner {
@@ -96,18 +96,29 @@
 }
 
 #maininner h2 {
-  color: #232b5a;
+  color: #f25c69;
   margin-top: 0;
-  padding-top: 0;
-  font: normal bold 130% Sans-Serif;
+  padding: 0.5em;
+  font-weight: bold;
+  font-size: 150%;
+  background-color: #f2d7da;
+  -moz-border-radius: 0.5em;
 }
 
 #maininner h3 {
-  color: #232b5a;
+  color: black;
+  font-size: 140%;
+  padding: 0.1em 0;
+}
+
+#maininner h3 tt {
+  color: black;
 }
 
 #maininner h4 {
-  color: #0066cc;
+  color: #232b5a;
+  text-transform: uppercase;
+  font-size: 120%;
 }
 
 #maininner a:link {
@@ -118,11 +129,18 @@
   color: #736667;
 }
 
-#popup {
-  display: none;
+#maininner a:hover {
+  background-color: #ffeeee;
 }
 
 /************************************************************/
+
+tt, code {
+  font-family: Monospace;
+  font-size: 110%;
+  font-weight: bold;
+  color: #333366;
+}
 
 .warning {
   background-color: #f2d7da;
@@ -132,15 +150,31 @@
   -moz-border-radius: 1em;
 }
 
-pre.verbatim {
-  background-color: #f2d7da;
-  padding: 0.5em;
+pre.verbatim, .note, .result {
+  background-color: #dad7f2;
+  padding: 1em;
+  color: #333366;
+  border: 1px solid #333366;
+  -moz-border-radius: 1em;
 }
 
-.note, .result {
+form.input {
+  background-color: #ccffcc;
+  background-color: #f2d7da;
+  border: 2px solid black;
+  padding: 2em;
+  color: black;
   -moz-border-radius: 1em;
-  background-color: #dad7f2;
-  padding: 0.5em;
+  text-align: center;
+  font-size: larger;
+}
+
+form.input textarea, form.input input {
+  background-color: #ffeeee;
+}
+
+.error {
+  -moz-border-radius: 0.5em;
 }
 
 table.failures {
@@ -176,6 +210,10 @@ blockquote {
 
 /************************************************************/
 
+#popup {
+  display: none;
+}
+
 .ui-dialog .ui-dialog-content {
   padding: 0 !important;
 }
@@ -188,13 +226,13 @@ div.exampleResult {
   font-size: small;
 }
 
-.upconversionExample {
+a.upconversionExample {
+  display: block;
   padding: 0.3em;
-}
-
-.upconversionExample a {
-  text-decoration: none;
-  color: black;
+  text-align: center;
+  background-color: #eeeeee;
+  border: 1px solid #dddddd;
+  -moz-border-radius: 0.3em;
 }
 
 /************************************************************/
@@ -202,7 +240,7 @@ div.exampleResult {
 /* Override setting in main stylesheet */
 #copyright {
   background-color: white;
-  border: none;
+  border-top: 1px dotted #f2d7da;
   margin-top: 0;
   padding-top: 1em;
   font-size: smaller;

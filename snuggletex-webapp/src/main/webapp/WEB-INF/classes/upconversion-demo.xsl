@@ -41,13 +41,19 @@ All Rights Reserved
     <!-- Do input form -->
     <h3>Input</h3>
     <p>
-      Enter a LaTeX math mode expression
+      This demo lets you try out the experimental
+      <a href="documentation/semantic-upconversion.html">Semantic Up-Conversion</a>
+      process, converting simple LaTeX inputs to semantically richer Presentation MathML,
+      Content MathML and Maxima input syntax.
+    </p>
+    <p>
+      Simply enter a LaTeX math mode expression
       into the box below and hit <tt>Go!</tt> to see the resulting outputs.
     </p>
-    <form method="POST" id="inputForm">
-        LaTeX Math Mode Input: \[ <input id="input" name="input" type="text" value="{$latex-input}"/> \]
-        <input type="submit" value="Go!" />
-        <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />
+    <form method="post" class="input">
+      LaTeX Math Mode Input: <input id="input" name="input" type="text" value="{$latex-input}"/>
+      <input type="submit" value="Go!" />
+      <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />
     </form>
     <xsl:choose>
       <xsl:when test="$is-bad-input">
@@ -78,16 +84,28 @@ All Rights Reserved
     </div>
 
     <h3>Raw Presentation MathML</h3>
+    <p>
+      This is the Presentation MathML normally produced by SnuggleTeX:
+    </p>
     <pre class="result">
       <xsl:value-of select="$pmathml-initial"/>
     </pre>
 
     <h3>Enhanced Presentation MathML</h3>
+    <p>
+      This shows the result of attempting to infer semantics from the raw
+      Presentation MathML, as described in
+      <a href="documentation/pmathml-enhancement.html">Presentation MathML Enhancement</a>:
+    </p>
     <pre class="result">
       <xsl:value-of select="$pmathml-upconverted"/>
     </pre>
 
     <h3>Content MathML</h3>
+    <p>
+      This shows the result of an attempted
+      <a href="documentation/content-mathml.html">conversion to Content MathML</a>:
+    </p>
     <xsl:variable name="content-failures" as="element(s:fail)*" select="m:math/m:semantics/m:annotation-xml[@encoding='MathML-Content-upconversion-failures']/*"/>
     <xsl:choose>
       <xsl:when test="exists($content-failures)">
@@ -106,7 +124,11 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
 
-    <h3>Maxima Input Form</h3>
+    <h3>Maxima Input Syntax</h3>
+    <p>
+      This shows the result of an attempted
+      <a href="documentation/maxima-input.html">conversion to Maxima Input syntax</a>:
+    </p>
     <xsl:variable name="maxima-failures" as="element(s:fail)*" select="m:math/m:semantics/m:annotation-xml[@encoding='Maxima-upconversion-failures']/*"/>
     <xsl:choose>
       <xsl:when test="exists($content-failures)">
@@ -131,7 +153,11 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
 
-    <h3>Fully annotated MathML Element</h3>
+    <h3>MathML Parallel Markup</h3>
+    <p>
+      This shows the enhanced Presentation MathML with other forms encapsulated
+      as annotations:
+    </p>
     <pre class="result">
       <xsl:value-of select="$parallel-mathml"/>
     </pre>

@@ -29,7 +29,7 @@
 \newcommand{\ndemo}[2]{\verb|#1| & #1 & \note{#2} \\}
 \newcommand{\bigdemo}[1]{\begin{verbatim}#1\end{verbatim} & #1 \\}
 
-\section*{Text Escapes}
+\subsection*{Text Escapes}
 
 SnuggleTeX supports the usual commands for escaping characters that are normally
 special in LaTeX.
@@ -45,14 +45,14 @@ special in LaTeX.
 \ndemo{No\ break}{Produces a non-breaking space}
 \end{ndemotable}
 
-\section*{Text Spacing Commands}
+\subsection*{Text Spacing Commands}
 
 \begin{demotable}
 \demo{A\,B}
 \demo{A\hspace{2em}B}
 \end{demotable}
 
-\section*{Punctuation}
+\subsection*{Punctuation}
 
 \begin{ndemotable}
 \demo{`Single Quotes'}
@@ -67,7 +67,7 @@ special in LaTeX.
 \demo{|}
 \end{ndemotable}
 
-\section*{Lists}
+\subsection*{Lists}
 
 SnuggleTeX supports the {\tt itemize} and {\tt enumerate} environments.
 
@@ -82,7 +82,7 @@ SnuggleTeX supports the {\tt itemize} and {\tt enumerate} environments.
 \end{enumerate}}
 \end{demotable}
 
-\section*{Text Styling}
+\subsection*{Text Styling}
 
 These commands style text using the old TeX approach,
 causing the new style to be applied until the end of
@@ -100,7 +100,7 @@ the current level (i.e. closing curly bracket).
 \styledemo{\sf}
 \end{demotable}
 
-\section*{Newer Text Stylings}
+\subsection*{Newer Text Stylings}
 
 The following commands are similar but the styles apply to their
 arguments explicitly.
@@ -118,7 +118,7 @@ arguments explicitly.
 \textstyledemo{\emph}
 \end{demotable}
 
-\section*{Sizing Commands}
+\subsection*{Sizing Commands}
 
 The standard TeX sizing commands are supported. These apply until the
 end of the current level (i.e. closing curly bracket).
@@ -136,7 +136,7 @@ end of the current level (i.e. closing curly bracket).
 \styledemo{\Huge}
 \end{demotable}
 
-\section*{Text Mode Accents}
+\subsection*{Text Mode Accents}
 
 Applying accents to characters in XHTML is more difficult to implement than
 you might except as it usually requires remapping Unicode characters to their
@@ -162,7 +162,7 @@ the CSS is correctly used).
 \demo{\underline{a} et.\ al.}
 \end{demotable}
 
-\section{Miscellaneous Text-mode Symbols}
+\subsection*{Miscellaneous Text-mode Symbols}
 
 We also support the following basic text-mode symbols:
 

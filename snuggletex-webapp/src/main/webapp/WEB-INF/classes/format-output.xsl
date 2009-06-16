@@ -200,15 +200,14 @@ All Rights Reserved
 
   <!-- Up-conversion examples -->
   <xsl:template match="s:upConversionExample">
-    <!-- NB: Author uses \verb|...| to wrap input, which will have replaced spaces with nbsp, so need to undo
-    when producing the form to pass back as SnuggleTeX input -->
-    <!-- FIXME: Need to URI encode this as '+' is not being treated correctly!!! -->
+    <!-- NB: Author uses \verb|...| to wrap input, which will have replaced
+    spaces with nbsp, so need to undo when producing the form to pass back as
+    SnuggleTeX input -->
     <xsl:variable name="input" select="encode-for-uri(replace(., '&#xa0;', ' '))" as="xs:string"/>
-    <span class="upconversionExample ui-widget-content ui-corner-all">
-      <a class="dialog" title="{.}" href="{$context-path}/UpConversionExampleFragment?input={$input}">
-        <xsl:value-of select="."/>
-      </a>
-    </span>
+    <a class="upconversionExample dialog" title="{.}"
+        href="{$context-path}/UpConversionExampleFragment?input={$input}">
+      <code><xsl:value-of select="."/></code>
+    </a>
   </xsl:template>
 
   <!-- Fail if any other s:* element gets through, as I'm not expecting that to happen -->
