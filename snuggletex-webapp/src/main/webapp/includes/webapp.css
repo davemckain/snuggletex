@@ -176,6 +176,29 @@ blockquote {
 
 /************************************************************/
 
+.ui-dialog .ui-dialog-content {
+  padding: 0 !important;
+}
+
+.ui-tabs .ui-tabs-nav li {
+  font-size: smaller !important;
+}
+
+div.exampleResult {
+  font-size: small;
+}
+
+.upconversionExample {
+  padding: 0.3em;
+}
+
+.upconversionExample a {
+  text-decoration: none;
+  color: black;
+}
+
+/************************************************************/
+
 /* Override setting in main stylesheet */
 #copyright {
   background-color: white;

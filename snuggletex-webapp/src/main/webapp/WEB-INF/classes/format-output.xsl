@@ -204,9 +204,11 @@ All Rights Reserved
     when producing the form to pass back as SnuggleTeX input -->
     <!-- FIXME: Need to URI encode this as '+' is not being treated correctly!!! -->
     <xsl:variable name="input" select="encode-for-uri(replace(., '&#xa0;', ' '))" as="xs:string"/>
-    <a class="dialog" title="{.}" href="{$context-path}/UpConversionExampleFragment?input={$input}">
-      Example: <xsl:value-of select="."/>
-    </a>
+    <span class="upconversionExample ui-widget-content ui-corner-all">
+      <a class="dialog" title="{.}" href="{$context-path}/UpConversionExampleFragment?input={$input}">
+        <xsl:value-of select="."/>
+      </a>
+    </span>
   </xsl:template>
 
   <!-- Fail if any other s:* element gets through, as I'm not expecting that to happen -->

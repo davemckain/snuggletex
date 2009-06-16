@@ -3,7 +3,9 @@
 
 $Id: upconversion-demo.xsl 371 2009-05-25 21:11:40Z davemckain $
 
-Formats the little fragment containing up-conversion example results.
+Formats the mini pages containing up-conversion example results.
+(These are normally loaded using AJAX with most of the content thrown away,
+but we'll generated full pages here anyway as that can be useful.)
 
 Copyright (c) 2009 University of Edinburgh.
 All Rights Reserved
@@ -30,86 +32,113 @@ All Rights Reserved
   <xsl:param name="cmathml" as="xs:string?"/>
   <xsl:param name="maxima-input" as="xs:string?"/>
 
-  <!-- (We're going to throw away most of the surrounding HTML here!) -->
-  <xsl:template match="/">
-    <div class="exampleResult">
-      <xsl:choose>
-        <xsl:when test="$is-bad-input">
-          <!-- Bad input -->
-          <xsl:call-template name="handle-successful-input"/>
-        </xsl:when>
-        <xsl:when test="exists($parsing-errors)">
-          <!-- SnuggleTeX Parsing Error(s) -->
-          <xsl:call-template name="handle-failed-input"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <!-- Successful Parsing -->
-          <xsl:call-template name="handle-successful-input"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </div>
+  <xsl:template match="html">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <head>
+        <link rel="stylesheet" href="{$context-path}/includes/core.css" />
+        <link rel="stylesheet" href="{$context-path}/includes/webapp.css" />
+        <link rel="stylesheet" href="{$context-path}/includes/jquery-ui-1.7.2.custom.css" />
+        <script type="text/javascript" src="{$context-path}/includes/jquery.js"></script>
+        <script type="text/javascript" src="{$context-path}/includes/jquery-ui-1.7.2.custom.js"></script>
+        <script type="text/javascript" src="{$context-path}/includes/webapp.js"></script>
+        <script type="text/javascript">
+          $(document).ready(function() {
+              $(".exampleResult").tabs({
+              });
+          });
+        </script>
+      </head>
+      <body>
+        <div class="exampleResult">
+          <xsl:choose>
+            <xsl:when test="$is-bad-input">
+              <!-- Bad input -->
+              <xsl:call-template name="handle-successful-input"/>
+            </xsl:when>
+            <xsl:when test="exists($parsing-errors)">
+              <!-- SnuggleTeX Parsing Error(s) -->
+              <xsl:call-template name="handle-failed-input"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <!-- Successful Parsing -->
+              <xsl:call-template name="handle-successful-input"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </div>
+      </body>
+    </xsl:copy>
   </xsl:template>
 
   <xsl:template name="handle-successful-input">
-    <h3>Initial Presentation MathML</h3>
-    <pre class="result">
-      <xsl:value-of select="$pmathml-initial"/>
-    </pre>
-
-    <h3>Enhanced Presentation MathML</h3>
-    <pre class="result">
-      <xsl:value-of select="$pmathml-upconverted"/>
-    </pre>
-
-    <h3>Content MathML</h3>
     <xsl:variable name="mathml" as="element(m:math)" select="//m:math[1]"/>
     <xsl:variable name="content-failures" as="element(s:fail)*" select="$mathml/m:semantics/m:annotation-xml[@encoding='MathML-Content-upconversion-failures']/*"/>
-    <xsl:choose>
-      <xsl:when test="exists($content-failures)">
-        <p>
-          The conversion from Presentation MathML to Content MathML was not successful
-          for this input.
-        </p>
-        <xsl:call-template name="format-upconversion-failures">
-          <xsl:with-param name="failures" select="$content-failures"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <pre class="result">
-          <xsl:value-of select="$cmathml"/>
-        </pre>
-      </xsl:otherwise>
-    </xsl:choose>
-
-    <h3>Maxima Input Form</h3>
     <xsl:variable name="maxima-failures" as="element(s:fail)*" select="$mathml/m:semantics/m:annotation-xml[@encoding='Maxima-upconversion-failures']/*"/>
-    <xsl:choose>
-      <xsl:when test="exists($content-failures)">
-        <p>
-          Conversion to Maxima Input is reliant on the conversion to Content MathML
-          being successful, which was not the case here.
-        </p>
-      </xsl:when>
-      <xsl:when test="exists($maxima-failures)">
-        <p>
-          The conversion from Content MathML to Maxima Input was not successful for
-          this input.
-        </p>
-        <xsl:call-template name="format-upconversion-failures">
-          <xsl:with-param name="failures" select="$maxima-failures"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <pre class="result">
-          <xsl:value-of select="$maxima-input"/>
-        </pre>
-      </xsl:otherwise>
-    </xsl:choose>
-
-    <h3>Fully annotated MathML Element</h3>
-    <pre class="result">
-      <xsl:value-of select="$parallel-mathml"/>
-    </pre>
+    <!-- (We generate JQuery UI tabs microformat) -->
+    <ul>
+      <li><a href="#ex-parallel">Parallel Markup</a></li>
+      <li><a href="#ex-rpmathml">Raw PMathML</a></li>
+      <li><a href="#ex-epmathml">Enhanced PMathML</a></li>
+      <li><a href="#ex-cmathml">Content MathML</a></li>
+      <li><a href="#ex-maxima">Maxima</a></li>
+    </ul>
+    <div id="ex-parallel">
+      <pre>
+        <xsl:value-of select="$parallel-mathml"/>
+      </pre>
+    </div>
+    <div id="ex-rpmathml">
+      <pre>
+        <xsl:value-of select="$pmathml-initial"/>
+      </pre>
+    </div>
+    <div id="ex-epmathml">
+      <pre>
+        <xsl:value-of select="$pmathml-upconverted"/>
+      </pre>
+    </div>
+    <div id="ex-cmathml">
+      <xsl:choose>
+        <xsl:when test="exists($content-failures)">
+          <p>
+            The conversion from Presentation MathML to Content MathML was not successful
+            for this input.
+          </p>
+          <xsl:call-template name="format-upconversion-failures">
+            <xsl:with-param name="failures" select="$content-failures"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <pre>
+            <xsl:value-of select="$cmathml"/>
+          </pre>
+        </xsl:otherwise>
+      </xsl:choose>
+    </div>
+    <div id="ex-maxima">
+      <xsl:choose>
+        <xsl:when test="exists($content-failures)">
+          <p>
+            Conversion to Maxima Input is reliant on the conversion to Content MathML
+            being successful, which was not the case here.
+          </p>
+        </xsl:when>
+        <xsl:when test="exists($maxima-failures)">
+          <p>
+            The conversion from Content MathML to Maxima Input was not successful for
+            this input.
+          </p>
+          <xsl:call-template name="format-upconversion-failures">
+            <xsl:with-param name="failures" select="$maxima-failures"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <pre>
+            <xsl:value-of select="$maxima-input"/>
+          </pre>
+        </xsl:otherwise>
+      </xsl:choose>
+    </div>
   </xsl:template>
 
   <!-- Show SnuggleTeX failure details. -->

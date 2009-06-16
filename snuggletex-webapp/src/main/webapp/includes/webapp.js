@@ -12,9 +12,12 @@
 
 /* ============================================================ */
 
+var popup = null;
+
 $(document).ready(function() {
     /* Set up dialog box */
-    $("#popup").dialog({
+    popup = $("#popup");
+    popup.dialog({
       autoOpen: false,
       title: 'Example',
       width: 600,
@@ -22,12 +25,12 @@ $(document).ready(function() {
     });
     /* Attach handlers to dialog popups links */
     $(".dialog").bind("click", function(event) {
-        /* FIXME: The following code only lets the dialog appear once. Read the docs when back online! */
-        var popup = $("#popup");
-        popup.empty();
-        popup.load(this.href);
-        popup.dialog('option', 'title', 'Example: ' + this.getAttribute('title'));
-        popup.dialog('open');
+        var latexInput = this.getAttribute('title');
+        popup.load(this.href + " .exampleResult", null, function() {
+            $(".exampleResult").tabs();
+            popup.dialog('option', 'title', 'Example: ' + latexInput);
+            popup.dialog('open');
+        });
         return false;
     });
 });
