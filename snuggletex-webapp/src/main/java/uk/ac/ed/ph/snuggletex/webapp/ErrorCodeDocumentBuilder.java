@@ -31,8 +31,8 @@ public final class ErrorCodeDocumentBuilder {
     private static final Map<String, String> categoryHeadingMap;
     
     private static final String[] categoryData = {
-        "TTE", "Tokenisation Errors",
-        "TFE", "Token Fixing Errors",
+        "TTE", "LaTeX Parsing/Tokenisation Errors",
+        "TFE", "Token Fix-up Errors",
         "TDE", "DOM Building Errors",
         "UCE", "Failures during Up-Conversion to Content MathML",
         "UME", "Failures during Up-Conversion to Maxima syntax"
@@ -56,6 +56,9 @@ public final class ErrorCodeDocumentBuilder {
         outputWriter.println("\n(In the tables below, \\{0\\} et\\ al\\ are placeholders for details "
                 + "specific to each error instance that are substituted in when formatting error messages)");
         
+        /* We just loop over each ErrorCode. Note that I'm relying on the fact that they've
+         * been entered in a sensible order which makes grouping trivial here.
+         */
         String currentCategory = null;
         String category;
         String codeName;
@@ -69,7 +72,11 @@ public final class ErrorCodeDocumentBuilder {
                     outputWriter.println("\\end{tabular}");                    
                 }
                 currentCategory = category;
-                outputWriter.println("\n\\subsection*{" + category + ": " + categoryHeadingMap.get(category));
+                outputWriter.println("\n\\subsection*{"
+                        + category
+                        + "xxx: "
+                        + categoryHeadingMap.get(category)
+                        + "}");
                 outputWriter.println("\\begin{tabular}{|c|l|}\n\\hline");
             }
             outputWriter.println("\\anchor{"
