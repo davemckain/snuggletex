@@ -11,7 +11,7 @@
  \end{center}
 }
 
-\subsection*{Entering VERBATIM Mode}
+\subsection*{Entering verbatim Mode}
 
 SnuggleTeX supports the \verb|\verb| and \verb|\verb*| commands and the
 \texttt{verbatim} environments in the normal way. These allow you to
@@ -44,10 +44,10 @@ text without escaping but displays it as normal. \\
 \subsection*{Creating Verbatim Mode Commands and Environments}
 
 SnuggleTeX deviates from LaTeX in the way it allows Commands
-and Environments to be defined that support VERBATIM mode.
+and Environments to be defined that support verbatim mode.
 
 Commands and Environments created using \verb|\newcommand|,
-\verb|\newenvironment| and friends support VERBATIM mode insofar
+\verb|\newenvironment| and friends support verbatim mode insofar
 as you can do things like:
 
 \begin{verbatim}
@@ -66,7 +66,7 @@ but doesn't work the same way in LaTeX.
 
 On other other hand, there is no way to indicate that certain arguments
 of user-defined commands and environments should be themselves parsed in
-VERBATIM mode, which makes it difficult to define macros out of existing
+verbatim mode, which makes it difficult to define macros out of existing
 ones that do, such as the \verb|\href| command.
 
 If you need this type of functionality, you can use the SnuggleTeX API to

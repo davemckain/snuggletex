@@ -3,18 +3,19 @@
 SnuggleTeX 1.1.0 introduces experimental and limited support for generating
 more ``semantic'' outputs than its usual display-oriented Presentation MathML
 that some users might find interesting to play around with. This notion is
-referred to as ``up-converison'' in SnuggleTeX.
+referred to as ``up-conversion'' in SnuggleTeX.
 
 These features were added as part of SnuggleTeX's involvement in the
-JISC-funded MathAssess project concerned with enhancing existing computer-based
-assessment tools aimed at the educational sector for ``service level''
-mathematics teaching up to early undergraduate level in the United Kingdom.
+JISC-funded \href[MathAssess]{http://mathassess.ecs.soton.ac.uk/}
+project which was concerned with enhancing existing computer-based assessment
+tools aimed at the educational sector for ``service level'' mathematics
+teaching up to early undergraduate level in the United Kingdom.
 
-These features make it possible to:
+SnuggleTeX's up-conversion extensions make it possible to:
 
 \begin{itemize}
 
-\item Generate semantically richer \href[Enhanced Presentation MathML]{pmathml-enhancement.html} from certain SnuggleTeX inputs
+\item \href[Generate semantically richer Presentation MathML]{pmathml-enhancement.html} from certain SnuggleTeX inputs
 
 \item \href[Generate Content MathML]{content-mathml.html} from certain SnuggleTeX inputs
 
@@ -24,18 +25,19 @@ These features make it possible to:
 
 \end{itemize}
 
-It is important to qualify all of the above with phrases like ``limited'' and ``experimental''
-as it is indeed not possible to derive meaning from arbitrary LaTeX math inputs or arbitrary
-Presentation MathML expressions. This is not difficult to demonstrate. For
-example, written mathematical notations tend to be reused for different
-purposes and their correct interpretation relies on an understanding of the
-underlying context. For example, the symbol $e$ might refer to the exponential
-number in some cases whereas, it could also be the identity in a group or have
-a number of other meanings. Similarly, the expression $f(x+1)$ could well
-represent the application of the function $f$ to $x+1$, whereas it could also
-be the product of $f$ and $x+1$. A related difficulty is that mathmetical notations
-and conventions are often localised, with different countries favouring particular
-notations and symbolic conventions over others.
+It is important to qualify all of the above with phrases like ``limited'' and
+``experimental'' as it is generally not possible to derive meaning from
+arbitrary LaTeX math inputs or arbitrary Presentation MathML expressions. This
+is not difficult to demonstrate. For example, written mathematical notations
+tend to be reused for different purposes and their correct interpretation
+relies on an understanding of the underlying context. For example, the symbol
+$e$ might refer to the exponential number in some cases whereas, it could also
+be the identity in a group or have a number of other meanings. Similarly, the
+expression $f(x+1)$ could well represent the application of the function $f$ to
+$x+1$, whereas it could also be the product of $f$ and $x+1$. A related
+difficulty is that mathematical notations and conventions are often localised,
+with different countries favouring particular notations and symbolic
+conventions over others.
 
 \subsection*{Supported Input Forms}
 
@@ -45,7 +47,7 @@ using:
 \begin{itemize}
 \item ``Traditional'' UK notation and conventions
 \item Numbers and identifiers
-\item Symbols for basic arithmetic operators
+\item Familiar symbols for basic arithmetic operators
 \item Basic unary trigonometric, hyperbolic, logarithmic and exponential functions
 \item Some basic n-ary functions like \verb|min|, \verb|max|, \verb|gcd| etc.
 \item Implicit products and function arguments
@@ -61,16 +63,5 @@ using:
 You can play around with these ideas yourself using our
 \href[MathML Semantic Up-Conversion Demo]{/UpConversionDemo}.
 
-\subsection*{TODO}
-
-\upConversionExample{\verb|\frac{x}{y}|}
-
-{\bf This document is currently just a draft. It will be finished shortly\ldots}
-
-To write about...
-
-\begin{itemize}
-\item Failure handling
-\item Conventions followed
-\end{itemize}
-
+The pages describing the up-conversion process in more detail also have some
+pop-up examples showing the process in action.

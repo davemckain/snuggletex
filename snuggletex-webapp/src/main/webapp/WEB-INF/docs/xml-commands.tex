@@ -21,7 +21,7 @@ optional one to allow you to set XML attributes
   \item Namespace URI. This must be a valid URI, otherwise
     error \href[\verb|TDEX04|]{error-codes.html#TDEX04} will be recorded.
     (Note that this argument is parsed in LR mode
-    rather than \verb|VERBATIM| mode so as to allow you to
+    rather than \verb|verbatim| mode so as to allow you to
     parametrise it, if required.)
   \item Element qName (qualified name), which will be of
     the form \verb|prefix:localName| or just
@@ -65,7 +65,7 @@ It is sometimes useful to be able to enforce that a particular input
 is a valid XML name. This can be done with the \verb|\xmlName|
 and \verb|\xmlName*| commands. These both take a single argument and returns it
 unchanged, recording a \href[\verb|TDEX03|]{error-codes.html#TDEX03} error if the name is invalid.
-The \verb|\xmlName| parses its argument in VERBATIM Mode, saving users from
+The \verb|\xmlName| parses its argument in verbatim Mode, saving users from
 having to escape the underscore character. However, this also makes it
 impossible to dynamically evaluate the names. For this, you can use
 \verb|\xmlName*|, which parses its argument in LR Mode.

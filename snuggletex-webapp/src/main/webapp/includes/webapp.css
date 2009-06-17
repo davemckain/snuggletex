@@ -91,10 +91,6 @@
   overflow-x: auto;
 }
 
-#maininner p {
-  text-align: justify;
-}
-
 #maininner h2 {
   color: #f25c69;
   margin-top: 0;
