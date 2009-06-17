@@ -14,20 +14,33 @@ All Rights Reserved
   <formats>
     <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
+  <includeBaseDirectory>true</includeBaseDirectory>
   <moduleSets>
     <moduleSet>
       <includes>
-        <include>uk.ac.ed.ph.snuggletex:snuggletex-core</include>
-        <include>uk.ac.ed.ph.snuggletex:snuggletex-jeuclid</include>
-        <include>uk.ac.ed.ph.snuggletex:snuggletex-upconversion</include>
+        <!--
+        NOTE: I'm just including the snuggletex-webapp as that
+        has dependencies on all other built artifacts and includes
+        them at once. If I add other artifacts, the assembly process
+        adds them to the ZIP file multiple times, which is annoying.
+        -->
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-webapp</include>
       </includes>
       <binaries>
-        <outputDirectory>modules/${artifactId}</outputDirectory>
+        <outputDirectory>bin</outputDirectory>
         <includeDependencies>true</includeDependencies>
         <unpack>false</unpack>
       </binaries>
+    </moduleSet>
+    <moduleSet>
       <sources>
+        <includeModuleDirectory>false</includeModuleDirectory>
+        <fileSets>
+          <fileSet>
+            <directory>src</directory>
+            <outputDirectory>src/${module.artifactId}</outputDirectory>
+          </fileSet>
+        </fileSets>
       </sources>
     </moduleSet>
     <moduleSet>
@@ -39,7 +52,7 @@ All Rights Reserved
         <fileSets>
           <fileSet>
             <directory>target</directory>
-            <outputDirectory></outputDirectory>
+            <outputDirectory>dist</outputDirectory>
             <includes>
               <include>snuggletex.css</include>
             </includes>
