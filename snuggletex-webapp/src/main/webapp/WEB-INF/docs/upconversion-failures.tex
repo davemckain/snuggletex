@@ -45,7 +45,7 @@ revealing where the conversion to Content MathML failed:
 </math>
 \end{verbatim}
 
-The failure code(s) will all have the form \verb|UCExxx| when up-conversion
+The failure code(s) will all have the form \verb|UCFxxx| when up-conversion
 to Content MathML fails. These are listed in the
 \href[SnuggleTeX Error Codes]{error-codes.html} page. (Do however note that
 these are not reported the same way as parsing or DOM-building errors.)
@@ -97,7 +97,7 @@ This generates the following MathML:
 
 Here, the Maxima-related failures are contained within an
 \verb|<annotation-xml/>| element with encoding \verb|Maxima-upconversion-failures|
-and all have codes of the form \verb|UMExxx|.
+and all have codes of the form \verb|UMFxxx|.
 
 \subsection*{Extracting Up-Conversion Failure Information}
 
