@@ -26,8 +26,8 @@ public final class MathRelationOrBracketOperatorInterpretation implements MathOp
     private final BracketType bracketType;
     
     public MathRelationOrBracketOperatorInterpretation(final MathMLOperator operator,
-            final MathMLOperator partnerOperator, final MathMLOperator notOperator,
-            final BracketType bracketType) {
+            final MathMLOperator partnerOperator, final BracketType bracketType,
+            final MathMLOperator notOperator) {
         this.operator = operator;
         this.partnerOperator = partnerOperator;
         this.notOperator = notOperator;
