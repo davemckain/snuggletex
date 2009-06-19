@@ -107,7 +107,7 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
             );
         }
         
-        /* Log things nicely */
+        /* Log things nicely if input was specified by user */
         if (rawInputLaTeX!=null) {
             String xmlString = session.buildXMLString(options);
             List<InputError> errors = session.getErrors();

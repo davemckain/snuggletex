@@ -45,18 +45,14 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
     /** Location of XSLT controlling page layout */
     private static final String DISPLAY_XSLT_LOCATION = "classpath:/asciimathml-upconversion-demo.xsl";
     
-    /**
-     * Generate initial input form with some demo JavaScript.
-     */
+    /** Generates initial input form with some demo JavaScript. */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
         generatePage(request, response, true, null, null, null, null, null, null, null);
     }
     
-    /**
-     * Handle information obtained from ASCIIMathML.
-     */
+    /** Handles the posted raw input & PMathML extracted from ASCIIMathML. */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

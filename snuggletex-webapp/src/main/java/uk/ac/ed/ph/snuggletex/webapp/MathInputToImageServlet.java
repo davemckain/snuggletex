@@ -78,7 +78,7 @@ public final class MathInputToImageServlet extends BaseServlet {
              */
             session.createWebPage(options);
 
-            /* Generate appropriate result */
+            /* Generate appropriate result, logging bad things but staying silent otherwise */
             List<InputError> errors = session.getErrors();
             if (!errors.isEmpty()) {
                 logger.warn("Bad input: {}", inputLaTeX);

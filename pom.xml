@@ -25,6 +25,7 @@ All Rights Reserved
     <jeuclid.version>3.1.5</jeuclid.version>
     <saxon9.version>9.1.0.6</saxon9.version>
     <slf4j.version>1.5.6</slf4j.version>
+    <log4j.version>1.2.14</log4j.version>
     <maven.site.url>http://snuggletex.sourceforge.net/maven/</maven.site.url>
   </properties>
   <repositories>

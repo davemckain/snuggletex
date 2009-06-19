@@ -145,7 +145,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
             badInput = true;
         }
         
-        /* Log things nicely */
+        /* Log things nicely if input was specified by user */
         if (rawInputLaTeX!=null) {
             if (errors.isEmpty()) {
                 logger.info("Input: {}", inputLaTeX);
