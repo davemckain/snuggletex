@@ -18,7 +18,11 @@ All Rights Reserved
     <author email="david.mckain&#xa0;[at]&#xa0;ed.ac.uk">David McKain</author>
   </properties>
   <body>
-    <release version="1.1.0" date="2009-06-19" description="Version 1.1.0 (SVN revision 427)">
+    <release version="1.1.0" date="2009-06-19" description="Version 1.1.0 (SVN revision 428)">
+      <action dev="davemckain" type="update" date="2009-06-19">
+        Improved structure of the "full" distribution bundle, also fixing a couple of issues
+        with the way Maven was assembling it.
+      </action>
       <action dev="davemckain" type="update" date="2009-06-19">
         Renamed UCExxx and UMExxx error codes as UCFxxx and UMFxxx respectively, to
         reflect the fact that they are not handled as errors in the normal way.

@@ -52,7 +52,7 @@ All Rights Reserved
         <fileSets>
           <fileSet>
             <directory>target</directory>
-            <outputDirectory>dist</outputDirectory>
+            <outputDirectory>bin</outputDirectory>
             <includes>
               <include>snuggletex.css</include>
             </includes>
