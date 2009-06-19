@@ -28,14 +28,14 @@ x_1
 x[1]
 ====
 1_x
-!UMEG04
+!UMFG04
 ====
 x_{1,2}
 x[1,2]
 ====
 ## @ is currently treated as an identfier, which has no Maxima form
 @
-!UMEG03
+!UMFG03
 ====
 ## Binary equals
 x=y
@@ -194,13 +194,13 @@ log(y)
 ====
 ## Still need to decide what to do with these!
 \log x
-!UMEG01
+!UMFG01
 ====
 \log_a x
-!UMEG01
+!UMFG01
 ====
 \log
-!UMEG00
+!UMFG00
 ====
 (1,2)
 [1, 2]
@@ -293,7 +293,7 @@ units("kg")
 1 + (-(+(-x)))
 ====
 1+*x
-!UCEOP0
+!UCFOP0
 ====
 ## Other relations
 \not =
@@ -325,13 +325,13 @@ operator("not<")
 ====
 ## These aren't supported currently
 a \equiv b
-!UMEG01
+!UMFG01
 ====
 a \approx b
-!UMEG01
+!UMFG01
 ====
 \equiv
-!UMEG00
+!UMFG00
 ====
 ## Set theory stuff
 \cup
@@ -377,7 +377,7 @@ gcd
 gcd(x, y)
 ====
 \gcd(x)
-!UMEFX0
+!UMFFX0
 ====
 \lcm(x,y)
 lcm(x, y)
@@ -405,11 +405,11 @@ operator("+")
 ====
 ## 2 multiplied by nothing
 2{}
-!UMEOP0
+!UMFOP0
 ====
 ## This is not be best error here, but will do for the time being
 ^2
-!UMEOP0
+!UMFOP0
 ====
 ## Likewise. (This is currently the only way of obtaining operator("^"))
 {}^{}
@@ -420,9 +420,9 @@ operator("^")
 operator("/")
 ====
 \hbar
-!UMEG03
+!UMFG03
 ====
 ## Regression bug fix
 \hbar+1
-!UMEG03
+!UMFG03
 ====

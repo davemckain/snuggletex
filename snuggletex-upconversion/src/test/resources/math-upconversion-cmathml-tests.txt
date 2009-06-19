@@ -46,10 +46,10 @@ a=b=c
 </apply>
 ====
 3=
-!UCEOP4
+!UCFOP4
 ====
 =3
-!UCEOP4
+!UCFOP4
 ====
 +
 <plus/>
@@ -63,7 +63,7 @@ a=b=c
 ====
 ## Postfix plus makes no sense
 x+
-!UCEOP1
+!UCFOP1
 ====
 x+y
 <apply>
@@ -82,7 +82,7 @@ x+y
 </apply>
 ====
 x-
-!UCEOP2
+!UCFOP2
 ====
 x-y
 <apply>
@@ -116,10 +116,10 @@ x-y-z
 <times/>
 ====
 *1
-!UCEOP0
+!UCFOP0
 ====
 1*
-!UCEOP1
+!UCFOP1
 ====
 x\times y
 <apply>
@@ -139,10 +139,10 @@ x\times y
 </apply>
 ====
 /1
-!UCEOP0
+!UCFOP0
 ====
 1/
-!UCEOP2
+!UCFOP2
 ====
 a/b/c
 <apply>
@@ -442,7 +442,7 @@ x\,y\,z
 ====
 ## Inverse logs aren't allowed!
 \ln^{-1} x
-!UCEFN1
+!UCFFN1
 ====
 ## Unapplied elementary functions
 \sin
@@ -455,7 +455,7 @@ x\,y\,z
 ====
 ## Erroneous n-ary application of \sin
 \sin(x,y)
-!UCEFX2
+!UCFFX2
 ====
 \sin^{-1}
 <arcsin/>
@@ -573,7 +573,7 @@ x_1
 ====
 ## Mismatched fences
 \left( x \right]
-!UCEG02
+!UCFG02
 ====
 ## Round brackets with more than 1 element become vectors by default
 (1,2)
@@ -647,25 +647,25 @@ x_1
 </apply>
 ====
 1+*x
-!UCEOP0
+!UCFOP0
 ====
 x==y
-!UCEOP4
+!UCFOP4
 ====
 x==
-!UCEOP4
+!UCFOP4
 ====
 ==
-!UCEOP4
+!UCFOP4
 ====
 =!
-!UCEOP4
+!UCFOP4
 ====
 !!
-!UCEOP5
+!UCFOP5
 ====
 --
-!UCEOP2
+!UCFOP2
 ====
 x!
 <apply>
@@ -692,10 +692,10 @@ x!
 </apply>
 ====
 \neg \neg
-!UCEOP5
+!UCFOP5
 ====
 \neg \neg \neg
-!UCEOP5
+!UCFOP5
 ====
 A \land B \lor C
 <apply>
@@ -729,7 +729,7 @@ A \land \lnot B
 </apply>
 ====
 \land\land
-!UCEOP1
+!UCFOP1
 ====
 ## 2 or more relation operators at same level get converted into booleans and relations!
 1 < 2 = 3
@@ -754,7 +754,7 @@ A \land \lnot B
 <gt/>
 ====
 <<
-!UCEOP4
+!UCFOP4
 ====
 ## Notted relations
 \not =

@@ -299,7 +299,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:copy-of select="s:make-error('UMEOP0', ., ($operator))"/>
+            <xsl:copy-of select="s:make-error('UMFOP0', ., ($operator))"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
@@ -403,7 +403,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:choose>
       <xsl:when test="count($arguments)=1 and $function/@require-nary='true'">
         <!-- Fail: function cannot be used in a unary context -->
-        <xsl:copy-of select="s:make-error('UMEFX0', ., ($function/@maxima-function))"/>
+        <xsl:copy-of select="s:make-error('UMFFX0', ., ($function/@maxima-function))"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$function/@maxima-function"/>
@@ -450,7 +450,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:choose>
       <xsl:when test="count($arguments)=1 and $function/@require-nary='true'">
         <!-- Fail: function must be used in n-ary context -->
-        <xsl:copy-of select="s:make-error('UMEFX0', ., ($function/@maxima-function))"/>
+        <xsl:copy-of select="s:make-error('UMFFX0', ., ($function/@maxima-function))"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$function/@maxima-function"/>
@@ -473,7 +473,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <!-- Maxima doesn't actually support intervals! -->
   <xsl:template match="interval" mode="cmathml-to-maxima" as="element(s:fail)">
-    <xsl:copy-of select="s:make-error('UMEG02', ., ())"/>
+    <xsl:copy-of select="s:make-error('UMFG02', ., ())"/>
   </xsl:template>
 
   <xsl:template match="set" mode="cmathml-to-maxima" as="node()+">
@@ -557,7 +557,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
           </xsl:when>
           <xsl:otherwise>
             <!-- Fail: no suitable Maxima input form for identifier -->
-            <xsl:copy-of select="s:make-error('UMEG03', $element, ($name))"/>
+            <xsl:copy-of select="s:make-error('UMFG03', $element, ($name))"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -612,7 +612,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <xsl:template match="*" mode="ci-subscripted" as="node()">
     <xsl:param name="ci" as="element(ci)"/>
     <!-- Fail: cannot create subscripted variable -->
-    <xsl:copy-of select="s:make-error('UMEG04', $ci, ())"/>
+    <xsl:copy-of select="s:make-error('UMFG04', $ci, ())"/>
   </xsl:template>
 
   <!-- Don't know what to do in other cases -->
@@ -634,12 +634,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <!-- Catch-all for the <apply/> cases we can't or won't handle here -->
   <xsl:template match="apply" mode="cmathml-to-maxima" as="element(s:fail)">
-    <xsl:copy-of select="s:make-error('UMEG01', ., (local-name(*[1])))"/>
+    <xsl:copy-of select="s:make-error('UMFG01', ., (local-name(*[1])))"/>
   </xsl:template>
 
   <!-- Default catch-all for everything else -->
   <xsl:template match="*" mode="cmathml-to-maxima" as="element(s:fail)">
-    <xsl:copy-of select="s:make-error('UMEG00', ., (local-name(.)))"/>
+    <xsl:copy-of select="s:make-error('UMFG00', ., (local-name(.)))"/>
   </xsl:template>
 
 </xsl:stylesheet>

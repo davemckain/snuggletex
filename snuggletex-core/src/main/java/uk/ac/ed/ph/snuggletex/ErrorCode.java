@@ -103,30 +103,32 @@ public enum ErrorCode {
     TDEUN1(),
     TDEUN2(),
     
-    /* ================ Errors in the Up-conversion Process, via extension (U) =============== */
+    /* ================ Failures in the Up-conversion Process, via extension (U) =============== */
     
-    UCEG00(),
-    UCEG01(),
-    UCEG02(),
-    UCEOP0(),
-    UCEOP1(),
-    UCEOP2(),
-    UCEOP3(),
-    UCEOP4(),
-    UCEOP5(),
-    UCEFN0(),
-    UCEFN1(),
-    UCEFX0(),
-    UCEFX1(),
-    UCEFX2(),
+    /* Presentation to Content MathML Failures */
+    UCFG00(),
+    UCFG01(),
+    UCFG02(),
+    UCFOP0(),
+    UCFOP1(),
+    UCFOP2(),
+    UCFOP3(),
+    UCFOP4(),
+    UCFOP5(),
+    UCFFN0(),
+    UCFFN1(),
+    UCFFX0(),
+    UCFFX1(),
+    UCFFX2(),
     
-    UMEG00(),
-    UMEG01(),
-    UMEG02(),
-    UMEG03(),
-    UMEG04(),
-    UMEFX0(),
-    UMEOP0()
+    /* Content MathML to Maxima Failures */
+    UMFG00(),
+    UMFG01(),
+    UMFG02(),
+    UMFG03(),
+    UMFG04(),
+    UMFFX0(),
+    UMFOP0()
     
     ;
 }

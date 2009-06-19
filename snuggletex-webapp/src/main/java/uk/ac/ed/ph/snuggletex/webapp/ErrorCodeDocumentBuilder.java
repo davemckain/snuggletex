@@ -34,8 +34,8 @@ public final class ErrorCodeDocumentBuilder {
         "TTE", "LaTeX Parsing/Tokenisation Errors",
         "TFE", "Token Fix-up Errors",
         "TDE", "DOM Building Errors",
-        "UCE", "Failures during Up-Conversion to Content MathML",
-        "UME", "Failures during Up-Conversion to Maxima syntax"
+        "UCF", "Failures during Up-Conversion to Content MathML",
+        "UMF", "Failures during Up-Conversion to Maxima syntax"
     };
     
     static {

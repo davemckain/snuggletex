@@ -288,7 +288,7 @@ All Rights Reserved
       </xsl:when>
       <xsl:otherwise>
         <!-- Fail: unhandled group -->
-        <xsl:copy-of select="s:make-error('UCEG01', $elements, ())"/>
+        <xsl:copy-of select="s:make-error('UCFG01', $elements, ())"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -322,7 +322,7 @@ All Rights Reserved
         <xsl:choose>
           <xsl:when test="not($allow-unary)">
             <!-- Fail: operator is not a prefix operator -->
-            <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
+            <xsl:copy-of select="s:make-error('UCFOP0', ., ($cmathml-name))"/>
           </xsl:when>
           <xsl:otherwise>
             <!-- Legal prefix application -->
@@ -340,7 +340,7 @@ All Rights Reserved
         <xsl:variable name="content" as="element()*">
           <xsl:if test="count($elements) mod 2 = 0">
             <!-- Fail: Unsupported n-ary infix grouping -->
-            <xsl:copy-of select="s:make-error('UCEOP1', $elements, ($cmathml-name))"/>
+            <xsl:copy-of select="s:make-error('UCFOP1', $elements, ($cmathml-name))"/>
           </xsl:if>
           <xsl:for-each select="$elements">
             <xsl:variable name="i" as="xs:integer" select="position()"/>
@@ -350,7 +350,7 @@ All Rights Reserved
                 <xsl:choose>
                   <xsl:when test="local:is-matching-standard-operator(., $operator)">
                     <!-- Fail: (as above) -->
-                    <xsl:copy-of select="s:make-error('UCEOP1', $elements, ($cmathml-name))"/>
+                    <xsl:copy-of select="s:make-error('UCFOP1', $elements, ($cmathml-name))"/>
                   </xsl:when>
                   <xsl:otherwise>
                     <!-- Supported -->
@@ -364,7 +364,7 @@ All Rights Reserved
                 <!-- Even position, so expecting operator -->
                 <xsl:if test="not(local:is-matching-standard-operator(., $operator))">
                   <!-- Fail: (as above) -->
-                  <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
+                  <xsl:copy-of select="s:make-error('UCFOP4', $elements, ())"/>
                 </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
@@ -414,7 +414,7 @@ All Rights Reserved
         <xsl:choose>
           <xsl:when test="not($allow-unary)">
             <!-- Fail: operator is not a prefix operator -->
-            <xsl:copy-of select="s:make-error('UCEOP0', ., ($cmathml-name))"/>
+            <xsl:copy-of select="s:make-error('UCFOP0', ., ($cmathml-name))"/>
           </xsl:when>
           <xsl:otherwise>
             <!-- Legal prefix/unary application -->
@@ -429,11 +429,11 @@ All Rights Reserved
       </xsl:when>
       <xsl:when test="count($elements) &gt; 3">
         <!-- Fail: n-ary with n>2 not allowed -->
-        <xsl:copy-of select="s:make-error('UCEOP3', $elements, ($cmathml-name))"/>
+        <xsl:copy-of select="s:make-error('UCFOP3', $elements, ($cmathml-name))"/>
       </xsl:when>
       <xsl:when test="count($elements) &lt; 3 or $elements[position()!=2][local:is-operator(.)] or not($elements[2][local:is-matching-standard-operator(., $operator)])">
         <!-- Fail: bad grouping for binary operator -->
-        <xsl:copy-of select="s:make-error('UCEOP2', $elements, ($cmathml-name))"/>
+        <xsl:copy-of select="s:make-error('UCFOP2', $elements, ($cmathml-name))"/>
       </xsl:when>
       <xsl:otherwise>
         <!-- This is type (1) as outlined above -->
@@ -497,7 +497,7 @@ All Rights Reserved
         <xsl:variable name="paired" as="element()+">
           <xsl:if test="count($elements) mod 2 = 0">
             <!-- Fail: Relation operators must be strictly infix -->
-            <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
+            <xsl:copy-of select="s:make-error('UCFOP4', $elements, ())"/>
           </xsl:if>
           <xsl:for-each select="$elements">
             <xsl:variable name="i" as="xs:integer" select="position()"/>
@@ -506,7 +506,7 @@ All Rights Reserved
                 <!-- Odd position, so expecting operand -->
                 <xsl:if test="local:is-relation-operator(.)">
                   <!-- Fail: Relation operators must be strictly infix -->
-                  <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
+                  <xsl:copy-of select="s:make-error('UCFOP4', $elements, ())"/>
                 </xsl:if>
               </xsl:when>
               <xsl:otherwise>
@@ -514,7 +514,7 @@ All Rights Reserved
                 <xsl:choose>
                   <xsl:when test="not(local:is-relation-operator(.))">
                     <!-- Fail: Relation operators must be strictly infix -->
-                    <xsl:copy-of select="s:make-error('UCEOP4', $elements, ())"/>
+                    <xsl:copy-of select="s:make-error('UCFOP4', $elements, ())"/>
                   </xsl:when>
                   <xsl:otherwise>
                     <!-- Group what came before and what comes after -->
@@ -637,11 +637,11 @@ All Rights Reserved
         <xsl:choose>
           <xsl:when test="not($elements[2][self::mo and .='&#x2061;'])">
             <!-- Fail (unlikely): Expected "apply function" operator as second element -->
-            <xsl:copy-of select="s:make-error('UCEFX0', $elements, ())"/>
+            <xsl:copy-of select="s:make-error('UCFFX0', $elements, ())"/>
           </xsl:when>
           <xsl:when test="not(exists($elements[3]))">
             <!-- Fail (unlikely): Nothing following "apply function" operator -->
-            <xsl:copy-of select="s:make-error('UCEFX1', $elements, ())"/>
+            <xsl:copy-of select="s:make-error('UCFFX1', $elements, ())"/>
           </xsl:when>
           <xsl:otherwise>
             <!-- This is really (2) or (3)! -->
@@ -664,7 +664,7 @@ All Rights Reserved
             <xsl:choose>
               <xsl:when test="count($operands) &gt; 1 and not($function/@nary='true')">
                 <!-- Fail: Function is not n-ary -->
-                <xsl:copy-of select="s:make-error('UCEFX2', $elements, ($function/local-name(), string(count($operands))))"/>
+                <xsl:copy-of select="s:make-error('UCFFX2', $elements, ($function/local-name(), string(count($operands))))"/>
               </xsl:when>
               <xsl:otherwise>
                 <!-- Do application -->
@@ -733,7 +733,7 @@ All Rights Reserved
               </xsl:when>
               <xsl:otherwise>
                 <!-- Fail: Function cannot be inverted -->
-                <xsl:copy-of select="s:make-error('UCEFN1', $operator-element, ($function))"/>
+                <xsl:copy-of select="s:make-error('UCFFN1', $operator-element, ($function))"/>
               </xsl:otherwise>
             </xsl:choose>
           </local:cmathml>
@@ -835,7 +835,7 @@ All Rights Reserved
         <xsl:choose>
           <xsl:when test="$operands[local:is-operator(.)]">
             <!-- Fail: bad combination of operators -->
-            <xsl:copy-of select="s:make-error('UCEOP5', $elements, ())"/>
+            <xsl:copy-of select="s:make-error('UCFOP5', $elements, ())"/>
           </xsl:when>
           <xsl:otherwise>
             <apply>
@@ -861,7 +861,7 @@ All Rights Reserved
       <xsl:when test="count($factorials)&gt;1">
         <!-- Too many factorials...
              Fail: Bad combination of operators -->
-        <xsl:copy-of select="s:make-error('UCEOP5', $elements, ())"/>
+        <xsl:copy-of select="s:make-error('UCFOP5', $elements, ())"/>
       </xsl:when>
       <xsl:when test="count($elements)=2">
         <!-- Applied factorial -->
@@ -928,7 +928,7 @@ All Rights Reserved
   <!-- Failure fallback for other types of fences -->
   <xsl:template match="mfenced" mode="pmathml-to-cmathml" as="element(s:fail)">
     <!-- Failure: can't handle this type of fence -->
-    <xsl:copy-of select="s:make-error('UCEG02', ., (@open, @close))"/>
+    <xsl:copy-of select="s:make-error('UCFG02', ., (@open, @close))"/>
   </xsl:template>
 
   <!-- Numbers. TODO: Different notations? -->
@@ -1057,7 +1057,7 @@ All Rights Reserved
   <!-- Fallback for unsupported MathML elements -->
   <xsl:template match="*" mode="pmathml-to-cmathml" as="element(s:fail)">
     <!-- Failure: cannot up-convert this presentation MathML element -->
-    <xsl:copy-of select="s:make-error('UCEG00', ., ())"/>
+    <xsl:copy-of select="s:make-error('UCFG00', ., ())"/>
   </xsl:template>
 
 </xsl:stylesheet>
