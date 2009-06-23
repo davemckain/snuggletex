@@ -1385,7 +1385,7 @@ public final class LaTeXTokeniser {
         int argumentNumber = 1;
         if (command.isAllowingOptionalArgument()) {
             replacement = replacement.replace("#1",
-                    argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : "");
+                    argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : command.getOptionalArgument());
             argumentNumber++;
         }
         for (int i=0; i<argumentSearchResult.requiredArguments.length; i++) {
@@ -1408,7 +1408,7 @@ public final class LaTeXTokeniser {
      */
     static class UserDefinedCommandArgumentSearchResult {
         
-        /** Optional argument, null if not supported. */
+        /** Optional argument, null if not provided or not supported. */
         public CharSequence optionalArgument;
         
         /** Required arguments */
@@ -1433,7 +1433,7 @@ public final class LaTeXTokeniser {
      * @throws SnuggleParseException
      */
     private ErrorToken advanceOverUserDefinedCommandOrEnvironmentArguments(final CommandOrEnvironment commandOrEnvironment,
-            final UserDefinedCommandArgumentSearchResult result) throws SnuggleParseException {
+            UserDefinedCommandArgumentSearchResult result) throws SnuggleParseException {
         /* First of all see if we're expecting arguments and bail if not */
         if (commandOrEnvironment.getArgumentCount()==0 && !commandOrEnvironment.isAllowingOptionalArgument()) {
             result.optionalArgument = null;
@@ -1760,7 +1760,7 @@ public final class LaTeXTokeniser {
         int argumentNumber = 1;
         if (environment.isAllowingOptionalArgument()) {
               resolvedBegin = resolvedBegin.replace("#1",
-                      argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : "");
+                      argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : environment.getOptionalArgument());
               argumentNumber++;
         }
         for (int i=0; i<argumentSearchResult.requiredArguments.length; i++) {
@@ -1910,7 +1910,7 @@ public final class LaTeXTokeniser {
         /* Now create the new command */
         FrozenSlice definitionSlice = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
         UserDefinedCommand userCommand = new UserDefinedCommand(commandName,
-                argumentDefinitionResult.allowOptionalArgument,
+                argumentDefinitionResult.optionalArgument,
                 argumentDefinitionResult.requiredArgumentCount,
                 definitionSlice);
         
@@ -1990,7 +1990,7 @@ public final class LaTeXTokeniser {
         
         /* Now create new environment */
         UserDefinedEnvironment userEnvironment = new UserDefinedEnvironment(environmentName,
-                argumentDefinitionResult.allowOptionalArgument,
+                argumentDefinitionResult.optionalArgument,
                 argumentDefinitionResult.requiredArgumentCount,
                 definitionSlices[0], definitionSlices[1]);
         
@@ -2019,7 +2019,10 @@ public final class LaTeXTokeniser {
      * Trivial result Object for {@link LaTeXTokeniser#advanceOverUserDefinedCommandOrEnvironmentArgumentDefinition(String, ArgumentDefinitionResult)}
      */
     static final class ArgumentDefinitionResult {
-        public boolean allowOptionalArgument;
+        /** Optional argument, null if not supported */
+        public String optionalArgument;
+        
+        /** Number of required arguments */
         public int requiredArgumentCount;
     }
     
@@ -2028,7 +2031,7 @@ public final class LaTeXTokeniser {
      * the form:
      * <tt>[n]</tt>
      * OR
-     * <tt>[n][]</tt>.
+     * <tt>[n][opt]</tt>.
      * <p>
      * PRE-CONDITION: position should be set to just after <tt>\\newcommand{name}</tt>
      *   or <tt>\\newenvironment{name}</tt>
@@ -2053,10 +2056,10 @@ public final class LaTeXTokeniser {
          * Examples:
          * 
          * [2] -> no optional argument, 2 mandatory arguments
-         * [2][] -> 1 optional argument, 2-1=1 mandatory argument
+         * [2][opt] -> 1 optional argument, 2-1=1 mandatory argument
          */
-        int argCount = 0;
-        boolean allowOptArgs = false;
+        int requiredArgumentCount = 0;
+        String optionalArgument = null;
         int c = workingDocument.charAt(position);
         if (c=='[') {
             int afterOpenSquare = position + 1;
@@ -2068,27 +2071,27 @@ public final class LaTeXTokeniser {
             position = closeSquareIndex + 1; /* Move on to after ']' */
             String rawArgCount = workingDocument.extract(afterOpenSquare, closeSquareIndex).toString().trim();
             try {
-                argCount = Integer.parseInt(rawArgCount);
+                requiredArgumentCount = Integer.parseInt(rawArgCount);
             }
             catch (NumberFormatException e) {
                 /* Error: Not an integer! */
                 return createError(ErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
-            if (argCount<1 || argCount>9) {
+            if (requiredArgumentCount<1 || requiredArgumentCount>9) {
                 /* Error: Number of args must be between 1 and 9 inclusive */
                 return createError(ErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
             skipOverCommentsAndWhitespace();
             if (workingDocument.charAt(position)=='[') {
-                allowOptArgs = true;
-                argCount--;
+                requiredArgumentCount--;
                 closeSquareIndex = findEndSquareBrackets(position);
                 if (closeSquareIndex==-1) {
                     /* Error: no ']' found! */
                     return createError(ErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
                 }
+                optionalArgument = workingDocument.extract(position+1, closeSquareIndex).toString();
                 position = closeSquareIndex + 1; /* Move past ']' */
             }
         }
@@ -2097,8 +2100,8 @@ public final class LaTeXTokeniser {
         skipOverCommentsAndWhitespace();
         
         /* Fill in result and return null to indicate 'no error' */
-        result.allowOptionalArgument = allowOptArgs;
-        result.requiredArgumentCount = argCount;
+        result.optionalArgument = optionalArgument;
+        result.requiredArgumentCount = requiredArgumentCount;
         return null;
     }
     

@@ -132,13 +132,25 @@ Good
 \newcommand{\test}[2][]{Hello #1 #2}Good
 Good
 ====
+\newcommand{\test}[2][Sausage]{Hello #1 #2}Good
+Good
+====
 \newcommand{\test}[1]{Hello #1}\test{There}
 Hello There
 ====
 \newcommand{\test}[1][]{Hello #1}\test[There]
 Hello There
 ====
+\newcommand{\test}[1][]{Hello#1}\test
+Hello
+====
+\newcommand{\test}[1][There]{Hello #1}\test
+Hello There
+====
 \newcommand{\test}[2][]{Hello #1 #2}\test[You]{There}
+Hello You There
+====
+\newcommand{\test}[2][You]{Hello #1 #2}\test{There}
 Hello You There
 ====
 \newcommand{\test}[1]{Hello #1}\test{There} more text afterwards
@@ -216,6 +228,18 @@ BeginABeginBEndCEndD
 ====
 \newenvironment{test}[2]{#1 #2}{End}\begin{test}{A}{B}Hello\end{test}
 A BHelloEnd
+====
+\newenvironment{test}[2][]{#1#2}{End}\begin{test}[A]{B}Hello\end{test}
+ABHelloEnd
+====
+\newenvironment{test}[2][]{#1#2}{End}\begin{test}{B}Hello\end{test}
+BHelloEnd
+====
+\newenvironment{test}[2][A]{#1#2}{End}\begin{test}[C]{B}Hello\end{test}
+CBHelloEnd
+====
+\newenvironment{test}[2][A]{#1#2}{End}\begin{test}{B}Hello\end{test}
+ABHelloEnd
 ====
 \newenvironment{test}{A}{B}\renewenvironment{test}{C}{D}\begin{test}Hello\end{test}
 CHelloD

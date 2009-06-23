@@ -22,10 +22,10 @@ public final class UserDefinedEnvironment extends UserDefinedCommandOrEnvironmen
     private final FrozenSlice beginDefinitionSlice;
     private final FrozenSlice endDefinitionSlice;
     
-    public UserDefinedEnvironment(final String texName, final boolean allowingOptionalArgument,
+    public UserDefinedEnvironment(final String texName, final String optionalArgument,
             final int argumentCount, final FrozenSlice beginDefinitionSlice,
             final FrozenSlice endDefinitionSlice) {
-        super(texName, allowingOptionalArgument, argumentCount);
+        super(texName, optionalArgument, argumentCount);
         this.beginDefinitionSlice = beginDefinitionSlice;
         this.endDefinitionSlice = endDefinitionSlice;
     }

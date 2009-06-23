@@ -16,13 +16,17 @@ package uk.ac.ed.ph.snuggletex.definitions;
 abstract class UserDefinedCommandOrEnvironment implements CommandOrEnvironment {
  
     protected final String texName;
-    protected final boolean allowingOptionalArgument;
+    
+    /** Optional argument, which may be blank. null if not supported */
+    protected final String optionalArgument;
+    
+    /** Number of arguments */
     protected final int argumentCount;
     
-    public UserDefinedCommandOrEnvironment(final String texName, final boolean allowingOptionalArgument,
+    public UserDefinedCommandOrEnvironment(final String texName, final String optionalArgument,
             final int argumentCount) {
         this.texName = texName;
-        this.allowingOptionalArgument = allowingOptionalArgument;
+        this.optionalArgument = optionalArgument;
         this.argumentCount = argumentCount;
     }
 
@@ -31,7 +35,11 @@ abstract class UserDefinedCommandOrEnvironment implements CommandOrEnvironment {
     }
 
     public boolean isAllowingOptionalArgument() {
-        return allowingOptionalArgument;
+        return optionalArgument!=null;
+    }
+    
+    public String getOptionalArgument() {
+        return optionalArgument;
     }
 
     public int getArgumentCount() {

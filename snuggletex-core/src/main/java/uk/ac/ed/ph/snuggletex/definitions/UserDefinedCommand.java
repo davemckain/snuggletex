@@ -21,9 +21,9 @@ public final class UserDefinedCommand extends UserDefinedCommandOrEnvironment
  
     private final FrozenSlice definitionSlice;
     
-    public UserDefinedCommand(final String texName, final boolean allowingOptionalArgument,
+    public UserDefinedCommand(final String texName, final String optionalArgument,
             final int argumentCount, final FrozenSlice definitionSlice) {
-        super(texName, allowingOptionalArgument, argumentCount);
+        super(texName, optionalArgument, argumentCount);
         this.definitionSlice = definitionSlice;
     }
 
