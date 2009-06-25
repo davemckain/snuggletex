@@ -19,6 +19,10 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.1.1" date="TBC" description="Version 1.1.1 (SVN revision ???)">
+      <action dev="davemckain" type="add" date="2009-06-25">
+        Up-conversion process now includes an XPath expression within the <![CDATA[<s:fail/>]]>
+        element to help locate where the failure occurred.
+      </action>
       <action dev="davemckain" type="add" date="2009-06-23">
         Filled in gap in support for optional arguments in user-defined commands and
         environments.

@@ -81,6 +81,7 @@ All Rights Reserved
         <tr>
           <th>Failure Code</th>
           <th>Message</th>
+          <th>XPath</th>
           <th>Context</th>
         </tr>
       </thead>
@@ -93,6 +94,7 @@ All Rights Reserved
               </xsl:call-template>
             </td>
             <td><xsl:value-of select="@message"/></td>
+            <td><xsl:value-of select="s:xpath"/></td>
             <td>
               <pre>
                 <!--

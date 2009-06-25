@@ -65,6 +65,7 @@ public final class UpConversionUtilities {
         NodeList childNodes = sFailElement.getChildNodes();
         Node child;
         List<String> arguments = new ArrayList<String>();
+        String xPath = null;
         String context = null;
         for (int i=0, size=childNodes.getLength(); i<size; i++) {
             child = childNodes.item(i);
@@ -74,6 +75,12 @@ public final class UpConversionUtilities {
                 }
                 if (child.getLocalName().equals("arg")) {
                     arguments.add(XMLUtilities.extractTextElementValue((Element) child));
+                }
+                else if (child.getLocalName().equals("xpath")) {
+                    if (context!=null) {
+                        throw new SnuggleLogicException("Did not expect more than 1 <s:xpath/> element inside <s:fail/>");
+                    }
+                    xPath = XMLUtilities.extractTextElementValue((Element) child);
                 }
                 else if (child.getLocalName().equals("context")) {
                     if (context!=null) {
@@ -89,7 +96,7 @@ public final class UpConversionUtilities {
         if (context==null) {
             throw new SnuggleLogicException("No <s:context/> element found inside <s:fail/>");
         }
-        return new UpConversionFailure(errorCode, context, arguments.toArray(new String[arguments.size()]));
+        return new UpConversionFailure(errorCode, xPath, context, arguments.toArray(new String[arguments.size()]));
     }
     
     public static List<UpConversionFailure> extractUpConversionFailures(Document upConvertedDocument) {

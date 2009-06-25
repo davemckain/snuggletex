@@ -46,11 +46,19 @@ public final class UpConversionFailure implements Serializable {
     /** Any additional arguments about the error. These are interpolated into error messages */
     private final Object[] arguments;
     
+    /** 
+     * XPath String corresponding to the first error Element. This is given relative to the
+     * "top" of the original MathML (normally a <math/> Element but might be a <semantics/> or
+     * <annotation-xml/> and assumes that MathML namespace is the default.) 
+     */
+    private final String xPath;
+    
     /** Context within the MathML that the error occurred, as a serialized DOM subtree */
     private final String context;
     
-    public UpConversionFailure(final ErrorCode errorCode, final String context, final Object[] arguments) {
+    public UpConversionFailure(final ErrorCode errorCode, final String xPath, final String context, final Object[] arguments) {
         this.errorCode = errorCode;
+        this.xPath = xPath;
         this.context = context;
         this.arguments = arguments;
     }
@@ -63,6 +71,10 @@ public final class UpConversionFailure implements Serializable {
     public Object[] getArguments() {
         return arguments;
     }
+    
+    public String getXPath() {
+        return xPath;
+    }
 
     public String getContext() {
         return context;
@@ -73,6 +85,7 @@ public final class UpConversionFailure implements Serializable {
         return getClass().getName()
             + "(errorCode=" + errorCode
             + ",arguments=" + Arrays.toString(arguments)
+            + ",xPath=" + xPath
             + ",context=" + context
             + ")";
     }

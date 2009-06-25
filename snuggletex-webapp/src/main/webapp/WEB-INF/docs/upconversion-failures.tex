@@ -35,6 +35,7 @@ revealing where the conversion to Content MathML failed:
       <annotation-xml encoding="MathML-Content-upconversion-failures">
          <s:fail xmlns:s="http://www.ph.ed.ac.uk/snuggletex" code="UCFOP4"
                  message="Unsupported grouping of relation operators">
+            <s:xpath>mrow[1]/mo[1]</s:xpath>
             <s:context>
                <mo>=</mo>
                <mn>2</mn>
@@ -49,6 +50,12 @@ The failure code(s) will all have the form \verb|UCFxxx| when up-conversion
 to Content MathML fails. These are listed in the
 \href[SnuggleTeX Error Codes]{error-codes.html} page. (Do however note that
 these are not reported the same way as parsing or DOM-building errors.)
+
+The \verb|<s:context/>| indicates the problematic Presentation MathML Element(s)
+that this failure refers to, and the \verb|<s:xpath/>| gives the location of
+the first of these Elements relative to the root of the Presentation MathML as
+an XPath expression. (This expression assumes that the default namespace is the
+MathML namespace.)
 
 \subsection*{Failure to generate Maxima Input}
 
@@ -81,6 +88,7 @@ This generates the following MathML:
       <annotation-xml encoding="Maxima-upconversion-failures">
          <s:fail xmlns:s="http://www.ph.ed.ac.uk/snuggletex" code="UMFG04"
                  message="Cannot create subscripted variable">
+            <s:xpath>ci[1]</s:xpath>
             <s:context>
                <ci>
                   <msub>
@@ -99,10 +107,17 @@ Here, the Maxima-related failures are contained within an
 \verb|<annotation-xml/>| element with encoding \verb|Maxima-upconversion-failures|
 and all have codes of the form \verb|UMFxxx|.
 
+Similarly, the \verb|<s:context/>| indicates the problematic Content MathML Element(s)
+that this failure refers to, and the \verb|<s:xpath/>| gives the location of
+the first of these Elements relative to the root of the Content MathML as
+an XPath expression. (This expression assumes that the default namespace is the
+MathML namespace.)
+
+
 \subsection*{Extracting Up-Conversion Failure Information}
 
 You can extract details of any up-conversion failures from an annotated MathML
 \verb|Element| or \verb|Document| using the utility method
 \verb|UpConversionUtilities.extractUpConversionFailures()|. This returns
-a \verb|List| or \verb|UpConversionFailure| Objects than can be interrogated or
+a \verb|List| of \verb|UpConversionFailure| Objects than can be interrogated or
 converted to error messages.
