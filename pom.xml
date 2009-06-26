@@ -30,15 +30,11 @@ All Rights Reserved
   </properties>
   <repositories>
     <repository>
-      <id>www.ph.ed.ac.uk-snapshots</id>
+      <id>www.ph.ed.ac.uk</id>
       <url>http://www.ph.ed.ac.uk/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
-    <repository>
-      <id>www.ph.ed.ac.uk-releases</id>
-      <url>http://www.ph.ed.ac.uk/maven2</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -114,12 +110,11 @@ All Rights Reserved
   </issueManagement>
   <distributionManagement>
     <repository>
-      <!-- (This might change soon) -->
-      <id>www.ph.ed.ac.uk-releases</id>
+      <id>www.ph.ed.ac.uk</id>
       <url>file:///Disk/lust3/maven2</url>
     </repository>
     <snapshotRepository>
-      <id>www.ph.ed.ac.uk-snapshots</id>
+      <id>www.ph.ed.ac.uk</id>
       <url>file:///Disk/lust3/maven2</url>
     </snapshotRepository>
     <site>
