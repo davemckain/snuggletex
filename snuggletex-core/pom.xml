@@ -28,11 +28,6 @@ All Rights Reserved
             <include>**/*Test.java</include>
             <include>**/*Tests.java</include>
           </includes>
-          <!--
-          <excludes>
-            <exclude>**/testutil/**</exclude>
-          </excludes>
-          -->
         </configuration>
       </plugin>
       <!-- Builds snuggletex.css and stores in the build directory -->
