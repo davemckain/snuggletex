@@ -115,7 +115,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         else if (resultNodeList.getLength()==1 && MathMLUtilities.isMathMLElement(resultNodeList.item(0), "math")) {
             /* Result is a single <math/> element, which looks correct. */
             resultMathElement = (Element) resultNodeList.item(0);
-            resultMathML = MathMLUtilities.serializeElement(resultMathElement);
+            resultMathML = MathMLUtilities.serializeElement(resultMathElement, "ASCII");
         }
         else {
             /* This could have been caused by input like 'x \] hello \[ x', which would end

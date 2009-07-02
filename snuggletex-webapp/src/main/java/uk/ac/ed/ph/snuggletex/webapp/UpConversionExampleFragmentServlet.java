@@ -113,7 +113,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
              * might not have succeeded though.
              */
             mathElement = (Element) resultNodeList.item(0);
-            pMathMLInitial = MathMLUtilities.serializeElement(mathElement);
+            pMathMLInitial = MathMLUtilities.serializeElement(mathElement, "ASCII");
             
             /* Do up-conversion and extract wreckage */
             MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetCache());
