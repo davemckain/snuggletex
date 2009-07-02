@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+import uk.ac.ed.ph.snuggletex.definitions.CombinerTargetMatcher;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
@@ -33,6 +34,23 @@ import org.w3c.dom.Element;
  * @version $Revision$
  */
 public final class MathFenceHandler implements EnvironmentHandler {
+    
+    public static final class BracketCombinerTargetMatcher implements CombinerTargetMatcher {
+        public boolean isAllowed(FlowToken target) {
+            boolean isAllowed = false;
+            if (target.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
+                isAllowed = true;
+            }
+            else if (target.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                /* Check for special case of combiner being a '.', which signifies "no bracket" */
+                MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) target.getInterpretation(InterpretationType.MATH_OPERATOR);
+                if (operatorInterp.getOperator()==MathMLOperator.DOT) {
+                    isAllowed = true;
+                }
+            }
+            return isAllowed;
+        }
+    }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
@@ -110,15 +128,21 @@ public final class MathFenceHandler implements EnvironmentHandler {
         List<FlowToken> contents = argumentContainerToken.getContents();
         String result = null;
         if (!contents.isEmpty()) {
+            /* (Logic here follows the combiner logic above) */
             FlowToken bracketToken = contents.get(0);
             if (bracketToken.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
+                /* This is a proper bracket */
                 result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET)).getOperator().getOutput();
             }
-            else {
-                /* (Since this token is created only during token fixing, the following is a logic
-                 * failure rather than a client error.)
-                 */
-                throw new SnuggleLogicException("Expected to find a single bracket operator, or empty container");
+            else if (bracketToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                /* Check for special case of combiner being a '.', which signifies "no bracket" */
+                MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_OPERATOR);
+                if (operatorInterp.getOperator()==MathMLOperator.DOT) {
+                    result = "";
+                }
+            }
+            if (result==null) {
+                throw new SnuggleLogicException("Bracket combiner was not of the expected form");
             }
         }
         return result;

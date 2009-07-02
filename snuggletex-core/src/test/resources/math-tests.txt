@@ -279,6 +279,11 @@ a\not \in A
   <mi>x</mi>
 </mfenced>
 ====
+\left( x \right.
+<mfenced open='(' close=''>
+  <mi>x</mi>
+</mfenced>
+====
 \left( (1,2) \right)
 <mfenced open='(' close=')'>
   <mfenced open='(' close=')'>

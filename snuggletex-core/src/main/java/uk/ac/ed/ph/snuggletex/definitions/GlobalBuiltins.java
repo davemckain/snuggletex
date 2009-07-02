@@ -571,22 +571,7 @@ public final class GlobalBuiltins {
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.
          */
-        CombinerTargetMatcher bracketTargetMatcher = new CombinerTargetMatcher() {
-            public boolean isAllowed(FlowToken target) {
-                boolean isAllowed = false;
-                if (target.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
-                    isAllowed = true;
-                }
-                else if (target.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                    /* Check for special case of combiner being a '.', which signifies "no bracket" */
-                    MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) target.getInterpretation(InterpretationType.MATH_OPERATOR);
-                    if (operatorInterp.getOperator()==MathMLOperator.DOT) {
-                        isAllowed = true;
-                    }
-                }
-                return isAllowed;
-            }
-        };
+        CombinerTargetMatcher bracketTargetMatcher = new MathFenceHandler.BracketCombinerTargetMatcher();
         CMD_LEFT = map.addCombinerCommand("left", MATH_MODE_ONLY, bracketTargetMatcher, null, null);
         CMD_RIGHT = map.addCombinerCommand("right", MATH_MODE_ONLY, bracketTargetMatcher, null, null);
         
