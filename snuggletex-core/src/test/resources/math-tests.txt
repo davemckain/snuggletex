@@ -319,7 +319,7 @@ a\not \in A
 <mo>|</mo>
 ====
 \left< x \right>
-<mfenced open='&lt;' close='&gt;'>
+<mfenced open='&#x2329;' close='&#x232a;'>
   <mi>x</mi>
 </mfenced>
 ====
@@ -576,7 +576,7 @@ x/2
 <mn>2</mn>
 ====
 \left< 1 \right>
-<mfenced open="&lt;" close="&gt;">
+<mfenced open="&#x2329;" close="&#x232a;">
   <mn>1</mn>
 </mfenced>
 ====

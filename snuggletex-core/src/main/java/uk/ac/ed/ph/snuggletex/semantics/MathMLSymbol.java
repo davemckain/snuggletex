@@ -22,9 +22,7 @@ public interface MathMLSymbol {
     public static final String DOT = ".";
     
     public static final String LESS_THAN = "<";
-    public static final String OPEN_ANGLE_BRACKET = "<";
     public static final String GREATER_THAN = ">";
-    public static final String CLOSE_ANGLE_BRACKET = ">";
     public static final String OPEN_BRACKET = "(";
     public static final String CLOSE_BRACKET = ")";
     public static final String OPEN_CURLY_BRACKET = "{";
@@ -231,6 +229,8 @@ public interface MathMLSymbol {
     
     public static final String SMILE = "\u2323";
     public static final String FROWN = "\u2324";
+    public static final String OPEN_ANGLE_BRACKET = "\u2329";
+    public static final String CLOSE_ANGLE_BRACKET = "\u232a";
 
     public static final String BIGTRIANGLEUP = "\u25b3";
     public static final String TRIANGLE = "\u25b5";
