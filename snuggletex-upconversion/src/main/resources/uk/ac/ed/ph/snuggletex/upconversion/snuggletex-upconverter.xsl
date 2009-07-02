@@ -16,8 +16,9 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
+  xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s"
+  exclude-result-prefixes="xs s m"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <!-- ************************************************************ -->
@@ -105,67 +106,106 @@ All Rights Reserved
         if (starts-with($maxima-with-brackets, '(') and ends-with($maxima-with-brackets, ')'))
         then substring($maxima-with-brackets, 2, string-length($maxima-with-brackets) - 2)
         else $maxima-with-brackets"/>
-    <!-- Finally build up the resulting MathML -->
-    <math>
-      <xsl:copy-of select="@*"/>
-      <xsl:choose>
-        <xsl:when test="$s:do-content-mathml or $s:do-maxima or exists($annotations)">
-          <!-- We're definitely going to be doing annotations here! -->
-          <semantics>
-            <!-- Put in the enhanced Presentation MathML first -->
-            <xsl:call-template name="s:maybe-wrap-in-mrow">
-              <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
-            </xsl:call-template>
-            <!-- Maybe add Content MathML or failure annotation -->
-            <xsl:choose>
-              <xsl:when test="exists($cmathml-failures)">
-                <annotation-xml encoding="{$s:content-failures-annotation}">
-                  <xsl:copy-of select="$cmathml-failures"/>
-                </annotation-xml>
-              </xsl:when>
-              <xsl:when test="$s:do-content-mathml">
-                <annotation-xml encoding="{$s:content-mathml-annotation}">
-                  <xsl:copy-of select="$cmathml/*"/>
-                </annotation-xml>
-              </xsl:when>
-            </xsl:choose>
-            <!-- Copy existing annotations -->
-            <xsl:copy-of select="$annotations"/>
-            <!-- Copy any existing "SnuggleTeX" annotation as a "LaTeX" annotation -->
-            <xsl:if test="$annotations[self::annotation and @encoding=$s:snuggletex-annotation]">
-              <annotation encoding="{$s:latex-annotation}">
-                <xsl:value-of select="$annotations[self::annotation and @encoding=$s:snuggletex-annotation][1]"/>
-              </annotation>
-            </xsl:if>
-            <!-- Maybe add Maxima or failure annotation -->
-            <xsl:choose>
-              <xsl:when test="exists($maxima-failures)">
-                <annotation-xml encoding="{$s:maxima-failures-annotation}">
-                  <xsl:copy-of select="$maxima-failures"/>
-                </annotation-xml>
-              </xsl:when>
-              <xsl:when test="$s:do-maxima and not(exists($cmathml-failures))">
-                <annotation encoding="{$s:maxima-annotation}">
-                  <xsl:value-of select="$maxima"/>
+    <!-- Build up the resulting MathML math element -->
+    <xsl:variable name="result" as="element(math)">
+      <math>
+        <xsl:copy-of select="@*"/>
+        <xsl:choose>
+          <xsl:when test="$s:do-content-mathml or $s:do-maxima or exists($annotations)">
+            <!-- We're definitely going to be doing annotations here! -->
+            <semantics>
+              <!-- Put in the enhanced Presentation MathML first -->
+              <xsl:call-template name="s:maybe-wrap-in-mrow">
+                <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
+              </xsl:call-template>
+              <!-- Maybe add Content MathML or failure annotation -->
+              <xsl:choose>
+                <xsl:when test="exists($cmathml-failures)">
+                  <annotation-xml encoding="{$s:content-failures-annotation}">
+                    <xsl:copy-of select="$cmathml-failures"/>
+                  </annotation-xml>
+                </xsl:when>
+                <xsl:when test="$s:do-content-mathml">
+                  <annotation-xml encoding="{$s:content-mathml-annotation}">
+                    <xsl:copy-of select="$cmathml/*"/>
+                  </annotation-xml>
+                </xsl:when>
+              </xsl:choose>
+              <!-- Copy existing annotations -->
+              <xsl:copy-of select="$annotations"/>
+              <!-- Copy any existing "SnuggleTeX" annotation as a "LaTeX" annotation -->
+              <xsl:if test="$annotations[self::annotation and @encoding=$s:snuggletex-annotation]">
+                <annotation encoding="{$s:latex-annotation}">
+                  <xsl:value-of select="$annotations[self::annotation and @encoding=$s:snuggletex-annotation][1]"/>
                 </annotation>
+              </xsl:if>
+              <!-- Maybe add Maxima or failure annotation -->
+              <xsl:choose>
+                <xsl:when test="exists($maxima-failures)">
+                  <annotation-xml encoding="{$s:maxima-failures-annotation}">
+                    <xsl:copy-of select="$maxima-failures"/>
+                  </annotation-xml>
+                </xsl:when>
+                <xsl:when test="$s:do-maxima and not(exists($cmathml-failures))">
+                  <annotation encoding="{$s:maxima-annotation}">
+                    <xsl:value-of select="$maxima"/>
+                  </annotation>
+                </xsl:when>
+              </xsl:choose>
+            </semantics>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- All we did was enhance the PMathML and there are no annotations. For niceness,
+            we'll strip off a top-level <mrow/> if it is deemed to be redundant -->
+            <xsl:choose>
+              <xsl:when test="$enhanced-pmathml[count(*)=1 and *[1][self::mrow]]">
+                <xsl:copy-of select="$enhanced-pmathml/mrow/*"/>
               </xsl:when>
+              <xsl:otherwise>
+                <xsl:copy-of select="$enhanced-pmathml/*"/>
+              </xsl:otherwise>
             </xsl:choose>
-          </semantics>
-        </xsl:when>
-        <xsl:otherwise>
-          <!-- All we did was enhance the PMathML and there are no annotations. For niceness,
-          we'll strip off a top-level <mrow/> if it is deemed to be redundant -->
-          <xsl:choose>
-            <xsl:when test="$enhanced-pmathml[count(*)=1 and *[1][self::mrow]]">
-              <xsl:copy-of select="$enhanced-pmathml/mrow/*"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:copy-of select="$enhanced-pmathml/*"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:otherwise>
-      </xsl:choose>
-    </math>
+          </xsl:otherwise>
+        </xsl:choose>
+      </math>
+    </xsl:variable>
+    <!--
+    Finally we fix up the resulting MathML to make sure all MathML elements have the
+    same namespace prefix as the element originally matched.
+    -->
+    <xsl:choose>
+      <xsl:when test="name()!=local-name()">
+        <!-- A prefix is being used, so apply prefixes to all elements -->
+        <xsl:variable name="mathml-prefix" select="substring-before(name(), ':')" as="xs:string"/>
+        <xsl:apply-templates select="$result" mode="apply-prefixes">
+          <xsl:with-param name="prefix" select="$mathml-prefix"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- No prefixing, so just return result as-is -->
+        <xsl:copy-of select="$result"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="m:*" mode="apply-prefixes">
+    <xsl:param name="prefix" as="xs:string"/>
+    <xsl:element name="{concat($prefix, ':', local-name())}" namespace="http://www.w3.org/1998/Math/MathML">
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="apply-prefixes">
+        <xsl:with-param name="prefix" select="$prefix"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="node()" mode="apply-prefixes">
+    <xsl:param name="prefix" as="xs:string"/>
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="apply-prefixes">
+        <xsl:with-param name="prefix" select="$prefix"/>
+      </xsl:apply-templates>
+    </xsl:copy>
   </xsl:template>
 
 </xsl:stylesheet>
