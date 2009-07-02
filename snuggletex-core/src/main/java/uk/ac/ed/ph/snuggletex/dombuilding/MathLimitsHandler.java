@@ -12,7 +12,6 @@ import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -34,18 +33,17 @@ public final class MathLimitsHandler implements CommandHandler {
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
         /* Get the token to which the limit is being applied to, which is precisely the
-         * first argument
+         * first argument.
          */
         List<FlowToken> limitand = token.getArguments()[0].getContents(); /* Ha! */
         
         /* Decide whether we should do a munder/mover in preference to the more common
-         * msub/msup. This decision is made on whether the "limitand" is a single token
-         * comprising a certain type of Math operator.
+         * msub/msup. This decision is made on whether the "limitand" has been flagged
+         * as having a certain Interpretation.
          */ 
         boolean isUnderOver = builder.getOutputContext()==OutputContext.MATHML_BLOCK
             && limitand.size()==1
-            && limitand.get(0).hasInterpretationType(InterpretationType.MATH_OPERATOR)
-            && ((MathOperatorInterpretation) limitand.get(0).getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator().isLimitsUnderOrOver();
+            && limitand.get(0).hasInterpretationType(InterpretationType.MATH_BIG_LIMIT_OWNER);
         BuiltinCommand command = token.getCommand();
         String elementName;
         if (command.equals(GlobalBuiltins.CMD_MSUB_OR_MUNDER)) {

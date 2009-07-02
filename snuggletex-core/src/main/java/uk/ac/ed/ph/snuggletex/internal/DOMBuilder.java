@@ -25,7 +25,6 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -434,7 +433,7 @@ public final class DOMBuilder {
         }
         else if (interpretationMap.containsKey(InterpretationType.MATH_OPERATOR)) {
             MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) interpretationMap.get(InterpretationType.MATH_OPERATOR);
-            appendMathMLOperatorElement(parentElement, operatorInterp.getOperator());
+            appendMathMLOperatorElement(parentElement, operatorInterp.getMathMLOperatorContent());
         }
         else if (interpretationMap.containsKey(InterpretationType.MATH_FUNCTION)) {
             MathFunctionInterpretation functionInterp = (MathFunctionInterpretation) interpretationMap.get(InterpretationType.MATH_FUNCTION);
@@ -506,15 +505,6 @@ public final class DOMBuilder {
         Element mspaceElement = appendMathMLElement(parentElement, "mspace");
         mspaceElement.setAttribute("width", width);
         return mspaceElement;
-    }
-    
-    public Element appendMathMLOperatorElement(Element parentElement, MathMLOperator operator) {
-        String output = operator.getOutput();
-        if (output!=null) {
-            return appendMathMLOperatorElement(parentElement, output);
-        }
-        throw new SnuggleLogicException("null operator " + operator
-                + " (probably placeholder) should have been sorted out earlier");   
     }
     
     public Element appendMathMLOperatorElement(Element parentElement, String content) {

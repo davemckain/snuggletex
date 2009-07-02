@@ -15,9 +15,9 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 
 import java.util.EnumMap;
@@ -54,6 +54,12 @@ public final class Globals {
     
     /** URN used in MathML -> XHTML to call up XML containing current CSS Properties */
     public static final String CSS_PROPERTIES_DOCUMENT_URN = "urn:snuggletex-css-properties";
+
+    /** Placeholder operator representing ^. This is replaced by an appropriate Command during token fixing */
+    public static final String SUP_PLACEHOLDER = "^";
+    
+    /** Placeholder operator representing ^. This is replaced by an appropriate Command during token fixing */
+    public static final String SUB_PLACEHOLDER = "_";
     
     public static final EnumSet<LaTeXMode> MATH_MODE_ONLY = EnumSet.of(MATH);
     public static final EnumSet<LaTeXMode> PARA_MODE_ONLY = EnumSet.of(PARAGRAPH);
@@ -72,23 +78,23 @@ public final class Globals {
      * has been flattened to make it easy to manage this code!
      */
     private static final Object[] mathCharacterData = new Object[] {
-       '_', new MathOperatorInterpretation(MathMLOperator.SUB),
-       '^', new MathOperatorInterpretation(MathMLOperator.SUPER),
-       '+', new MathOperatorInterpretation(MathMLOperator.ADD),
-       '-', new MathOperatorInterpretation(MathMLOperator.SUBTRACT),
-       '=', new MathOperatorInterpretation(MathMLOperator.EQUALS), new MathRelationInterpretation(MathMLOperator.EQUALS, MathMLOperator.NOT_EQUALS),
-       ',', new MathOperatorInterpretation(MathMLOperator.COMMA),
-       '/', new MathOperatorInterpretation(MathMLOperator.SLASH),
-       '*', new MathOperatorInterpretation(MathMLOperator.ASTERISK),
-       '!', new MathOperatorInterpretation(MathMLOperator.FACTORIAL),
-       '.', new MathOperatorInterpretation(MathMLOperator.DOT),
-       '(', new MathOperatorInterpretation(MathMLOperator.OPEN_BRACKET), new MathBracketInterpretation(MathMLOperator.OPEN_BRACKET, MathMLOperator.CLOSE_BRACKET, BracketType.OPENER, true),
-       ')', new MathOperatorInterpretation(MathMLOperator.CLOSE_BRACKET), new MathBracketInterpretation(MathMLOperator.CLOSE_BRACKET, MathMLOperator.OPEN_BRACKET, BracketType.CLOSER, true),
-       '[', new MathOperatorInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET), new MathBracketInterpretation(MathMLOperator.OPEN_SQUARE_BRACKET, MathMLOperator.CLOSE_SQUARE_BRACKET, BracketType.OPENER, true),
-       ']', new MathOperatorInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET), new MathBracketInterpretation(MathMLOperator.CLOSE_SQUARE_BRACKET, MathMLOperator.OPEN_SQUARE_BRACKET, BracketType.CLOSER, true),
-       '<', new MathOperatorInterpretation(MathMLOperator.LESS_THAN_OR_OPEN_ANGLE_BRACKET), new MathRelationInterpretation(MathMLOperator.LESS_THAN_OR_OPEN_ANGLE_BRACKET, MathMLOperator.NOT_LESS_THAN), new MathBracketInterpretation(MathMLOperator.LESS_THAN_OR_OPEN_ANGLE_BRACKET, MathMLOperator.GREATER_THAN_OR_CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
-       '>', new MathOperatorInterpretation(MathMLOperator.GREATER_THAN_OR_CLOSE_ANGLE_BRACKET), new MathRelationInterpretation(MathMLOperator.GREATER_THAN_OR_CLOSE_ANGLE_BRACKET, MathMLOperator.NOT_GREATER_THAN), new MathBracketInterpretation(MathMLOperator.GREATER_THAN_OR_CLOSE_ANGLE_BRACKET, MathMLOperator.LESS_THAN_OR_OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
-       '|', new MathOperatorInterpretation(MathMLOperator.VERT_BRACKET), new MathBracketInterpretation(MathMLOperator.VERT_BRACKET, MathMLOperator.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
+       '_', new MathOperatorInterpretation(Globals.SUB_PLACEHOLDER),
+       '^', new MathOperatorInterpretation(Globals.SUP_PLACEHOLDER),
+       '+', new MathOperatorInterpretation(MathMLSymbol.ADD),
+       '-', new MathOperatorInterpretation(MathMLSymbol.SUBTRACT),
+       '=', new MathOperatorInterpretation(MathMLSymbol.EQUALS), new MathNegatableInterpretation(MathMLSymbol.NOT_EQUALS),
+       ',', new MathOperatorInterpretation(MathMLSymbol.COMMA),
+       '/', new MathOperatorInterpretation(MathMLSymbol.SLASH),
+       '*', new MathOperatorInterpretation(MathMLSymbol.ASTERISK),
+       '!', new MathOperatorInterpretation(MathMLSymbol.FACTORIAL),
+       '.', new MathOperatorInterpretation(MathMLSymbol.DOT),
+       '(', new MathOperatorInterpretation(MathMLSymbol.OPEN_BRACKET), new MathBracketInterpretation(MathMLSymbol.OPEN_BRACKET, BracketType.OPENER, true),
+       ')', new MathOperatorInterpretation(MathMLSymbol.CLOSE_BRACKET), new MathBracketInterpretation(MathMLSymbol.CLOSE_BRACKET, BracketType.CLOSER, true),
+       '[', new MathOperatorInterpretation(MathMLSymbol.OPEN_SQUARE_BRACKET), new MathBracketInterpretation(MathMLSymbol.OPEN_SQUARE_BRACKET, BracketType.OPENER, true),
+       ']', new MathOperatorInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET), new MathBracketInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET, BracketType.CLOSER, true),
+       '<', new MathOperatorInterpretation(MathMLSymbol.LESS_THAN), new MathNegatableInterpretation(MathMLSymbol.NOT_LESS_THAN), new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
+       '>', new MathOperatorInterpretation(MathMLSymbol.GREATER_THAN), new MathNegatableInterpretation(MathMLSymbol.NOT_GREATER_THAN), new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
+       '|', new MathOperatorInterpretation(MathMLSymbol.DIVIDES), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
     };
     
     private static final Map<Character, EnumMap<InterpretationType, Interpretation>> mathCharacterMap;
@@ -127,5 +133,6 @@ public final class Globals {
     public static EnumMap<InterpretationType, Interpretation> getMathCharacterInterpretationMap(char c) {
         return mathCharacterMap.get(Character.valueOf(c));
     }
+
 
 }

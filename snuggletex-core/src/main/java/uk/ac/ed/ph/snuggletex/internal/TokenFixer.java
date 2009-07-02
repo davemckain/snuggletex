@@ -12,12 +12,13 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
@@ -594,7 +595,7 @@ public final class TokenFixer {
     }
     
     /**
-     * Converts leading occurrences of {@link MathMLOperator#SUBTRACT} followed by a {@link MathNumberInterpretation}
+     * Converts leading occurrences of {@link MathMLSymbol#SUBTRACT} followed by a {@link MathNumberInterpretation}
      * into a single token representing the negation of the given number.
      * 
      * @param tokens
@@ -606,7 +607,7 @@ public final class TokenFixer {
         FlowToken firstToken = tokens.get(0);
         FlowToken secondToken = tokens.get(1);
         if (firstToken.hasInterpretationType(InterpretationType.MATH_OPERATOR) &&
-                ((MathOperatorInterpretation) firstToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator()==MathMLOperator.SUBTRACT
+                ((MathOperatorInterpretation) firstToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent()==MathMLSymbol.SUBTRACT
                 && secondToken.hasInterpretationType(InterpretationType.MATH_NUMBER)) {
             CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation(InterpretationType.MATH_NUMBER)).getNumber();
             SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
@@ -697,9 +698,8 @@ public final class TokenFixer {
         int size, startModifyIndex;
         FlowToken subOrSuperToken;
         FlowToken t1, t2, t3;
-        MathOperatorInterpretation tokenInterp;
-        MathMLOperator tokenOperator = null;
-        MathMLOperator followingOperator;
+        String tokenOperator = null;
+        String followingOperator;
         boolean isSubOrSuper;
         boolean firstIsSuper;
         for (int i=0; i<tokens.size(); i++) { /* NB: tokens.size() may decrease during this loop! */
@@ -708,9 +708,8 @@ public final class TokenFixer {
             firstIsSuper = false;
             isSubOrSuper = false;
             if (subOrSuperToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                tokenInterp = (MathOperatorInterpretation) subOrSuperToken.getInterpretation(InterpretationType.MATH_OPERATOR);
-                tokenOperator = tokenInterp.getOperator();
-                isSubOrSuper = tokenOperator==MathMLOperator.SUPER || tokenOperator==MathMLOperator.SUB;
+                tokenOperator = ((MathOperatorInterpretation) subOrSuperToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent();
+                isSubOrSuper = tokenOperator==Globals.SUP_PLACEHOLDER || tokenOperator==Globals.SUB_PLACEHOLDER;
             }
             if (!isSubOrSuper) {
                 continue;
@@ -741,8 +740,8 @@ public final class TokenFixer {
             t3 = null;
             followingOperator = null;
             if (i+2<size && tokens.get(i+2).hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                followingOperator = ((MathOperatorInterpretation) tokens.get(i+2).getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator();
-                if (followingOperator==MathMLOperator.SUPER || followingOperator==MathMLOperator.SUB) {
+                followingOperator = ((MathOperatorInterpretation) tokens.get(i+2).getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent();
+                if (followingOperator==Globals.SUP_PLACEHOLDER || followingOperator==Globals.SUB_PLACEHOLDER) {
                     /* OK, need to find the "T3" operator! */
                     if (i+3>=size) {
                         /* Trailing super/subscript */
@@ -753,8 +752,8 @@ public final class TokenFixer {
                     t3 = tokens.get(i+3);
                     
                     /* Make sure we've got the right pair of operators e.g. not something like T1^T2^T3 */
-                    if (tokenOperator==MathMLOperator.SUPER && followingOperator==MathMLOperator.SUPER
-                            || tokenOperator==MathMLOperator.SUB && followingOperator==MathMLOperator.SUB) {
+                    if (tokenOperator==Globals.SUP_PLACEHOLDER && followingOperator==Globals.SUP_PLACEHOLDER
+                            || tokenOperator==Globals.SUB_PLACEHOLDER && followingOperator==Globals.SUB_PLACEHOLDER) {
                         /* Double super/subscript */
                         tokens.set(i-1, createError(subOrSuperToken, ErrorCode.TFEM02));
                         tokens.subList(i, i+3).clear();
@@ -765,7 +764,7 @@ public final class TokenFixer {
             /* Now be build the replacements */
             FrozenSlice replacementSlice;
             BuiltinCommand replacementCommand;
-            firstIsSuper = tokenOperator==MathMLOperator.SUPER;
+            firstIsSuper = tokenOperator==Globals.SUP_PLACEHOLDER;
             if (t3!=null) {
                 /* Create replacement, replacing tokens at i-1,i+1,i+2 and i+3 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t3.getSlice());

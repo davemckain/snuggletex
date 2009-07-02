@@ -8,8 +8,8 @@ package uk.ac.ed.ph.snuggletex.semantics;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
- * Represents a mathematical function like sin, cos, etc. These are considered
- * identifiers in MathML but we consider them special here.
+ * Represents a mathematical function like sin, cos, etc. These are considered as
+ * identifiers in MathML but we will consider them slightly more special here.
  * 
  * @author  David McKain
  * @version $Revision$

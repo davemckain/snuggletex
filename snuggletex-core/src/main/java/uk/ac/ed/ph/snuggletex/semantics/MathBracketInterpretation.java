@@ -8,8 +8,7 @@ package uk.ac.ed.ph.snuggletex.semantics;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
- * Represents a mathematical bracket, specifying additional information on how it
- * can be paired up.
+ * Supplementary interpretation indicating that a certain operator is a MathML bracket.
  * 
  * @author  David McKain
  * @version $Revision$
@@ -21,9 +20,14 @@ public final class MathBracketInterpretation implements MathInterpretation {
         CLOSER,
         OPENER_OR_CLOSER
     }
+
+    /** 
+     * Content for resulting mfenced open/close attribute. This allows brackets
+     * to map to different open/close characters if they also have meaning as standalone operators,
+     * such as the '<' operator.
+     */
+    private final String mfencedAttributeContent;
     
-    private final MathMLOperator operator;
-    private final MathMLOperator partnerOperator;
     private final BracketType bracketType;
     
     /**
@@ -33,23 +37,17 @@ public final class MathBracketInterpretation implements MathInterpretation {
      */
     private final boolean pairingInferencePossible;
     
-    public MathBracketInterpretation(final MathMLOperator operator,
-            final MathMLOperator partnerOperator, final BracketType bracketType,
+    public MathBracketInterpretation(final String mfencedAttributeContent, final BracketType bracketType,
             final boolean pairingInferencePossible) {
-        this.operator = operator;
-        this.partnerOperator = partnerOperator;
+        this.mfencedAttributeContent = mfencedAttributeContent;
         this.bracketType = bracketType;
         this.pairingInferencePossible = pairingInferencePossible;
     }
     
-    public MathMLOperator getOperator() {
-        return operator;
+    public String getMfencedAttributeContent() {
+        return mfencedAttributeContent;
     }
-    
-    public MathMLOperator getPartnerOperator() {
-        return partnerOperator;
-    }
-    
+
     public BracketType getBracketType() {
         return bracketType;
     }

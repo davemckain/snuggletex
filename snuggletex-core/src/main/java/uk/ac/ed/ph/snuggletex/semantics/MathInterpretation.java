@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.semantics;
 
 /**
- * Base for math-specified semantic interpretations.
+ * Base for math-specific semantic interpretations.
  * 
  * @author  David McKain
  * @version $Revision:179 $

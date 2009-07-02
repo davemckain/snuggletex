@@ -32,8 +32,9 @@ public enum InterpretationType {
     /* The next ones are "supplementary" in that they generally accompany one of the above
      * Math Interpretations as well.
      */
-    MATH_RELATION,
+    MATH_NEGATABLE,
     MATH_BRACKET,
+    MATH_BIG_LIMIT_OWNER,
     
     ;
 }

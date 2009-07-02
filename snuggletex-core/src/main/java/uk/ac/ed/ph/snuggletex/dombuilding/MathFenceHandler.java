@@ -14,7 +14,7 @@ import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
@@ -44,7 +44,7 @@ public final class MathFenceHandler implements EnvironmentHandler {
             else if (target.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
                 /* Check for special case of combiner being a '.', which signifies "no bracket" */
                 MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) target.getInterpretation(InterpretationType.MATH_OPERATOR);
-                if (operatorInterp.getOperator()==MathMLOperator.DOT) {
+                if (operatorInterp.getMathMLOperatorContent()==MathMLSymbol.DOT) {
                     isAllowed = true;
                 }
             }
@@ -82,7 +82,7 @@ public final class MathFenceHandler implements EnvironmentHandler {
         List<FlowToken> groupBuilder = new ArrayList<FlowToken>();
         for (FlowToken contentToken : contentContainer) {
             if (contentToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)
-                    && ((MathOperatorInterpretation) contentToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator()==MathMLOperator.COMMA) {
+                    && ((MathOperatorInterpretation) contentToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent()==MathMLSymbol.COMMA) {
                 /* Found a comma, so add Node based on what's been found so far */
                 makeFenceGroup(builder, mfenced, groupBuilder);
                 groupBuilder.clear();
@@ -130,17 +130,20 @@ public final class MathFenceHandler implements EnvironmentHandler {
         if (!contents.isEmpty()) {
             /* (Logic here follows the combiner logic above) */
             FlowToken bracketToken = contents.get(0);
-            if (bracketToken.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
-                /* This is a proper bracket */
-                result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET)).getOperator().getOutput();
-            }
-            else if (bracketToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                /* Check for special case of combiner being a '.', which signifies "no bracket" */
-                MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_OPERATOR);
-                if (operatorInterp.getOperator()==MathMLOperator.DOT) {
-                    result = "";
+            if (bracketToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                MathOperatorInterpretation mathOperatorInterp = (MathOperatorInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_OPERATOR);
+                if (bracketToken.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
+                    /* This is a proper bracket */
+                    result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET)).getMfencedAttributeContent();
+                }
+                else if (bracketToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                    /* Check for special case of combiner being a '.', which signifies "no bracket" */
+                    if (mathOperatorInterp.getMathMLOperatorContent()==MathMLSymbol.DOT) {
+                        result = "";
+                    }
                 }
             }
+
             if (result==null) {
                 throw new SnuggleLogicException("Bracket combiner was not of the expected form");
             }

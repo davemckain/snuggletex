@@ -59,9 +59,10 @@ import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
+import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -143,12 +144,12 @@ public final class GlobalBuiltins {
         map.addSimpleCommand("&", ALL_MODES, new CharacterCommandHandler("&"), ALLOW_INLINE);
         map.addSimpleCommand("_", ALL_MODES, new CharacterCommandHandler("_"), ALLOW_INLINE);
         map.addSimpleCommand("{", ALL_MODES, new Interpretation[] {
-                new MathOperatorInterpretation(MathMLOperator.OPEN_CURLY_BRACKET),
-                new MathBracketInterpretation(MathMLOperator.OPEN_CURLY_BRACKET, MathMLOperator.CLOSE_CURLY_BRACKET, BracketType.OPENER, true),                
+                new MathOperatorInterpretation(MathMLSymbol.OPEN_CURLY_BRACKET),
+                new MathBracketInterpretation(MathMLSymbol.OPEN_CURLY_BRACKET, BracketType.OPENER, true),                
             }, new ModeDelegatingHandler(new CharacterCommandHandler("{"), new InterpretableSimpleMathHandler()), null);
         map.addSimpleCommand("}", ALL_MODES, new Interpretation[] {
-                new MathOperatorInterpretation(MathMLOperator.CLOSE_CURLY_BRACKET),
-                new MathBracketInterpretation(MathMLOperator.CLOSE_CURLY_BRACKET, MathMLOperator.OPEN_CURLY_BRACKET, BracketType.CLOSER, true),                
+                new MathOperatorInterpretation(MathMLSymbol.CLOSE_CURLY_BRACKET),
+                new MathBracketInterpretation(MathMLSymbol.CLOSE_CURLY_BRACKET, BracketType.CLOSER, true),                
             }, new ModeDelegatingHandler(new CharacterCommandHandler("}"), new InterpretableSimpleMathHandler()), null);
         map.addSimpleCommand(",", ALL_MODES, new SpaceHandler("\u2009", "0.167em"), ALLOW_INLINE); /* Thin space, all modes */
         map.addSimpleCommand(":", MATH_MODE_ONLY, new SpaceHandler(null, "0.222em"), null); /* Medium space, math only */
@@ -201,7 +202,6 @@ public final class GlobalBuiltins {
         
         /* We'll support the usual LaTeX sectioning commands...
          * 
-         * TODO: Decide whether to support traditional LaTeX labelling or not.
          * TODO: Decide whether to support traditional LaTeX numbering or not.
          */
         map.addComplexCommandOneArg("section", false, PARA_MODE_ONLY, LR, new SimpleXHTMLContainerBuildingHandler("h2"), START_NEW_XHTML_BLOCK);
@@ -279,8 +279,8 @@ public final class GlobalBuiltins {
         // Math Mode stuff (see LaTeX Companion pp39-52)
         
         /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
-        CMD_APPLY_FUNCTION = map.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLOperator.APPLY_FUNCTION));
-        CMD_INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new MathOperatorInterpretation(MathMLOperator.INVISIBLE_TIMES));
+        CMD_APPLY_FUNCTION = map.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLSymbol.APPLY_FUNCTION));
+        CMD_INVISIBLE_TIMES = map.addSimpleMathCommand("itimes", new MathOperatorInterpretation(MathMLSymbol.INVISIBLE_TIMES));
         
         /* Placeholders for corresponding MathML constructs. These are substituted from traditional LaTeX constructs
          * by {@link TokenFixer}.
@@ -311,51 +311,51 @@ public final class GlobalBuiltins {
         map.addComplexCommandSameArgMode("mathfrak", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.FRAKTUR), null);
         
         /* Ellipses (Math-mode only) */
-        map.addSimpleMathCommand("cdots", new MathIdentifierInterpretation("\u00b7\u00b7\u00b7"));
-        map.addSimpleMathCommand("vdots", new MathIdentifierInterpretation("\u22ee"));
-        map.addSimpleMathCommand("ddots", new MathIdentifierInterpretation("\u22f1"));
+        map.addSimpleMathCommand("cdots", new MathIdentifierInterpretation(MathMLSymbol.CDOTS));
+        map.addSimpleMathCommand("vdots", new MathIdentifierInterpretation(MathMLSymbol.VDOTS));
+        map.addSimpleMathCommand("ddots", new MathIdentifierInterpretation(MathMLSymbol.DDOTS));
         
         /* Greek letters (need turned into Unicode characters) */
-        map.addSimpleMathCommand("alpha", new MathIdentifierInterpretation("\u03b1"));
-        map.addSimpleMathCommand("beta", new MathIdentifierInterpretation("\u03b2"));
-        map.addSimpleMathCommand("gamma", new MathIdentifierInterpretation("\u03b3"));
-        map.addSimpleMathCommand("delta", new MathIdentifierInterpretation("\u03b4"));
-        map.addSimpleMathCommand("epsilon", new MathIdentifierInterpretation("\u03f5"));
-        map.addSimpleMathCommand("varepsilon", new MathIdentifierInterpretation("\u03b5"));
-        map.addSimpleMathCommand("zeta", new MathIdentifierInterpretation("\u03b6"));
-        map.addSimpleMathCommand("eta", new MathIdentifierInterpretation("\u03b7"));
-        map.addSimpleMathCommand("theta", new MathIdentifierInterpretation("\u03b8"));
-        map.addSimpleMathCommand("vartheta", new MathIdentifierInterpretation("\u03d1"));
-        map.addSimpleMathCommand("iota", new MathIdentifierInterpretation("\u03b9"));
-        map.addSimpleMathCommand("kappa", new MathIdentifierInterpretation("\u03ba"));
-        map.addSimpleMathCommand("lambda", new MathIdentifierInterpretation("\u03bb"));
-        map.addSimpleMathCommand("mu", new MathIdentifierInterpretation("\u03bc"));
-        map.addSimpleMathCommand("nu", new MathIdentifierInterpretation("\u03bd"));
-        map.addSimpleMathCommand("xi", new MathIdentifierInterpretation("\u03be"));
-        map.addSimpleMathCommand("pi", new MathIdentifierInterpretation("\u03c0"));
-        map.addSimpleMathCommand("varpi", new MathIdentifierInterpretation("\u03d6"));
-        map.addSimpleMathCommand("rho", new MathIdentifierInterpretation("\u03c1"));
-        map.addSimpleMathCommand("varrho", new MathIdentifierInterpretation("\u03f1"));
-        map.addSimpleMathCommand("sigma", new MathIdentifierInterpretation("\u03c3"));
-        map.addSimpleMathCommand("varsigma", new MathIdentifierInterpretation("\u03c2"));
-        map.addSimpleMathCommand("tau", new MathIdentifierInterpretation("\u03c4"));
-        map.addSimpleMathCommand("upsilon", new MathIdentifierInterpretation("\u03c5"));
-        map.addSimpleMathCommand("phi", new MathIdentifierInterpretation("\u03c6"));
-        map.addSimpleMathCommand("varphi", new MathIdentifierInterpretation("\u03d5"));
-        map.addSimpleMathCommand("chi", new MathIdentifierInterpretation("\u03c7"));
-        map.addSimpleMathCommand("psi", new MathIdentifierInterpretation("\u03c8"));
-        map.addSimpleMathCommand("omega", new MathIdentifierInterpretation("\u03c9"));
-        map.addSimpleMathCommand("Gamma", new MathIdentifierInterpretation("\u0393"));
-        map.addSimpleMathCommand("Delta", new MathIdentifierInterpretation("\u0394"));
-        map.addSimpleMathCommand("Theta", new MathIdentifierInterpretation("\u0398"));
-        map.addSimpleMathCommand("Lambda", new MathIdentifierInterpretation("\u039b"));
-        map.addSimpleMathCommand("Xi", new MathIdentifierInterpretation("\u039e"));
-        map.addSimpleMathCommand("Pi", new MathIdentifierInterpretation("\u03a0"));
-        map.addSimpleMathCommand("Sigma", new MathIdentifierInterpretation("\u03a3"));
-        map.addSimpleMathCommand("Upsilon", new MathIdentifierInterpretation("\u03a5"));
-        map.addSimpleMathCommand("Phi", new MathIdentifierInterpretation("\u03a6"));
-        map.addSimpleMathCommand("Psi", new MathIdentifierInterpretation("\u03a8"));
-        map.addSimpleMathCommand("Omega", new MathIdentifierInterpretation("\u03a9"));
+        map.addSimpleMathCommand("alpha", new MathIdentifierInterpretation(MathMLSymbol.ALPHA));
+        map.addSimpleMathCommand("beta", new MathIdentifierInterpretation(MathMLSymbol.BETA));
+        map.addSimpleMathCommand("gamma", new MathIdentifierInterpretation(MathMLSymbol.GAMMA));
+        map.addSimpleMathCommand("delta", new MathIdentifierInterpretation(MathMLSymbol.DELTA));
+        map.addSimpleMathCommand("epsilon", new MathIdentifierInterpretation(MathMLSymbol.EPSILON));
+        map.addSimpleMathCommand("varepsilon", new MathIdentifierInterpretation(MathMLSymbol.VAREPSILON));
+        map.addSimpleMathCommand("zeta", new MathIdentifierInterpretation(MathMLSymbol.ZETA));
+        map.addSimpleMathCommand("eta", new MathIdentifierInterpretation(MathMLSymbol.ETA));
+        map.addSimpleMathCommand("theta", new MathIdentifierInterpretation(MathMLSymbol.THETA));
+        map.addSimpleMathCommand("vartheta", new MathIdentifierInterpretation(MathMLSymbol.VARTHETA));
+        map.addSimpleMathCommand("iota", new MathIdentifierInterpretation(MathMLSymbol.IOTA));
+        map.addSimpleMathCommand("kappa", new MathIdentifierInterpretation(MathMLSymbol.KAPPA));
+        map.addSimpleMathCommand("lambda", new MathIdentifierInterpretation(MathMLSymbol.LAMBDA));
+        map.addSimpleMathCommand("mu", new MathIdentifierInterpretation(MathMLSymbol.MU));
+        map.addSimpleMathCommand("nu", new MathIdentifierInterpretation(MathMLSymbol.NU));
+        map.addSimpleMathCommand("xi", new MathIdentifierInterpretation(MathMLSymbol.XI));
+        map.addSimpleMathCommand("pi", new MathIdentifierInterpretation(MathMLSymbol.PI));
+        map.addSimpleMathCommand("varpi", new MathIdentifierInterpretation(MathMLSymbol.VARPI));
+        map.addSimpleMathCommand("rho", new MathIdentifierInterpretation(MathMLSymbol.RHO));
+        map.addSimpleMathCommand("varrho", new MathIdentifierInterpretation(MathMLSymbol.VARRHO));
+        map.addSimpleMathCommand("sigma", new MathIdentifierInterpretation(MathMLSymbol.SIGMA));
+        map.addSimpleMathCommand("varsigma", new MathIdentifierInterpretation(MathMLSymbol.VARSIGMA));
+        map.addSimpleMathCommand("tau", new MathIdentifierInterpretation(MathMLSymbol.TAU));
+        map.addSimpleMathCommand("upsilon", new MathIdentifierInterpretation(MathMLSymbol.UPSILON));
+        map.addSimpleMathCommand("phi", new MathIdentifierInterpretation(MathMLSymbol.PHI));
+        map.addSimpleMathCommand("varphi", new MathIdentifierInterpretation(MathMLSymbol.VARPHI));
+        map.addSimpleMathCommand("chi", new MathIdentifierInterpretation(MathMLSymbol.CHI));
+        map.addSimpleMathCommand("psi", new MathIdentifierInterpretation(MathMLSymbol.PSI));
+        map.addSimpleMathCommand("omega", new MathIdentifierInterpretation(MathMLSymbol.OMEGA));
+        map.addSimpleMathCommand("Gamma", new MathIdentifierInterpretation(MathMLSymbol.UC_GAMMA));
+        map.addSimpleMathCommand("Delta", new MathIdentifierInterpretation(MathMLSymbol.UC_DELTA));
+        map.addSimpleMathCommand("Theta", new MathIdentifierInterpretation(MathMLSymbol.UC_THETA));
+        map.addSimpleMathCommand("Lambda", new MathIdentifierInterpretation(MathMLSymbol.UC_LAMBDA));
+        map.addSimpleMathCommand("Xi", new MathIdentifierInterpretation(MathMLSymbol.UC_XI));
+        map.addSimpleMathCommand("Pi", new MathIdentifierInterpretation(MathMLSymbol.UC_PI));
+        map.addSimpleMathCommand("Sigma", new MathIdentifierInterpretation(MathMLSymbol.UC_SIGMA));
+        map.addSimpleMathCommand("Upsilon", new MathIdentifierInterpretation(MathMLSymbol.UC_UPSILON));
+        map.addSimpleMathCommand("Phi", new MathIdentifierInterpretation(MathMLSymbol.UC_PHI));
+        map.addSimpleMathCommand("Psi", new MathIdentifierInterpretation(MathMLSymbol.UC_PSI));
+        map.addSimpleMathCommand("Omega", new MathIdentifierInterpretation(MathMLSymbol.UC_OMEGA));
         
         /* Math "functions" (treated as identifiers in MathML) */
         map.addSimpleMathCommand("arccos", new MathFunctionInterpretation("arccos"));
@@ -407,166 +407,167 @@ public final class GlobalBuiltins {
         map.addSimpleMathCommand("arccoth", new MathFunctionInterpretation("arccoth"));
 
         /* Variable-sized symbols */
-        map.addSimpleMathCommand("sum", new MathOperatorInterpretation(MathMLOperator.SUM));
-        map.addSimpleMathCommand("prod", new MathOperatorInterpretation(MathMLOperator.PROD));
-        map.addSimpleMathCommand("coprod", new MathOperatorInterpretation(MathMLOperator.COPROD));
-        map.addSimpleMathCommand("int", new MathOperatorInterpretation(MathMLOperator.INTEGRAL));
-        map.addSimpleMathCommand("oint", new MathOperatorInterpretation(MathMLOperator.OINT));
-        map.addSimpleMathCommand("bigcap", new MathOperatorInterpretation(MathMLOperator.BIGCAP));
-        map.addSimpleMathCommand("bigcup", new MathOperatorInterpretation(MathMLOperator.BIGCUP));
-        map.addSimpleMathCommand("bigsqcup", new MathOperatorInterpretation(MathMLOperator.BIGSQCUP));
-        map.addSimpleMathCommand("bigvee", new MathOperatorInterpretation(MathMLOperator.BIGVEE));
-        map.addSimpleMathCommand("bigwedge", new MathOperatorInterpretation(MathMLOperator.BIGWEDGE));
-        map.addSimpleMathCommand("bigodot", new MathOperatorInterpretation(MathMLOperator.BIGODOT));
-        map.addSimpleMathCommand("bigotimes", new MathOperatorInterpretation(MathMLOperator.BIGOTIMES));
-        map.addSimpleMathCommand("bigoplus", new MathOperatorInterpretation(MathMLOperator.BIGOPLUS));
-        map.addSimpleMathCommand("biguplus", new MathOperatorInterpretation(MathMLOperator.BIGUPLUS));
+        MathBigLimitOwnerInterpretation bigLimitOwner = new MathBigLimitOwnerInterpretation();
+        map.addSimpleMathCommand("sum", new MathOperatorInterpretation(MathMLSymbol.SUM), bigLimitOwner);
+        map.addSimpleMathCommand("prod", new MathOperatorInterpretation(MathMLSymbol.PROD), bigLimitOwner);
+        map.addSimpleMathCommand("coprod", new MathOperatorInterpretation(MathMLSymbol.COPROD), bigLimitOwner);
+        map.addSimpleMathCommand("int", new MathOperatorInterpretation(MathMLSymbol.INTEGRAL));
+        map.addSimpleMathCommand("oint", new MathOperatorInterpretation(MathMLSymbol.OINT), bigLimitOwner);
+        map.addSimpleMathCommand("bigcap", new MathOperatorInterpretation(MathMLSymbol.BIGCAP), bigLimitOwner);
+        map.addSimpleMathCommand("bigcup", new MathOperatorInterpretation(MathMLSymbol.BIGCUP), bigLimitOwner);
+        map.addSimpleMathCommand("bigsqcup", new MathOperatorInterpretation(MathMLSymbol.BIGSQCUP), bigLimitOwner);
+        map.addSimpleMathCommand("bigvee", new MathOperatorInterpretation(MathMLSymbol.BIGVEE), bigLimitOwner);
+        map.addSimpleMathCommand("bigwedge", new MathOperatorInterpretation(MathMLSymbol.BIGWEDGE), bigLimitOwner);
+        map.addSimpleMathCommand("bigodot", new MathOperatorInterpretation(MathMLSymbol.BIGODOT), bigLimitOwner);
+        map.addSimpleMathCommand("bigotimes", new MathOperatorInterpretation(MathMLSymbol.BIGOTIMES), bigLimitOwner);
+        map.addSimpleMathCommand("bigoplus", new MathOperatorInterpretation(MathMLSymbol.BIGOPLUS), bigLimitOwner);
+        map.addSimpleMathCommand("biguplus", new MathOperatorInterpretation(MathMLSymbol.BIGUPLUS), bigLimitOwner);
         
         /* Binary operators */
-        map.addSimpleMathCommand("pm", new MathOperatorInterpretation(MathMLOperator.PM));
-        map.addSimpleMathCommand("mp", new MathOperatorInterpretation(MathMLOperator.MP));
-        map.addSimpleMathCommand("times", new MathOperatorInterpretation(MathMLOperator.TIMES));
-        map.addSimpleMathCommand("div", new MathOperatorInterpretation(MathMLOperator.DIV));
-        map.addSimpleMathCommand("ast", new MathOperatorInterpretation(MathMLOperator.AST));
-        map.addSimpleMathCommand("star", new MathOperatorInterpretation(MathMLOperator.STAR));
-        map.addSimpleMathCommand("circ", new MathOperatorInterpretation(MathMLOperator.CIRC));
-        map.addSimpleMathCommand("bullet", new MathOperatorInterpretation(MathMLOperator.BULLET));
-        map.addSimpleMathCommand("cdot", new MathOperatorInterpretation(MathMLOperator.CDOT));
-        map.addSimpleMathCommand("cap", new MathOperatorInterpretation(MathMLOperator.CAP));
-        map.addSimpleMathCommand("cup", new MathOperatorInterpretation(MathMLOperator.CUP));
-        map.addSimpleMathCommand("uplus", new MathOperatorInterpretation(MathMLOperator.UPLUS));
-        map.addSimpleMathCommand("sqcap", new MathOperatorInterpretation(MathMLOperator.SQCAP));
-        map.addSimpleMathCommand("sqcup", new MathOperatorInterpretation(MathMLOperator.SQCUP));
-        map.addSimpleMathCommand("vee", new MathOperatorInterpretation(MathMLOperator.VEE));
-        map.addSimpleMathCommand("lor", new MathOperatorInterpretation(MathMLOperator.VEE));
-        map.addSimpleMathCommand("wedge", new MathOperatorInterpretation(MathMLOperator.WEDGE));
-        map.addSimpleMathCommand("land", new MathOperatorInterpretation(MathMLOperator.WEDGE));
-        map.addSimpleMathCommand("setminus", new MathOperatorInterpretation(MathMLOperator.SETMINUS));
-        map.addSimpleMathCommand("wr", new MathOperatorInterpretation(MathMLOperator.WR));
-        map.addSimpleMathCommand("diamond", new MathOperatorInterpretation(MathMLOperator.DIAMOND));
-        map.addSimpleMathCommand("bigtriangleup", new MathOperatorInterpretation(MathMLOperator.BIGTRIANGLEUP));
-        map.addSimpleMathCommand("bigtriangledown", new MathOperatorInterpretation(MathMLOperator.BIGTRIANGLEDOWN));
-        map.addSimpleMathCommand("triangleleft", new MathOperatorInterpretation(MathMLOperator.TRIANGLELEFT));
-        map.addSimpleMathCommand("triangleright", new MathOperatorInterpretation(MathMLOperator.TRIANGLERIGHT));
-        map.addSimpleMathCommand("oplus", new MathOperatorInterpretation(MathMLOperator.OPLUS));
-        map.addSimpleMathCommand("ominus", new MathOperatorInterpretation(MathMLOperator.OMINUS));
-        map.addSimpleMathCommand("otimes", new MathOperatorInterpretation(MathMLOperator.OTIMES));
-        map.addSimpleMathCommand("oslash", new MathOperatorInterpretation(MathMLOperator.OSLASH));
-        map.addSimpleMathCommand("odot", new MathOperatorInterpretation(MathMLOperator.ODOT));
-        map.addSimpleMathCommand("bigcirc", new MathOperatorInterpretation(MathMLOperator.BIGCIRC));
-        map.addSimpleMathCommand("dagger", new MathOperatorInterpretation(MathMLOperator.DAGGER));
-        map.addSimpleMathCommand("ddagger", new MathOperatorInterpretation(MathMLOperator.DDAGGER));
-        map.addSimpleMathCommand("amalg", new MathOperatorInterpretation(MathMLOperator.AMALG));
-        map.addSimpleMathCommand("leq", new MathOperatorInterpretation(MathMLOperator.LEQ), new MathRelationInterpretation(MathMLOperator.LEQ, MathMLOperator.NOT_LEQ));
-        map.addSimpleMathCommand("le", new MathOperatorInterpretation(MathMLOperator.LEQ), new MathRelationInterpretation(MathMLOperator.LEQ, MathMLOperator.NOT_LEQ));
-        map.addSimpleMathCommand("prec", new MathOperatorInterpretation(MathMLOperator.PREC), new MathRelationInterpretation(MathMLOperator.PREC, MathMLOperator.NOT_PREC));
-        map.addSimpleMathCommand("preceq", new MathOperatorInterpretation(MathMLOperator.PRECEQ));
-        map.addSimpleMathCommand("ll", new MathOperatorInterpretation(MathMLOperator.LL));
-        map.addSimpleMathCommand("subset", new MathOperatorInterpretation(MathMLOperator.SUBSET), new MathRelationInterpretation(MathMLOperator.SUBSET, MathMLOperator.NOT_SUBSET));
-        map.addSimpleMathCommand("subseteq", new MathOperatorInterpretation(MathMLOperator.SUBSETEQ), new MathRelationInterpretation(MathMLOperator.SUBSETEQ, MathMLOperator.NOT_SUBSETEQ));
-        map.addSimpleMathCommand("sqsubset", new MathOperatorInterpretation(MathMLOperator.SQSUBSET));
-        map.addSimpleMathCommand("sqsubseteq", new MathOperatorInterpretation(MathMLOperator.SQSUBSETEQ), new MathRelationInterpretation(MathMLOperator.SQSUBSETEQ, MathMLOperator.NOT_SQSUBSETEQ));
-        map.addSimpleMathCommand("in", new MathOperatorInterpretation(MathMLOperator.IN), new MathRelationInterpretation(MathMLOperator.IN, MathMLOperator.NOT_IN));
-        map.addSimpleMathCommand("vdash", new MathOperatorInterpretation(MathMLOperator.VDASH), new MathRelationInterpretation(MathMLOperator.VDASH, MathMLOperator.NOT_VDASH));
-        map.addSimpleMathCommand("geq", new MathOperatorInterpretation(MathMLOperator.GEQ), new MathRelationInterpretation(MathMLOperator.GEQ, MathMLOperator.NOT_GEQ));
-        map.addSimpleMathCommand("ge", new MathOperatorInterpretation(MathMLOperator.GEQ), new MathRelationInterpretation(MathMLOperator.GEQ, MathMLOperator.NOT_GEQ));
-        map.addSimpleMathCommand("succ", new MathOperatorInterpretation(MathMLOperator.SUCC), new MathRelationInterpretation(MathMLOperator.SUCC, MathMLOperator.NOT_SUCC));
-        map.addSimpleMathCommand("succeq", new MathOperatorInterpretation(MathMLOperator.SUCCEQ));
-        map.addSimpleMathCommand("gg", new MathOperatorInterpretation(MathMLOperator.GG));
-        map.addSimpleMathCommand("supset", new MathOperatorInterpretation(MathMLOperator.SUPSET), new MathRelationInterpretation(MathMLOperator.SUPSET, MathMLOperator.NOT_SUPSET));
-        map.addSimpleMathCommand("supseteq", new MathOperatorInterpretation(MathMLOperator.SUPSETEQ), new MathRelationInterpretation(MathMLOperator.SUPSETEQ, MathMLOperator.NOT_SUPSETEQ));
-        map.addSimpleMathCommand("sqsupset", new MathOperatorInterpretation(MathMLOperator.SQSUPSET));
-        map.addSimpleMathCommand("sqsupseteq", new MathOperatorInterpretation(MathMLOperator.SQSUPSETEQ), new MathRelationInterpretation(MathMLOperator.SQSUPSETEQ, MathMLOperator.NOT_SQSUPSETEQ));
-        map.addSimpleMathCommand("ni", new MathOperatorInterpretation(MathMLOperator.NI), new MathRelationInterpretation(MathMLOperator.NI, MathMLOperator.NOT_NI));
-        map.addSimpleMathCommand("dashv", new MathOperatorInterpretation(MathMLOperator.DASHV));
-        map.addSimpleMathCommand("equiv", new MathOperatorInterpretation(MathMLOperator.EQUIV), new MathRelationInterpretation(MathMLOperator.EQUIV, MathMLOperator.NOT_EQUIV));
-        map.addSimpleMathCommand("sim", new MathOperatorInterpretation(MathMLOperator.SIM), new MathRelationInterpretation(MathMLOperator.SIM, MathMLOperator.NOT_SIM));
-        map.addSimpleMathCommand("simeq", new MathOperatorInterpretation(MathMLOperator.SIMEQ), new MathRelationInterpretation(MathMLOperator.SIMEQ, MathMLOperator.NOT_SIMEQ));
-        map.addSimpleMathCommand("asymp", new MathOperatorInterpretation(MathMLOperator.ASYMP));
-        map.addSimpleMathCommand("approx", new MathOperatorInterpretation(MathMLOperator.APPROX), new MathRelationInterpretation(MathMLOperator.APPROX, MathMLOperator.NOT_APPROX));
-        map.addSimpleMathCommand("cong", new MathOperatorInterpretation(MathMLOperator.CONG), new MathRelationInterpretation(MathMLOperator.CONG, MathMLOperator.NOT_CONG));
-        map.addSimpleMathCommand("neq", new MathOperatorInterpretation(MathMLOperator.NOT_IN));
-        map.addSimpleMathCommand("doteq", new MathOperatorInterpretation(MathMLOperator.DOTEQ));
-        map.addSimpleMathCommand("notin", new MathOperatorInterpretation(MathMLOperator.NOT_IN));
-        map.addSimpleMathCommand("models", new MathOperatorInterpretation(MathMLOperator.MODELS));
-        map.addSimpleMathCommand("perp", new MathOperatorInterpretation(MathMLOperator.PERP));
-        map.addSimpleMathCommand("mid", new MathOperatorInterpretation(MathMLOperator.MID), new MathRelationInterpretation(MathMLOperator.MID, MathMLOperator.NOT_MID));
-        map.addSimpleMathCommand("parallel", new MathOperatorInterpretation(MathMLOperator.PARALLEL));
-        map.addSimpleMathCommand("bowtie", new MathOperatorInterpretation(MathMLOperator.BOWTIE));
-        map.addSimpleMathCommand("smile", new MathOperatorInterpretation(MathMLOperator.SMILE));
-        map.addSimpleMathCommand("frown", new MathOperatorInterpretation(MathMLOperator.FROWN));
-        map.addSimpleMathCommand("propto", new MathOperatorInterpretation(MathMLOperator.PROPTO));
+        map.addSimpleMathCommand("pm", new MathOperatorInterpretation(MathMLSymbol.PM));
+        map.addSimpleMathCommand("mp", new MathOperatorInterpretation(MathMLSymbol.MP));
+        map.addSimpleMathCommand("times", new MathOperatorInterpretation(MathMLSymbol.TIMES));
+        map.addSimpleMathCommand("div", new MathOperatorInterpretation(MathMLSymbol.DIV));
+        map.addSimpleMathCommand("ast", new MathOperatorInterpretation(MathMLSymbol.AST));
+        map.addSimpleMathCommand("star", new MathOperatorInterpretation(MathMLSymbol.STAR));
+        map.addSimpleMathCommand("circ", new MathOperatorInterpretation(MathMLSymbol.CIRC));
+        map.addSimpleMathCommand("bullet", new MathOperatorInterpretation(MathMLSymbol.BULLET));
+        map.addSimpleMathCommand("cdot", new MathOperatorInterpretation(MathMLSymbol.CDOT));
+        map.addSimpleMathCommand("cap", new MathOperatorInterpretation(MathMLSymbol.CAP));
+        map.addSimpleMathCommand("cup", new MathOperatorInterpretation(MathMLSymbol.CUP));
+        map.addSimpleMathCommand("uplus", new MathOperatorInterpretation(MathMLSymbol.UPLUS));
+        map.addSimpleMathCommand("sqcap", new MathOperatorInterpretation(MathMLSymbol.SQCAP));
+        map.addSimpleMathCommand("sqcup", new MathOperatorInterpretation(MathMLSymbol.SQCUP));
+        map.addSimpleMathCommand("vee", new MathOperatorInterpretation(MathMLSymbol.VEE));
+        map.addSimpleMathCommand("lor", new MathOperatorInterpretation(MathMLSymbol.VEE));
+        map.addSimpleMathCommand("wedge", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
+        map.addSimpleMathCommand("land", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
+        map.addSimpleMathCommand("setminus", new MathOperatorInterpretation(MathMLSymbol.SETMINUS));
+        map.addSimpleMathCommand("wr", new MathOperatorInterpretation(MathMLSymbol.WR));
+        map.addSimpleMathCommand("diamond", new MathOperatorInterpretation(MathMLSymbol.DIAMOND));
+        map.addSimpleMathCommand("bigtriangleup", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEUP));
+        map.addSimpleMathCommand("bigtriangledown", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEDOWN));
+        map.addSimpleMathCommand("triangleleft", new MathOperatorInterpretation(MathMLSymbol.TRIANGLELEFT));
+        map.addSimpleMathCommand("triangleright", new MathOperatorInterpretation(MathMLSymbol.TRIANGLERIGHT));
+        map.addSimpleMathCommand("oplus", new MathOperatorInterpretation(MathMLSymbol.OPLUS));
+        map.addSimpleMathCommand("ominus", new MathOperatorInterpretation(MathMLSymbol.OMINUS));
+        map.addSimpleMathCommand("otimes", new MathOperatorInterpretation(MathMLSymbol.OTIMES));
+        map.addSimpleMathCommand("oslash", new MathOperatorInterpretation(MathMLSymbol.OSLASH));
+        map.addSimpleMathCommand("odot", new MathOperatorInterpretation(MathMLSymbol.ODOT));
+        map.addSimpleMathCommand("bigcirc", new MathOperatorInterpretation(MathMLSymbol.BIGCIRC));
+        map.addSimpleMathCommand("dagger", new MathOperatorInterpretation(MathMLSymbol.DAGGER));
+        map.addSimpleMathCommand("ddagger", new MathOperatorInterpretation(MathMLSymbol.DDAGGER));
+        map.addSimpleMathCommand("amalg", new MathOperatorInterpretation(MathMLSymbol.AMALG));
+        map.addSimpleMathCommand("leq", new MathOperatorInterpretation(MathMLSymbol.LEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_LEQ));
+        map.addSimpleMathCommand("le", new MathOperatorInterpretation(MathMLSymbol.LEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_LEQ));
+        map.addSimpleMathCommand("prec", new MathOperatorInterpretation(MathMLSymbol.PREC), new MathNegatableInterpretation(MathMLSymbol.NOT_PREC));
+        map.addSimpleMathCommand("preceq", new MathOperatorInterpretation(MathMLSymbol.PRECEQ));
+        map.addSimpleMathCommand("ll", new MathOperatorInterpretation(MathMLSymbol.LL));
+        map.addSimpleMathCommand("subset", new MathOperatorInterpretation(MathMLSymbol.SUBSET), new MathNegatableInterpretation(MathMLSymbol.NOT_SUBSET));
+        map.addSimpleMathCommand("subseteq", new MathOperatorInterpretation(MathMLSymbol.SUBSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SUBSETEQ));
+        map.addSimpleMathCommand("sqsubset", new MathOperatorInterpretation(MathMLSymbol.SQSUBSET));
+        map.addSimpleMathCommand("sqsubseteq", new MathOperatorInterpretation(MathMLSymbol.SQSUBSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SQSUBSETEQ));
+        map.addSimpleMathCommand("in", new MathOperatorInterpretation(MathMLSymbol.IN), new MathNegatableInterpretation(MathMLSymbol.NOT_IN));
+        map.addSimpleMathCommand("vdash", new MathOperatorInterpretation(MathMLSymbol.VDASH), new MathNegatableInterpretation(MathMLSymbol.NOT_VDASH));
+        map.addSimpleMathCommand("geq", new MathOperatorInterpretation(MathMLSymbol.GEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_GEQ));
+        map.addSimpleMathCommand("ge", new MathOperatorInterpretation(MathMLSymbol.GEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_GEQ));
+        map.addSimpleMathCommand("succ", new MathOperatorInterpretation(MathMLSymbol.SUCC), new MathNegatableInterpretation(MathMLSymbol.NOT_SUCC));
+        map.addSimpleMathCommand("succeq", new MathOperatorInterpretation(MathMLSymbol.SUCCEQ));
+        map.addSimpleMathCommand("gg", new MathOperatorInterpretation(MathMLSymbol.GG));
+        map.addSimpleMathCommand("supset", new MathOperatorInterpretation(MathMLSymbol.SUPSET), new MathNegatableInterpretation(MathMLSymbol.NOT_SUPSET));
+        map.addSimpleMathCommand("supseteq", new MathOperatorInterpretation(MathMLSymbol.SUPSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SUPSETEQ));
+        map.addSimpleMathCommand("sqsupset", new MathOperatorInterpretation(MathMLSymbol.SQSUPSET));
+        map.addSimpleMathCommand("sqsupseteq", new MathOperatorInterpretation(MathMLSymbol.SQSUPSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SQSUPSETEQ));
+        map.addSimpleMathCommand("ni", new MathOperatorInterpretation(MathMLSymbol.NI), new MathNegatableInterpretation(MathMLSymbol.NOT_NI));
+        map.addSimpleMathCommand("dashv", new MathOperatorInterpretation(MathMLSymbol.DASHV));
+        map.addSimpleMathCommand("equiv", new MathOperatorInterpretation(MathMLSymbol.EQUIV), new MathNegatableInterpretation(MathMLSymbol.NOT_EQUIV));
+        map.addSimpleMathCommand("sim", new MathOperatorInterpretation(MathMLSymbol.SIM), new MathNegatableInterpretation(MathMLSymbol.NOT_SIM));
+        map.addSimpleMathCommand("simeq", new MathOperatorInterpretation(MathMLSymbol.SIMEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SIMEQ));
+        map.addSimpleMathCommand("asymp", new MathOperatorInterpretation(MathMLSymbol.ASYMP));
+        map.addSimpleMathCommand("approx", new MathOperatorInterpretation(MathMLSymbol.APPROX), new MathNegatableInterpretation(MathMLSymbol.NOT_APPROX));
+        map.addSimpleMathCommand("cong", new MathOperatorInterpretation(MathMLSymbol.CONG), new MathNegatableInterpretation(MathMLSymbol.NOT_CONG));
+        map.addSimpleMathCommand("neq", new MathOperatorInterpretation(MathMLSymbol.NOT_IN));
+        map.addSimpleMathCommand("doteq", new MathOperatorInterpretation(MathMLSymbol.DOTEQ));
+        map.addSimpleMathCommand("notin", new MathOperatorInterpretation(MathMLSymbol.NOT_IN));
+        map.addSimpleMathCommand("models", new MathOperatorInterpretation(MathMLSymbol.MODELS));
+        map.addSimpleMathCommand("perp", new MathOperatorInterpretation(MathMLSymbol.PERP));
+        map.addSimpleMathCommand("mid", new MathOperatorInterpretation(MathMLSymbol.MID), new MathNegatableInterpretation(MathMLSymbol.NOT_MID));
+        map.addSimpleMathCommand("parallel", new MathOperatorInterpretation(MathMLSymbol.PARALLEL));
+        map.addSimpleMathCommand("bowtie", new MathOperatorInterpretation(MathMLSymbol.BOWTIE));
+        map.addSimpleMathCommand("smile", new MathOperatorInterpretation(MathMLSymbol.SMILE));
+        map.addSimpleMathCommand("frown", new MathOperatorInterpretation(MathMLSymbol.FROWN));
+        map.addSimpleMathCommand("propto", new MathOperatorInterpretation(MathMLSymbol.PROPTO));
         
         /* Arrows */
-        map.addSimpleMathCommand("leftarrow", new MathOperatorInterpretation(MathMLOperator.LEFTARROW));
-        map.addSimpleMathCommand("Leftarrow", new MathOperatorInterpretation(MathMLOperator.UC_LEFTARROW));
-        map.addSimpleMathCommand("rightarrow", new MathOperatorInterpretation(MathMLOperator.RIGHTARROW));
-        map.addSimpleMathCommand("Rightarrow", new MathOperatorInterpretation(MathMLOperator.UC_RIGHTARROW));
-        map.addSimpleMathCommand("leftrightarrow", new MathOperatorInterpretation(MathMLOperator.LEFTRIGHTARROW));
-        map.addSimpleMathCommand("Leftrightarrow", new MathOperatorInterpretation(MathMLOperator.UC_LEFTRIGHTARROW));
-        map.addSimpleMathCommand("mapsto", new MathOperatorInterpretation(MathMLOperator.MAPSTO));
-        map.addSimpleMathCommand("hookleftarrow", new MathOperatorInterpretation(MathMLOperator.HOOKLEFTARROW));
-        map.addSimpleMathCommand("leftharpoonup", new MathOperatorInterpretation(MathMLOperator.LEFTHARPOONUP));
-        map.addSimpleMathCommand("leftharpoondown", new MathOperatorInterpretation(MathMLOperator.LEFTHARPOONDOWN));
-        map.addSimpleMathCommand("rightleftharpoons", new MathOperatorInterpretation(MathMLOperator.RIGHTLEFTHARPOONS));
-        map.addSimpleMathCommand("longleftarrow", new MathOperatorInterpretation(MathMLOperator.LEFTARROW)); /* NB: No appropriate Unicode symbols for long operators! */
-        map.addSimpleMathCommand("Longleftarrow", new MathOperatorInterpretation(MathMLOperator.UC_LEFTARROW));
-        map.addSimpleMathCommand("longrightarrow", new MathOperatorInterpretation(MathMLOperator.RIGHTARROW));
-        map.addSimpleMathCommand("Longrightarrow", new MathOperatorInterpretation(MathMLOperator.UC_RIGHTARROW));
-        map.addSimpleMathCommand("longleftrightarrow", new MathOperatorInterpretation(MathMLOperator.LEFTRIGHTARROW));
-        map.addSimpleMathCommand("Longleftrightarrow", new MathOperatorInterpretation(MathMLOperator.UC_LEFTRIGHTARROW));
-        map.addSimpleMathCommand("longmapsto", new MathOperatorInterpretation(MathMLOperator.MAPSTO));
-        map.addSimpleMathCommand("hookrightarrow", new MathOperatorInterpretation(MathMLOperator.HOOKRIGHTARROW));
-        map.addSimpleMathCommand("rightharpoonup", new MathOperatorInterpretation(MathMLOperator.RIGHTHARPOONOUP));
-        map.addSimpleMathCommand("rightharpoondown", new MathOperatorInterpretation(MathMLOperator.RIGHTHARPOONDOWN));
-        map.addSimpleMathCommand("uparrow", new MathOperatorInterpretation(MathMLOperator.UPARROW));
-        map.addSimpleMathCommand("Uparrow", new MathOperatorInterpretation(MathMLOperator.UC_UPARROW));
-        map.addSimpleMathCommand("downarrow", new MathOperatorInterpretation(MathMLOperator.DOWNARROW));
-        map.addSimpleMathCommand("Downarrow", new MathOperatorInterpretation(MathMLOperator.UC_DOWNARROW));
-        map.addSimpleMathCommand("updownarrow", new MathOperatorInterpretation(MathMLOperator.UPDOWNARROW));
-        map.addSimpleMathCommand("Updownarrow", new MathOperatorInterpretation(MathMLOperator.UC_UPDOWNARROW));
-        map.addSimpleMathCommand("nearrow", new MathOperatorInterpretation(MathMLOperator.NEARROW));
-        map.addSimpleMathCommand("searrow", new MathOperatorInterpretation(MathMLOperator.SEARROW));
-        map.addSimpleMathCommand("swarrow", new MathOperatorInterpretation(MathMLOperator.SWARROW));
-        map.addSimpleMathCommand("nwarrow", new MathOperatorInterpretation(MathMLOperator.NWARROW));
+        map.addSimpleMathCommand("leftarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTARROW));
+        map.addSimpleMathCommand("Leftarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTARROW));
+        map.addSimpleMathCommand("rightarrow", new MathOperatorInterpretation(MathMLSymbol.RIGHTARROW));
+        map.addSimpleMathCommand("Rightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_RIGHTARROW));
+        map.addSimpleMathCommand("leftrightarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTRIGHTARROW));
+        map.addSimpleMathCommand("Leftrightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTRIGHTARROW));
+        map.addSimpleMathCommand("mapsto", new MathOperatorInterpretation(MathMLSymbol.MAPSTO));
+        map.addSimpleMathCommand("hookleftarrow", new MathOperatorInterpretation(MathMLSymbol.HOOKLEFTARROW));
+        map.addSimpleMathCommand("leftharpoonup", new MathOperatorInterpretation(MathMLSymbol.LEFTHARPOONUP));
+        map.addSimpleMathCommand("leftharpoondown", new MathOperatorInterpretation(MathMLSymbol.LEFTHARPOONDOWN));
+        map.addSimpleMathCommand("rightleftharpoons", new MathOperatorInterpretation(MathMLSymbol.RIGHTLEFTHARPOONS));
+        map.addSimpleMathCommand("longleftarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTARROW)); /* NB: No appropriate Unicode symbols for long operators! */
+        map.addSimpleMathCommand("Longleftarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTARROW));
+        map.addSimpleMathCommand("longrightarrow", new MathOperatorInterpretation(MathMLSymbol.RIGHTARROW));
+        map.addSimpleMathCommand("Longrightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_RIGHTARROW));
+        map.addSimpleMathCommand("longleftrightarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTRIGHTARROW));
+        map.addSimpleMathCommand("Longleftrightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTRIGHTARROW));
+        map.addSimpleMathCommand("longmapsto", new MathOperatorInterpretation(MathMLSymbol.MAPSTO));
+        map.addSimpleMathCommand("hookrightarrow", new MathOperatorInterpretation(MathMLSymbol.HOOKRIGHTARROW));
+        map.addSimpleMathCommand("rightharpoonup", new MathOperatorInterpretation(MathMLSymbol.RIGHTHARPOONOUP));
+        map.addSimpleMathCommand("rightharpoondown", new MathOperatorInterpretation(MathMLSymbol.RIGHTHARPOONDOWN));
+        map.addSimpleMathCommand("uparrow", new MathOperatorInterpretation(MathMLSymbol.UPARROW));
+        map.addSimpleMathCommand("Uparrow", new MathOperatorInterpretation(MathMLSymbol.UC_UPARROW));
+        map.addSimpleMathCommand("downarrow", new MathOperatorInterpretation(MathMLSymbol.DOWNARROW));
+        map.addSimpleMathCommand("Downarrow", new MathOperatorInterpretation(MathMLSymbol.UC_DOWNARROW));
+        map.addSimpleMathCommand("updownarrow", new MathOperatorInterpretation(MathMLSymbol.UPDOWNARROW));
+        map.addSimpleMathCommand("Updownarrow", new MathOperatorInterpretation(MathMLSymbol.UC_UPDOWNARROW));
+        map.addSimpleMathCommand("nearrow", new MathOperatorInterpretation(MathMLSymbol.NEARROW));
+        map.addSimpleMathCommand("searrow", new MathOperatorInterpretation(MathMLSymbol.SEARROW));
+        map.addSimpleMathCommand("swarrow", new MathOperatorInterpretation(MathMLSymbol.SWARROW));
+        map.addSimpleMathCommand("nwarrow", new MathOperatorInterpretation(MathMLSymbol.NWARROW));
         
         /* Miscellaneous symbols */
-        map.addSimpleMathCommand("aleph", new MathIdentifierInterpretation("\u2135"));
-        map.addSimpleMathCommand("imath", new MathIdentifierInterpretation("\u0131"));
-        map.addSimpleMathCommand("jmath", new MathIdentifierInterpretation("\u006a"));
-        map.addSimpleMathCommand("ell", new MathIdentifierInterpretation("\u2113"));
-        map.addSimpleMathCommand("wp", new MathIdentifierInterpretation("\u2118"));
-        map.addSimpleMathCommand("Re", new MathIdentifierInterpretation("\u211c"));
-        map.addSimpleMathCommand("Im", new MathIdentifierInterpretation("\u2111"));
-        map.addSimpleMathCommand("mho", new MathIdentifierInterpretation("\u2127"));
-        map.addSimpleMathCommand("prime", new MathIdentifierInterpretation("\u2032"));
-        map.addSimpleMathCommand("emptyset", new MathIdentifierInterpretation("\u2205"));
-        map.addSimpleMathCommand("nabla", new MathOperatorInterpretation(MathMLOperator.NABLA));
-        map.addSimpleMathCommand("surd", new MathOperatorInterpretation(MathMLOperator.SURD));
-        map.addSimpleMathCommand("top", new MathOperatorInterpretation(MathMLOperator.TOP));
-        map.addSimpleMathCommand("bot", new MathOperatorInterpretation(MathMLOperator.BOT));
-        map.addSimpleMathCommand("|", new MathOperatorInterpretation(MathMLOperator.DOUBLE_VERT_BRACKET));
-        map.addSimpleMathCommand("angle", new MathOperatorInterpretation(MathMLOperator.ANGLE));
-        map.addSimpleMathCommand("forall", new MathOperatorInterpretation(MathMLOperator.FORALL));
-        map.addSimpleMathCommand("exists", new MathOperatorInterpretation(MathMLOperator.EXISTS));
-        map.addSimpleMathCommand("neg", new MathOperatorInterpretation(MathMLOperator.NEG));
-        map.addSimpleMathCommand("lnot", new MathOperatorInterpretation(MathMLOperator.NEG));
-        map.addSimpleMathCommand("flat", new MathIdentifierInterpretation("\u266d"));
-        map.addSimpleMathCommand("natural", new MathIdentifierInterpretation("\u266e"));
-        map.addSimpleMathCommand("sharp", new MathIdentifierInterpretation("\u266f"));
-        map.addSimpleMathCommand("backslash", new MathOperatorInterpretation(MathMLOperator.BACKSLASH));
-        map.addSimpleMathCommand("partial", new MathOperatorInterpretation(MathMLOperator.PARTIAL));
-        map.addSimpleMathCommand("infty", new MathIdentifierInterpretation("\u221e"));
-        map.addSimpleMathCommand("triangle", new MathIdentifierInterpretation("\u25b5"));
-        map.addSimpleMathCommand("clubsuit", new MathIdentifierInterpretation("\u2663"));
-        map.addSimpleMathCommand("diamondsuit", new MathIdentifierInterpretation("\u2662"));
-        map.addSimpleMathCommand("heartsuit", new MathIdentifierInterpretation("\u2661"));
-        map.addSimpleMathCommand("spadesuit", new MathIdentifierInterpretation("\u2660"));
+        map.addSimpleMathCommand("aleph", new MathIdentifierInterpretation(MathMLSymbol.ALEPH));
+        map.addSimpleMathCommand("imath", new MathIdentifierInterpretation(MathMLSymbol.IMATH));
+        map.addSimpleMathCommand("jmath", new MathIdentifierInterpretation(MathMLSymbol.JMATH));
+        map.addSimpleMathCommand("ell", new MathIdentifierInterpretation(MathMLSymbol.ELL));
+        map.addSimpleMathCommand("wp", new MathIdentifierInterpretation(MathMLSymbol.WP));
+        map.addSimpleMathCommand("Re", new MathIdentifierInterpretation(MathMLSymbol.RE));
+        map.addSimpleMathCommand("Im", new MathIdentifierInterpretation(MathMLSymbol.IM));
+        map.addSimpleMathCommand("mho", new MathIdentifierInterpretation(MathMLSymbol.MHO));
+        map.addSimpleMathCommand("prime", new MathIdentifierInterpretation(MathMLSymbol.PRIME));
+        map.addSimpleMathCommand("emptyset", new MathIdentifierInterpretation(MathMLSymbol.EMPTYSET));
+        map.addSimpleMathCommand("nabla", new MathOperatorInterpretation(MathMLSymbol.NABLA));
+        map.addSimpleMathCommand("surd", new MathOperatorInterpretation(MathMLSymbol.SURD));
+        map.addSimpleMathCommand("top", new MathOperatorInterpretation(MathMLSymbol.TOP));
+        map.addSimpleMathCommand("bot", new MathOperatorInterpretation(MathMLSymbol.BOT));
+        map.addSimpleMathCommand("|", new MathOperatorInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET));
+        map.addSimpleMathCommand("angle", new MathOperatorInterpretation(MathMLSymbol.ANGLE));
+        map.addSimpleMathCommand("forall", new MathOperatorInterpretation(MathMLSymbol.FORALL));
+        map.addSimpleMathCommand("exists", new MathOperatorInterpretation(MathMLSymbol.EXISTS));
+        map.addSimpleMathCommand("neg", new MathOperatorInterpretation(MathMLSymbol.NEG));
+        map.addSimpleMathCommand("lnot", new MathOperatorInterpretation(MathMLSymbol.NEG));
+        map.addSimpleMathCommand("flat", new MathIdentifierInterpretation(MathMLSymbol.FLAT));
+        map.addSimpleMathCommand("natural", new MathIdentifierInterpretation(MathMLSymbol.NATURAL));
+        map.addSimpleMathCommand("sharp", new MathIdentifierInterpretation(MathMLSymbol.SHARP));
+        map.addSimpleMathCommand("backslash", new MathOperatorInterpretation(MathMLSymbol.BACKSLASH));
+        map.addSimpleMathCommand("partial", new MathOperatorInterpretation(MathMLSymbol.PARTIAL));
+        map.addSimpleMathCommand("infty", new MathIdentifierInterpretation(MathMLSymbol.INFTY));
+        map.addSimpleMathCommand("triangle", new MathIdentifierInterpretation(MathMLSymbol.TRIANGLE));
+        map.addSimpleMathCommand("clubsuit", new MathIdentifierInterpretation(MathMLSymbol.CLUBSUIT));
+        map.addSimpleMathCommand("diamondsuit", new MathIdentifierInterpretation(MathMLSymbol.DIAMONDSUIT));
+        map.addSimpleMathCommand("heartsuit", new MathIdentifierInterpretation(MathMLSymbol.HEARTSUIT));
+        map.addSimpleMathCommand("spadesuit", new MathIdentifierInterpretation(MathMLSymbol.SPADESUIT));
         
         /* Extra identifiers */
-        map.addSimpleMathCommand("hbar", new MathIdentifierInterpretation("\u210f"));
-        map.addSimpleMathCommand("aa", new MathIdentifierInterpretation("\u00e5"));
-        map.addSimpleMathCommand("AA", new MathIdentifierInterpretation("\u00c5"));
+        map.addSimpleMathCommand("hbar", new MathIdentifierInterpretation(MathMLSymbol.HBAR));
+        map.addSimpleMathCommand("aa", new MathIdentifierInterpretation(MathMLSymbol.AA));
+        map.addSimpleMathCommand("AA", new MathIdentifierInterpretation(MathMLSymbol.UC_AA));
 
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.
@@ -577,18 +578,18 @@ public final class GlobalBuiltins {
         
         /* Special bracket commands */
         map.addSimpleMathCommand("vert",
-                new MathOperatorInterpretation(MathMLOperator.VERT_BRACKET),
-                new MathBracketInterpretation(MathMLOperator.VERT_BRACKET, MathMLOperator.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
+                new MathOperatorInterpretation(MathMLSymbol.VERT_BRACKET),
+                new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
         map.addSimpleMathCommand("Vert",
-                new MathOperatorInterpretation(MathMLOperator.DOUBLE_VERT_BRACKET),
-                new MathBracketInterpretation(MathMLOperator.DOUBLE_VERT_BRACKET, MathMLOperator.DOUBLE_VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
+                new MathOperatorInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET),
+                new MathBracketInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
 
         /* This is a LaTeX-specific combiner macro that always comes before a
          * {@link MathRelationInterpretation} command.
          */
         CombinerTargetMatcher notTargetMatcher = new CombinerTargetMatcher() {
             public boolean isAllowed(FlowToken target) {
-                return target.hasInterpretationType(InterpretationType.MATH_RELATION);
+                return target.hasInterpretationType(InterpretationType.MATH_NEGATABLE);
             }  
         };
         CMD_NOT = map.addCombinerCommand("not", MATH_MODE_ONLY, notTargetMatcher, new MathNotHandler(), null);
