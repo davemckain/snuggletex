@@ -9,10 +9,13 @@ import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumperOptions;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
+import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+
+import java.util.EnumMap;
 
 /**
  * Base interface for a parsed SnuggleTeX token.
@@ -31,19 +34,23 @@ public abstract class Token {
     /** LaTeX Mode that this token was parsed in */
     protected final LaTeXMode latexMode;
     
-    /** Interpretation of this token, if it can be readily deduced from the input */
-    protected final Interpretation interpretation;
+    /** Interpretation(s) of this token, if it can be readily deduced from the input */
+    protected final EnumMap<InterpretationType, Interpretation> interpretationMap;
     
-    protected Token(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode) {
-        this(slice, type, latexMode, null);
-    }
-    
-    protected Token(final FrozenSlice slice, final TokenType type,
-            final LaTeXMode latexMode, final Interpretation interpretation) {
+    protected Token(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,
+            final Interpretation... interpretations) {
         this.slice = slice;
         this.type = type;
         this.latexMode = latexMode;
-        this.interpretation = interpretation;
+        this.interpretationMap = DefinitionMap.makeInterpretationMap(interpretations);
+    }
+    
+    protected Token(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,
+            final EnumMap<InterpretationType, Interpretation> interpretationMap) {
+        this.slice = slice;
+        this.type = type;
+        this.latexMode = latexMode;
+        this.interpretationMap = interpretationMap;
     }
     
     @ObjectDumperOptions(DumpMode.TO_STRING)
@@ -59,25 +66,24 @@ public abstract class Token {
         return latexMode;
     }
 
-    public Interpretation getInterpretation() {
-        return interpretation;
+    @ObjectDumperOptions(DumpMode.TO_STRING)
+    public EnumMap<InterpretationType, Interpretation> getInterpretationMap() {
+        return interpretationMap;
     }
     
-    public InterpretationType getInterpretationType() {
-        return interpretation!=null ? interpretation.getType() : null;
+    public Interpretation getInterpretation(InterpretationType type) {
+        return interpretationMap!=null ? interpretationMap.get(type) : null;
     }
-
     
     //------------------------------------------------------
     // Convenience
 
-    public boolean isInterpretationType(InterpretationType... types) {
-        if (interpretation==null) {
+    public boolean hasInterpretationType(InterpretationType... types) {
+        if (interpretationMap==null) {
             return false;
         }
-        InterpretationType interpretationType = interpretation.getType();
         for (InterpretationType testType : types) {
-            if (testType==interpretationType) {
+            if (interpretationMap.containsKey(testType)) {
                 return true;
             }
         }

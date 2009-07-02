@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
-import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -21,8 +20,10 @@ import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
+import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
+import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
+import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
@@ -37,6 +38,7 @@ import uk.ac.ed.ph.snuggletex.tokens.TokenType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -537,17 +539,19 @@ public final class LaTeXTokeniser {
         FrozenSlice thisCharSlice = workingDocument.freezeSlice(position, position+1);
         
         /* Is this a special math character? */
-        MathInterpretation interpretation = Globals.getMathCharacter(c);
-        if (interpretation!=null) {
+        EnumMap<InterpretationType, Interpretation> interpretationMap = Globals.getMathCharacterInterpretationMap(c);
+        if (interpretationMap!=null) {
             return new SimpleToken(thisCharSlice,
                     TokenType.SINGLE_CHARACTER_MATH_SPECIAL,
-                    LaTeXMode.MATH, interpretation, null);
+                    LaTeXMode.MATH,
+                    null, interpretationMap);
         }
         /* If still here, then we'll treat this as an identifier (e.g. 'x', 'y' etc.) */
         return new SimpleToken(thisCharSlice,
                 TokenType.SINGLE_CHARACTER_MATH_IDENTIFIER,
                 LaTeXMode.MATH,
-                new MathIdentifierInterpretation(String.valueOf(c)), null);
+                null,
+                new MathIdentifierInterpretation(String.valueOf(c)));
     }
     
     /**
@@ -607,8 +611,8 @@ public final class LaTeXTokeniser {
         }
         FrozenSlice numberSlice = workingDocument.freezeSlice(position, index);
         return new SimpleToken(numberSlice, TokenType.MATH_NUMBER, LaTeXMode.MATH,
-                new MathNumberInterpretation(numberSlice.extract()),
-                null);
+                null,
+                new MathNumberInterpretation(numberSlice.extract()));
     }
     
     //-----------------------------------------
@@ -1165,7 +1169,7 @@ public final class LaTeXTokeniser {
                     command.getTeXName());
         }
         /* Make sure this next token is allowed to be combined with this one */
-        if (!(command.getAllowedCombinerIntepretationTypes().contains(nextToken.getInterpretationType()))) {
+        if (!command.getCombinerTargetMatcher().isAllowed(nextToken)) {
             /* Inappropriate combiner target */
             return createError(ErrorCode.TTEC04, startTokenIndex, nextToken.getSlice().endIndex,
                     command.getTeXName());

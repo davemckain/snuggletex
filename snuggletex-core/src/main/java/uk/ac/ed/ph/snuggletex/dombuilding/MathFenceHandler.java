@@ -5,17 +5,16 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationOrBracketOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -64,8 +63,8 @@ public final class MathFenceHandler implements EnvironmentHandler {
         /* Now add contents, grouping on comma operators */
         List<FlowToken> groupBuilder = new ArrayList<FlowToken>();
         for (FlowToken contentToken : contentContainer) {
-            if (contentToken.isInterpretationType(InterpretationType.MATH_OPERATOR)
-                    && ((SimpleMathOperatorInterpretation) contentToken.getInterpretation()).getOperator()==MathMLOperator.COMMA) {
+            if (contentToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)
+                    && ((MathOperatorInterpretation) contentToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator()==MathMLOperator.COMMA) {
                 /* Found a comma, so add Node based on what's been found so far */
                 makeFenceGroup(builder, mfenced, groupBuilder);
                 groupBuilder.clear();
@@ -109,19 +108,19 @@ public final class MathFenceHandler implements EnvironmentHandler {
     private String getBracket(ArgumentContainerToken argumentContainerToken) {
         /* Ensure fence endpoint is either nothing or a single bracket */
         List<FlowToken> contents = argumentContainerToken.getContents();
+        String result = null;
         if (!contents.isEmpty()) {
             FlowToken bracketToken = contents.get(0);
-            if (bracketToken.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
-                return ((MathBracketOperatorInterpretation) bracketToken.getInterpretation()).getOperator().getOutput();
+            if (bracketToken.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
+                result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET)).getOperator().getOutput();
             }
-            else if (bracketToken.isInterpretationType(InterpretationType.MATH_RELATION_OR_BRACKET_OPERATOR)) {
-                return ((MathRelationOrBracketOperatorInterpretation) bracketToken.getInterpretation()).getOperator().getOutput();
+            else {
+                /* (Since this token is created only during token fixing, the following is a logic
+                 * failure rather than a client error.)
+                 */
+                throw new SnuggleLogicException("Expected to find a single bracket operator, or empty container");
             }
-            /* (Since this token is created only during token fixing, the following is a logic
-             * failure rather than a client error.)
-             */
-            throw new SnuggleLogicException("Expected to find a single bracket operator, or empty container");
         }
-        return null;
+        return result;
     }
 }

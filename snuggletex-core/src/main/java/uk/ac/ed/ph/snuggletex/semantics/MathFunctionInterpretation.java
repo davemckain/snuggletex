@@ -9,17 +9,16 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
  * Represents a mathematical function like sin, cos, etc. These are considered
- * identifiers in MathML but need to be considered separately from other
- * identifiers.
+ * identifiers in MathML but we consider them special here.
  * 
  * @author  David McKain
  * @version $Revision$
  */
-public class MathFunctionIdentifierInterpretation implements MathInterpretation {
+public final class MathFunctionInterpretation implements MathInterpretation {
     
     private final String name;
     
-    public MathFunctionIdentifierInterpretation(final String name) {
+    public MathFunctionInterpretation(final String name) {
         this.name = name;
     }
     
@@ -28,7 +27,7 @@ public class MathFunctionIdentifierInterpretation implements MathInterpretation 
     }
     
     public InterpretationType getType() {
-        return InterpretationType.MATH_FUNCTION_IDENTIFIER;
+        return InterpretationType.MATH_FUNCTION;
     }
     
     @Override

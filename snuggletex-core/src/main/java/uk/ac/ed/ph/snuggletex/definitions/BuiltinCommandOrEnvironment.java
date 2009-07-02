@@ -7,7 +7,9 @@ package uk.ac.ed.ph.snuggletex.definitions;
 
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
+import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
@@ -24,20 +26,21 @@ abstract class BuiltinCommandOrEnvironment<H> implements CommandOrEnvironment {
     protected final boolean allowingOptionalArgument;
     protected final int argumentCount;
     protected final EnumSet<LaTeXMode> allowedModes;
-    protected final Interpretation interpretation;
+    protected final EnumMap<InterpretationType, Interpretation> interpretationMap;
     protected final TextFlowContext textFlowContext;
     protected final H domBuildingHandler;
     
     protected BuiltinCommandOrEnvironment(final String texName, final boolean allowingOptionalArgument,
-            final int argumentCount, final EnumSet<LaTeXMode> allowedModes, final Interpretation interpretation,
-            final TextFlowContext textFlowContext, final H domBuildingHandler) {
+            final int argumentCount, final EnumSet<LaTeXMode> allowedModes,
+            final EnumMap<InterpretationType, Interpretation> interpretationMap, final TextFlowContext textFlowContext,
+            final H domBuildingHandler) {
         ConstraintUtilities.ensureNotNull(texName, "texName");
         ConstraintUtilities.ensureNotNull(allowedModes, "allowedModes");
         this.texName = texName;
         this.allowingOptionalArgument = allowingOptionalArgument;
         this.argumentCount = argumentCount;
         this.allowedModes = allowedModes;
-        this.interpretation = interpretation;
+        this.interpretationMap = interpretationMap;
         this.textFlowContext = textFlowContext;
         this.domBuildingHandler = domBuildingHandler;
     }
@@ -58,8 +61,12 @@ abstract class BuiltinCommandOrEnvironment<H> implements CommandOrEnvironment {
         return allowedModes;
     }
     
-    public Interpretation getInterpretation() {
-        return interpretation;
+    public EnumMap<InterpretationType, Interpretation> getInterpretationMap() {
+        return interpretationMap;
+    }
+    
+    public Interpretation getInterpretation(InterpretationType type) {
+        return interpretationMap!=null ? interpretationMap.get(type) : null;
     }
     
     public TextFlowContext getTextFlowContext() {

@@ -1,18 +1,39 @@
-/* $Id:MathOperatorInterpretation.java 179 2008-08-01 13:41:24Z davemckain $
+/* $Id$
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
+
 /**
- * Base interface for a Mathematical operator
+ * Represents a generic Mathematical operator.
+ * 
+ * @see MathBracketInterpretation
+ * @see MathRelationInterpretation
  * 
  * @author  David McKain
- * @version $Revision:179 $
+ * @version $Revision$
  */
-public interface MathOperatorInterpretation extends MathInterpretation {
+public final class MathOperatorInterpretation implements MathInterpretation {
     
-    MathMLOperator getOperator();
+    private final MathMLOperator operator;
     
+    public MathOperatorInterpretation(final MathMLOperator operator) {
+        this.operator = operator;
+    }
+    
+    public MathMLOperator getOperator() {
+        return operator;
+    }
+    
+    public InterpretationType getType() {
+        return InterpretationType.MATH_OPERATOR;
+    }
+    
+    @Override
+    public String toString() {
+        return ObjectUtilities.beanToString(this);
+    }
 }

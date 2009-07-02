@@ -79,9 +79,9 @@ public final class AccentHandler implements CommandHandler {
          */
         List<FlowToken> content = token.getArguments()[0].getContents();
         char mathAccent = 0; /* Will be set to non-zero accent character if success */
-        if (accentMap!=null && content.size()==1 && content.get(0).isInterpretationType(InterpretationType.MATH_IDENTIFIER)) {
+        if (accentMap!=null && content.size()==1 && content.get(0).hasInterpretationType(InterpretationType.MATH_IDENTIFIER)) {
             /* Possible accent! Let's see if we the resulting Unicode is safe for most browsers. */
-            MathIdentifierInterpretation mathIdentifier = (MathIdentifierInterpretation) content.get(0).getInterpretation();
+            MathIdentifierInterpretation mathIdentifier = (MathIdentifierInterpretation) content.get(0).getInterpretation(InterpretationType.MATH_IDENTIFIER);
             String identifier = mathIdentifier.getName();
             if (identifier.length()==1) {
                 mathAccent = accentMap.getAccentedMathChar(identifier.charAt(0));

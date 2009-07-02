@@ -5,28 +5,35 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
+import uk.ac.ed.ph.snuggletex.definitions.CommandOrEnvironment;
+import uk.ac.ed.ph.snuggletex.tokens.Token;
+
 /**
  * Defines the different types of interpretations handled by the {@link Interpretation} class
  * hierarchy.
+ * <p>
+ * Note that a {@link Token} or {@link CommandOrEnvironment} may have more than one interpretation,
+ * but no more than one of each type listed here.
  * 
  * @author  David McKain
  * @version $Revision:179 $
  */
 public enum InterpretationType {
     
-    /* Text */
+    /* Text interpretations */
     STYLE_DECLARATION,
     
-    /* Math */
+    /* Principal Math Interpretations. These ones are mutually exclusive */
     MATH_NUMBER,
     MATH_IDENTIFIER,
-    MATH_FUNCTION_IDENTIFIER,
+    MATH_FUNCTION,
     MATH_OPERATOR,
-    MATH_RELATION_OPERATOR,
-    MATH_BRACKET_OPERATOR,
-
-    /** FIXME: Yuck! Required for '<'... need this to be more polymorphic I think */
-    MATH_RELATION_OR_BRACKET_OPERATOR,
+    
+    /* The next ones are "supplementary" in that they generally accompany one of the above
+     * Math Interpretations as well.
+     */
+    MATH_RELATION,
+    MATH_BRACKET,
     
     ;
 }

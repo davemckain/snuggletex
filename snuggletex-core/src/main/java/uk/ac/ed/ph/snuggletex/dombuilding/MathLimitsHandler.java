@@ -44,8 +44,8 @@ public final class MathLimitsHandler implements CommandHandler {
          */ 
         boolean isUnderOver = builder.getOutputContext()==OutputContext.MATHML_BLOCK
             && limitand.size()==1
-            && limitand.get(0).isInterpretationType(InterpretationType.MATH_OPERATOR)
-            && ((MathOperatorInterpretation) limitand.get(0).getInterpretation()).getOperator().isLimitsUnderOrOver();
+            && limitand.get(0).hasInterpretationType(InterpretationType.MATH_OPERATOR)
+            && ((MathOperatorInterpretation) limitand.get(0).getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator().isLimitsUnderOrOver();
         BuiltinCommand command = token.getCommand();
         String elementName;
         if (command.equals(GlobalBuiltins.CMD_MSUB_OR_MUNDER)) {

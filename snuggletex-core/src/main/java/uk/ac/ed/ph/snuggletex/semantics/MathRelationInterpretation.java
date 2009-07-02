@@ -11,17 +11,15 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
  * Represents a mathematical relation operator that can be applied to the <tt>\\not</tt>
  * token to result in the corresponding inverse operator.
  * 
- * @see MathRelationOrBracketOperatorInterpretation
- * 
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathRelationOperatorInterpretation implements MathOperatorInterpretation {
+public final class MathRelationInterpretation implements MathInterpretation {
     
     private final MathMLOperator operator;
     private final MathMLOperator notOperator;
     
-    public MathRelationOperatorInterpretation(final MathMLOperator operator, final MathMLOperator notOperator) {
+    public MathRelationInterpretation(final MathMLOperator operator, final MathMLOperator notOperator) {
         this.operator = operator;
         this.notOperator = notOperator;
     }
@@ -35,7 +33,7 @@ public final class MathRelationOperatorInterpretation implements MathOperatorInt
     }
     
     public InterpretationType getType() {
-        return InterpretationType.MATH_RELATION_OPERATOR;
+        return InterpretationType.MATH_RELATION;
     }
     
     @Override

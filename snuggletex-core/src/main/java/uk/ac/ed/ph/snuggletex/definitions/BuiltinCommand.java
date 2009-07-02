@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
@@ -26,7 +27,8 @@ public final class BuiltinCommand extends BuiltinCommandOrEnvironment<CommandHan
         implements Command {
     
     private final CommandType type;
-    private final EnumSet<InterpretationType> allowedCombinerIntepretationTypes;
+    
+    private final CombinerTargetMatcher combinerTargetMatcher;
     
     /** 
      * Mode to use when parsing arguments. If not supplied, will preserve mode that Macro
@@ -38,15 +40,17 @@ public final class BuiltinCommand extends BuiltinCommandOrEnvironment<CommandHan
     
     //--------------------------------------------------
     
-    public BuiltinCommand(String texName, CommandType commandType, boolean allowingOptionalArgument,
-            int argumentCount, EnumSet<LaTeXMode> allowedModes, LaTeXMode[] argumentModes,
-            Interpretation interpretation, CommandHandler domBuilderHandler, TextFlowContext textFlowContext,
-            EnumSet<InterpretationType> allowedCombinerInterpretationTypes) {
+    public BuiltinCommand(final String texName, final CommandType commandType,
+            final boolean allowingOptionalArgument, final int argumentCount,
+            final EnumSet<LaTeXMode> allowedModes, final LaTeXMode[] argumentModes,
+            final EnumMap<InterpretationType, Interpretation> interpretations,
+            final CommandHandler domBuilderHandler, final TextFlowContext textFlowContext,
+            final CombinerTargetMatcher combinerTargetMatcher) {
         super(texName, allowingOptionalArgument, argumentCount, allowedModes,
-                interpretation, textFlowContext, domBuilderHandler);
+                interpretations, textFlowContext, domBuilderHandler);
         this.type = commandType;
         this.argumentModes = argumentModes;
-        this.allowedCombinerIntepretationTypes = allowedCombinerInterpretationTypes;
+        this.combinerTargetMatcher = combinerTargetMatcher;
     }
     
     public CommandType getType() {
@@ -57,7 +61,7 @@ public final class BuiltinCommand extends BuiltinCommandOrEnvironment<CommandHan
         return argumentModes!=null ? argumentModes[argumentIndex] : null;
     }
     
-    public EnumSet<InterpretationType> getAllowedCombinerIntepretationTypes() {
-        return allowedCombinerIntepretationTypes;
+    public CombinerTargetMatcher getCombinerTargetMatcher() {
+        return combinerTargetMatcher;
     }
 }

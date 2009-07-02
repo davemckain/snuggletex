@@ -12,6 +12,9 @@ import static uk.ac.ed.ph.snuggletex.semantics.MathMLOperator.OperatorType.PREFI
 /**
  * Enumerates the various MathML operators.
  * 
+ * FIXME: Most of the "operator-ness" is encapsulated in other places. Perhaps it would be best
+ * just to rename this as MathMLSymbol or something?
+ * 
  * @author David McKain
  * @version $Revision:179 $
  */
@@ -23,6 +26,7 @@ public enum MathMLOperator {
     SLASH(INFIX, "/"),
     COMMA(INFIX, ","),
     EQUALS(INFIX, "="),
+    DOT(INFIX, "."),
 
     FACTORIAL(POSTFIX, "!"),
     BACKSLASH(INFIX, "\\"),    

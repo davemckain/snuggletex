@@ -5,9 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
-import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
@@ -21,15 +18,16 @@ import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
+import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathFunctionIdentifierInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationOrBracketOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathRelationOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -43,6 +41,7 @@ import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -424,48 +423,25 @@ public final class DOMBuilder {
     }
 
     public void appendSimpleMathElement(Element parentElement, Token token) {
-        Interpretation interpretation = token.getInterpretation();
-        if (interpretation==null) {
-            throw new SnuggleLogicException("Simple Math token has null interpretation");
+        EnumMap<InterpretationType, Interpretation> interpretationMap = token.getInterpretationMap();
+        if (interpretationMap.containsKey(InterpretationType.MATH_IDENTIFIER)) {
+            MathIdentifierInterpretation identifierInterp = (MathIdentifierInterpretation) interpretationMap.get(InterpretationType.MATH_IDENTIFIER);
+            appendMathMLIdentifierElement(parentElement, identifierInterp.getName());
         }
-        switch (interpretation.getType()) {
-            case MATH_IDENTIFIER:
-                MathIdentifierInterpretation identifierInterp = (MathIdentifierInterpretation) interpretation;
-                appendMathMLIdentifierElement(parentElement, identifierInterp.getName());
-                break;
-                
-            case MATH_FUNCTION_IDENTIFIER:
-                MathFunctionIdentifierInterpretation functionInterp = (MathFunctionIdentifierInterpretation) interpretation;
-                appendMathMLIdentifierElement(parentElement, functionInterp.getName());
-                break;
-                
-            case MATH_NUMBER:
-                MathNumberInterpretation numberInterp = (MathNumberInterpretation) interpretation;
-                appendMathMLNumberElement(parentElement, numberInterp.getNumber().toString());
-                break;
-                
-            case MATH_OPERATOR:
-                SimpleMathOperatorInterpretation operatorInterp = (SimpleMathOperatorInterpretation) interpretation;
-                appendMathMLOperatorElement(parentElement, operatorInterp.getOperator());
-                break;
-                
-            case MATH_RELATION_OPERATOR:
-                MathRelationOperatorInterpretation relationInterp = (MathRelationOperatorInterpretation) interpretation;
-                appendMathMLOperatorElement(parentElement, relationInterp.getOperator());
-                break;
-                
-            case MATH_BRACKET_OPERATOR:
-                MathBracketOperatorInterpretation bracketInterp = (MathBracketOperatorInterpretation) interpretation;
-                appendMathMLOperatorElement(parentElement, bracketInterp.getOperator());
-                break;
-                
-            case MATH_RELATION_OR_BRACKET_OPERATOR:
-                MathRelationOrBracketOperatorInterpretation relationOrBracketInterp = (MathRelationOrBracketOperatorInterpretation) interpretation;
-                appendMathMLOperatorElement(parentElement, relationOrBracketInterp.getOperator());
-                break;
-                
-            default:
-                throw new SnuggleLogicException("Unexpected switch case " + interpretation.getType());
+        else if (interpretationMap.containsKey(InterpretationType.MATH_NUMBER)) {
+            MathNumberInterpretation numberInterp = (MathNumberInterpretation) interpretationMap.get(InterpretationType.MATH_NUMBER);
+            appendMathMLNumberElement(parentElement, numberInterp.getNumber().toString());
+        }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_OPERATOR)) {
+            MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) interpretationMap.get(InterpretationType.MATH_OPERATOR);
+            appendMathMLOperatorElement(parentElement, operatorInterp.getOperator());
+        }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_FUNCTION)) {
+            MathFunctionInterpretation functionInterp = (MathFunctionInterpretation) interpretationMap.get(InterpretationType.MATH_FUNCTION);
+            appendMathMLIdentifierElement(parentElement, functionInterp.getName());
+        }
+        else {
+            throw new SnuggleLogicException("Unexpected logic branch based on InterpretationMap, which was: " + interpretationMap);
         }
     }
 

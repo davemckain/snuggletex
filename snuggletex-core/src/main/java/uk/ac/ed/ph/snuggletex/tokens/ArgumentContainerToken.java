@@ -34,7 +34,7 @@ public final class ArgumentContainerToken extends Token implements Iterable<Flow
     
     public ArgumentContainerToken(final FrozenSlice slice, final LaTeXMode latexMode,
             final List<FlowToken> contents) {
-        super(slice, TokenType.ARGUMENT_CONTAINER, latexMode, null);
+        super(slice, TokenType.ARGUMENT_CONTAINER, latexMode);
         this.contents = contents;
     }
     

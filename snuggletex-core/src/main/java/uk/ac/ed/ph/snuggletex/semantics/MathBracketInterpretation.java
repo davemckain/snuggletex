@@ -6,32 +6,40 @@
 package uk.ac.ed.ph.snuggletex.semantics;
 
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
 
 /**
- * Special variant of {@link MathRelationOperatorInterpretation} for the 'less than' and
- * 'greater than' symbols, which may also act as brackets!
- * 
- * FIXME: This smells like a mixin... perhaps it's worth refactoring these classes a bit?
+ * Represents a mathematical bracket, specifying additional information on how it
+ * can be paired up.
  * 
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathRelationOrBracketOperatorInterpretation implements MathOperatorInterpretation {
+public final class MathBracketInterpretation implements MathInterpretation {
+    
+    public static enum BracketType {
+        OPENER,
+        CLOSER,
+        OPENER_OR_CLOSER
+    }
     
     private final MathMLOperator operator;
     private final MathMLOperator partnerOperator;
-    private final MathMLOperator notOperator;
-    
     private final BracketType bracketType;
     
-    public MathRelationOrBracketOperatorInterpretation(final MathMLOperator operator,
+    /**
+     * Flag denoting whether to allow pairs of brackets of this type to be inferred during
+     * Token Fixing. This is not always safe for things like angle brackets, which also
+     * mean less than or greater than.
+     */
+    private final boolean pairingInferencePossible;
+    
+    public MathBracketInterpretation(final MathMLOperator operator,
             final MathMLOperator partnerOperator, final BracketType bracketType,
-            final MathMLOperator notOperator) {
+            final boolean pairingInferencePossible) {
         this.operator = operator;
         this.partnerOperator = partnerOperator;
-        this.notOperator = notOperator;
         this.bracketType = bracketType;
+        this.pairingInferencePossible = pairingInferencePossible;
     }
     
     public MathMLOperator getOperator() {
@@ -42,16 +50,16 @@ public final class MathRelationOrBracketOperatorInterpretation implements MathOp
         return partnerOperator;
     }
     
-    public MathMLOperator getNotOperator() {
-        return notOperator;
-    }
-
     public BracketType getBracketType() {
         return bracketType;
     }
+    
+    public boolean isPairingInferencePossible() {
+        return pairingInferencePossible;
+    }
 
     public InterpretationType getType() {
-        return InterpretationType.MATH_RELATION_OR_BRACKET_OPERATOR;
+        return InterpretationType.MATH_BRACKET;
     }
     
     @Override

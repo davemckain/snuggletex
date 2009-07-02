@@ -32,7 +32,7 @@ public final class EnvironmentToken extends FlowToken {
     public EnvironmentToken(final FrozenSlice slice, final LaTeXMode latexMode,
             final BuiltinEnvironment environment, final ArgumentContainerToken optionalArgument,
             final ArgumentContainerToken[] arguments, final ArgumentContainerToken content) {
-        super(slice, TokenType.ENVIRONMENT, latexMode, environment.getInterpretation(), environment.getTextFlowContext());
+        super(slice, TokenType.ENVIRONMENT, latexMode, environment.getTextFlowContext(), environment.getInterpretationMap());
         this.environment = environment;
         this.optionalArgument = optionalArgument;
         this.arguments = arguments;

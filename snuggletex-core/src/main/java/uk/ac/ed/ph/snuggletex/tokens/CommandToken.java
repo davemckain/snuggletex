@@ -16,7 +16,7 @@ import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
  * @author  David McKain
  * @version $Revision$
  */
-public class CommandToken extends FlowToken {
+public final class CommandToken extends FlowToken {
     
     private final BuiltinCommand command;
     
@@ -38,22 +38,24 @@ public class CommandToken extends FlowToken {
      */
     private final FlowToken combinerTarget;
     
-    public CommandToken(FrozenSlice slice, LaTeXMode latexMode, BuiltinCommand command) {
+    public CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command) {
         this(slice, latexMode, command, null, null, null);
     }
     
-    public CommandToken(FrozenSlice slice, LaTeXMode latexMode, BuiltinCommand command, FlowToken combinerTarget) {
+    public CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command,
+            final FlowToken combinerTarget) {
         this(slice, latexMode, command, combinerTarget, null, null);
     }
     
-    public CommandToken(FrozenSlice slice, LaTeXMode latexMode, BuiltinCommand command,
-            ArgumentContainerToken optionalArgument, ArgumentContainerToken[] arguments) {
+    public CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command,
+            final ArgumentContainerToken optionalArgument, final ArgumentContainerToken[] arguments) {
         this(slice, latexMode, command, null, optionalArgument, arguments);
     }
     
-    private CommandToken(FrozenSlice slice, LaTeXMode latexMode, BuiltinCommand command, FlowToken combinerTarget,
-            ArgumentContainerToken optionalArgument, ArgumentContainerToken[] arguments) {
-        super(slice, TokenType.COMMAND, latexMode, command.getInterpretation(), command.getTextFlowContext());
+    private CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command,
+            final FlowToken combinerTarget, final ArgumentContainerToken optionalArgument,
+            final ArgumentContainerToken[] arguments) {
+        super(slice, TokenType.COMMAND, latexMode, command.getTextFlowContext(), command.getInterpretationMap());
         this.command = command;
         this.combinerTarget = combinerTarget;
         this.optionalArgument = optionalArgument;

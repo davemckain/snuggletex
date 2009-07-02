@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -37,13 +38,17 @@ public final class StyleInterpretationHandler implements CommandHandler, Environ
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
-        StyleDeclarationInterpretation styleInterpretation = (StyleDeclarationInterpretation) token.getCommand().getInterpretation();
+        StyleDeclarationInterpretation styleInterpretation = (StyleDeclarationInterpretation) token
+            .getCommand()
+            .getInterpretation(InterpretationType.STYLE_DECLARATION);
         handleContent(builder, parentElement, styleInterpretation, token.getArguments()[0]);
     }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token)
             throws SnuggleParseException {
-        StyleDeclarationInterpretation styleInterpretation = (StyleDeclarationInterpretation) token.getEnvironment().getInterpretation();
+        StyleDeclarationInterpretation styleInterpretation = (StyleDeclarationInterpretation) token
+            .getEnvironment()
+            .getInterpretation(InterpretationType.STYLE_DECLARATION);
         handleContent(builder, parentElement, styleInterpretation, token.getContent());
     }
     

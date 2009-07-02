@@ -7,7 +7,9 @@ package uk.ac.ed.ph.snuggletex.definitions;
 
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
+import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
@@ -30,9 +32,9 @@ public final class BuiltinEnvironment extends BuiltinCommandOrEnvironment<Enviro
     
     public BuiltinEnvironment(final String texName, final boolean allowingOptionalArgument,
             final int argumentCount, final EnumSet<LaTeXMode> allowedModes,
-            final LaTeXMode contentMode, final Interpretation interpretation,
+            final LaTeXMode contentMode, final EnumMap<InterpretationType, Interpretation> interpretations,
             final EnvironmentHandler domBuildingHandler, final TextFlowContext textFlowContext) {
-        super(texName, allowingOptionalArgument, argumentCount, allowedModes, interpretation,
+        super(texName, allowingOptionalArgument, argumentCount, allowedModes, interpretations,
                 textFlowContext, domBuildingHandler);
         this.contentMode = contentMode;
     }

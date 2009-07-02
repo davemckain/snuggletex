@@ -15,13 +15,12 @@ import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLOperator;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.SimpleMathOperatorInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketOperatorInterpretation.BracketType;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -219,7 +218,7 @@ public final class TokenFixer {
         FlowToken token;
         for (int i=0; i<tokens.size(); i++) { /* (This does fix-in-place) */
             token = tokens.get(i);
-            if (token.getType()==TokenType.COMMAND && token.isInterpretationType(InterpretationType.STYLE_DECLARATION)
+            if (token.getType()==TokenType.COMMAND && token.hasInterpretationType(InterpretationType.STYLE_DECLARATION)
                     && ((CommandToken) token).getCommand().getArgumentCount()==0) {
                 /* Look up the corresponding environment (having the same name as the command) */
                 CommandToken commandToken = (CommandToken) token;
@@ -606,13 +605,13 @@ public final class TokenFixer {
         }
         FlowToken firstToken = tokens.get(0);
         FlowToken secondToken = tokens.get(1);
-        if (firstToken.isInterpretationType(InterpretationType.MATH_OPERATOR) &&
-                ((MathOperatorInterpretation) firstToken.getInterpretation()).getOperator()==MathMLOperator.SUBTRACT
-                && secondToken.isInterpretationType(InterpretationType.MATH_NUMBER)) {
-            CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation()).getNumber();
+        if (firstToken.hasInterpretationType(InterpretationType.MATH_OPERATOR) &&
+                ((MathOperatorInterpretation) firstToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator()==MathMLOperator.SUBTRACT
+                && secondToken.hasInterpretationType(InterpretationType.MATH_NUMBER)) {
+            CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation(InterpretationType.MATH_NUMBER)).getNumber();
             SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
                     TokenType.MATH_NUMBER, firstToken.getLatexMode(),
-                    new MathNumberInterpretation(negation), null);
+                    null, new MathNumberInterpretation(negation));
             tokens.remove(0);
             tokens.set(0, replacementToken);
         }
@@ -667,8 +666,8 @@ public final class TokenFixer {
         FrozenSlice replacementSlice;
         for (int i=0; i<tokens.size()-1; i++) { /* We're fixing in place so tokens.size() may decrease over time */
             maybePrimeToken = tokens.get(i+1);
-            if (maybePrimeToken.isInterpretationType(InterpretationType.MATH_IDENTIFIER)
-                    && ((MathIdentifierInterpretation) maybePrimeToken.getInterpretation()).getName().equals("'")) {
+            if (maybePrimeToken.hasInterpretationType(InterpretationType.MATH_IDENTIFIER)
+                    && ((MathIdentifierInterpretation) maybePrimeToken.getInterpretation(InterpretationType.MATH_IDENTIFIER)).getName().equals("'")) {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());
@@ -698,7 +697,7 @@ public final class TokenFixer {
         int size, startModifyIndex;
         FlowToken subOrSuperToken;
         FlowToken t1, t2, t3;
-        SimpleMathOperatorInterpretation tokenInterp;
+        MathOperatorInterpretation tokenInterp;
         MathMLOperator tokenOperator = null;
         MathMLOperator followingOperator;
         boolean isSubOrSuper;
@@ -708,8 +707,8 @@ public final class TokenFixer {
             subOrSuperToken = tokens.get(i);
             firstIsSuper = false;
             isSubOrSuper = false;
-            if (subOrSuperToken.isInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                tokenInterp = (SimpleMathOperatorInterpretation) subOrSuperToken.getInterpretation();
+            if (subOrSuperToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                tokenInterp = (MathOperatorInterpretation) subOrSuperToken.getInterpretation(InterpretationType.MATH_OPERATOR);
                 tokenOperator = tokenInterp.getOperator();
                 isSubOrSuper = tokenOperator==MathMLOperator.SUPER || tokenOperator==MathMLOperator.SUB;
             }
@@ -741,8 +740,8 @@ public final class TokenFixer {
             /* See if there's another '^' or '_' afterwards */
             t3 = null;
             followingOperator = null;
-            if (i+2<size && tokens.get(i+2).isInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                followingOperator = ((SimpleMathOperatorInterpretation) tokens.get(i+2).getInterpretation()).getOperator();
+            if (i+2<size && tokens.get(i+2).hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                followingOperator = ((MathOperatorInterpretation) tokens.get(i+2).getInterpretation(InterpretationType.MATH_OPERATOR)).getOperator();
                 if (followingOperator==MathMLOperator.SUPER || followingOperator==MathMLOperator.SUB) {
                     /* OK, need to find the "T3" operator! */
                     if (i+3>=size) {
@@ -894,10 +893,14 @@ public final class TokenFixer {
         FlowToken token;
         LEFT_SEARCH: for (int i=0; i<tokens.size(); i++) { /* (List may change from 'i' onwards during loop) */
             token = tokens.get(i);
-            if (!token.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
+            if (!token.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
                 continue LEFT_SEARCH;
             }
-            MathBracketOperatorInterpretation interpretation = (MathBracketOperatorInterpretation) token.getInterpretation();
+            MathBracketInterpretation interpretation = (MathBracketInterpretation) token.getInterpretation(InterpretationType.MATH_BRACKET);
+            if (!interpretation.isPairingInferencePossible()) {
+                /* Too dangerous to try to pair up this type of bracket (e.g. < or |) */
+                continue LEFT_SEARCH;
+            }
             BracketType bracketType = interpretation.getBracketType();
             if (bracketType==BracketType.CLOSER) {
                 /* First thing found is a closer, so make a fence with an empty opener closing at this point */
@@ -930,12 +933,12 @@ public final class TokenFixer {
             FlowToken matchingCloseBracketToken = null;
             int matchingCloseBracketIndex = -1;
             FlowToken afterToken;
-            Stack<MathBracketOperatorInterpretation> openerStack = new Stack<MathBracketOperatorInterpretation>();
+            Stack<MathBracketInterpretation> openerStack = new Stack<MathBracketInterpretation>();
             openerStack.add(interpretation);
             MATCH_SEARCH: for (int j=i+1; j<tokens.size(); j++) { /* 'j' is search index from current point onwards */
                 afterToken = tokens.get(j);
-                if (afterToken.isInterpretationType(InterpretationType.MATH_BRACKET_OPERATOR)) {
-                    MathBracketOperatorInterpretation afterInterpretation = (MathBracketOperatorInterpretation) afterToken.getInterpretation();
+                if (afterToken.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
+                    MathBracketInterpretation afterInterpretation = (MathBracketInterpretation) afterToken.getInterpretation(InterpretationType.MATH_BRACKET);
                     BracketType afterBracketType = afterInterpretation.getBracketType();
                     switch (afterBracketType) {
                         case OPENER:
