@@ -112,10 +112,7 @@ public final class TokenFixer {
         if (environment==GlobalBuiltins.ENV_ITEMIZE || environment==GlobalBuiltins.ENV_ENUMERATE) {
             fixListEnvironmentContent(environmentToken);
         }
-        else if (environment==GlobalBuiltins.ENV_TABULAR
-                || environment==GlobalBuiltins.ENV_ARRAY
-                || environment==GlobalBuiltins.ENV_EQNARRAY
-                || environment==GlobalBuiltins.ENV_EQNARRAYSTAR) {
+        else if (environment.hasInterpretation(InterpretationType.TABULAR)) {
             fixTabularEnvironmentContent(environmentToken);
         }
         

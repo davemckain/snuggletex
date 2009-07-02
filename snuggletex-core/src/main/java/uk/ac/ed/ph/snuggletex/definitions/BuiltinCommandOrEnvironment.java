@@ -65,9 +65,14 @@ abstract class BuiltinCommandOrEnvironment<H> implements CommandOrEnvironment {
         return interpretationMap;
     }
     
+    public boolean hasInterpretation(InterpretationType type) {
+        return interpretationMap!=null && interpretationMap.containsKey(type);
+    }
+    
     public Interpretation getInterpretation(InterpretationType type) {
         return interpretationMap!=null ? interpretationMap.get(type) : null;
     }
+
     
     public TextFlowContext getTextFlowContext() {
         return textFlowContext;

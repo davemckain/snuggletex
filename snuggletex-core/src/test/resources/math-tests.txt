@@ -496,6 +496,39 @@ v_{\mbox{\rm av}}
   </mtr>
 </mtable>
 ====
+\begin{cases} 1 & \mbox{if $x>0$,} \\ 2 & \mbox{otherwise.} \end{cases}
+<mfenced open='{' close=''>
+  <mtable>
+    <mtr>
+      <mtd>
+        <mn>1</mn>
+      </mtd>
+      <mtd>
+        <mrow>
+          <mtext>if</mtext>
+          <mspace width="1ex"/>
+          <mrow>
+            <mi>x</mi>
+            <mo>&gt;</mo>
+            <mn>0</mn>
+          </mrow>
+          <mtext>,</mtext>
+        </mrow>
+      </mtd>
+    </mtr>
+    <mtr>
+      <mtd>
+        <mn>2</mn>
+      </mtd>
+      <mtd>
+        <mrow>
+          <mtext>otherwise.</mtext>
+        </mrow>
+      </mtd>
+    </mtr>
+  </mtable>
+</mfenced>
+====
 ## Regression: can't do small-caps in Math mode so we just ignore this
 \mbox{\sc Hello}
 <mrow><mtext>Hello</mtext></mrow>

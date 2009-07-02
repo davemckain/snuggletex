@@ -21,6 +21,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.BoxHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.CasesHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnsureMathHandler;
@@ -56,14 +57,15 @@ import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameOrIdHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLUnparseHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
-import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.TabularInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -114,13 +116,9 @@ public final class GlobalBuiltins {
     public static BuiltinEnvironment ENV_VERBATIM;
     public static BuiltinEnvironment ENV_ITEMIZE;
     public static BuiltinEnvironment ENV_ENUMERATE;
-    public static BuiltinEnvironment ENV_TABULAR;
     public static BuiltinEnvironment ENV_MATH;
     public static BuiltinEnvironment ENV_DISPLAYMATH;
     public static BuiltinEnvironment ENV_BRACKETED;
-    public static BuiltinEnvironment ENV_ARRAY;
-    public static BuiltinEnvironment ENV_EQNARRAY;
-    public static BuiltinEnvironment ENV_EQNARRAYSTAR;
     
     private static final DefinitionMap map;
     
@@ -662,10 +660,13 @@ public final class GlobalBuiltins {
         ENV_VERBATIM = map.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimHandler(false), START_NEW_XHTML_BLOCK);
         ENV_ITEMIZE = map.addEnvironment("itemize", PARA_MODE_ONLY, null, null, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
         ENV_ENUMERATE = map.addEnvironment("enumerate", PARA_MODE_ONLY, null, null, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
-        ENV_TABULAR = map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, null, new TabularHandler(), START_NEW_XHTML_BLOCK);
-        ENV_ARRAY = map.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, null, new ArrayHandler(), null);
-        ENV_EQNARRAY = map.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, null, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
-        ENV_EQNARRAYSTAR = map.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, null, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
+        
+        TabularInterpretation tabularInterpretation = new TabularInterpretation();
+        map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, tabularInterpretation, new TabularHandler(), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, tabularInterpretation, new ArrayHandler(), null);
+        map.addEnvironment("cases", MATH_MODE_ONLY, MATH, tabularInterpretation, new CasesHandler(), null);
+        map.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, tabularInterpretation, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
+        map.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, tabularInterpretation, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
         
         /* Simple text environments */
         map.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);

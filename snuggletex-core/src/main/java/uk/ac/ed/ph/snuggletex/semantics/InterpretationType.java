@@ -36,5 +36,8 @@ public enum InterpretationType {
     MATH_BRACKET,
     MATH_BIG_LIMIT_OWNER,
     
+    /* These can be applied to both Text and Math stuff. (Generally only environments) */
+    TABULAR
+    
     ;
 }
