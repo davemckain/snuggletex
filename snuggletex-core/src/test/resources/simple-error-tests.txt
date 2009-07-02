@@ -211,7 +211,7 @@ $\begin{array}{c} 1&2 \end{array}$
 TDEMA2
 ====
 $\begin{cases} 1&2&3 \end{cases}$
-TDEMC0
+TDEMM0
 ====
 \'{\mbox{a}}
 TDETA0

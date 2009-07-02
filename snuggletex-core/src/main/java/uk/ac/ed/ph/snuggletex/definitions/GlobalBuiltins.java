@@ -21,7 +21,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.BoxHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.CasesHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MatrixHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnsureMathHandler;
@@ -664,9 +664,17 @@ public final class GlobalBuiltins {
         TabularInterpretation tabularInterpretation = new TabularInterpretation();
         map.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, tabularInterpretation, new TabularHandler(), START_NEW_XHTML_BLOCK);
         map.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, tabularInterpretation, new ArrayHandler(), null);
-        map.addEnvironment("cases", MATH_MODE_ONLY, MATH, tabularInterpretation, new CasesHandler(), null);
+        map.addEnvironment("cases", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(2, MathMLSymbol.OPEN_CURLY_BRACKET, ""), null);
         map.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, tabularInterpretation, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
         map.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, tabularInterpretation, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
+        
+        /* AMS-LaTeX convenience environments */
+        map.addEnvironment("matrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(), null);
+        map.addEnvironment("pmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.OPEN_BRACKET, MathMLSymbol.CLOSE_BRACKET), null);
+        map.addEnvironment("bmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.OPEN_SQUARE_BRACKET, MathMLSymbol.CLOSE_SQUARE_BRACKET), null);
+        map.addEnvironment("Bmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.OPEN_CURLY_BRACKET, MathMLSymbol.CLOSE_CURLY_BRACKET), null);
+        map.addEnvironment("vmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.VERT_BRACKET, MathMLSymbol.VERT_BRACKET), null);
+        map.addEnvironment("Vmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.DOUBLE_VERT_BRACKET, MathMLSymbol.DOUBLE_VERT_BRACKET), null);
         
         /* Simple text environments */
         map.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);

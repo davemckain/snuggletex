@@ -70,10 +70,8 @@ SnuggleTeX also supports the \verb|\ensuremath{...}| command.
 \minout{-5.32} & \note{Simple number. (Currently SnuggleTeX only understands UK number
   formats but this will improve soon\ldots)} \\
 \minout{x} & \note{An identifier} \\
-\minout{3x} & \note{SnuggleTeX can be asked to insert explicit "InvisibleTimes"
-  characters between adjacent tokens in the resulting MathML.} \\
-\minout{x+1 \over 3-y} & \note{Old style fractions} \\
-\minout{\frac{x+1}{3-y}} & \note{New style fractions} \\
+\minout{x+1 \over 3y} & \note{Old style fractions} \\
+\minout{\frac{x+1}{3y}} & \note{New style fractions} \\
 \minout{x^2} & \note{Simple superscript example} \\
 \minout{x^{2^{y-z}}} & \note{Complex superscript example} \\
 \minout{(x_1, x_2)} & \note{Subscript example.} \\
@@ -230,14 +228,13 @@ Note that some of the more exotic operators may require extra fonts installed.
 As with LaTeX, we support the \verb|\not| command to negate certain operators. Only
 the ones listed in the table below are supported.
 
-
 \newcommand{\rdemo}[1]{\minout{#1} & & \\}
 \newcommand{\rndemo}[1]{\minout{#1} & \minout{\not #1} \\}
 \newenvironment{rdemotable}
 {\begin{center}
  \begin{tabular}{|r|l|r|l|}
  \hline \\
- Input & Result & Input (notted) & Result \\
+ Input & Result & Input (negated) & Result \\
  \hline \\
 }{\hline
  \end{tabular}
@@ -456,6 +453,8 @@ results on all of the browsers that you need to support!
 \mpdemo{\vert}{\vert}
 \mpdemo{\Vert}{\Vert}
 \mpdemo{<}{>}
+\mpdemo{.}{)}
+\mpdemo{[}{.}
 \end{mptable}
 
 \subsection*{Math Fonts}
@@ -492,12 +491,6 @@ within math mode. It also supports \verb|\textrm| and friends.
 \subsection*{Mathematical Structures}
 
 \begin{ndemotable}
-\bigdminout{\left(
-  \begin{array}{cc}
-    1 & 2 \\
-    3 & 4
-  \end{array}
-\right)} & \note{This uses the \texttt{array} environment combined with stretchy brackets to make a matrix.} \\
 
 \newcommand{\biginout}[1]{\begin{verbatim}#1\end{verbatim} & #1}
 \biginout{\begin{eqnarray*}
@@ -508,6 +501,49 @@ within math mode. It also supports \verb|\textrm| and friends.
   SnuggleTeX also supports \texttt{eqnarray}, though labelling is not supported so it
   behaves exactly like \texttt{eqnarray*}.}
   \\
+
+\bigdminout{\left(
+  \begin{array}{cc}
+    1 & 2 \\
+    3 & 4
+  \end{array}
+\right)} & \note{This uses the \texttt{array} environment combined with stretchy brackets to make a matrix.} \\
+
+\bigdminout{\begin{matrix}
+  1 & 2 \\
+  3 & 4
+\end{matrix}} & \note{SnuggleTeX supports the convenient AMS-LaTeX  \texttt{matrix} environment\ldots} \\
+
+\bigdminout{\begin{pmatrix}
+  1 & 2 \\
+  3 & 4
+\end{pmatrix}} & \note{\ldots and \texttt{pmatrix} \ldots} \\
+
+\bigdminout{\begin{bmatrix}
+  1 & 2 \\
+  3 & 4
+\end{bmatrix}} & \note{\ldots and \texttt{bmatrix} \ldots} \\
+
+\bigdminout{\begin{Bmatrix}
+  1 & 2 \\
+  3 & 4
+\end{Bmatrix}} & \note{\ldots and \texttt{Bmatrix} \ldots} \\
+
+\bigdminout{\begin{vmatrix}
+  1 & 2 \\
+  3 & 4
+\end{vmatrix}} & \note{\ldots and \texttt{vmatrix} \ldots} \\
+
+\bigdminout{\begin{Vmatrix}
+  1 & 2 \\
+  3 & 4
+\end{Vmatrix}} & \note{\ldots and \texttt{Vmatrix}.} \\
+
+\bigdminout{A=\begin{cases}
+  1 & 2 \\
+  3 & 4
+\end{cases}} & \note{Another useful AMS-LaTeX environment environment\ldots} \\
+
 \end{ndemotable}
 
 \subsection*{Variant Characters}

@@ -496,6 +496,88 @@ v_{\mbox{\rm av}}
   </mtr>
 </mtable>
 ====
+\begin{matrix} 1 & 2 \\ 3 & 4 \end{matrix}
+<mtable>
+  <mtr>
+    <mtd><mn>1</mn></mtd>
+    <mtd><mn>2</mn></mtd>
+  </mtr>
+  <mtr>
+    <mtd><mn>3</mn></mtd>
+    <mtd><mn>4</mn></mtd>
+  </mtr>
+</mtable>
+====
+\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}
+<mfenced open='(' close=')'>
+  <mtable>
+    <mtr>
+      <mtd><mn>1</mn></mtd>
+      <mtd><mn>2</mn></mtd>
+    </mtr>
+    <mtr>
+      <mtd><mn>3</mn></mtd>
+      <mtd><mn>4</mn></mtd>
+    </mtr>
+  </mtable>
+</mfenced>
+====
+\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}
+<mfenced open='[' close=']'>
+  <mtable>
+    <mtr>
+      <mtd><mn>1</mn></mtd>
+      <mtd><mn>2</mn></mtd>
+    </mtr>
+    <mtr>
+      <mtd><mn>3</mn></mtd>
+      <mtd><mn>4</mn></mtd>
+    </mtr>
+  </mtable>
+</mfenced>
+====
+\begin{Bmatrix} 1 & 2 \\ 3 & 4 \end{Bmatrix}
+<mfenced open='{' close='}'>
+  <mtable>
+    <mtr>
+      <mtd><mn>1</mn></mtd>
+      <mtd><mn>2</mn></mtd>
+    </mtr>
+    <mtr>
+      <mtd><mn>3</mn></mtd>
+      <mtd><mn>4</mn></mtd>
+    </mtr>
+  </mtable>
+</mfenced>
+====
+\begin{vmatrix} 1 & 2 \\ 3 & 4 \end{vmatrix}
+<mfenced open='|' close='|'>
+  <mtable>
+    <mtr>
+      <mtd><mn>1</mn></mtd>
+      <mtd><mn>2</mn></mtd>
+    </mtr>
+    <mtr>
+      <mtd><mn>3</mn></mtd>
+      <mtd><mn>4</mn></mtd>
+    </mtr>
+  </mtable>
+</mfenced>
+====
+\begin{Vmatrix} 1 & 2 \\ 3 & 4 \end{Vmatrix}
+<mfenced open='&#x2225;' close='&#x2225;'>
+  <mtable>
+    <mtr>
+      <mtd><mn>1</mn></mtd>
+      <mtd><mn>2</mn></mtd>
+    </mtr>
+    <mtr>
+      <mtd><mn>3</mn></mtd>
+      <mtd><mn>4</mn></mtd>
+    </mtr>
+  </mtable>
+</mfenced>
+====
 \begin{cases} 1 & \mbox{if $x>0$,} \\ 2 & \mbox{otherwise.} \end{cases}
 <mfenced open='{' close=''>
   <mtable>
