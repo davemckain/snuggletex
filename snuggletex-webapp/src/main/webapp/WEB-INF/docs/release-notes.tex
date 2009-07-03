@@ -181,7 +181,7 @@ Reports \href[Changes Report]{maven://changes-report.html} page.
 
   \item \verb|MathMLWebPageBuilder| now checks whether the serializing XSLT
   created via TrAX is a version of Saxon supporting XSLT 2.0 and, if so,
-  uses the \verb|xhtml| output method rather than \verb.html| when appropriate.
+  uses the \verb|xhtml| output method rather than \verb|xml| when appropriate.
 
   \item Renamed \verb|WebPageType.DEFAULT| as \verb|WebPageType.MOZILLA| and
   added \verb|WebPageType.UNIVERSAL_STYLESHEET| as an extra convenience.
@@ -307,7 +307,7 @@ Reports \href[Changes Report]{maven://changes-report.html} page.
   \item Added special \verb|\href| macro to make it easy to create a hypertext
   link with optional link text. (This may change before 1.0.0)
 
-  \item Added \verb|.htmlName| command which takes a single argument (in
+  \item Added \verb|\xmlName| command which takes a single argument (in
   verbatim mode) and verifies that it is a proper XML Name.
 
   \item Improved information provided by \verb|MessageFormatter| class when
