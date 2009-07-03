@@ -101,8 +101,8 @@ public final class MathInputDemoServlet extends BaseServlet {
          */
         NodeList resultNodeList = resultRoot.getChildNodes();
         List<InputError> errors = session.getErrors();
-        Element resultMathElement = null;
-        String resultMathML = null;
+        Element resultMathMLElement = null;
+        String resultMathMLSource = null;
         List<Element> parsingErrors = null;
         boolean badInput = false;
         if (!errors.isEmpty()) {
@@ -114,8 +114,8 @@ public final class MathInputDemoServlet extends BaseServlet {
         }
         else if (resultNodeList.getLength()==1 && MathMLUtilities.isMathMLElement(resultNodeList.item(0), "math")) {
             /* Result is a single <math/> element, which looks correct. */
-            resultMathElement = (Element) resultNodeList.item(0);
-            resultMathML = MathMLUtilities.serializeElement(resultMathElement, "ASCII");
+            resultMathMLElement = (Element) resultNodeList.item(0);
+            resultMathMLSource = MathMLUtilities.serializeElement(resultMathMLElement, "ASCII");
         }
         else {
             /* This could have been caused by input like 'x \] hello \[ x', which would end
@@ -129,11 +129,11 @@ public final class MathInputDemoServlet extends BaseServlet {
         if (rawInputLaTeX!=null) {
             if (errors.isEmpty()) {
                 logger.info("Input: {}", inputLaTeX);
-                logger.info("Resulting MathML: {}", resultMathML);
+                logger.info("Resulting MathML: {}", resultMathMLSource);
             }
             else {
                 logger.warn("Input: {}", inputLaTeX);
-                logger.warn("Resulting MathML: {}", resultMathML);
+                logger.warn("Resulting MathML: {}", resultMathMLSource);
                 logger.warn("Error count: {}", errors.size());
                 for (InputError error : errors) {
                     logger.warn("Error: " + MessageFormatter.formatErrorAsString(error));
@@ -166,16 +166,14 @@ public final class MathInputDemoServlet extends BaseServlet {
         webOptions.setIndenting(true);
         webOptions.setIncludingStyleElement(false);
         
-        /* If browser can't handle MathML, we'll add post-processors to down-convert
-         * simple expressions to XHTML + CSS and replace the remaining MathML islands
-         * with dynamically generated images.
+        /* We will actually generate a XHTML+CSS+Images page, even if the browser can cope
+         * with MathmL as this gives us a nice way of showing both types of output in this
+         * case as we can simply pass the resulting MathML Element in as a parameter. Woo hoo!
          */
-        if (webPageType==WebPageType.PROCESSED_HTML) {
-            webOptions.setDOMPostProcessors(
-                    new DownConvertingPostProcessor(),
-                    new MathMLToImageLinkPostProcessor(request.getContextPath())
-            );
-        }
+        webOptions.setDOMPostProcessors(
+                new DownConvertingPostProcessor(),
+                new MathMLToImageLinkPostProcessor(request.getContextPath())
+        );
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
@@ -184,7 +182,8 @@ public final class MathInputDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
-        viewStylesheet.setParameter("result-mathml", resultMathML);
+        viewStylesheet.setParameter("result-mathml-source", resultMathMLSource);
+        viewStylesheet.setParameter("result-mathml-element", resultMathMLElement);
         webOptions.setStylesheets(viewStylesheet);
        
         /* Generate and serve the resulting web page */

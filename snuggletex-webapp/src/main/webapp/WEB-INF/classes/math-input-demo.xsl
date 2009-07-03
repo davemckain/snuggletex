@@ -27,7 +27,8 @@ All Rights Reserved
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
   <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
   <xsl:param name="parsing-errors" as="element(s:error)*"/>
-  <xsl:param name="result-mathml" as="xs:string?"/>
+  <xsl:param name="result-mathml-element" as="element(m:math)"/>
+  <xsl:param name="result-mathml-source" as="xs:string?"/>
 
   <!-- Override page ID -->
   <xsl:variable name="pageId" select="'mathInputDemo'" as="xs:string"/>
@@ -74,15 +75,26 @@ All Rights Reserved
   possibility that up-conversion has not been entirely successful.
   -->
   <xsl:template match="body" mode="handle-successful-input">
-    <h3>Output (as rendered by your browser)</h3>
-    <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+    <h3>Resulting MathML Output (as rendered by your browser)</h3>
+    <xsl:choose>
+      <xsl:when test="$is-mathml-capable">
+        <div class="result">
+          <xsl:copy-of select="$result-mathml-element"/>
+        </div>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+      </xsl:otherwise>
+    </xsl:choose>
+
+    <h3>Legacy Output (MathML converted to XHTML+CSS or a PNG image)</h3>
     <div class="result">
       <xsl:copy-of select="node()"/>
     </div>
 
-    <h3>Resulting MathML</h3>
+    <h3>Resulting MathML Source</h3>
     <pre class="result">
-      <xsl:value-of select="$result-mathml"/>
+      <xsl:value-of select="$result-mathml-source"/>
     </pre>
   </xsl:template>
 
