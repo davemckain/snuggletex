@@ -491,7 +491,6 @@ within math mode. It also supports \verb|\textrm| and friends.
 \subsection*{Mathematical Structures}
 
 \begin{ndemotable}
-
 \newcommand{\biginout}[1]{\begin{verbatim}#1\end{verbatim} & #1}
 \biginout{\begin{eqnarray*}
   x & = & y \\
@@ -501,49 +500,40 @@ within math mode. It also supports \verb|\textrm| and friends.
   SnuggleTeX also supports \texttt{eqnarray}, though labelling is not supported so it
   behaves exactly like \texttt{eqnarray*}.}
   \\
-
 \bigdminout{\left(
   \begin{array}{cc}
     1 & 2 \\
     3 & 4
   \end{array}
 \right)} & \note{This uses the \texttt{array} environment combined with stretchy brackets to make a matrix.} \\
-
 \bigdminout{\begin{matrix}
   1 & 2 \\
   3 & 4
 \end{matrix}} & \note{SnuggleTeX supports the convenient AMS-LaTeX  \texttt{matrix} environment\ldots} \\
-
 \bigdminout{\begin{pmatrix}
   1 & 2 \\
   3 & 4
 \end{pmatrix}} & \note{\ldots and \texttt{pmatrix} \ldots} \\
-
 \bigdminout{\begin{bmatrix}
   1 & 2 \\
   3 & 4
 \end{bmatrix}} & \note{\ldots and \texttt{bmatrix} \ldots} \\
-
 \bigdminout{\begin{Bmatrix}
   1 & 2 \\
   3 & 4
 \end{Bmatrix}} & \note{\ldots and \texttt{Bmatrix} \ldots} \\
-
 \bigdminout{\begin{vmatrix}
   1 & 2 \\
   3 & 4
 \end{vmatrix}} & \note{\ldots and \texttt{vmatrix} \ldots} \\
-
 \bigdminout{\begin{Vmatrix}
   1 & 2 \\
   3 & 4
 \end{Vmatrix}} & \note{\ldots and \texttt{Vmatrix}.} \\
-
 \bigdminout{A=\begin{cases}
   1 & 2 \\
   3 & 4
 \end{cases}} & \note{Another useful AMS-LaTeX environment environment\ldots} \\
-
 \end{ndemotable}
 
 \subsection*{Variant Characters}
