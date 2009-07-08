@@ -116,7 +116,7 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
                 logger.info("Output: {}", xmlString);
             }
             else {
-                logger.warn("Input:  {}" + inputLaTeX);
+                logger.warn("Input:  {}", inputLaTeX);
                 logger.warn("Output: {}", xmlString);
                 logger.warn("Errors: #{}", errors.size());
                 for (InputError error : errors) {
