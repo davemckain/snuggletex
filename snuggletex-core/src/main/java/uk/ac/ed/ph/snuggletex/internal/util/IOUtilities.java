@@ -6,23 +6,21 @@
 package uk.ac.ed.ph.snuggletex.internal.util;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.nio.channels.FileChannel;
 
 /**
  * A collection of vaguely useful utilities for doing common I/O and File-related tasks.
+ * <p>
+ * (This is a cut-down version of the Class of the same name in <tt>ph-commons-util</tt>.)
  * 
  * @author  David McKain
  * @version $Revision: 302 $
@@ -34,16 +32,6 @@ public final class IOUtilities {
 
     /** Maximum size of characters we'll read from a text stream before complaining */
     public static int MAX_TEXT_STREAM_SIZE = 1024 * 1024;
-
-    /**
-     * This is a filename filter which ignores CVS control directories and
-     * .cvsBLAH and .#BLAH files.
-     */
-    public static final FilenameFilter CVS_FILE_FILTER = new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-            return !(name.equals("CVS") || name.startsWith(".cvs") || name.startsWith(".#"));
-        }
-    };
 
     //----------------------------------------------------------------------------
 
@@ -206,12 +194,6 @@ public final class IOUtilities {
     //----------------------------------------------------------------------------
     // Reading methods
     
-    public static byte[] readBinaryStream(InputStream stream) throws IOException {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        transfer(stream, outStream);
-        return outStream.toByteArray();
-    }
-    
     /**
      * Reads all character data from the given Reader, returning a String
      * containing all of the data. The Reader will be buffered for efficiency and
@@ -268,84 +250,5 @@ public final class IOUtilities {
         finally {
             inStream.close();
         }
-    }
-
-    //----------------------------------------------------------------------------
-    // Output methods
-
-    /**
-     * Writes the given String data to the given output file, encoded as
-     * UTF-8.
-     *
-     * @param outputFile File to save to (overwriting any existing content)
-     * @param data String data to store
-     *
-     * @throws IOException if the usual bad things happen
-     */
-    public static void writeUnicodeFile(File outputFile, String data) throws IOException {
-        writeFile(outputFile, data, "UTF-8");
-    }
-
-    /**
-     * Writes the given String data to the given output file, encoded using
-     * the given encoding.
-     *
-     * @param outputFile File to save to (overwriting any existing content)
-     * @param data String data to store
-     *
-     * @throws IOException if the usual bad things happen
-     * @throws UnsupportedEncodingException if the given encoding
-     *   is not supported.
-     */
-    public static void writeFile(File outputFile, String data, String encoding) throws IOException {
-        FileOutputStream outStream = new FileOutputStream(outputFile);
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(outStream, encoding);
-            writer.write(data);
-        }
-        finally {
-            if (writer!=null) {
-                writer.close();
-            }
-            else {
-                outStream.close();
-            }
-        }
-    }
-
-    //--------------------------------------------------------
-
-    /**
-     * Recursively deletes the contents of the given directory (and
-     * possibly the directory itself).
-     *
-     * @param root directory (or file) whose contents will be deleted
-     * @param deleteRoot true deletes root directory, false deletes only
-     *  its contents.
-     *
-     * @throws IOException if something goes wrong, which may leave things
-     *   in an inconsistent state.
-     */
-    public static void recursivelyDelete(File root, boolean deleteRoot) throws IOException {
-        if (root.isDirectory()) {
-            File [] contents = root.listFiles();
-            for (File child : contents) {
-                recursivelyDelete(child, true);
-            }
-        }
-        if (deleteRoot) {
-            if (!root.delete()) {
-                throw new IOException("Could not delete directory " + root);
-            }
-        }
-    }
-
-    /**
-     * Convenience version of {@link #recursivelyDelete(File, boolean)} that
-     * deletes the given root directory as well.
-     */
-    public static void recursivelyDelete(File root) throws IOException {
-        recursivelyDelete(root, true);
     }
 }
