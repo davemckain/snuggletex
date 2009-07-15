@@ -27,14 +27,14 @@ public interface SessionContext {
     SessionConfiguration getConfiguration();
 
     List<InputError> getErrors();
+
+    BuiltinCommand getBuiltinCommandByTeXName(String texName);
+    
+    BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName);
     
     Map<String, UserDefinedCommand> getUserCommandMap();
     
     Map<String, UserDefinedEnvironment> getUserEnvironmentMap();
-    
-    BuiltinCommand getCommandByTeXName(String texName);
-    
-    BuiltinEnvironment getEnvironmentByTeXName(String texName);
     
     StylesheetManager getStylesheetManager();
     

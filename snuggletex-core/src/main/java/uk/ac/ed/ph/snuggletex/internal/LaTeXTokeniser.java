@@ -1063,7 +1063,7 @@ public final class LaTeXTokeniser {
             result = finishUserDefinedCommand(userCommand);
         }
         else {
-            BuiltinCommand builtinCommand = sessionContext.getCommandByTeXName(commandName);
+            BuiltinCommand builtinCommand = sessionContext.getBuiltinCommandByTeXName(commandName);
             if (builtinCommand!=null) {
                 result = finishBuiltinCommand(builtinCommand);
             }
@@ -1541,7 +1541,7 @@ public final class LaTeXTokeniser {
             result = finishBeginUserDefinedEnvironment(userEnvironment);
         }
         else {
-            BuiltinEnvironment builtinEnvironment = sessionContext.getEnvironmentByTeXName(environmentName);
+            BuiltinEnvironment builtinEnvironment = sessionContext.getBuiltinEnvironmentByTeXName(environmentName);
             if (builtinEnvironment!=null) {
                 result = finishBeginBuiltinEnvironment(builtinEnvironment);
                 
@@ -1590,7 +1590,7 @@ public final class LaTeXTokeniser {
             result = finishEndUserDefinedEnvironment(userEnvironment);
         }
         else {
-            BuiltinEnvironment builtinEnvironment = sessionContext.getEnvironmentByTeXName(environmentName);
+            BuiltinEnvironment builtinEnvironment = sessionContext.getBuiltinEnvironmentByTeXName(environmentName);
             if (builtinEnvironment!=null) {
                 /* The end of a build-in environment is special as the \\begin{env} will have
                  * started a new tokenisation level. We simply return null to indicate there's
@@ -1922,7 +1922,7 @@ public final class LaTeXTokeniser {
          * or not. */
         Map<String, UserDefinedCommand> userCommandMap = sessionContext.getUserCommandMap();
         boolean isRenewing = definitionCommand==GlobalBuiltins.CMD_RENEWCOMMAND;
-        boolean isCommandAlreadyDefined = userCommandMap.containsKey(commandName) || sessionContext.getCommandByTeXName(commandName)!=null;
+        boolean isCommandAlreadyDefined = userCommandMap.containsKey(commandName) || sessionContext.getBuiltinCommandByTeXName(commandName)!=null;
         if (isRenewing && !isCommandAlreadyDefined) {
             /* Command does not already exist so can't be renewed */
             return createError(ErrorCode.TTEUC4, startTokenIndex, position, commandName);
@@ -2002,7 +2002,7 @@ public final class LaTeXTokeniser {
          * or not. */
         Map<String, UserDefinedEnvironment> userEnvironmentMap = sessionContext.getUserEnvironmentMap();
         boolean isRenewing = definitionCommand==GlobalBuiltins.CMD_RENEWENVIRONMENT;
-        boolean isEnvAlreadyDefined = userEnvironmentMap.containsKey(environmentName) || sessionContext.getEnvironmentByTeXName(environmentName)!=null;
+        boolean isEnvAlreadyDefined = userEnvironmentMap.containsKey(environmentName) || sessionContext.getBuiltinEnvironmentByTeXName(environmentName)!=null;
         if (isRenewing && !isEnvAlreadyDefined) {
             /* Error: Environment is not already defined so can't be renewed */
             return createError(ErrorCode.TTEUE2, startTokenIndex, position, environmentName);

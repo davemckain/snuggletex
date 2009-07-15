@@ -221,7 +221,7 @@ public final class TokenFixer {
                 /* Look up the corresponding environment (having the same name as the command) */
                 CommandToken commandToken = (CommandToken) token;
                 BuiltinCommand command = commandToken.getCommand();
-                BuiltinEnvironment environment = sessionContext.getEnvironmentByTeXName(command.getTeXName());
+                BuiltinEnvironment environment = sessionContext.getBuiltinEnvironmentByTeXName(command.getTeXName());
                 if (environment==null) {
                     throw new SnuggleLogicException("No environment defined to replace old TeX command " + command);
                 }
