@@ -229,7 +229,7 @@ public final class SnuggleSession implements SessionContext {
      *   input LaTeX and if the session was configured to fail on the first error. 
      */
     public boolean buildDOMSubtree(final Element targetRoot) {
-        return buildDOMSubtree(targetRoot, engine.getDefaultDOMOptions());
+        return buildDOMSubtree(targetRoot, engine.getDefaultDOMOutputOptions());
     }
     
     /**
@@ -245,7 +245,7 @@ public final class SnuggleSession implements SessionContext {
      *   the first error. 
      */
     public NodeList buildDOMSubtree() {
-        return buildDOMSubtree(engine.getDefaultDOMOptions());
+        return buildDOMSubtree(engine.getDefaultDOMOutputOptions());
     }
     
     /**
@@ -272,10 +272,9 @@ public final class SnuggleSession implements SessionContext {
     //---------------------------------------------
     
     /**
-     * Convenience method to create a well-formed external general parsed entity out of the
-     * currently parsed tokens.
+     * Creates a well-formed external general parsed entity out of the currently parsed tokens.
      * <p>
-     * The default {@link DOMOutputOptions} specified in the {@link SnuggleEngine} will be
+     * The default {@link XMLOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
      *
      * @return resulting XML if the process completed successfully, null if the process was
@@ -283,7 +282,28 @@ public final class SnuggleSession implements SessionContext {
      *   the first error.  
      */
     public String buildXMLString() {
-        return buildXMLString(engine.getDefaultDOMOptions(), false);
+        return buildXMLString(engine.getDefaultXMLOutputOptions());
+    }
+    
+    /**
+     * Creates a well-formed external general parsed entity out of the currently parsed tokens.
+     * <p>
+     * The given {@link XMLOutputOptions} Object is used to configure the process.
+     * 
+     * @return resulting XML if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
+     */
+    public String buildXMLString(final XMLOutputOptions options) {
+        DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
+        Document document = documentBuilder.newDocument();
+        Element temporaryRoot = document.createElement("root");
+        document.appendChild(temporaryRoot);
+        if (!buildDOMSubtree(temporaryRoot, options)) {
+            return null;
+        }
+        return XMLUtilities.serializeNodeChildren(temporaryRoot, options.getEncoding(),
+                options.isIndenting(), true, getStylesheetManager());
     }
     
     /**
@@ -297,10 +317,13 @@ public final class SnuggleSession implements SessionContext {
      *
      * @return resulting XML if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
-     *   the first error.  
+     *   the first error.
+     *   
+     * @deprecated Use {@link #buildXMLString(XMLOutputOptions)} instead
      */
+    @Deprecated
     public String buildXMLString(boolean indent) {
-        return buildXMLString(engine.getDefaultDOMOptions(), indent);
+        return buildXMLString(engine.getDefaultDOMOutputOptions(), indent);
     }
     
     /**
@@ -311,8 +334,11 @@ public final class SnuggleSession implements SessionContext {
      * 
      * @return resulting XML if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
-     *   the first error. 
+     *   the first error.
+     *   
+     * @deprecated Use {@link #buildXMLString(XMLOutputOptions)} instead.
      */
+    @Deprecated
     public String buildXMLString(final DOMOutputOptions options) {
         return buildXMLString(options, false);
     }
@@ -327,8 +353,11 @@ public final class SnuggleSession implements SessionContext {
      * 
      * @return resulting XML if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
-     *   the first error. 
+     *   the first error.
+     *   
+     * @deprecated Use {@link #buildXMLString(XMLOutputOptions)} instead.
      */
+    @Deprecated
     public String buildXMLString(final DOMOutputOptions options, final boolean indent) {
         DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
         Document document = documentBuilder.newDocument();
@@ -337,7 +366,8 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        return XMLUtilities.serializeNodeChildren(temporaryRoot, indent, true, getStylesheetManager());
+        return XMLUtilities.serializeNodeChildren(temporaryRoot, XMLOutputOptions.DEFAULT_ENCODING,
+                indent, true, getStylesheetManager());
     }
     
     //---------------------------------------------

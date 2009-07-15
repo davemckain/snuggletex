@@ -215,13 +215,14 @@ public final class XMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
-    public static String serializeNodeChildren(final Node node, final boolean indent,
+    public static String serializeNodeChildren(final Node node, final String encoding, final boolean indent,
             final boolean omitXMLDeclaration, StylesheetManager stylesheetManager) {
         StringWriter resultWriter = new StringWriter();
         try {
             Transformer serializer = stylesheetManager.getStylesheet(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME).newTransformer();
             serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
+            serializer.setOutputProperty(OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8");
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
         }
         catch (Exception e) {

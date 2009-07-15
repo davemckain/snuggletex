@@ -19,7 +19,6 @@ import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 public final class WebPageOutputOptionsTemplates {
     
     public static final String DEFAULT_CONTENT_TYPE = "application/xhtml+xml";
-    public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String DEFAULT_LANG = "en";
     
     /**

@@ -46,7 +46,10 @@ public final class XMLUnparseHandler implements EnvironmentHandler, CommandHandl
         /* Serialize child content to text and replace all children with this text inside
          * an appropriate container  */
         String parentContentUnparsed = XMLUtilities.serializeNodeChildren(parentElement,
-                isBlock, true, builder.getSessionContext().getStylesheetManager());
+                "UTF-8", /* (Use UTF-8) */
+                isBlock, /* (Indent if block mode) */
+                true, /* (Omit XML declaration) */
+                builder.getSessionContext().getStylesheetManager());
         NodeList childNodes = parentElement.getChildNodes();
         for (int i=childNodes.getLength()-1; i>=0; i--) {
             parentElement.removeChild(childNodes.item(i));

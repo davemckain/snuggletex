@@ -5,18 +5,17 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * This is the main entry point into SnuggleTeX.
@@ -56,7 +55,10 @@ public final class SnuggleEngine {
     private SessionConfiguration defaultSessionConfiguration;
     
     /** Default {@link DOMOutputOptions} */
-    private DOMOutputOptions defaultDOMOptions;
+    private DOMOutputOptions defaultDOMOutputOptions;
+    
+    /** Default {@link XMLOutputOptions} */
+    private DOMOutputOptions defaultXMLOutputOptions;
 
     /**
      * Creates a new {@link SnuggleEngine} using a very simple cache for any
@@ -75,8 +77,9 @@ public final class SnuggleEngine {
      */
     public SnuggleEngine(StylesheetCache stylesheetCache) {
         this.definitionMaps = new ArrayList<DefinitionMap>();
-        this.defaultSessionConfiguration = new SessionConfiguration();
-        this.defaultDOMOptions = new DOMOutputOptions();
+        this.defaultSessionConfiguration = null; /* (Lazy init) */
+        this.defaultDOMOutputOptions = null; /* (Lazy init) */
+        this.defaultXMLOutputOptions = null; /* (Lazy init) */
         
         /* Create manager for XSLT stlyesheets using the given cache */
         this.stylesheetManager = new StylesheetManager(stylesheetCache);
@@ -94,7 +97,7 @@ public final class SnuggleEngine {
     //-------------------------------------------------
     
     public SnuggleSession createSession() {
-        return createSession(defaultSessionConfiguration);
+        return createSession(getDefaultSessionConfiguration());
     }
     
     public SnuggleSession createSession(SessionConfiguration configuration) {
@@ -129,8 +132,22 @@ public final class SnuggleEngine {
     }
     
     //-------------------------------------------------
+    
+    /**
+     * Convenience method to extract the underlying {@link StylesheetManager} used by
+     * this engine. Most people won't care about this, but it might be useful if you're
+     * trying to integrate stylesheet caching.
+     */
+    public StylesheetManager getStylesheetManager() {
+        return stylesheetManager;
+    }
+    
+    //-------------------------------------------------
 
     public SessionConfiguration getDefaultSessionConfiguration() {
+        if (defaultSessionConfiguration==null) {
+            defaultSessionConfiguration = new SessionConfiguration();
+        }
         return defaultSessionConfiguration;
     }
     
@@ -138,18 +155,50 @@ public final class SnuggleEngine {
         ConstraintUtilities.ensureNotNull(defaultSessionConfiguration, "defaultSessionConfiguration");
         this.defaultSessionConfiguration = defaultSessionConfiguration;
     }
+    
+    
+    public DOMOutputOptions getDefaultDOMOutputOptions() {
+        if (defaultDOMOutputOptions==null) {
+            defaultDOMOutputOptions = new DOMOutputOptions();
+        }
+        return defaultDOMOutputOptions;
+    }
 
     
-    public DOMOutputOptions getDefaultDOMOptions() {
-        return defaultDOMOptions;
+    public void setDefaultDOMOutputOptions(DOMOutputOptions defaultDOMOutputOptions) {
+        ConstraintUtilities.ensureNotNull(defaultDOMOutputOptions, "defaultDOMOutputOptions");
+        this.defaultDOMOutputOptions = defaultDOMOutputOptions;
     }
+
     
+    public DOMOutputOptions getDefaultXMLOutputOptions() {
+        if (defaultXMLOutputOptions==null) {
+            defaultXMLOutputOptions = new XMLOutputOptions();
+        }
+        return defaultXMLOutputOptions;
+    }
+
+    public void setDefaultXMLOutputOptions(DOMOutputOptions defaultXMLOutputOptions) {
+        ConstraintUtilities.ensureNotNull(defaultXMLOutputOptions, "defaultXMLOutputOptions");
+        this.defaultXMLOutputOptions = defaultXMLOutputOptions;
+    }
+
+
+    /**
+     * @deprecated Use {@link #getDefaultDOMOutputOptions()}
+     */
+    @Deprecated
+    public DOMOutputOptions getDefaultDOMOptions() {
+        return defaultDOMOutputOptions;
+    }
+
+    /**
+     * @deprecated Use {@link #setDefaultDOMOutputOptions(DOMOutputOptions)}
+     */
+    @Deprecated
     public void setDefaultDOMOptions(DOMOutputOptions defaultDOMOptions) {
         ConstraintUtilities.ensureNotNull(defaultDOMOptions, "defaultDOMOptions");
-        this.defaultDOMOptions = defaultDOMOptions;
+        this.defaultDOMOutputOptions = defaultDOMOptions;
     }
-    
-    public StylesheetManager getStylesheetManager() {
-        return stylesheetManager;
-    }
+
 }

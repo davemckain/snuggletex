@@ -10,7 +10,7 @@ import static uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities.concat;
 import javax.xml.transform.Transformer;
 
 /**
- * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
+ * Builds on {@link XMLOutputOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleSession}
  * (e.g. {@link SnuggleSession#createWebPage(WebPageOutputOptions)}).
  * <p>
@@ -20,12 +20,14 @@ import javax.xml.transform.Transformer;
  * But you can also create and configure {@link WebPageOutputOptions} from scratch if you
  * know exactly what you want to do.
  * 
+ * @see DOMOutputOptions
+ * @see XMLOutputOptions
  * @see WebPageOutputOptionsTemplates
  *
  * @author  David McKain
  * @version $Revision$
  */
-public class WebPageOutputOptions extends DOMOutputOptions {
+public class WebPageOutputOptions extends XMLOutputOptions {
     
     /**
      * Enumerates the different web page "types" supported. This is used both by
@@ -174,13 +176,6 @@ public class WebPageOutputOptions extends DOMOutputOptions {
     private String contentType;
     
     /** 
-     * Encoding for the resulting page.
-     * Default is {@link WebPageOutputOptionsTemplates#DEFAULT_ENCODING}.
-     * Must not be null.
-     */
-    private String encoding;
-    
-    /** 
      * Language code for the resulting page.
      * Default is <tt>en</tt>.
      * May be set to null
@@ -199,13 +194,6 @@ public class WebPageOutputOptions extends DOMOutputOptions {
      * body as an XHTML <tt>h1</tt> element. This has no effect if title is null.
      */
     private boolean addingTitleHeading;
-    
-    /**
-     * Whether to indent the resulting web page or not.
-     * (This depends on how clever the underlying XSLT engine will be!)
-     * Default is false.
-     */
-    private boolean indenting;
     
     /**
      * Set to include SnuggleTeX-related CSS as a <tt>style</tt> element within the resulting
@@ -263,7 +251,6 @@ public class WebPageOutputOptions extends DOMOutputOptions {
         this.contentType = WebPageOutputOptionsTemplates.DEFAULT_CONTENT_TYPE;
         this.webPageType = WebPageType.MOZILLA;
         this.serializationMethod = SerializationMethod.XML;
-        this.encoding = WebPageOutputOptionsTemplates.DEFAULT_ENCODING;
         this.lang = WebPageOutputOptionsTemplates.DEFAULT_LANG;
         this.includingStyleElement = true;
     }
@@ -296,15 +283,6 @@ public class WebPageOutputOptions extends DOMOutputOptions {
     }
 
 
-    public String getEncoding() {
-        return encoding;
-    }
-    
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-    
-
     public String getLang() {
         return lang;
     }
@@ -329,15 +307,6 @@ public class WebPageOutputOptions extends DOMOutputOptions {
     
     public void setAddingTitleHeading(boolean addingTitleHeading) {
         this.addingTitleHeading = addingTitleHeading;
-    }
-
-    
-    public boolean isIndenting() {
-        return indenting;
-    }
-    
-    public void setIndenting(boolean identing) {
-        this.indenting = identing;
     }
 
     
