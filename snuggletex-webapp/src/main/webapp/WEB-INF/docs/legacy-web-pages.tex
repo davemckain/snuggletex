@@ -11,6 +11,9 @@ using the \verb|DownConvertingPostProcessor| class that you can easily attach to
 
 Using this extension requires a bit of programming on your part as you must decide
 how you are going to store and serve the resulting images along with your web pages.
+(You might be able to get some ideas by poking around inside the \verb|snuggletex-webapp|
+module, which is part of the full distribution and is used to serve up these 
+documentation pages and the various online demos.)
 
 \subsection*{Getting Started with the JEuclid Extension}
 
@@ -28,9 +31,9 @@ how you are going to store and serve the resulting images along with your web pa
   \verb|batik-ext.jar|,
   \verb|batik-util.jar|,
   \verb|batik-xml.jar|,
-  \verb|commons-iojar|,
+  \verb|commons-io.jar|,
   \verb|commons-logging.jar|,
-  \verb|xml-apis.jar (not needed for Java 6 and above)|,
+  \verb|xml-apis.jar| (not needed for Java 6 and above),
   \verb|xml-apis-ext.jar| and
   \verb|xmlgraphics-commons.jar|.
   (The JARs in the distribution
@@ -60,7 +63,8 @@ which has been configured with one or both of the following \verb|DOMPostProcess
 
 \begin{itemize}
 \item \verb|DownConvertingPostProcessor|: This will optionally attempt to convert
-simple MathML expressions to XHTML + CSS.
+simple MathML expressions to XHTML + CSS. Expressions that are too complex are left
+as MathML.
 
 \item \verb|JEuclidMathMLPostProcessor|: This hunts out any (remaining) MathML elements,
 converts them to images using JEuclid, calls back on your \verb|MathMLImageSavingCallback|
