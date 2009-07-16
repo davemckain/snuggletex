@@ -41,7 +41,9 @@ import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.w3c.dom.DOMException;
@@ -94,8 +96,14 @@ public final class DOMBuilder {
         ;
     }
     
+    /** Current {@link OutputContext} */
     private OutputContext outputContext;
+    
+    /** Stack of active {@link MathVariantMap}s. */
     private ArrayListStack<MathVariantMap> mathVariantMapStack;
+    
+    /** Map containing the current variable values */
+    private Map<String,Object> variableMap;
     
     //-------------------------------------------
     
@@ -109,6 +117,7 @@ public final class DOMBuilder {
         
         this.outputContext = null;
         this.mathVariantMapStack = new ArrayListStack<MathVariantMap>();
+        this.variableMap = new HashMap<String,Object>();
     }
     
     //-------------------------------------------
@@ -149,6 +158,26 @@ public final class DOMBuilder {
     
     public ArrayListStack<MathVariantMap> getMathVariantMapStack() {
         return mathVariantMapStack;
+    }
+    
+    //-------------------------------------------
+    // Variable management
+    
+    public Object getVariable(String namespace, String variableName) {
+        String key = createVariableKey(namespace, variableName);
+        return variableMap.get(key);
+    }
+    
+    public void setVariable(String namespace, String variableName, Object value) {
+        String key = createVariableKey(namespace, variableName);
+        variableMap.put(key, value);
+    }
+    
+    private String createVariableKey(String namespace, String variableName) {
+        /* We'll trivially join the namespace and variableName using character 0, which can't
+         * be input so guarantees an invertible mapping.
+         */
+        return StringUtilities.emptyIfNull(namespace) + "\u0000" + variableName;
     }
     
     //-------------------------------------------

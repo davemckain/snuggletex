@@ -513,6 +513,19 @@ a
 \literal{ # %}
  # %
 ====
+## Test of functionality for managing simple "variables"
+\setvar{x}{Hello}\getvar{x}
+Hello
+====
+\setvar[ns]{x}{Hello}\getvar[ns]{x}
+Hello
+====
+A\setvar{x}{Hello}\getvar[ns]{x}
+A
+====
+A\setvar[ns]{x}{Hello}\getvar{x}
+A
+====
 ## Regression: Empty style commands were not being handled correctly before. Silly me!
 {\rm }
 <span class="rm"/>

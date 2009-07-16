@@ -21,11 +21,11 @@ import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.BoxHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.MatrixHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnsureMathHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.GetVarHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.HSpaceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.HrefHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
@@ -40,9 +40,11 @@ import uk.ac.ed.ph.snuggletex.dombuilding.MathNotHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathRootHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MatrixHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MrowHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ParagraphHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.SetVarHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.SimpleXHTMLContainerBuildingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.SpaceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.StyleInterpretationHandler;
@@ -652,6 +654,10 @@ public final class GlobalBuiltins {
         map.addComplexCommandOneArg("xmlId", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
         map.addComplexCommandOneArg("xmlId*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
         map.addComplexCommandSameArgMode("xmlUnparse", false, 1, TEXT_MODE_ONLY, new XMLUnparseHandler(), ALLOW_INLINE);
+        
+        /* Special commands for managing simple "variables" */
+        map.addComplexCommandSameArgMode("getvar", true, 1, ALL_MODES, new GetVarHandler(), IGNORE);
+        map.addComplexCommandSameArgMode("setvar", true, 2, ALL_MODES, new SetVarHandler(), IGNORE);
         
         /* =================================== ENVIRONMENTS ================================= */
         
