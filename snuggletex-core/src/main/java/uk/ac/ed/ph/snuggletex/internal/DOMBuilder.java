@@ -510,6 +510,7 @@ public final class DOMBuilder {
         appendTextNode(xhtmlElement, content, trim);
         return xhtmlElement;
     }
+
     
     public Element appendMathMLElement(Element parentElement, String elementLocalName) {
         String qName;
@@ -678,6 +679,44 @@ public final class DOMBuilder {
     }
     
     //-------------------------------------------
+    // Various Helpers
+    
+    /**
+     * Builds a MathML <tt>math</tt> element for the given Token token, using contentToken
+     * to provide the content.
+     */
+    public void buildMathElement(final Element parentElement,
+            final Token token, final ArgumentContainerToken contentToken,
+            final boolean isDisplayMath) throws SnuggleParseException {
+        /* Set output context appropriately */
+        OutputContext currentContext = getOutputContext();
+        setOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
+        
+        /* Create a proper <math>...</math> element with optional annotation */
+        Element math = appendMathMLElement(parentElement, "math");
+        if (isDisplayMath) {
+            math.setAttribute("display", "block");
+        }
+        if (options.isAddingMathAnnotations()) {
+            /* The structure here is <semantics>...<annotation/></semantics>
+             * where the first child of <semantics> is the resulting MathML.
+             * (Therefore, we need to wrap the MathML in an <mrow/> if there is
+             * more than one top level element here)
+             */
+            Element semantics = appendMathMLElement(math, "semantics");
+            handleMathTokensAsSingleElement(semantics, contentToken);
+
+            /* Create annotation */
+            Element annotation = appendMathMLTextElement(semantics, "annotation",
+                    token.getSlice().extract().toString(), true);
+            annotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+        }
+        else {
+            handleTokens(math, contentToken, false);
+        }
+        /* Reset output context back to whatever it was before */
+        setOutputContext(currentContext);
+    }
 
     public Element findNearestXHTMLAncestorOrSelf(final Element element) {
         Element currentElement = element;

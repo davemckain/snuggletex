@@ -5,15 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
-import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
-import uk.ac.ed.ph.snuggletex.tokens.Token;
 
 import org.w3c.dom.Element;
 
@@ -36,39 +32,7 @@ public final class MathEnvironmentHandler implements EnvironmentHandler {
         }
         else {
             boolean isDisplayMath = environment==GlobalBuiltins.ENV_DISPLAYMATH;
-            buildMathElement(builder, parentElement, token, token.getContent(), isDisplayMath);
+            builder.buildMathElement(parentElement, token, token.getContent(), isDisplayMath);
         }
-    }
-    
-    public void buildMathElement(final DOMBuilder builder, final Element parentElement,
-            final Token token, final ArgumentContainerToken contentToken,
-            final boolean isDisplayMath) throws SnuggleParseException {
-        /* Set output context appropriately */
-        builder.setOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
-        
-        /* Create a proper <math>...</math> element with optional annotation */
-        Element math = builder.appendMathMLElement(parentElement, "math");
-        if (isDisplayMath) {
-            math.setAttribute("display", "block");
-        }
-        if (builder.getOptions().isAddingMathAnnotations()) {
-            /* The structure here is <semantics>...<annotation/></semantics>
-             * where the first child of <semantics> is the resulting MathML.
-             * (Therefore, we need to wrap the MathML in an <mrow/> if there is
-             * more than one top level element here)
-             */
-            Element semantics = builder.appendMathMLElement(math, "semantics");
-            builder.handleMathTokensAsSingleElement(semantics, contentToken);
-
-            /* Create annotation */
-            Element annotation = builder.appendMathMLTextElement(semantics, "annotation",
-                    token.getSlice().extract().toString(), true);
-            annotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
-        }
-        else {
-            builder.handleTokens(math, contentToken, false);
-        }
-        /* Reset output context back to XHTML */
-        builder.setOutputContext(OutputContext.XHTML);
     }
 }

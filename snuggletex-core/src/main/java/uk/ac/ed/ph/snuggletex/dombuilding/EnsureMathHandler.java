@@ -13,20 +13,12 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import org.w3c.dom.Element;
 
 /**
- * This handles the <tt>\\ensuremath</tt> command. This is implemented by simply delegating
- * to {@link MathEnvironmentHandler} to start a new (inline) MathML element if we're not
- * already inside MathML.
+ * This handles the <tt>\\ensuremath</tt> command.
  *
  * @author  David McKain
  * @version $Revision$
  */
 public final class EnsureMathHandler implements CommandHandler {
-    
-    private final MathEnvironmentHandler mathEnvironmentBuilder;
-    
-    public EnsureMathHandler() {
-        this.mathEnvironmentBuilder = new MathEnvironmentHandler();
-    }
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
@@ -40,8 +32,7 @@ public final class EnsureMathHandler implements CommandHandler {
              * 
              * To do this, we simply delegate to MathEnvironmentBuilder
              */
-            mathEnvironmentBuilder.buildMathElement(builder, parentElement, token, contentToken, false);
+            builder.buildMathElement(parentElement, token, contentToken, false);
         }
     }
-
 }
