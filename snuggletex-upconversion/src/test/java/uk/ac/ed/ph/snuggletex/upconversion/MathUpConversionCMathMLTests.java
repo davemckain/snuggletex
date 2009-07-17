@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
 
-import uk.ac.ed.ph.snuggletex.AbstractGoodMathTest;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathTests;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
@@ -38,7 +37,7 @@ import org.w3c.dom.NodeList;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
+public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionTest {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-cmathml-tests.txt";
     
@@ -52,7 +51,7 @@ public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
     public MathUpConversionCMathMLTests(final String inputLaTeXMaths, final String expectedMathMLContent) {
         super(inputLaTeXMaths, expectedMathMLContent);
         
-        /* Set up up-converter so that it only generates fixed up Presentation MathML */
+        /* Set up up-converter */
         Map<String, Object> upconversionParameterMap = new HashMap<String, Object>();
         upconversionParameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.TRUE);
         upconversionParameterMap.put(UpConversionParameters.DO_MAXIMA, Boolean.FALSE);
@@ -110,9 +109,6 @@ public class MathUpConversionCMathMLTests extends AbstractGoodMathTest {
         }
     }
 
-    /**
-     * We add in the up-converter, only going as far as Presentation MathML this time.
-     */
     @Override
     protected DOMOutputOptions createDOMOutputOptions() {
         DOMOutputOptions result = super.createDOMOutputOptions();

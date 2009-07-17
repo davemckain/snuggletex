@@ -8,6 +8,25 @@ supporting various types of MathML results.
 
 This may be applied to an entire XHTML + MathML document.
 
+Assumptions can be specified in the following form:
+
+<s:assumptions>
+  <s:assume property="function">
+    <s:target>
+      <mi>f</mi>
+    </s:target>
+    <s:target>
+      <mi>g</mi>
+    </s:target>
+  </s:assume>
+  <s:assume property="imaginary-i">
+    <s:target>
+      <mi>i</mi>
+    </s:target>
+  </s:assume>
+  ...
+</s:assumptions>
+
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved
 
@@ -42,19 +61,72 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <!-- Catch-all template for non-MathML -->
-  <xsl:template match="*" as="element()">
+  <!--
+  We will actually traverse the document by sibling recursion so that we
+  can always have the most recently set assumptions to hand at each point.
+  -->
+  <xsl:template match="/">
+    <xsl:apply-templates select="node()[1]" mode="sibling-traversal">
+      <xsl:with-param name="current-assumptions" select="()"/>
+    </xsl:apply-templates>
+  </xsl:template>
+
+  <!--
+  When we find an <s:assumption/>, leave it out of the result tree but
+  make it the current assumption for the next node.
+  -->
+  <xsl:template match="s:assumptions" mode="sibling-traversal">
+    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+    <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
+      <xsl:with-param name="current-assumptions" select="."/>
+    </xsl:apply-templates>
+  </xsl:template>
+
+  <!--
+  When we find an <math/>, let the main processing template handle it
+  and then traverse on to next siblings.
+  -->
+  <xsl:template match="math" mode="sibling-traversal">
+    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+    <xsl:apply-templates select="." mode="process-math">
+      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+    </xsl:apply-templates>
+    <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
+      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+    </xsl:apply-templates>
+  </xsl:template>
+
+  <!--
+  All other elements will be given a shallow copy, then traverse into children.
+  Finally, traverse following siblings.
+  -->
+  <xsl:template match="*" as="element()" mode="sibling-traversal">
+    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="node()[1]" mode="sibling-traversal">
+        <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+      </xsl:apply-templates>
     </xsl:copy>
+    <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
+      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+    </xsl:apply-templates>
   </xsl:template>
 
-  <xsl:template match="text()" as="text()">
+  <!-- Keep text, comments and PIs intact -->
+  <xsl:template match="text()|comment()|processing-instruction()" mode="sibling-traversal">
+    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
     <xsl:copy-of select="."/>
+    <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
+      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+    </xsl:apply-templates>
   </xsl:template>
 
-  <xsl:template match="math" priority="10" as="element(math)">
+  <!-- ************************************************************ -->
+
+  <xsl:template match="math" mode="process-math" as="element(math)">
+    <!-- Current in-scope assumptions -->
+    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
     <!-- Extract the actual PMathML content and any existing annotations.
          (The criterion for whether there are any top level annotations will
          be that we have a <semantics/> element with at least 2 children.) -->
@@ -64,6 +136,7 @@ All Rights Reserved
     <xsl:variable name="enhanced-pmathml">
       <xsl:call-template name="s:enhance-pmathml">
         <xsl:with-param name="elements" select="$presentation-mathml"/>
+        <xsl:with-param name="assumptions" select="$current-assumptions"/>
       </xsl:call-template>
     </xsl:variable>
     <!-- Maybe convert Presentation MathML to Content MathML, creating another new Document Node -->
@@ -71,6 +144,7 @@ All Rights Reserved
       <xsl:if test="$s:do-content-mathml or $s:do-maxima">
         <xsl:call-template name="s:pmathml-to-cmathml">
           <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
+          <xsl:with-param name="assumptions" select="$current-assumptions"/>
         </xsl:call-template>
       </xsl:if>
     </xsl:variable>
@@ -89,6 +163,7 @@ All Rights Reserved
         <xsl:otherwise>
           <xsl:call-template name="s:cmathml-to-maxima">
             <xsl:with-param name="elements" select="$cmathml/*"/>
+            <xsl:with-param name="assumptions" select="$current-assumptions"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>

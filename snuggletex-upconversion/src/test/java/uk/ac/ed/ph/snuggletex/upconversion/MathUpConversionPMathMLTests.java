@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
 
-import uk.ac.ed.ph.snuggletex.AbstractGoodMathTest;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathTests;
 import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
@@ -27,7 +26,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionPMathMLTests extends AbstractGoodMathTest {
+public class MathUpConversionPMathMLTests extends AbstractGoodUpConversionTest {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-pmathml-tests.txt";
     

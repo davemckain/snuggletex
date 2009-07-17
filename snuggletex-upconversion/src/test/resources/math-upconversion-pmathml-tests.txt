@@ -680,3 +680,19 @@ x_{1,2}
 <mo>&#x2062;</mo>
 <mi>z</mi>
 ====
+## By default, we don't interpret this as a function...
+f(x)
+<mi>f</mi>
+<mo>&#x2062;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+</mfenced>
+====
+## ...but this can be requested using \assume
+\assume{function}{f} $f(x)$
+<mi>f</mi>
+<mo>&#x2061;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+</mfenced>
+====

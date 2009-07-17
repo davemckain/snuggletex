@@ -20,6 +20,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML
 import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.AssumeHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.BoxHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.CharacterCommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
@@ -658,6 +659,9 @@ public final class GlobalBuiltins {
         /* Special commands for managing simple "variables" */
         map.addComplexCommandSameArgMode("getvar", true, 1, ALL_MODES, new GetVarHandler(), IGNORE);
         map.addComplexCommandSameArgMode("setvar", true, 2, ALL_MODES, new SetVarHandler(), IGNORE);
+        
+        /* Special commands for making up-conversion assumptions. (These should move into a separate "package") */
+        map.addComplexCommand("assume", false, 2, TEXT_MODE_ONLY, new LaTeXMode[] { LR, MATH }, new AssumeHandler(), IGNORE);
         
         /* =================================== ENVIRONMENTS ================================= */
         

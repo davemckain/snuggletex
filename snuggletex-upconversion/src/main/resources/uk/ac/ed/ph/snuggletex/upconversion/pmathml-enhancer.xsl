@@ -36,15 +36,17 @@ All Rights Reserved
   <!-- Entry point -->
   <xsl:template name="s:enhance-pmathml">
     <xsl:param name="elements" as="element()*"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="$elements"/>
+      <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
     </xsl:call-template>
   </xsl:template>
 
   <!-- ************************************************************ -->
 
   <!--
-  All supported elementary functions.
+  All supported pre-defined elementary functions.
   -->
   <xsl:variable name="local:elementary-functions" as="xs:string+"
     select="('sin', 'cos', 'tan',
@@ -58,7 +60,7 @@ All Rights Reserved
              'ln', 'log', 'exp')"/>
 
   <!--
-  Other supported functions, such as \Re and \Im.
+  Other supported pre-defined functions, such as \Re and \Im.
   -->
   <xsl:variable name="local:other-functions" as="xs:string+"
     select="('gcd', 'lcm', 'min', 'max', 'det',
@@ -78,15 +80,37 @@ All Rights Reserved
   </xsl:function>
 
   <!--
-  Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}, \Re, \Re^{.} etc.
+  Helper to extract all of the "simple" assumed functions specified by the user.
+  These are things like 'f' but not 'f_n'.
+
+  TODO: Need to handle f_n and f_n^p as well.
+  TODO: Need to signal error if bad arguments are passed.
+  -->
+  <xsl:function name="local:get-simple-assumed-functions" as="xs:string*">
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:variable name="function-targets" select="$assumptions/s:assume[@property='function']/s:target" as="element(s:target)*"/>
+    <xsl:variable name="simple-function-targets" select="$function-targets[mi and count(node())=1]" as="element(s:target)*"/>
+    <xsl:sequence select="for $t in $simple-function-targets return string($t/mi)"/>
+  </xsl:function>
+
+  <!--
+  Tests for the equivalent of \sin, \sin^{.}, \log_{.}, \log_{.}^{.}, \Re, \Re^{.},
+  plus assumed function constructs of the form 'f' only.
+
+  TODO: Need to be able to handle f_n and f_n^p as well.
+
   Result need not make any actual sense!
   -->
   <xsl:function name="local:is-supported-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:variable name="function-targets" select="$assumptions/s:assume[@property='function']/s:target" as="element(s:target)*"/>
     <xsl:sequence select="local:is-supported-function($element)
       or $element[self::msup and local:is-supported-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]
-      or $element[self::msubsup and *[1][self::mi and .='log']]"/>
+      or $element[self::msubsup and *[1][self::mi and .='log']]
+      or $element[self::mi and local:get-simple-assumed-functions($assumptions)=string(.)]
+      "/>
   </xsl:function>
 
   <!--
@@ -220,7 +244,9 @@ All Rights Reserved
 
   <xsl:function name="local:is-prefix-or-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean(local:is-supported-function-construct($element) or local:is-prefix-operator($element))"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:sequence select="boolean(local:is-supported-function-construct($element, $assumptions)
+      or local:is-prefix-operator($element))"/>
   </xsl:function>
 
   <xsl:function name="local:is-postfix-operator" as="xs:boolean">
@@ -252,11 +278,12 @@ All Rights Reserved
   -->
   <xsl:function name="local:is-implicit-product-starter" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
     <xsl:sequence select="boolean(
       not(exists($previous)) (: case 1 :)
       or ($previous[self::mfenced]) (: case 2 :)
-      or (local:is-prefix-or-function($element) and not(local:is-prefix-or-function($previous))) (: case 3 :)
+      or (local:is-prefix-or-function($element, $assumptions) and not(local:is-prefix-or-function($previous, $assumptions))) (: case 3 :)
       or (not(local:is-postfix-operator($element)) and local:is-postfix-operator($previous) (: case 4 :)))"/>
   </xsl:function>
 
@@ -536,7 +563,8 @@ All Rights Reserved
 
   <xsl:template name="local:infer-implicit-product-subgroups" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:for-each-group select="$elements" group-starting-with="*[local:is-implicit-product-starter(.)]">
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:for-each-group select="$elements" group-starting-with="*[local:is-implicit-product-starter(., $assumptions)]">
       <!-- Add an invisible times if we're the second multiplicative group -->
       <xsl:if test="position()!=1">
         <mo>&#x2062;</mo>
@@ -546,6 +574,7 @@ All Rights Reserved
         <xsl:with-param name="elements" as="element()*">
           <xsl:call-template name="local:apply-prefix-functions-and-operators">
             <xsl:with-param name="elements" select="current-group()"/>
+            <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
           </xsl:call-template>
         </xsl:with-param>
       </xsl:call-template>
@@ -554,10 +583,11 @@ All Rights Reserved
 
   <xsl:template name="local:apply-prefix-functions-and-operators" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
     <xsl:variable name="first-element" as="element()" select="$elements[1]"/>
     <xsl:variable name="after-first-element" as="element()*" select="$elements[position()!=1]"/>
     <xsl:choose>
-      <xsl:when test="local:is-supported-function-construct($first-element) and exists($after-first-element)">
+      <xsl:when test="local:is-supported-function-construct($first-element, $assumptions) and exists($after-first-element)">
         <!-- This is a (prefix) function application. Copy the operator as-is -->
         <xsl:copy-of select="$first-element"/>
         <!-- Add an "Apply Function" operator -->
@@ -567,6 +597,7 @@ All Rights Reserved
           <xsl:with-param name="elements" as="element()+">
             <xsl:call-template name="local:apply-prefix-functions-and-operators">
               <xsl:with-param name="elements" select="$after-first-element"/>
+              <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
             </xsl:call-template>
           </xsl:with-param>
         </xsl:call-template>
@@ -579,6 +610,7 @@ All Rights Reserved
             <xsl:with-param name="elements" as="element()*">
               <xsl:call-template name="local:apply-prefix-functions-and-operators">
                 <xsl:with-param name="elements" select="$after-first-element"/>
+                <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
               </xsl:call-template>
             </xsl:with-param>
           </xsl:call-template>
@@ -590,6 +622,7 @@ All Rights Reserved
           <xsl:with-param name="elements" as="element()*">
             <xsl:call-template name="local:apply-postfix-operators">
               <xsl:with-param name="elements" select="$elements"/>
+              <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
             </xsl:call-template>
           </xsl:with-param>
         </xsl:call-template>

@@ -38,6 +38,18 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
+  <!-- Entry point -->
+  <xsl:template name="s:pmathml-to-cmathml" as="element()*">
+    <xsl:param name="elements" as="element()*"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:call-template name="local:process-group">
+      <xsl:with-param name="elements" select="$elements"/>
+      <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <!-- ************************************************************ -->
+
   <!--
   Handy utility function for checking whether an element is an <mo/>
   -->
@@ -202,29 +214,43 @@ All Rights Reserved
       else ()"/>
   </xsl:function>
 
+  <!--
+  Helper to extract all of the "simple" assumed functions specified by the user.
+  These are things like 'f' but not 'f_n'.
+
+  TODO: Need to handle f_n and f_n^p as well.
+  TODO: Need to signal error if bad arguments are passed.
+  -->
+  <xsl:function name="local:get-simple-assumed-functions" as="xs:string*">
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:variable name="function-targets" select="$assumptions/s:assume[@property='function']/s:target" as="element(s:target)*"/>
+    <xsl:variable name="simple-function-targets" select="$function-targets[mi and count(node())=1]" as="element(s:target)*"/>
+    <xsl:sequence select="for $t in $simple-function-targets return string($t/mi)"/>
+  </xsl:function>
+
+  <xsl:function name="local:is-simple-assumed-function" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:sequence select="boolean($element[self::mi and local:get-simple-assumed-functions($assumptions)=string(.)])"/>
+  </xsl:function>
+
   <xsl:function name="local:is-supported-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
     <xsl:sequence select="local:is-supported-function($element)
       or $element[self::msup and local:is-supported-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]
-      or $element[self::msubsup and *[1][self::mi and .='log']]"/>
+      or $element[self::msubsup and *[1][self::mi and .='log']]
+      or local:is-simple-assumed-function($element, $assumptions)
+      "/>
   </xsl:function>
-
-  <!-- ************************************************************ -->
-
-  <!-- Entry point -->
-  <xsl:template name="s:pmathml-to-cmathml" as="element()*">
-    <xsl:param name="elements" as="element()*"/>
-    <xsl:call-template name="local:process-group">
-      <xsl:with-param name="elements" select="$elements"/>
-    </xsl:call-template>
-  </xsl:template>
 
   <!-- ************************************************************ -->
 
   <!-- Application of groups by the precedence order built by pmathml-enhancer.xsl -->
   <xsl:template name="local:process-group" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
     <xsl:choose>
       <xsl:when test="$elements[self::mspace]">
         <!-- Strip off <mspace/> and reapply this template to whatever is left -->
@@ -261,10 +287,11 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[1][local:is-supported-function-construct(.)]">
+      <xsl:when test="$elements[1][local:is-supported-function-construct(., $assumptions)]">
         <!-- Supported function (not necessarily applied) -->
         <xsl:call-template name="local:handle-supported-function-group">
           <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[1][local:is-prefix-operator(.)]">
@@ -620,19 +647,30 @@ All Rights Reserved
   -->
   <xsl:template name="local:handle-supported-function-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
         <!-- This is case (1) above -->
-        <xsl:variable name="function-output" as="element(local:function-mapping)">
-          <xsl:call-template name="local:map-supported-function">
-            <xsl:with-param name="operator-element" select="$elements[1]"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <!-- Just return resulting CMathML as there are no operands here -->
-        <xsl:copy-of select="$function-output/local:cmathml/*" copy-namespaces="no"/>
+        <xsl:variable name="function" select="$elements[1]" as="element()"/>
+        <xsl:choose>
+          <xsl:when test="local:is-simple-assumed-function($function, $assumptions)">
+            <!-- Simple function -->
+            <ci type="function"><xsl:value-of select="string($function)"/></ci>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Pre-defined supported function -->
+            <xsl:variable name="function-output" as="element(local:function-mapping)">
+              <xsl:call-template name="local:map-supported-function">
+                <xsl:with-param name="operator-element" select="$function"/>
+              </xsl:call-template>
+            </xsl:variable>
+            <!-- Just return resulting CMathML as there are no operands here -->
+            <xsl:copy-of select="$function-output/local:cmathml/*" copy-namespaces="no"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
-        <!-- This is (2) or (3). In both cases, the second element must be "apply function" -->
+        <!-- This is hopefully (2) or (3). In both cases, the second element must be "apply function" -->
         <xsl:variable name="first-function" select="$elements[1]" as="element()"/>
         <xsl:choose>
           <xsl:when test="not($elements[2][self::mo and .='&#x2061;'])">
@@ -647,31 +685,43 @@ All Rights Reserved
             <!-- This is really (2) or (3)! -->
             <xsl:variable name="first-apply" select="$elements[2]" as="element()"/>
             <xsl:variable name="after-first-apply" select="$elements[position() &gt; 2]" as="element()+"/>
-            <xsl:variable name="function-output" as="element(local:function-mapping)">
-              <xsl:call-template name="local:map-supported-function">
-                <xsl:with-param name="operator-element" select="$first-function"/>
-              </xsl:call-template>
-            </xsl:variable>
-            <xsl:variable name="output-form" as="element()+" select="$function-output/local:cmathml/*"/>
-            <xsl:variable name="function" as="element(local:function)" select="$function-output/local:function"/>
-            <!-- Work out operands -->
             <xsl:variable name="operands" as="element()*">
               <xsl:call-template name="local:handle-function-operands">
                 <xsl:with-param name="after-apply-function" select="$after-first-apply"/>
               </xsl:call-template>
             </xsl:variable>
-            <!-- If 'n' operands, then make sure function is actually nary -->
             <xsl:choose>
-              <xsl:when test="count($operands) &gt; 1 and not($function/@nary='true')">
-                <!-- Fail: Function is not n-ary -->
-                <xsl:copy-of select="s:make-error('UCFFX2', $elements, ($function/local-name(), string(count($operands))))"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <!-- Do application -->
+              <xsl:when test="local:is-simple-assumed-function($first-function, $assumptions)">
+                <!-- Simple function application -->
                 <apply>
-                  <xsl:copy-of select="$output-form" copy-namespaces="no"/>
+                  <fn><ci type="function"><xsl:value-of select="string($first-function)"/></ci></fn>
                   <xsl:copy-of select="$operands"/>
                 </apply>
+              </xsl:when>
+              <xsl:otherwise>
+                <!-- Pre-defined supported function application -->
+                <xsl:variable name="function-output" as="element(local:function-mapping)">
+                  <xsl:call-template name="local:map-supported-function">
+                    <xsl:with-param name="operator-element" select="$first-function"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="output-form" as="element()+" select="$function-output/local:cmathml/*"/>
+                <xsl:variable name="function" as="element(local:function)" select="$function-output/local:function"/>
+                <!-- Work out operands -->
+                <!-- If 'n' operands, then make sure function is actually nary -->
+                <xsl:choose>
+                  <xsl:when test="count($operands) &gt; 1 and not($function/@nary='true')">
+                    <!-- Fail: Function is not n-ary -->
+                    <xsl:copy-of select="s:make-error('UCFFX2', $elements, ($function/local-name(), string(count($operands))))"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <!-- Do application -->
+                    <apply>
+                      <xsl:copy-of select="$output-form" copy-namespaces="no"/>
+                      <xsl:copy-of select="$operands"/>
+                    </apply>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>

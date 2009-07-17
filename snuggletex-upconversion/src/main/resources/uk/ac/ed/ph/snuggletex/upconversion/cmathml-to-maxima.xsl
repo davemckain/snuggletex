@@ -37,7 +37,10 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   <!-- Entry Point -->
   <xsl:template name="s:cmathml-to-maxima" as="node()*">
     <xsl:param name="elements" as="item()*"/>
-    <xsl:apply-templates select="$elements" mode="cmathml-to-maxima"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:apply-templates select="$elements" mode="cmathml-to-maxima">
+      <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+    </xsl:apply-templates>
   </xsl:template>
 
   <!-- ************************************************************ -->
@@ -469,6 +472,23 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     </xsl:message>
   </xsl:template>
 
+  <!--
+  Assumed function application
+
+  <apply>
+    <fn><ci type="function">f</ci></fn>
+    <ci>x</ci>
+  </apply>
+  -->
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::fn]]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:variable name="function" as="element(ci)" select="fn[1]/ci"/>
+    <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
+    <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
+    <xsl:text>(</xsl:text>
+    <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+    <xsl:text>)</xsl:text>
+  </xsl:template>
+
   <!-- ************************************************************ -->
 
   <!-- Maxima doesn't actually support intervals! -->
@@ -564,7 +584,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     </xsl:choose>
   </xsl:function>
 
-  <!-- Map simple identifiers over as-is -->
+  <!-- Map simple identifiers and unapplied functions over as-is -->
   <xsl:template match="ci[count(node())=1 and text()]" mode="cmathml-to-maxima" as="node()">
     <xsl:copy-of select="local:map-identifier(., string(.))"/>
   </xsl:template>

@@ -6,10 +6,15 @@
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
+
+import java.util.logging.Logger;
 
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -22,27 +27,55 @@ import org.w3c.dom.NodeList;
  */
 public abstract class AbstractGoodMathTest extends AbstractGoodXMLTest {
     
+    private static final Logger log = Logger.getLogger(AbstractGoodMathTest.class.getName());
+    
     public AbstractGoodMathTest(final String inputLaTeXMaths, final String expectedMathMLContent) {
         super("$" + inputLaTeXMaths + "$",
-                "<math xmlns='" + Globals.MATHML_NAMESPACE + "'>"
-                + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")
-                + "</math>");
+            "<math xmlns='" + Globals.MATHML_NAMESPACE + "'>"
+            + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")
+            + "</math>");
     }
     
     @Override
     protected void fixupDocument(Document document) {
+        extractMathElement(document);
+    }
+    
+    public static Element extractMathElement(Document document) {
         /* Should only have 1 child of doc root (<body/>) element here, which should be <math/>.
          * We'll make that the new root Node */
-        Node rootElement = document.getChildNodes().item(0);
-        NodeList childNodes = rootElement.getChildNodes();
-        Assert.assertEquals(1, childNodes.getLength());
-        Node newRoot = childNodes.item(0);
-        
-        Assert.assertEquals(Node.ELEMENT_NODE, newRoot.getNodeType());
-        Assert.assertEquals("math", newRoot.getNodeName());
-        Assert.assertEquals(Globals.MATHML_NAMESPACE, newRoot.getNamespaceURI());
-        
-        document.removeChild(rootElement);
-        document.appendChild(newRoot);
+        try {
+            Node rootElement = document.getChildNodes().item(0);
+            
+            Element firstMathElement = null;
+            NodeList childNodes = rootElement.getChildNodes();
+            for (int i=0, length=childNodes.getLength(); i<length; i++) {
+                Node childNode = childNodes.item(i);
+                if (MathMLUtilities.isMathMLElement(childNode, "math")) {
+                    if (firstMathElement!=null) {
+                        Assert.fail("Found more than one <math/> children");
+                    }
+                    firstMathElement = (Element) childNode;
+                }
+                else if (childNode.getNodeType()==Node.ELEMENT_NODE) {
+                    Assert.fail("Found unexpected element under root");
+                }
+                else if (childNode.getNodeType()==Node.TEXT_NODE && childNode.getNodeValue().matches("\\S")) {
+                    Assert.fail("Found non-whitespace text Node");
+                }
+            }
+            if (firstMathElement==null) {
+                Assert.fail("No <math/> child found");
+            }
+            document.removeChild(rootElement);
+            document.appendChild(firstMathElement);
+            
+            return firstMathElement;
+        }
+        catch (AssertionFailedError e) {
+            log.severe("Resulting DOM Document did not have expected structure. Got:\n"
+                    + MathMLUtilities.serializeDocument(document));
+            throw e;
+        }
     }
 }

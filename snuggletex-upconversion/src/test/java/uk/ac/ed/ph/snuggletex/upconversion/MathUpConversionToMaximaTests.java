@@ -5,17 +5,17 @@
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
 
+import uk.ac.ed.ph.snuggletex.AbstractGoodMathTest;
+import uk.ac.ed.ph.snuggletex.AbstractGoodTest;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathTests;
-import uk.ac.ed.ph.snuggletex.SessionConfiguration;
-import uk.ac.ed.ph.snuggletex.SnuggleEngine;
-import uk.ac.ed.ph.snuggletex.SnuggleInput;
-import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
@@ -24,9 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Same idea as {@link MathTests}, but tests the initial up-conversion to more
@@ -36,52 +35,43 @@ import org.w3c.dom.NodeList;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionToMaximaTests {
+public class MathUpConversionToMaximaTests extends AbstractGoodTest {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-maxima-tests.txt";
     
     private static final Logger log = Logger.getLogger(MathUpConversionToMaximaTests.class.getName());
     
-    private final String inputLaTeX;
     private final String expectedMaxima;
+    private final UpConvertingPostProcessor upconverter;
     
-    public MathUpConversionToMaximaTests(final String inputLaTeX, final String expectedMaxima) {
-        this.inputLaTeX = inputLaTeX;
+    public MathUpConversionToMaximaTests(final String inputFragment, final String expectedMaxima) {
+        super(inputFragment.endsWith("$") ? inputFragment : "$" + inputFragment + "$");
         this.expectedMaxima = expectedMaxima;
+        
+        /* Set up up-converter */
+        Map<String, Object> upconversionParameterMap = new HashMap<String, Object>();
+        upconverter = new UpConvertingPostProcessor(upconversionParameterMap);
     }
     
     @Parameters
     public static Collection<String[]> data() throws Exception {
         return TestFileHelper.readAndParseSingleLineInputTestResource(TEST_RESOURCE_NAME);
     }
-
+    
     @Test
     public void runTest() throws Throwable {
         String maximaAnnotation = null;
         Element mathmlElement = null;
         String errorCodes = null;
-
-        /* We'll fail fast as we're not anticipating any errors */
-        SessionConfiguration configuration = new SessionConfiguration();
-        configuration.setFailingFast(true);
-        
-        SnuggleSession session = new SnuggleEngine().createSession(configuration);
         try {
-            /* Parse input */
-            session.parseInput(new SnuggleInput("$" + inputLaTeX + "$"));
+            /* Run usual process, expecting success */
+            Document resultDocument = runSnuggleProcessSuccessfully();
             
-            /* Up-convert and build DOM */
-            DOMOutputOptions domOptions = new DOMOutputOptions();
-            domOptions.setDOMPostProcessors(new UpConvertingPostProcessor());
-            NodeList nodeList = session.buildDOMSubtree(domOptions);
-            
-            /* First Node should be MathML element. */
-            Assert.assertEquals(1, nodeList.getLength());
-            Assert.assertEquals(Node.ELEMENT_NODE, nodeList.item(0).getNodeType());
-            mathmlElement = (Element) nodeList.item(0);
+            /* Result should be of the correct form */
+            mathmlElement = AbstractGoodMathTest.extractMathElement(resultDocument);
             
             /* Get any up-conversion errors, if found */
-            List<UpConversionFailure> upConversionFailures = UpConversionUtilities.extractUpConversionFailures(mathmlElement);
+            List<UpConversionFailure> upConversionFailures = UpConversionUtilities.extractUpConversionFailures(resultDocument);
             StringBuilder errorCodeBuilder = new StringBuilder();
             for (UpConversionFailure error : upConversionFailures) {
                 if (errorCodeBuilder.length()!=0) {
@@ -118,5 +108,12 @@ public class MathUpConversionToMaximaTests {
             log.severe("Expected result would have been: " + expectedMaxima);
             throw e;
         }
+    }
+
+    @Override
+    protected DOMOutputOptions createDOMOutputOptions() {
+        DOMOutputOptions result = super.createDOMOutputOptions();
+        result.setDOMPostProcessors(upconverter);
+        return result;
     }
 }

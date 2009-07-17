@@ -1052,3 +1052,16 @@ x_{1,2}
   <ci>y</ci>
 </apply>
 ====
+## Assumption fun
+f
+<ci>f</ci>
+====
+\assume{function}{f} $f$
+<ci type="function">f</ci>
+====
+f(x)
+<apply><times/><ci>f</ci><ci>x</ci></apply>
+====
+\assume{function}{f} $f(x)$
+<apply><fn><ci type="function">f</ci></fn><ci>x</ci></apply>
+====

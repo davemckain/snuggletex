@@ -426,3 +426,16 @@ operator("/")
 \hbar+1
 !UMFG03
 ====
+## Assume test
+f
+f
+====
+\assume{function}{f} $f$
+f
+====
+f(x)
+f * x
+====
+\assume{function}{f} $f(x)$
+f(x)
+====

@@ -7,22 +7,11 @@ package uk.ac.ed.ph.snuggletex;
 
 import static org.easymock.EasyMock.createStrictControl;
 
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
-import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
-import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
-import uk.ac.ed.ph.snuggletex.internal.SessionContext;
-import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
-import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
-import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
-import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumper;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.testutil.EasyMockContentHandler;
-import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
-import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,11 +24,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 
-import junit.framework.Assert;
-
 import org.easymock.IMocksControl;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -50,15 +36,18 @@ import org.xml.sax.XMLReader;
  * @author  David McKain
  * @version $Revision: 302 $
  */
-public abstract class AbstractGoodXMLTest {
+public abstract class AbstractGoodXMLTest extends AbstractGoodTest {
     
     private static final Logger log = Logger.getLogger(AbstractGoodXMLTest.class.getName());
     
-    protected final String inputLaTeX;
     protected final String expectedXML;
     
+    /**
+     * Subclasses should call this to initialise {@link #inputLaTeX} and {@link #expectedXML}
+     * as appropriate.
+     */
     protected AbstractGoodXMLTest(String inputLaTeX, String expectedXML) {
-        this.inputLaTeX = inputLaTeX;
+        super(inputLaTeX);
         this.expectedXML = expectedXML;
     }
     
@@ -66,32 +55,6 @@ public abstract class AbstractGoodXMLTest {
     
     protected boolean showTokensOnFailure() {
         return true;
-    }
-    
-    /**
-     * Sets up the {@link DOMOutputOptions} to use for the test.
-     * <p>
-     * The default is a fairly vanilla set of options, but with math variant
-     * mapping turned on.
-     * <p>
-     * Subclasses may override as required.
-     */
-    protected DOMOutputOptions createDOMOutputOptions() {
-        DOMOutputOptions result = new DOMOutputOptions();
-        result.setMathVariantMapping(true);
-        result.setPrefixingSnuggleXML(true);
-        return result;
-    }
-    
-    private void checkNoErrors(SessionContext sessionContext) {
-        List<InputError> errors = sessionContext.getErrors();
-        if (!errors.isEmpty()) {
-            log.warning("Got " + errors.size() + " unexpected error(s). Details following...");
-            for (InputError error : errors) {
-                log.warning(MessageFormatter.formatErrorAsString(error));
-            }
-        }
-        Assert.assertTrue(errors.isEmpty());
     }
     
     protected void verifyResultDocument(TransformerFactory transformerFactory, Document resultDocument) throws Throwable {
@@ -121,50 +84,9 @@ public abstract class AbstractGoodXMLTest {
     }
     
     public void runTest() throws Throwable {
-        String rawDump = null, fixedDump = null, output=null;
-
-        /* We'll drive the process manually as that gives us richer information if something
-         * goes wrong.
-         */
-        
-        /* First set up a suitable configuration for these tests. In future, we may want to
-         * have tests in different configurations. (This would be easier if configs could be
-         * changed at run-time via LaTeX markup!)
-         */
-        SessionConfiguration configuration =  new SessionConfiguration();
-
-        /* Set up DOMOutputOptions */
-        DOMOutputOptions domOptions = createDOMOutputOptions();
-        
-        SnuggleSession session = new SnuggleEngine().createSession(configuration);
-        SnuggleInputReader inputReader = new SnuggleInputReader(session, new SnuggleInput(inputLaTeX));
+        String output=null;
         try {
-            /* Tokenise */
-            LaTeXTokeniser tokeniser = new LaTeXTokeniser(session);
-            ArgumentContainerToken outerToken = tokeniser.tokenise(inputReader);
-            rawDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);
-            
-            /* Make sure we got no errors */
-            checkNoErrors(session);
-            
-            /* Run token fixer */
-            TokenFixer fixer = new TokenFixer(session);
-            fixer.fixTokenTree(outerToken);
-            fixedDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);
-               
-            /* Make sure we have still got no errors */
-            checkNoErrors(session);
-    
-            /* Convert to XML */
-            Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-            Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
-            resultDocument.appendChild(rootElement);
-            
-            DOMBuildingController domBuildingController = new DOMBuildingController(session, domOptions);
-            domBuildingController.buildDOMSubtree(rootElement, outerToken.getContents());
-               
-            /* Make sure we have still got no errors */
-            checkNoErrors(session);
+            Document resultDocument = runSnuggleProcessSuccessfully();
     
             /* Let subclass fudge up the resulting document if required */
             fixupDocument(resultDocument);
