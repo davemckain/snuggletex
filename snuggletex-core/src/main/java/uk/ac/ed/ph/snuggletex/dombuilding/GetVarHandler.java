@@ -26,7 +26,7 @@ public final class GetVarHandler implements CommandHandler {
             namespace = builder.extractStringValue(token.getOptionalArgument());
         }
         String variableName = builder.extractStringValue(token.getArguments()[0]);
-        Object value = builder.getVariable(namespace, variableName);
+        Object value = builder.getVariableManager().getVariable(namespace, variableName);
         if (value!=null) {
             builder.appendTextNode(parentElement, value.toString(), false);
         }

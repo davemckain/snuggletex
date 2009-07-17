@@ -19,6 +19,15 @@ import java.util.Properties;
  */
 public class DOMOutputOptions implements Cloneable {
     
+    /** Default prefix to use if/when prefixing XHTML elements */
+    public static final String DEFAULT_XHTML_PREFIX = "h";
+    
+    /** Default prefix to use if/when prefixing MathML elements */
+    public static final String DEFAULT_MATHML_PREFIX = "m";
+    
+    /** Default prefix to use if/when prefixing SnuggleTeX XML elements */
+    public static final String DEFAULT_SNUGGLETEX_XML_PREFIX = "s";
+    
     /**
      * Enumerates the various options for representing {@link InputError}s in the resulting
      * DOM.
@@ -74,24 +83,60 @@ public class DOMOutputOptions implements Cloneable {
      * If null, the default CSS will be used.
      */
     private Properties inlineCSSProperties;
+    
+    /**
+     * Set to true if you want XHTML element names to be prefixed.
+     * If false, then the default namespace is changed when entering an XHTML element scope.
+     * <p>
+     * Default is false.
+     */
+    private boolean prefixingXHTML;
+    
+    /**
+     * Prefix to use when prefixing XHTML element names.
+     * Only used if {@link #prefixingXHTML} is true.
+     * <p>
+     * Default is {@link #DEFAULT_XHTML_PREFIX}
+     * Must be non-null and a valid NCName.
+     */
+    private String xhtmlPrefix;
 
     /**
      * Set to true if you want MathML element names to be prefixed.
-     * If false, then the default
-     * namespace is changed on each MathML element.
+     * If false, then the default namespace is changed when entering a MathML element scope.
      * <p>
      * Default is false.
      */
     private boolean prefixingMathML;
     
     /**
-     * Prefix to use when prefixing MathML element names. Only used if
-     * {@link #prefixingMathML} is true and ignored if prefix is null.
+     * Prefix to use when prefixing MathML element names.
+     * Only used if {@link #prefixingMathML} is true.
      * <p>
-     * Default is <tt>m</tt>.
+     * Default is {@link #DEFAULT_MATHML_PREFIX}
      * Must be non-null and a valid NCName.
      */
     private String mathMLPrefix;
+    
+    /**
+     * Set to true if you want any SnuggleTeX-specific XML elements, such
+     * as error messages and certain MathML annotations to be prefixed.
+     * <p>
+     * If false, then the default namespace is changed when entering the scope of
+     * these elements.
+     * <p>
+     * Default is false.
+     */
+    private boolean prefixingSnuggleXML;
+    
+    /**
+     * Prefix to use when prefixing SnuggleTeX-specific XML element names.
+     * Only used if {@link #prefixingSnuggleXML} is true and ignored if prefix is null.
+     * <p>
+     * Default is {@link #DEFAULT_SNUGGLETEX_XML_PREFIX}.
+     * Must be non-null and a valid NCName.
+     */
+    private String snuggleXMLPrefix;
     
     /**
      * Set to true to perform automatic mappings of (safe) Unicode characters when applying
@@ -135,8 +180,13 @@ public class DOMOutputOptions implements Cloneable {
         this.inliningCSS = false;
         this.addingMathAnnotations = false;
         this.inlineCSSProperties = null;
-        this.mathMLPrefix = "m";
+        this.prefixingXHTML = false;
         this.prefixingMathML = false;
+        this.prefixingSnuggleXML = false;
+        this.xhtmlPrefix = DEFAULT_XHTML_PREFIX;
+        this.mathMLPrefix = DEFAULT_MATHML_PREFIX;
+        this.snuggleXMLPrefix = DEFAULT_SNUGGLETEX_XML_PREFIX;
+
         this.mathVariantMapping = false;
         this.linkResolver = null;
     }
@@ -180,10 +230,32 @@ public class DOMOutputOptions implements Cloneable {
     }
     
     
+    public boolean isPrefixingXHTML() {
+        return prefixingXHTML;
+    }
+    
+    public void setPrefixingXHTML(boolean prefixingXHTML) {
+        this.prefixingXHTML = prefixingXHTML;
+    }
+
+    
+    public String getXHTMLPrefix() {
+        return xhtmlPrefix;
+    }
+
+    
+    public void setXHTMLPrefix(String xhtmlPrefix) {
+        if (!XMLUtilities.isXMLNCName(xhtmlPrefix)) {
+            throw new IllegalArgumentException("XHTML prefix must be a valid NCName");
+        }
+        this.xhtmlPrefix = xhtmlPrefix;
+    }
+
     public boolean isPrefixingMathML() {
         return prefixingMathML;
     }
     
+
     public void setPrefixingMathML(boolean prefixingMathML) {
         this.prefixingMathML = prefixingMathML;
     }
@@ -200,6 +272,27 @@ public class DOMOutputOptions implements Cloneable {
         this.mathMLPrefix = mathMLPrefix;
     }
     
+    
+    public boolean isPrefixingSnuggleXML() {
+        return prefixingSnuggleXML;
+    }
+    
+    public void setPrefixingSnuggleXML(boolean prefixingSnuggleXML) {
+        this.prefixingSnuggleXML = prefixingSnuggleXML;
+    }
+
+    
+    public String getSnuggleXMLPrefix() {
+        return snuggleXMLPrefix;
+    }
+
+    public void setSnuggleXMLPrefix(String snuggleXMLPrefix) {
+        if (!XMLUtilities.isXMLNCName(snuggleXMLPrefix)) {
+            throw new IllegalArgumentException("SnuggleTeX XML prefix must be a valid NCName");
+        }
+        this.snuggleXMLPrefix = snuggleXMLPrefix;
+    }
+
 
     public boolean isMathVariantMapping() {
         return mathVariantMapping;

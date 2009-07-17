@@ -41,9 +41,7 @@ import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.w3c.dom.DOMException;
@@ -74,11 +72,22 @@ import org.w3c.dom.NodeList;
  */
 public final class DOMBuilder {
     
+    /** Underlying {@link SessionContext} */
     private final SessionContext sessionContext;
+    
+    /** Build options specified by user */
     private final DOMOutputOptions options;
-    private final Document document;
+    
+    /** {@link Element} that we're building into */
     private final Element buildRootElement;
     
+    /** {@link Document} owning {@link #buildRootElement} */
+    private final Document document;
+    
+    /** Helper to manage variables */
+    private final VariableManager variableManager;
+    
+    /** CSS Properties, used for inlining and created lazily as required */
     private Properties currentInlineCSSProperties;
     
     //-------------------------------------------
@@ -86,8 +95,9 @@ public final class DOMBuilder {
     
     /** 
      * Trivial enumeration to keep track of where we are in the outgoing DOM. This makes life
-     * a bit easier when handling certain types of tokens. Use the {@link DOMBuilder#getOutputContext()}
-     * and {@link DOMBuilder#setOutputContext(OutputContext)} to manage the current status.
+     * a bit easier when handling certain types of tokens. Use the
+     * {@link DOMBuilder#getOutputContext()}, {@link DOMBuilder#pushOutputContext(OutputContext)}
+     * and {@link DOMBuilder#popOutputContext()} to manage the current status.
      */
     public static enum OutputContext {
         XHTML,
@@ -96,14 +106,11 @@ public final class DOMBuilder {
         ;
     }
     
-    /** Current {@link OutputContext} */
-    private OutputContext outputContext;
+    /** Stack of {@link OutputContext} scopes. This never gets big but is safer done like this */
+    private final ArrayListStack<OutputContext> outputContextStack;
     
     /** Stack of active {@link MathVariantMap}s. */
-    private ArrayListStack<MathVariantMap> mathVariantMapStack;
-    
-    /** Map containing the current variable values */
-    private Map<String,Object> variableMap;
+    private final ArrayListStack<MathVariantMap> mathVariantMapStack;
     
     //-------------------------------------------
     
@@ -113,24 +120,40 @@ public final class DOMBuilder {
         this.document = buildRootElement.getOwnerDocument();
         this.sessionContext = sessionContext;
         this.options = options;
+        this.variableManager = new VariableManager();
         this.currentInlineCSSProperties = null;
-        
-        this.outputContext = null;
+        this.outputContextStack = new ArrayListStack<OutputContext>();
         this.mathVariantMapStack = new ArrayListStack<MathVariantMap>();
-        this.variableMap = new HashMap<String,Object>();
     }
     
     //-------------------------------------------
     // External entry point
     
     /**
+     * This is the external entry point used by {@link SnuggleSession} only. If you are using
+     * {@link DOMBuilder} as a callback to implementing your own built-in commands and
+     * environments, then you shouldn't call this method.
+     * 
      * @throws SnuggleParseException
      * @throws DOMException
      */
     public void buildDOMSubtree(final List<FlowToken> fixedTokens) throws SnuggleParseException {
-        this.outputContext = OutputContext.XHTML;
-        this.mathVariantMapStack.clear();
+        /* Reset state */
+        outputContextStack.clear();
+        mathVariantMapStack.clear();
+        
+        /* Do work */
+        outputContextStack.push(OutputContext.XHTML);
         handleTokens(buildRootElement, fixedTokens, true);
+        outputContextStack.pop();
+        
+        /* Perform state sanity check at end */
+        if (!mathVariantMapStack.isEmpty()) {
+            throw new SnuggleLogicException("mathVariantMapStack was non-empty at end of DOM building process");
+        }
+        if (!outputContextStack.isEmpty()) {
+            throw new SnuggleLogicException("outputContextStack was non-empty at end of DOM building process");
+        }
     }
     
     //-------------------------------------------
@@ -153,6 +176,10 @@ public final class DOMBuilder {
         return document;
     }
     
+    public VariableManager getVariableManager() {
+        return variableManager;
+    }
+    
     //-------------------------------------------
     // State Accessors
     
@@ -161,35 +188,19 @@ public final class DOMBuilder {
     }
     
     //-------------------------------------------
-    // Variable management
-    
-    public Object getVariable(String namespace, String variableName) {
-        String key = createVariableKey(namespace, variableName);
-        return variableMap.get(key);
-    }
-    
-    public void setVariable(String namespace, String variableName, Object value) {
-        String key = createVariableKey(namespace, variableName);
-        variableMap.put(key, value);
-    }
-    
-    private String createVariableKey(String namespace, String variableName) {
-        /* We'll trivially join the namespace and variableName using character 0, which can't
-         * be input so guarantees an invertible mapping.
-         */
-        return StringUtilities.emptyIfNull(namespace) + "\u0000" + variableName;
-    }
-    
-    //-------------------------------------------
     // Output context mutators - records whether we're doing XHTML or MathML content,
     // which is often useful.
     
     public OutputContext getOutputContext() {
-        return outputContext;
+        return outputContextStack.peek();
     }
-
-    public void setOutputContext(OutputContext outputContext) {
-        this.outputContext = outputContext;
+    
+    public void pushOutputContext(OutputContext outputContext) {
+        outputContextStack.push(outputContext);
+    }  
+    
+    public OutputContext popOutputContext() {
+        return outputContextStack.pop();
     }  
     
     /**
@@ -197,7 +208,8 @@ public final class DOMBuilder {
      * {@link OutputContext}.
      */
     public boolean isBuildingMathMLIsland() {
-        return outputContext==OutputContext.MATHML_BLOCK || outputContext==OutputContext.MATHML_INLINE;
+        OutputContext currentOutputContext = getOutputContext();
+        return currentOutputContext==OutputContext.MATHML_BLOCK || currentOutputContext==OutputContext.MATHML_INLINE;
     }
     
     //-------------------------------------------
@@ -342,6 +354,9 @@ public final class DOMBuilder {
                 /* First check we are in a suitable mode */
                 if (isBuildingMathMLIsland()) {
                     appendSimpleMathElement(parentElement, token);
+                }
+                else {
+                    throw new SnuggleLogicException("Math Mode token found but outputContext is currently " + outputContextStack);
                 }
                 break;
                 
@@ -493,24 +508,37 @@ public final class DOMBuilder {
         return lastChild;
     }
     
-    public Element appendSnuggleElement(Element parentElement, String elementName) {
-        Element element = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, elementName);
+    public Element appendSnuggleElement(Element parentElement, String elementLocalName) {
+        String qName;
+        if (options.isPrefixingSnuggleXML()) {
+            qName = options.getSnuggleXMLPrefix() + ":" + elementLocalName;
+        }
+        else {
+            qName = elementLocalName;
+        }
+        Element element = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, qName);
         parentElement.appendChild(element);
         return element;
     }
     
-    public Element appendXHTMLElement(Element parentElement, String elementName) {
-        Element xhtmlElement = document.createElementNS(Globals.XHTML_NAMESPACE, elementName);
+    public Element appendXHTMLElement(Element parentElement, String elementLocalName) {
+        String qName;
+        if (options.isPrefixingXHTML()) {
+            qName = options.getXHTMLPrefix() + ":" + elementLocalName;
+        }
+        else {
+            qName = elementLocalName;
+        }
+        Element xhtmlElement = document.createElementNS(Globals.XHTML_NAMESPACE, qName);
         parentElement.appendChild(xhtmlElement);
         return xhtmlElement;
     }
     
-    public Element appendXHTMLTextElement(Element parentElement, String elementName, String content, boolean trim) {
-        Element xhtmlElement = appendXHTMLElement(parentElement, elementName);
+    public Element appendXHTMLTextElement(Element parentElement, String elementLocalName, String content, boolean trim) {
+        Element xhtmlElement = appendXHTMLElement(parentElement, elementLocalName);
         appendTextNode(xhtmlElement, content, trim);
         return xhtmlElement;
     }
-
     
     public Element appendMathMLElement(Element parentElement, String elementLocalName) {
         String qName;
@@ -525,8 +553,8 @@ public final class DOMBuilder {
         return mathMLElement;
     }
     
-    public Element appendMathMLTextElement(Element parentElement, String elementName, String content, boolean trim) {
-        Element mathMLElement = appendMathMLElement(parentElement, elementName);
+    public Element appendMathMLTextElement(Element parentElement, String elementLocalName, String content, boolean trim) {
+        Element mathMLElement = appendMathMLElement(parentElement, elementLocalName);
         appendTextNode(mathMLElement, content, trim);
         return mathMLElement;
     }
@@ -603,6 +631,12 @@ public final class DOMBuilder {
     
     //-------------------------------------------
     
+    public NodeList extractNodeListValue(ArgumentContainerToken token) throws SnuggleParseException {
+        Element dummyContainer = document.createElement("dummy");
+        handleTokens(dummyContainer, token, true);
+        return dummyContainer.getChildNodes();
+    }
+    
     /**
      * This "converts" the given token to a String by performing
      * {{@link #handleTokens(Element, ArgumentContainerToken, boolean)}}
@@ -612,12 +646,8 @@ public final class DOMBuilder {
      * @throws SnuggleParseException
      */
     public String extractStringValue(ArgumentContainerToken token) throws SnuggleParseException {
-        Element dummyContainer = document.createElement("dummy");
-        handleTokens(dummyContainer, token, true);
-        
         StringBuilder resultBuilder = new StringBuilder();
-        buildStringValue(resultBuilder, dummyContainer.getChildNodes());
-        
+        buildStringValue(resultBuilder, extractNodeListValue(token));
         return resultBuilder.toString();
     }
     
@@ -688,15 +718,16 @@ public final class DOMBuilder {
     public void buildMathElement(final Element parentElement,
             final Token token, final ArgumentContainerToken contentToken,
             final boolean isDisplayMath) throws SnuggleParseException {
-        /* Set output context appropriately */
-        OutputContext currentContext = getOutputContext();
-        setOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
+        /* Change outputContext */
+        pushOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
         
-        /* Create a proper <math>...</math> element with optional annotation */
+        /* Create <math>...</math> container with appropriate attributes */
         Element math = appendMathMLElement(parentElement, "math");
         if (isDisplayMath) {
             math.setAttribute("display", "block");
         }
+        
+        /* Build up content, with annotation if necessary */
         if (options.isAddingMathAnnotations()) {
             /* The structure here is <semantics>...<annotation/></semantics>
              * where the first child of <semantics> is the resulting MathML.
@@ -704,18 +735,22 @@ public final class DOMBuilder {
              * more than one top level element here)
              */
             Element semantics = appendMathMLElement(math, "semantics");
+            
+            /* Descend into Math content */
             handleMathTokensAsSingleElement(semantics, contentToken);
 
-            /* Create annotation */
-            Element annotation = appendMathMLTextElement(semantics, "annotation",
-                    token.getSlice().extract().toString(), true);
-            annotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+            /* Maybe create source annotation */
+            if (options.isAddingMathAnnotations()) {
+                Element sourceAnnotation = appendMathMLTextElement(semantics, "annotation",
+                        token.getSlice().extract().toString(), true);
+                sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+            }
         }
         else {
             handleTokens(math, contentToken, false);
         }
-        /* Reset output context back to whatever it was before */
-        setOutputContext(currentContext);
+        /* Reset OutputContext */
+        popOutputContext();
     }
 
     public Element findNearestXHTMLAncestorOrSelf(final Element element) {

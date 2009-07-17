@@ -27,7 +27,7 @@ public final class SetVarHandler implements CommandHandler {
         }
         String variableName = builder.extractStringValue(token.getArguments()[0]);
         String value = builder.extractStringValue(token.getArguments()[1]);
-        builder.setVariable(namespace, variableName, value);
+        builder.getVariableManager().setVariable(namespace, variableName, value);
     }
 
 }

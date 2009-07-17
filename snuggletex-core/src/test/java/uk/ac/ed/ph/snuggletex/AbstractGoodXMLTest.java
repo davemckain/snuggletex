@@ -79,6 +79,7 @@ public abstract class AbstractGoodXMLTest {
     protected DOMOutputOptions createDOMOutputOptions() {
         DOMOutputOptions result = new DOMOutputOptions();
         result.setMathVariantMapping(true);
+        result.setPrefixingSnuggleXML(true);
         return result;
     }
     

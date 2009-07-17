@@ -50,7 +50,7 @@ public final class EqnArrayHandler implements EnvironmentHandler {
         Element mtableParent; 
 
         /* Build MathML container and structure */
-        builder.setOutputContext(OutputContext.MATHML_BLOCK);
+        builder.pushOutputContext(OutputContext.MATHML_BLOCK);
         Element mathElement = builder.appendMathMLElement(parentElement, "math");
         mathElement.setAttribute("display", "block");
         if (builder.getOptions().isAddingMathAnnotations()) {
@@ -92,6 +92,6 @@ public final class EqnArrayHandler implements EnvironmentHandler {
         }
         
         /* Reset output context back to XHTML */
-        builder.setOutputContext(OutputContext.XHTML);
+        builder.popOutputContext();
     }
 }
