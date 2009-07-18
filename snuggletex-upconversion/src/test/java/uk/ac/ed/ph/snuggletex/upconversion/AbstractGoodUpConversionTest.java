@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.upconversion;
 
 import uk.ac.ed.ph.snuggletex.AbstractGoodMathTest;
 import uk.ac.ed.ph.snuggletex.AbstractGoodXMLTest;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 
 import org.w3c.dom.Document;
 
@@ -23,7 +23,7 @@ public abstract class AbstractGoodUpConversionTest extends AbstractGoodXMLTest {
     
     public AbstractGoodUpConversionTest(final String inputFragment, final String expectedMathMLContent) {
         super(inputFragment.endsWith("$") ? inputFragment : "$" + inputFragment + "$",
-            "<math xmlns='" + Globals.MATHML_NAMESPACE + "'>"
+            "<math xmlns='" + W3CConstants.MATHML_NAMESPACE + "'>"
             + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")
             + "</math>");
     }

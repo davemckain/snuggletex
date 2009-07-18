@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.jeuclid;
 
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
@@ -94,12 +94,12 @@ public final class JEuclidMathMLPostProcessor extends MathMLPostProcessor {
         
         /* Next we add <div> or <span> to the output Document instead of the input <math/> element */
         boolean isBlock = inputMathIsland.getAttribute("display").equals("block");
-        Element divOrSpan = outputDocument.createElementNS(Globals.XHTML_NAMESPACE, isBlock ? "div" : "span");
+        Element divOrSpan = outputDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, isBlock ? "div" : "span");
         divOrSpan.setAttribute("class", "mathml-math");
         outputParentNode.appendChild(divOrSpan);
         
         /* Then put an <img/> inside the <div> or <span> */
-        Element imgElement = outputDocument.createElementNS(Globals.XHTML_NAMESPACE, "img");
+        Element imgElement = outputDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "img");
         imgElement.setAttribute("src", imageSavingCallback.getImageURL(mathmlCounter));
         imgElement.setAttribute("width", Integer.toString(imageDimension.width));
         imgElement.setAttribute("height", Integer.toString(imageDimension.height));

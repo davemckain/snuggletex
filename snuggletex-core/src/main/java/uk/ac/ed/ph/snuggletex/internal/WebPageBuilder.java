@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
@@ -23,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -68,10 +70,10 @@ public final class WebPageBuilder {
         }
         
         /* Create <body/> and maybe add title header */
-        Element body = document.createElementNS(Globals.XHTML_NAMESPACE, "body");
+        Element body = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "body");
         String title = options.getTitle();
         if (title!=null && options.isAddingTitleHeading()) {
-            Element titleHeader = document.createElementNS(Globals.XHTML_NAMESPACE, "h1");
+            Element titleHeader = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "h1");
             titleHeader.appendChild(document.createTextNode(title));
             body.appendChild(titleHeader);
         }
@@ -81,7 +83,7 @@ public final class WebPageBuilder {
         domBuildingController.buildDOMSubtree(body, fixedTokens);
         
         /* Build <head/> */
-        Element head = document.createElementNS(Globals.XHTML_NAMESPACE, "head");
+        Element head = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "head");
         
         /* Do template-y stuff */
         WebPageType pageType = options.getWebPageType();
@@ -91,7 +93,7 @@ public final class WebPageBuilder {
              * the <head/> element. Getting any of this in the wrong order will fail
              * to make MathPlayer work.
              */
-            Element object = document.createElementNS(Globals.XHTML_NAMESPACE, "object");
+            Element object = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "object");
             object.setAttribute("id", "MathPlayer");
             object.setAttribute("classid", "clsid:32F66A20-7614-11D4-BD11-00104BD3F987");
             head.appendChild(object);
@@ -105,20 +107,20 @@ public final class WebPageBuilder {
 
         /* Add content type <meta/> element. (The serializer might add another of these but let's
          * be safe as we don't know what's going to happen at this point.) */
-        Element meta = document.createElementNS(Globals.XHTML_NAMESPACE, "meta");
+        Element meta = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "meta");
         meta.setAttribute("http-equiv", "Content-Type");
         meta.setAttribute("content", computeMetaContentType());
         head.appendChild(meta);
         
         /* Add common relevant metadata */
-        meta = document.createElementNS(Globals.XHTML_NAMESPACE, "meta");
+        meta = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "meta");
         meta.setAttribute("name", "Generator");
         meta.setAttribute("content", "SnuggleTeX");
         head.appendChild(meta);
         
         /* Add <title/>, if specified */
         if (title!=null) {
-            Element titleElement = document.createElementNS(Globals.XHTML_NAMESPACE, "title");
+            Element titleElement = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "title");
             titleElement.appendChild(document.createTextNode(options.getTitle()));
             head.appendChild(titleElement);
         }
@@ -128,7 +130,7 @@ public final class WebPageBuilder {
         if (cssStylesheetURLs!=null) {
             Element link;
             for (String url : cssStylesheetURLs) {
-                link = document.createElementNS(Globals.XHTML_NAMESPACE, "link");
+                link = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("href", url);
                 head.appendChild(link);
@@ -137,7 +139,7 @@ public final class WebPageBuilder {
         
         /* Maybe add <style>...</style> section. */
         if (options.isIncludingStyleElement()) {
-            Element style = document.createElementNS(Globals.XHTML_NAMESPACE, "style");
+            Element style = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "style");
             style.setAttribute("type", "text/css");
             Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
             style.appendChild(document.createTextNode(CSSUtilities.writeStylesheet(cssProperties)));
@@ -145,11 +147,11 @@ public final class WebPageBuilder {
         }
         
         /* Create finished document */
-        Element html = document.createElementNS(Globals.XHTML_NAMESPACE, "html");
+        Element html = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "html");
         
         /* Add pref:renderer attribute if doing USS */
         if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
-            html.setAttributeNS(Globals.MATHML_PREF_NAMESPACE, "pref:renderer", "mathplayer-dl");
+            html.setAttributeNS(W3CConstants.MATHML_PREF_NAMESPACE, "pref:renderer", "mathplayer-dl");
         }
         
         String lang = options.getLang();
@@ -159,7 +161,7 @@ public final class WebPageBuilder {
                 html.setAttribute("lang", lang);
             }
             else {
-                html.setAttributeNS(Globals.XML_NAMESPACE, "xml:lang", lang);
+                html.setAttributeNS(XMLConstants.XML_NS_URI, "xml:lang", lang);
             }
         }
 
@@ -167,7 +169,7 @@ public final class WebPageBuilder {
             /* We'll explicitly set the MathML prefix on the root element.
              * (MathPlayer needs it to be declared here too.)
              */
-            html.setAttributeNS(Globals.XMLNS_NAMESPACE, "xmlns:" + options.getMathMLPrefix(), Globals.MATHML_NAMESPACE);
+            html.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:" + options.getMathMLPrefix(), W3CConstants.MATHML_NAMESPACE);
         }
         html.appendChild(head);
         html.appendChild(body);
@@ -296,8 +298,8 @@ public final class WebPageBuilder {
         serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
                 StringUtilities.toYesNo(!(pageType==WebPageType.CROSS_BROWSER_XHTML || pageType==WebPageType.UNIVERSAL_STYLESHEET)));
         if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
-            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN");
-            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd");
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, W3CConstants.XHTML_11_MATHML_20_PUBLIC_DTD);
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, W3CConstants.XHTML_11_MATHML_20_SYSTEM_DTD);
         }
         if (xslt20 && serializationMethod!=SerializationMethod.XML) {
             /* XSLT 2.0 allows us to explicitly stop serializer adding Content Type declaration,

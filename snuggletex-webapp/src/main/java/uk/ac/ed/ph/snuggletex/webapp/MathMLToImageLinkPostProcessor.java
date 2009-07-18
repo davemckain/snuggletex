@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.webapp;
 
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
@@ -47,10 +47,10 @@ public final class MathMLToImageLinkPostProcessor extends MathMLPostProcessor {
         }
         /* Replace with appropriate image servlet link */
         boolean isBlock = "block".equals(inputMathIsland.getAttribute("display"));
-        Element replacement = outputDocument.createElementNS(Globals.XHTML_NAMESPACE, isBlock ? "div" : "span");
+        Element replacement = outputDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, isBlock ? "div" : "span");
         replacement.setAttribute("class", "mathml-math");
         
-        Element image = outputDocument.createElementNS(Globals.XHTML_NAMESPACE, "img");
+        Element image = outputDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "img");
         try {
             image.setAttribute("src", contextPath + "/MathInputToImage.png?input="
                     + URLEncoder.encode(snuggleInput, "UTF-8"));

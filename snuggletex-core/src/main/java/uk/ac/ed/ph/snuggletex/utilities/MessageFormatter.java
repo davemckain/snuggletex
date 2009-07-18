@@ -11,6 +11,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument;
@@ -96,13 +97,13 @@ public final class MessageFormatter {
     }
     
     public static Element formatErrorAsXHTML(Document ownerDocument, InputError error) {
-        Element result = ownerDocument.createElementNS(Globals.XHTML_NAMESPACE, "div");
+        Element result = ownerDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "div");
         result.setAttribute("class", "error");
         
-        Element heading = ownerDocument.createElementNS(Globals.XHTML_NAMESPACE, "h2");
+        Element heading = ownerDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "h2");
         heading.appendChild(ownerDocument.createTextNode("SnuggleTeX Error (" + error.getErrorCode() + ")"));
         
-        Element pre = ownerDocument.createElementNS(Globals.XHTML_NAMESPACE, "pre");
+        Element pre = ownerDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "pre");
         
         /* Nicely format XML error content */
         StringBuffer messageBuilder = new StringBuffer(getErrorMessage(error));

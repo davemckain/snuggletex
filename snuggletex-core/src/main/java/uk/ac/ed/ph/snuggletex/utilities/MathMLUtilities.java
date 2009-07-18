@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.utilities;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
@@ -197,7 +197,7 @@ public final class MathMLUtilities {
     public static boolean isMathMLElement(final Node node, final String localName) {
         ConstraintUtilities.ensureNotNull(node, "Node");
         return node.getNodeType()==ELEMENT_NODE
-            && node.getNamespaceURI().equals(Globals.MATHML_NAMESPACE)
+            && node.getNamespaceURI().equals(W3CConstants.MATHML_NAMESPACE)
             && (localName==null || localName.equals(node.getLocalName()));
     }
     

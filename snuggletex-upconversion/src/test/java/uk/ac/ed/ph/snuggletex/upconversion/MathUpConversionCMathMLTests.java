@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.upconversion;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathTests;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
@@ -74,7 +74,7 @@ public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionTest {
             Node cmathML = cmathMLList.item(0);
 
             Assert.assertEquals(Node.ELEMENT_NODE, cmathML.getNodeType());
-            Assert.assertEquals(Globals.MATHML_NAMESPACE, cmathML.getNamespaceURI());
+            Assert.assertEquals(W3CConstants.MATHML_NAMESPACE, cmathML.getNamespaceURI());
             
             mathML.removeChild(mathML.getFirstChild()); /* Removes <semantics/> */
             mathML.appendChild(cmathML); /* Moves CMathML element to child of <math/> */

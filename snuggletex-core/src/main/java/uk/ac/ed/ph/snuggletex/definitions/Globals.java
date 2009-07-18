@@ -25,6 +25,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+
 /**
  * Lists various useful (but internal) constants and helper methods.
  * 
@@ -33,10 +35,34 @@ import java.util.Map;
  */
 public final class Globals {
     
+    /**
+     * @deprecated Use {@link XMLConstants#XML_NS_URI} instead
+     */
+    @Deprecated
     public static final String XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+    
+    /**
+     * @deprecated Use {@link XMLConstants#XMLNS_ATTRIBUTE_NS_URI} instead
+     */
+    @Deprecated
     public static final String XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
+    
+    /**
+     * @deprecated Use {@link W3CConstants#XHTML_NAMESPACE} instead
+     */
+    @Deprecated
     public static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+    
+    /**
+     * @deprecated Use {@link W3CConstants#MATHML_NAMESPACE} instead
+     */
+    @Deprecated
     public static final String MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
+    
+    /**
+     * @deprecated Use {@link W3CConstants#MATHML_PREF_NAMESPACE} instead
+     */
+    @Deprecated
     public static final String MATHML_PREF_NAMESPACE = "http://www.w3.org/2002/Math/preference";
     
     public static final String ERROR_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/error-messages";

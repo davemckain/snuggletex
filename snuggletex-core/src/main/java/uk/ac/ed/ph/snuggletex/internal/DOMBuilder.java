@@ -13,9 +13,9 @@ import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
@@ -529,7 +529,7 @@ public final class DOMBuilder {
         else {
             qName = elementLocalName;
         }
-        Element xhtmlElement = document.createElementNS(Globals.XHTML_NAMESPACE, qName);
+        Element xhtmlElement = document.createElementNS(W3CConstants.XHTML_NAMESPACE, qName);
         parentElement.appendChild(xhtmlElement);
         return xhtmlElement;
     }
@@ -548,7 +548,7 @@ public final class DOMBuilder {
         else {
             qName = elementLocalName;
         }
-        Element mathMLElement = document.createElementNS(Globals.MATHML_NAMESPACE, qName);
+        Element mathMLElement = document.createElementNS(W3CConstants.MATHML_NAMESPACE, qName);
         parentElement.appendChild(mathMLElement);
         return mathMLElement;
     }
@@ -761,7 +761,7 @@ public final class DOMBuilder {
                 /* We're at the root of our tree, so stop */
                 return currentElement;
             }
-            else if (Globals.XHTML_NAMESPACE.equals(currentElement.getNamespaceURI())) {
+            else if (W3CConstants.XHTML_NAMESPACE.equals(currentElement.getNamespaceURI())) {
                 /* We're at an XHTML element, so stop */
                 return currentElement;
             }

@@ -9,7 +9,7 @@ import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -71,7 +71,7 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
              * stage when they are allowed.
              * 
              * Make sure we're building a list */
-            if (builder.isParentElement(parentElement, Globals.XHTML_NAMESPACE, "ul", "ol")) {
+            if (builder.isParentElement(parentElement, W3CConstants.XHTML_NAMESPACE, "ul", "ol")) {
                 Element listItem = builder.appendXHTMLElement(parentElement, "li");
                 builder.handleTokens(listItem, itemToken.getArguments()[0], true);
             }

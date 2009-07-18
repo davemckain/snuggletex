@@ -1,6 +1,6 @@
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
@@ -103,7 +103,7 @@ public abstract class AbstractGoodTest {
 
         /* Convert to XML */
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-        Element rootElement = resultDocument.createElementNS(Globals.XHTML_NAMESPACE, "body");
+        Element rootElement = resultDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "body");
         resultDocument.appendChild(rootElement);
         
         DOMBuildingController domBuildingController = new DOMBuildingController(session, domOptions);
