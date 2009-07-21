@@ -38,7 +38,7 @@ public interface MathMLSymbol {
     public static final String JMATH = "\u006a";
     public static final String NEG = "\u00ac";
     public static final String PM = "\u00b1";
-    public static final String CDOTS = "\u00b7\u00b7\u00b7";
+
     public static final String UC_AA = "\u00c5";
     public static final String TIMES = "\u00d7";
     public static final String AA = "\u00e5";
@@ -225,6 +225,7 @@ public interface MathMLSymbol {
     public static final String BIGCAP = "\u22c2";
     public static final String BIGCUP = "\u22c3";
     public static final String VDOTS = "\u22ee";
+    public static final String CDOTS = "\u22ef";
     public static final String DDOTS = "\u22f1";
     
     public static final String SMILE = "\u2323";
