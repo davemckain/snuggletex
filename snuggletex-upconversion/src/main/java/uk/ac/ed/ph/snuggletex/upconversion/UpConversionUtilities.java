@@ -38,7 +38,23 @@ public final class UpConversionUtilities {
      * @param failure
      */
     public static String getErrorMessage(UpConversionFailure failure) {
-        return MessageFormatter.getErrorMessage(failure.getErrorCode().toString(), failure.getArguments());
+        return MessageFormatter.getErrorMessage(failure.getErrorCode(), failure.getArguments());
+    }
+    
+    /**
+     * Returns a full error message for the given {@link UpConversionErrorCode} String and arguments,
+     * using the SnuggleTeX {@link MessageFormatter} class to do the hard work.
+     */
+    public static String getErrorMessage(String upConversionErrorCodeAsString, Object... arguments) {
+        /* Look up ErrorCode in enum */
+        ErrorCode errorCode;
+        try {
+            errorCode = UpConversionErrorCode.valueOf(upConversionErrorCodeAsString);
+        }
+        catch (IllegalArgumentException e) {
+            throw new SnuggleLogicException("Could not look up UpConversionErrorCode " + upConversionErrorCodeAsString);
+        }
+        return MessageFormatter.getErrorMessage(errorCode, arguments);
     }
     
     /**
@@ -56,7 +72,7 @@ public final class UpConversionUtilities {
         String codeAttribute = sFailElement.getAttribute("code");
         ErrorCode errorCode;
         try {
-            errorCode = ErrorCode.valueOf(codeAttribute);
+            errorCode = UpConversionErrorCode.valueOf(codeAttribute);
         }
         catch (IllegalArgumentException e) {
             throw new SnuggleLogicException("Error code '" + codeAttribute + "' not defined");
@@ -142,5 +158,4 @@ public final class UpConversionUtilities {
             }
         }
     }
-
 }

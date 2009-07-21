@@ -68,7 +68,7 @@ public class SimpleErrorTests {
         List<InputError> errors = session.getErrors();
         String[] actualErrorCodes = new String[errors.size()];
         for (int i=0; i<actualErrorCodes.length; i++) {
-            actualErrorCodes[i] = errors.get(i).getErrorCode().name();
+            actualErrorCodes[i] = errors.get(i).getErrorCode().getName();
         }
         
         /* Work out which error codes we expected */

@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex;
 import static junit.framework.Assert.assertEquals;
 
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
-import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
@@ -33,14 +33,14 @@ public final class CommandArgumentsTest {
     @Before
     public void setup() {
         /* We'll create a custom built-in command called \\bob that simply does nothing of interest */
-        DefinitionMap definitionMap = new DefinitionMap();
-        definitionMap.addComplexCommandSameArgMode("bob", true, 1,
+        SnugglePackage pkg = new SnugglePackage("temp");
+        pkg.addComplexCommandSameArgMode("bob", true, 1,
                 Globals.TEXT_MODE_ONLY, new DoNothingHandler(), TextFlowContext.ALLOW_INLINE);
-        definitionMap.addComplexCommandSameArgMode("bobopt", true, 0,
+        pkg.addComplexCommandSameArgMode("bobopt", true, 0,
                 Globals.TEXT_MODE_ONLY, new DoNothingHandler(), TextFlowContext.ALLOW_INLINE);
         
         SnuggleEngine engine = new SnuggleEngine();
-        engine.registerDefinitions(definitionMap);
+        engine.addPackage(pkg);
         
         session = engine.createSession();
     }
@@ -80,6 +80,6 @@ public final class CommandArgumentsTest {
         CommandToken commandToken = (CommandToken) session.getParsedTokens().get(0);
         assertEquals("thing", commandToken.getArguments()[0].getSlice().extract().toString());
         assertEquals(1, session.getErrors().size());
-        assertEquals(ErrorCode.TTEG00, session.getErrors().get(0).getErrorCode());
+        assertEquals(CoreErrorCode.TTEG00, session.getErrors().get(0).getErrorCode());
     }
 }

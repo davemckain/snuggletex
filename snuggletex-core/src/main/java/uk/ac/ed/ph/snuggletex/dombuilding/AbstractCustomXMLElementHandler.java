@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -69,7 +69,7 @@ public abstract class AbstractCustomXMLElementHandler implements EnvironmentHand
         catch (DOMException e) {
             if (e.code==DOMException.INVALID_CHARACTER_ERR || e.code==DOMException.NAMESPACE_ERR) {
                 /* Error: Must be a bad QName */
-                builder.appendOrThrowError(parentElement, qNameToken, ErrorCode.TDEX01, qName);
+                builder.appendOrThrowError(parentElement, qNameToken, CoreErrorCode.TDEX01, qName);
                 return;
             }
             throw e;
@@ -90,7 +90,7 @@ public abstract class AbstractCustomXMLElementHandler implements EnvironmentHand
             throws SnuggleParseException {
         CommandToken resolvedAttrToken;
         for (FlowToken rawAttrToken : attrsToken) {
-            if (rawAttrToken.isCommand(GlobalBuiltins.CMD_XML_ATTR)) {
+            if (rawAttrToken.isCommand(CorePackageDefinitions.CMD_XML_ATTR)) {
                 resolvedAttrToken = (CommandToken) rawAttrToken;
                 String namespace = builder.extractStringValue(resolvedAttrToken.getArguments()[0]);
                 String qName = builder.extractStringValue(resolvedAttrToken.getArguments()[1]);
@@ -106,7 +106,7 @@ public abstract class AbstractCustomXMLElementHandler implements EnvironmentHand
             }
             else {
                 /* Error: Expected a CoreEngineConfigurer.XML_ATTR token here */
-                builder.appendOrThrowError(parentElement, rawAttrToken, ErrorCode.TDEX00);
+                builder.appendOrThrowError(parentElement, rawAttrToken, CoreErrorCode.TDEX00);
             }
         }
     }

@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
@@ -21,9 +21,9 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 /**
- * Handles the mathematical "limit" tokens like {@link GlobalBuiltins#CMD_MSUB_OR_MUNDER}, generating
+ * Handles the mathematical "limit" tokens like {@link CorePackageDefinitions#CMD_MSUB_OR_MUNDER}, generating
  * either <tt>msub</tt> or <tt>munder</tt> as appropriate, with analogous results for
- * {@link GlobalBuiltins#CMD_MSUP_OR_MOVER} and {@link GlobalBuiltins#CMD_MSUBSUP_OR_MUNDEROVER}.
+ * {@link CorePackageDefinitions#CMD_MSUP_OR_MOVER} and {@link CorePackageDefinitions#CMD_MSUBSUP_OR_MUNDEROVER}.
  *
  * @author  David McKain
  * @version $Revision$
@@ -46,13 +46,13 @@ public final class MathLimitsHandler implements CommandHandler {
             && limitand.get(0).hasInterpretationType(InterpretationType.MATH_BIG_LIMIT_OWNER);
         BuiltinCommand command = token.getCommand();
         String elementName;
-        if (command.equals(GlobalBuiltins.CMD_MSUB_OR_MUNDER)) {
+        if (command.equals(CorePackageDefinitions.CMD_MSUB_OR_MUNDER)) {
             elementName = isUnderOver ? "munder" : "msub";
         }
-        else if (command.equals(GlobalBuiltins.CMD_MSUP_OR_MOVER)) {
+        else if (command.equals(CorePackageDefinitions.CMD_MSUP_OR_MOVER)) {
             elementName = isUnderOver ? "mover" : "msup";
         }
-        else if (command.equals(GlobalBuiltins.CMD_MSUBSUP_OR_MUNDEROVER)) {
+        else if (command.equals(CorePackageDefinitions.CMD_MSUBSUP_OR_MUNDEROVER)) {
             elementName = isUnderOver ? "munderover" : "msubsup";
         }
         else {

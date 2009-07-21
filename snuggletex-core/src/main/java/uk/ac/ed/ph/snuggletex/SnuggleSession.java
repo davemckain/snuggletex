@@ -463,11 +463,11 @@ public final class SnuggleSession implements SessionContext {
     // Business helpers
     
     public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
-        return engine.getCommandByTeXName(texName);
+        return engine.getBuiltinCommandByTeXName(texName);
     }
     
     public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
-        return engine.getEnvironmentByTeXName(texName);
+        return engine.getBuiltinEnvironmentByTeXName(texName);
     }
     
     public Map<String, UserDefinedCommand> getUserCommandMap() {

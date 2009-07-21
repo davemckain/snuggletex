@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
@@ -41,7 +41,7 @@ public final class EqnArrayHandler implements EnvironmentHandler {
         int numColumns = geometry[1];
         if (numColumns>3) {
             /* Error: eqnarray must have no more than 3 columns */
-            builder.appendOrThrowError(parentElement, token, ErrorCode.TDEM01, numColumns);
+            builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDEM01, numColumns);
             return;
         }
         

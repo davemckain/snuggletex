@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
@@ -60,7 +60,7 @@ public final class HSpaceHandler implements CommandHandler {
         Matcher sizeMatcher = sizePattern.matcher(latexSize);
         if (!sizeMatcher.matches()) {
             /* Error: bad sizing */
-            builder.appendOrThrowError(parentElement, sizeToken, ErrorCode.TDEUN0,
+            builder.appendOrThrowError(parentElement, sizeToken, CoreErrorCode.TDEUN0,
                     latexSize);
             return null;
         }
@@ -74,7 +74,7 @@ public final class HSpaceHandler implements CommandHandler {
         }
         catch (NumberFormatException e) {
             /* Error: could not parse number */
-            builder.appendOrThrowError(parentElement, sizeToken, ErrorCode.TDEUN1,
+            builder.appendOrThrowError(parentElement, sizeToken, CoreErrorCode.TDEUN1,
                     incomingSizeString, latexSize);
             return null;
         }
@@ -109,7 +109,7 @@ public final class HSpaceHandler implements CommandHandler {
         }
         else {
             /* Error: bad units! */
-            builder.appendOrThrowError(parentElement, sizeToken, ErrorCode.TDEUN2,
+            builder.appendOrThrowError(parentElement, sizeToken, CoreErrorCode.TDEUN2,
                     incomingUnits, latexSize);
             return null;
         }

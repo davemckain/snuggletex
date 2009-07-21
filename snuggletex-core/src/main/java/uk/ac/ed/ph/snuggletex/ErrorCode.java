@@ -1,4 +1,4 @@
-/* $Id:ErrorCode.java 179 2008-08-01 13:41:24Z davemckain $
+/* $Id$
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -6,130 +6,17 @@
 package uk.ac.ed.ph.snuggletex;
 
 /**
- * Enumerates the various types of client-induced errors that can arise when using SnuggleTeX.
- * 
- * <h2>Developer Notes</h2>
- * 
- * <ul>
- *   <li>See the <tt>error-messages_en.properties</tt> file for descriptions of each code.</li>
- *   <li>To make things easier to read, add a comment whenever raising an error that briefly
- *     summarises the error.</li>
- *   <li>
- *     I'm using a kind of naming convention for these, as mentioned
- *     in the error-messages_en.properties. Note that the 3rd character
- *     indicates the type of error, which in all cases so far is 'E' for Error.
- *   </li>
- * </ul>
+ * Interface representing a code for an Error caused by client input.
  *
  * @author  David McKain
- * @version $Revision:179 $
+ * @version $Revision: 3 $
  */
-public enum ErrorCode {
+public interface ErrorCode {
     
-    /* ================ Errors in the normal SnuggleTeX -> MathML Process (T) =============== */
-    
-    /* Tokenisation errors */
-    TTEG00(),
-    TTEG01(),
-    TTEG02(),
-    TTEG03(),
-    TTEG04(),
-    TTEM00(),
-    TTEM01(),
-    TTEM02(),
-    TTEM03(),
-    TTEV00(),
-    TTEV01(),
-    TTEC00(),
-    TTEC01(),
-    TTEC02(),
-    TTEC03(),
-    TTEC04(),
-    TTEE00(),
-    TTEE01(),
-    TTEE02(),
-    TTEE03(),
-    TTEE04(),
-    TTEE05(),
-    TTEE06(),
-    TTEUC0(),
-    TTEUC1(),
-    TTEUC2(),
-    TTEUC3(),
-    TTEUC4(),
-    TTEUC5(),
-    TTEUC6(),
-    TTEUC7(),
-    TTEUC8(),
-    TTEUC9(),
-    TTEUE0(),
-    TTEUE1(),
-    TTEUE2(),
-    TTEUE3(),
-    TTEUE4(),
-    
-    /* Fixing errors */
-    TFEG00(),
-    TFEL00(),
-    TFEM00(),
-    TFEM01(),
-    TFEM02(),
-    TFEM03(),
-    TFEM04(),
-    TFETB0(),
-    
-    /* DOM Building errors */
-    TDEG00(),
-    TDEX00(),
-    TDEX01(),
-    TDEX02(),
-    TDEX03(),
-    TDEX04(),
-    TDEX05(),
-    TDEM00(),
-    TDEM01(),
-    TDEMA0(),
-    TDEMA1(),
-    TDEMA2(),
-    TDEMM0(),
-    TDEL00(),
-    TDETA0(),
-    TDETA1(),
-    TDETA2(),
-    TDETB0(),
-    TDETB1(),
-    TDETB2(),
-    TDETB3(),
-    TDEUN0(),
-    TDEUN1(),
-    TDEUN2(),
-    
-    /* ================ Failures in the Up-conversion Process, via extension (U) =============== */
-    
-    /* Presentation to Content MathML Failures */
-    UCFG00(),
-    UCFG01(),
-    UCFG02(),
-    UCFOP0(),
-    UCFOP1(),
-    UCFOP2(),
-    UCFOP3(),
-    UCFOP4(),
-    UCFOP5(),
-    UCFFN0(),
-    UCFFN1(),
-    UCFFX0(),
-    UCFFX1(),
-    UCFFX2(),
-    
-    /* Content MathML to Maxima Failures */
-    UMFG00(),
-    UMFG01(),
-    UMFG02(),
-    UMFG03(),
-    UMFG04(),
-    UMFFX0(),
-    UMFOP0()
-    
-    ;
+    /** Short name for this code, used to format error messages. */
+    String getName();
+
+    /** {@link SnugglePackage} defining this code */
+    SnugglePackage getPackage();
+
 }

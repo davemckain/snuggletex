@@ -5,11 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.tokens;
 
+import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumperOptions;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
-import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
@@ -42,7 +42,7 @@ public abstract class Token {
         this.slice = slice;
         this.type = type;
         this.latexMode = latexMode;
-        this.interpretationMap = DefinitionMap.makeInterpretationMap(interpretations);
+        this.interpretationMap = SnugglePackage.makeInterpretationMap(interpretations);
     }
     
     protected Token(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,

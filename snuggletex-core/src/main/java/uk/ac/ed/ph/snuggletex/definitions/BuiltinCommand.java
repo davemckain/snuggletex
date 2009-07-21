@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.definitions;
 
+import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
@@ -13,12 +14,12 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
- * Represents a {@link Command} that has been defined internally via a {@link DefinitionMap}.
+ * Represents a {@link Command} that has been defined internally via a {@link SnugglePackage}.
  * <p>
- * All of the core LaTeX macros have been defined in this way - see {@link GlobalBuiltins}.
+ * All of the core LaTeX macros have been defined in this way - see {@link CorePackageDefinitions}.
  * 
  * @see BuiltinEnvironment
- * @see GlobalBuiltins
+ * @see CorePackageDefinitions
  * 
  * @author  David McKain
  * @version $Revision:179 $

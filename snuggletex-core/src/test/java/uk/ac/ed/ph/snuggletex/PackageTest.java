@@ -9,7 +9,6 @@ import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
-import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.dombuilding.DoNothingHandler;
@@ -22,22 +21,22 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 /**
- * Tests the {@link DefinitionMap} class.
+ * Tests the {@link SnugglePackage} class.
  *
  * @author  David McKain
  * @version $Revision:179 $
  */
-public class DefinitionMapTest {
+public class PackageTest {
     
     @Test
     public void testCustomDefinition() throws Exception {
         /* We'll create a custom built-in command called \\bob that simply does nothing of interest */
-        DefinitionMap definitionMap = new DefinitionMap();
-        BuiltinCommand bobCommand = definitionMap.addSimpleCommand("bob", Globals.TEXT_MODE_ONLY,
+        SnugglePackage pkg = new SnugglePackage("test");
+        BuiltinCommand bobCommand = pkg.addSimpleCommand("bob", Globals.TEXT_MODE_ONLY,
                 new DoNothingHandler(), TextFlowContext.ALLOW_INLINE);
         
         SnuggleEngine engine = new SnuggleEngine();
-        engine.registerDefinitions(definitionMap);
+        engine.addPackage(pkg);
         
         SnuggleSession session = engine.createSession();
         session.parseInput(new SnuggleInput("\\bob"));

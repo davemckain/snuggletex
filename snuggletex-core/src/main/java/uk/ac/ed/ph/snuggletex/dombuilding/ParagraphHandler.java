@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -17,7 +17,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
- * This builds the content of a (fixed) {@link GlobalBuiltins#CMD_PARAGRAPH} token.
+ * This builds the content of a (fixed) {@link CorePackageDefinitions#CMD_PARAGRAPH} token.
  * 
  * @author  David McKain
  * @version $Revision$

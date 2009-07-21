@@ -5,13 +5,13 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
@@ -109,7 +109,7 @@ public final class TokenFixer {
     private void visitEnvironment(EnvironmentToken environmentToken) throws SnuggleParseException {
         /* We may do special handling for certain environments */
         BuiltinEnvironment environment = environmentToken.getEnvironment();
-        if (environment==GlobalBuiltins.ENV_ITEMIZE || environment==GlobalBuiltins.ENV_ENUMERATE) {
+        if (environment==CorePackageDefinitions.ENV_ITEMIZE || environment==CorePackageDefinitions.ENV_ENUMERATE) {
             fixListEnvironmentContent(environmentToken);
         }
         else if (environment.hasInterpretation(InterpretationType.TABULAR)) {
@@ -121,7 +121,7 @@ public final class TokenFixer {
          * We don't drill into the arguments of ENV_BRACKETED as that will end up with an infinite
          * loop of parenthesis nesting!
          */
-        if (environment!=GlobalBuiltins.ENV_BRACKETED) {
+        if (environment!=CorePackageDefinitions.ENV_BRACKETED) {
             ArgumentContainerToken optArgument = environmentToken.getOptionalArgument();
             if (optArgument!=null) {
                 visitContainerContent(optArgument);
@@ -279,8 +279,8 @@ public final class TokenFixer {
     
     /**
      * Infers explicit paragraphs by searching for the traditional LaTeX
-     * {@link TokenType#NEW_PARAGRAPH} and/or {@link GlobalBuiltins#CMD_PAR} tokens, replacing with
-     * the more tree-like {@link GlobalBuiltins#CMD_PARAGRAPH}.
+     * {@link TokenType#NEW_PARAGRAPH} and/or {@link CorePackageDefinitions#CMD_PAR} tokens, replacing with
+     * the more tree-like {@link CorePackageDefinitions#CMD_PARAGRAPH}.
      * 
      * @param tokens
      */
@@ -291,11 +291,11 @@ public final class TokenFixer {
         boolean hasParagraphs = false;
         for (int i=0; i<tokens.size(); i++) {
             FlowToken token = tokens.get(i);
-            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(GlobalBuiltins.CMD_PAR)) {
+            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(CorePackageDefinitions.CMD_PAR)) {
                 /* This token is an explicit "end current paragraph" token */
                 hasParagraphs = true;
                 if (!paragraphBuilder.isEmpty()) {
-                    resultBuilder.add(buildGroupedCommandToken(token, GlobalBuiltins.CMD_PARAGRAPH, paragraphBuilder));
+                    resultBuilder.add(buildGroupedCommandToken(token, CorePackageDefinitions.CMD_PARAGRAPH, paragraphBuilder));
                     paragraphCount++;
                 }
             }
@@ -304,7 +304,7 @@ public final class TokenFixer {
                  * being built and then add token. */
                 hasParagraphs = true;
                 if (!paragraphBuilder.isEmpty()) {
-                    CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.CMD_PARAGRAPH, paragraphBuilder);
+                    CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), CorePackageDefinitions.CMD_PARAGRAPH, paragraphBuilder);
                     resultBuilder.add(leftOver);
                     paragraphCount++;
                 }
@@ -330,7 +330,7 @@ public final class TokenFixer {
         
         /* Finish off current paragraph */
         if (!paragraphBuilder.isEmpty()) {
-            CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), GlobalBuiltins.CMD_PARAGRAPH, paragraphBuilder);
+            CommandToken leftOver = buildGroupedCommandToken(tokens.get(0), CorePackageDefinitions.CMD_PARAGRAPH, paragraphBuilder);
             resultBuilder.add(leftOver);
             paragraphCount++;
         }
@@ -347,7 +347,7 @@ public final class TokenFixer {
              * comments and stuff. As a slight optimisation, we'll pull up the paragraph's contents.
              */
             for (FlowToken resultToken : resultBuilder) {
-                if (resultToken.isCommand(GlobalBuiltins.CMD_PARAGRAPH)) {
+                if (resultToken.isCommand(CorePackageDefinitions.CMD_PARAGRAPH)) {
                     tokens.addAll(((CommandToken) resultToken).getArguments()[0].getContents());
                 }
                 else {
@@ -384,7 +384,7 @@ public final class TokenFixer {
         /* This does fix-in-place */
         for (int i=0; i<tokens.size(); i++) {
             FlowToken token = tokens.get(i);
-            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(GlobalBuiltins.CMD_PAR)) {
+            if (token.getType()==TokenType.NEW_PARAGRAPH || token.isCommand(CorePackageDefinitions.CMD_PAR)) {
                 /* We'll replace with a space */
                 tokens.set(i, new SimpleToken(token.getSlice(), TokenType.LR_MODE_NEW_PARAGRAPH,
                         LaTeXMode.LR, TextFlowContext.ALLOW_INLINE));
@@ -396,7 +396,7 @@ public final class TokenFixer {
                 /* We're not allowing blocks inside LR mode, which is more prescriptive but generally
                  * consistent with LaTeX.
                  */
-                tokens.set(i, createError(token, ErrorCode.TFEG00, token.getSlice().extract().toString()));
+                tokens.set(i, createError(token, CoreErrorCode.TFEG00, token.getSlice().extract().toString()));
             }
         }
     }
@@ -410,7 +410,7 @@ public final class TokenFixer {
      * 
      * \item ..... \item ..... \item ......
      * 
-     * (and maybe include {@link GlobalBuiltins#CMD_LIST_ITEM}s as well)
+     * (and maybe include {@link CorePackageDefinitions#CMD_LIST_ITEM}s as well)
      * 
      * We replace with a more tree-like version.
      * 
@@ -430,11 +430,11 @@ public final class TokenFixer {
         boolean foundItem = false;
         for (int i=0, size=contents.size(); i<size; i++) {
             token = contents.get(i);
-            if (token.isCommand(GlobalBuiltins.CMD_ITEM)) {
+            if (token.isCommand(CorePackageDefinitions.CMD_ITEM)) {
                 /* Old-style \item. Stop building up content (if appropriate) and replace with
                  * new LIST_ITEM command */
                 if (foundItem) {
-                    CommandToken itemBefore = buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_LIST_ITEM, itemBuilder);
+                    CommandToken itemBefore = buildGroupedCommandToken(environmentToken, CorePackageDefinitions.CMD_LIST_ITEM, itemBuilder);
                     resultBuilder.add(itemBefore);
                 }
                 foundItem = true;
@@ -448,7 +448,7 @@ public final class TokenFixer {
                 }
                 else {
                     /* Error: (non-trivial) content before first \item */
-                    resultBuilder.add(createError(token, ErrorCode.TFEL00));
+                    resultBuilder.add(createError(token, CoreErrorCode.TFEL00));
                 }
             }
             else {
@@ -458,7 +458,7 @@ public final class TokenFixer {
         }
         /* At end, finish off last item */
         if (foundItem) {
-            resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_LIST_ITEM, itemBuilder));
+            resultBuilder.add(buildGroupedCommandToken(environmentToken, CorePackageDefinitions.CMD_LIST_ITEM, itemBuilder));
         }
         
         /* Replace content */
@@ -468,10 +468,10 @@ public final class TokenFixer {
     
     /**
      * Helper to fix the content of tabular environments to make it more clearly demarcated
-     * as rows and columns. This kills off instances of {@link GlobalBuiltins#CMD_CHAR_BACKSLASH} and
+     * as rows and columns. This kills off instances of {@link CorePackageDefinitions#CMD_CHAR_BACKSLASH} and
      * {@link TokenType#TAB_CHARACTER} within tables/arrays and replaces then with
-     * zero or more {@link GlobalBuiltins#CMD_TABLE_ROW} each containing zero or more
-     * {@link GlobalBuiltins#CMD_TABLE_COLUMN}.
+     * zero or more {@link CorePackageDefinitions#CMD_TABLE_ROW} each containing zero or more
+     * {@link CorePackageDefinitions#CMD_TABLE_COLUMN}.
      */
     private void fixTabularEnvironmentContent(EnvironmentToken environmentToken)
             throws SnuggleParseException {
@@ -486,7 +486,7 @@ public final class TokenFixer {
          * create a fake token.
          */
         List<FlowToken> entries = contents;
-        if (entries.size()>0 && !entries.get(entries.size()-1).isCommand(GlobalBuiltins.CMD_CHAR_BACKSLASH)) {
+        if (entries.size()>0 && !entries.get(entries.size()-1).isCommand(CorePackageDefinitions.CMD_CHAR_BACKSLASH)) {
             entries = new ArrayList<FlowToken>(entries);
             entries.add(null);
         }
@@ -496,18 +496,18 @@ public final class TokenFixer {
         FlowToken lastGoodToken = null;
         for (int i=0, size=entries.size(); i<size; i++) {
             token = entries.get(i);
-            if (token==null || token.isCommand(GlobalBuiltins.CMD_CHAR_BACKSLASH)) {
+            if (token==null || token.isCommand(CorePackageDefinitions.CMD_CHAR_BACKSLASH)) {
                 /* End of a row (see above). */
-                if (token==null && lastGoodToken!=null && lastGoodToken.isCommand(GlobalBuiltins.CMD_HLINE)) {
+                if (token==null && lastGoodToken!=null && lastGoodToken.isCommand(CorePackageDefinitions.CMD_HLINE)) {
                     /* Last good token was \\hline so leave it there */
                     break;
                 }
                 /* First, finish off the last column (which may be
                  * completely empty but should always exist) */
-                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_TABLE_COLUMN, columnBuilder));
+                rowBuilder.add(buildGroupedCommandToken(environmentToken, CorePackageDefinitions.CMD_TABLE_COLUMN, columnBuilder));
                 
                 /* Then add row */
-                resultBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_TABLE_ROW, rowBuilder));
+                resultBuilder.add(buildGroupedCommandToken(environmentToken, CorePackageDefinitions.CMD_TABLE_ROW, rowBuilder));
             }
             else if (token.getType()==TokenType.TEXT_MODE_TEXT && token.getSlice().isWhitespace()) {
                 /* Whitespace token - we'll ignore this */
@@ -517,18 +517,18 @@ public final class TokenFixer {
                 /* Ends the column being built. This may be null (e.g. '& &') so we need to consider
                  * that case carefully.
                  */
-                rowBuilder.add(buildGroupedCommandToken(environmentToken, GlobalBuiltins.CMD_TABLE_COLUMN, columnBuilder));
+                rowBuilder.add(buildGroupedCommandToken(environmentToken, CorePackageDefinitions.CMD_TABLE_COLUMN, columnBuilder));
             }
-            else if (token.isCommand(GlobalBuiltins.CMD_HLINE)) {
+            else if (token.isCommand(CorePackageDefinitions.CMD_HLINE)) {
                 /* \\hline must be the only token in a row. It immediately ends the current row */
                 if (!columnBuilder.isEmpty()) {
                     /* Error: \\hline must be on its own within a row */
-                    resultBuilder.add(createError(columnBuilder.get(0), ErrorCode.TFETB0));
+                    resultBuilder.add(createError(columnBuilder.get(0), CoreErrorCode.TFETB0));
                     columnBuilder.clear(); 
                 }
                 else if (!rowBuilder.isEmpty()) {
                     /* Error: \\hline must be on its own within a row */
-                    resultBuilder.add(createError(rowBuilder.get(0), ErrorCode.TFETB0));
+                    resultBuilder.add(createError(rowBuilder.get(0), CoreErrorCode.TFETB0));
                     rowBuilder.clear();
                 }
                 /* Add \\hline to result as a "row" */
@@ -568,7 +568,7 @@ public final class TokenFixer {
         FlowToken firstToken = tokens.get(0);
         if (firstToken.getType()==TokenType.COMMAND) {
             Command command = ((CommandToken) firstToken).getCommand();
-            if (command==GlobalBuiltins.CMD_TABLE_ROW || command==GlobalBuiltins.CMD_TABLE_COLUMN) {
+            if (command==CorePackageDefinitions.CMD_TABLE_ROW || command==CorePackageDefinitions.CMD_TABLE_COLUMN) {
                 isStructural = true;
             }
         }
@@ -625,11 +625,11 @@ public final class TokenFixer {
         FlowToken token;
         for (int i=0; i<tokens.size(); i++) { /* Note: size() may change here */
             token = tokens.get(i);
-            if (token.isCommand(GlobalBuiltins.CMD_OVER)) {
+            if (token.isCommand(CorePackageDefinitions.CMD_OVER)) {
                 if (overIndex!=-1) {
                     /* Multiple \over occurrence, which we're not going to allow so kill this expression */
                     tokens.clear();
-                    tokens.add(createError(token, ErrorCode.TFEM00));
+                    tokens.add(createError(token, CoreErrorCode.TFEM00));
                     return;
                 }
                 overIndex = i;
@@ -641,7 +641,7 @@ public final class TokenFixer {
             List<FlowToken> afterTokens = new ArrayList<FlowToken>(tokens.subList(overIndex+1, tokens.size()));
             CommandToken replacement = new CommandToken(parentToken.getSlice(),
                     LaTeXMode.MATH,
-                    GlobalBuiltins.CMD_FRAC,
+                    CorePackageDefinitions.CMD_FRAC,
                     null, /* No optional arg */
                     new ArgumentContainerToken[] {
                         ArgumentContainerToken.createFromContiguousTokens(parentToken, LaTeXMode.MATH, beforeTokens), /* Numerator */
@@ -669,7 +669,7 @@ public final class TokenFixer {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());
-                replacementToken = new CommandToken(replacementSlice, LaTeXMode.MATH, GlobalBuiltins.CMD_MSUP_OR_MOVER, null,
+                replacementToken = new CommandToken(replacementSlice, LaTeXMode.MATH, CorePackageDefinitions.CMD_MSUP_OR_MOVER, null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, leftToken),
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, maybePrimeToken),
@@ -717,7 +717,7 @@ public final class TokenFixer {
              */
             if (i==size-1) {
                 /* Error: Trailing subscript/superscript */
-                tokens.set(i, createError(subOrSuperToken, ErrorCode.TFEM01));
+                tokens.set(i, createError(subOrSuperToken, CoreErrorCode.TFEM01));
                 continue;
             }
             if (i==0) {
@@ -742,7 +742,7 @@ public final class TokenFixer {
                     /* OK, need to find the "T3" operator! */
                     if (i+3>=size) {
                         /* Trailing super/subscript */
-                        tokens.set(i-1, createError(subOrSuperToken, ErrorCode.TFEM01));
+                        tokens.set(i-1, createError(subOrSuperToken, CoreErrorCode.TFEM01));
                         tokens.subList(i, i+3).clear();
                         continue;
                     }
@@ -752,7 +752,7 @@ public final class TokenFixer {
                     if (tokenOperator==Globals.SUP_PLACEHOLDER && followingOperator==Globals.SUP_PLACEHOLDER
                             || tokenOperator==Globals.SUB_PLACEHOLDER && followingOperator==Globals.SUB_PLACEHOLDER) {
                         /* Double super/subscript */
-                        tokens.set(i-1, createError(subOrSuperToken, ErrorCode.TFEM02));
+                        tokens.set(i-1, createError(subOrSuperToken, CoreErrorCode.TFEM02));
                         tokens.subList(i, i+3).clear();
                         continue;
                     }
@@ -765,7 +765,7 @@ public final class TokenFixer {
             if (t3!=null) {
                 /* Create replacement, replacing tokens at i-1,i+1,i+2 and i+3 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t3.getSlice());
-                replacementCommand = GlobalBuiltins.CMD_MSUBSUP_OR_MUNDEROVER;
+                replacementCommand = CorePackageDefinitions.CMD_MSUBSUP_OR_MUNDEROVER;
                 CommandToken replacement = new CommandToken(replacementSlice,
                         LaTeXMode.MATH,
                         replacementCommand,
@@ -781,7 +781,7 @@ public final class TokenFixer {
             else {
                 /* Just replace tokens at i-1, i, i+1 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t2.getSlice());
-                replacementCommand = firstIsSuper ? GlobalBuiltins.CMD_MSUP_OR_MOVER : GlobalBuiltins.CMD_MSUB_OR_MUNDER;
+                replacementCommand = firstIsSuper ? CorePackageDefinitions.CMD_MSUP_OR_MOVER : CorePackageDefinitions.CMD_MSUB_OR_MUNDER;
                 CommandToken replacement = new CommandToken(replacementSlice, LaTeXMode.MATH,
                         replacementCommand,
                         null, /* No optional args */
@@ -815,12 +815,12 @@ public final class TokenFixer {
              * wrap inside a fake environment. We'll also make sure we don't find a 
              * \right before a left!
              */
-            if (token.isCommand(GlobalBuiltins.CMD_RIGHT)) {
+            if (token.isCommand(CorePackageDefinitions.CMD_RIGHT)) {
                 /* Error: \right had not preceding \left */
-                tokens.set(i, createError(token, ErrorCode.TFEM03));
+                tokens.set(i, createError(token, CoreErrorCode.TFEM03));
                 continue LEFT_SEARCH;
             }
-            else if (token.isCommand(GlobalBuiltins.CMD_LEFT)) {
+            else if (token.isCommand(CorePackageDefinitions.CMD_LEFT)) {
                 /* Now search forward for matching \right */
                 List<FlowToken> innerTokens = new ArrayList<FlowToken>();
                 CommandToken openBracketToken = (CommandToken) token;
@@ -830,10 +830,10 @@ public final class TokenFixer {
                 FlowToken innerToken;
                 MATCH_SEARCH: for (int j=i+1; j<tokens.size(); j++) { /* 'j' is search index from current point onwards */
                     innerToken = tokens.get(j);
-                    if (innerToken.isCommand(GlobalBuiltins.CMD_LEFT)) {
+                    if (innerToken.isCommand(CorePackageDefinitions.CMD_LEFT)) {
                         bracketLevel++;
                     }
-                    else if (innerToken.isCommand(GlobalBuiltins.CMD_RIGHT)) {
+                    else if (innerToken.isCommand(CorePackageDefinitions.CMD_RIGHT)) {
                         bracketLevel--;
                         if (bracketLevel==0) {
                             /* We've found the matcher */
@@ -846,7 +846,7 @@ public final class TokenFixer {
                 }
                 if (matchingCloseBracketToken==null) {
                     /* Error: We never found a match for \\left so we'll kill the whole expression off */
-                    tokens.set(i, createError(token, ErrorCode.TFEM04));
+                    tokens.set(i, createError(token, CoreErrorCode.TFEM04));
                     tokens.subList(i+1, tokens.size()).clear();
                     break LEFT_SEARCH;
                 }
@@ -854,7 +854,7 @@ public final class TokenFixer {
                 FrozenSlice replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
                 EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
                         LaTeXMode.MATH,
-                        GlobalBuiltins.ENV_BRACKETED,
+                        CorePackageDefinitions.ENV_BRACKETED,
                         null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken.getCombinerTarget()),
@@ -871,7 +871,7 @@ public final class TokenFixer {
     
     /**
      * This attempts to group (not necessarily matching) pairs of open and close brackets into a
-     * corresponding {@link GlobalBuiltins#ENV_BRACKETED} environment that's easier to handle.
+     * corresponding {@link CorePackageDefinitions#ENV_BRACKETED} environment that's easier to handle.
      * <p>
      * It also handles brackets which are not correctly nested, using fake empty opener/closer
      * delimiters at the start/end of the group as required.
@@ -904,7 +904,7 @@ public final class TokenFixer {
                 List<FlowToken> innerTokens = new ArrayList<FlowToken>(tokens.subList(0, i));
                 EnvironmentToken replacementToken = new EnvironmentToken(replacementSlice,
                         LaTeXMode.MATH,
-                        GlobalBuiltins.ENV_BRACKETED,
+                        CorePackageDefinitions.ENV_BRACKETED,
                         null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createEmptyContainer(parentToken, LaTeXMode.MATH),
@@ -968,7 +968,7 @@ public final class TokenFixer {
                 replacementSlice = openBracketToken.getSlice().rightOuterSpan(matchingCloseBracketToken.getSlice());
                 replacementToken = new EnvironmentToken(replacementSlice,
                         LaTeXMode.MATH,
-                        GlobalBuiltins.ENV_BRACKETED,
+                        CorePackageDefinitions.ENV_BRACKETED,
                         null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken),
@@ -983,7 +983,7 @@ public final class TokenFixer {
                 replacementSlice = openBracketToken.getSlice().rightOuterSpan(tokens.get(tokens.size()-1).getSlice());
                 replacementToken = new EnvironmentToken(replacementSlice,
                         LaTeXMode.MATH,
-                        GlobalBuiltins.ENV_BRACKETED,
+                        CorePackageDefinitions.ENV_BRACKETED,
                         null,
                         new ArgumentContainerToken[] {
                             ArgumentContainerToken.createFromSingleToken(LaTeXMode.MATH, openBracketToken),
@@ -1031,7 +1031,7 @@ public final class TokenFixer {
         return result;
     }
 
-    private ErrorToken createError(final FlowToken token, final ErrorCode errorCode,
+    private ErrorToken createError(final FlowToken token, final CoreErrorCode errorCode,
             final Object... arguments) throws SnuggleParseException {
         FrozenSlice slice = token.getSlice();
         InputError error = new InputError(errorCode, slice, arguments);

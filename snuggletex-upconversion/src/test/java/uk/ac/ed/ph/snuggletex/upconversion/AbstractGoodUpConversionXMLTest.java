@@ -7,7 +7,10 @@ package uk.ac.ed.ph.snuggletex.upconversion;
 
 import uk.ac.ed.ph.snuggletex.AbstractGoodMathTest;
 import uk.ac.ed.ph.snuggletex.AbstractGoodXMLTest;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
+import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 
 import org.w3c.dom.Document;
 
@@ -19,9 +22,9 @@ import org.w3c.dom.Document;
  * @author  David McKain
  * @version $Revision:179 $
  */
-public abstract class AbstractGoodUpConversionTest extends AbstractGoodXMLTest {
+public abstract class AbstractGoodUpConversionXMLTest extends AbstractGoodXMLTest {
     
-    public AbstractGoodUpConversionTest(final String inputFragment, final String expectedMathMLContent) {
+    public AbstractGoodUpConversionXMLTest(final String inputFragment, final String expectedMathMLContent) {
         super(inputFragment.endsWith("$") ? inputFragment : "$" + inputFragment + "$",
             "<math xmlns='" + W3CConstants.MATHML_NAMESPACE + "'>"
             + expectedMathMLContent.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")
@@ -31,5 +34,13 @@ public abstract class AbstractGoodUpConversionTest extends AbstractGoodXMLTest {
     @Override
     protected void fixupDocument(Document document) {
         AbstractGoodMathTest.extractMathElement(document);
+    }
+    
+    @Override
+    protected SnuggleSession createSnuggleSession() {
+        SnuggleEngine engine = new SnuggleEngine();
+        engine.addPackage(UpConversionPackageDefinitions.getPackage());
+        
+        return engine.createSession();
     }
 }

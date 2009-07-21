@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.definitions;
 
+import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
@@ -13,10 +14,10 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
- * Defines a built-in LaTeX environment, as specified within a {@link DefinitionMap}.
+ * Defines a built-in LaTeX environment, as specified within a {@link SnugglePackage}.
  * 
  * @see BuiltinCommand
- * @see GlobalBuiltins
+ * @see CorePackageDefinitions
  * 
  * @author  David McKain
  * @version $Revision:179 $

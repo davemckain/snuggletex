@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
+import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 /**
  * Internal Exception thrown by {@link SnuggleSession#registerError(InputError)} when a parsing
@@ -22,7 +23,7 @@ public final class SnuggleParseException extends Exception {
     private final InputError error;
     
     public SnuggleParseException(InputError error) {
-        super(error.getErrorCode().name());
+        super(MessageFormatter.formatErrorAsString(error));
         this.error = error;
     }
 

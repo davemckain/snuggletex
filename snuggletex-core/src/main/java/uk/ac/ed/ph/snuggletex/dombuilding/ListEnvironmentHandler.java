@@ -5,10 +5,10 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
@@ -34,10 +34,10 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
             throws SnuggleParseException {
         String listElementName = null;
         BuiltinEnvironment environment = token.getEnvironment();
-        if (environment==GlobalBuiltins.ENV_ITEMIZE) {
+        if (environment==CorePackageDefinitions.ENV_ITEMIZE) {
             listElementName = "ul";
         }
-        else if (environment==GlobalBuiltins.ENV_ENUMERATE) {
+        else if (environment==CorePackageDefinitions.ENV_ENUMERATE) {
             listElementName = "ol";
         }
         else {
@@ -45,7 +45,7 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
         }
         Element listElement = builder.appendXHTMLElement(parentElement, listElementName);
         for (FlowToken contentToken : token.getContent()) {
-            if (contentToken.isCommand(GlobalBuiltins.CMD_LIST_ITEM)) {
+            if (contentToken.isCommand(CorePackageDefinitions.CMD_LIST_ITEM)) {
                 builder.handleToken(listElement, contentToken);
             }
             else if (contentToken.getType()==TokenType.ERROR) {
@@ -66,7 +66,7 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
      */
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken itemToken)
             throws SnuggleParseException {
-        if (itemToken.isCommand(GlobalBuiltins.CMD_LIST_ITEM)) {
+        if (itemToken.isCommand(CorePackageDefinitions.CMD_LIST_ITEM)) {
             /* Right, this is one of the special LIST_ITEM tokens, creating during the fixing
              * stage when they are allowed.
              * 
@@ -82,11 +82,11 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
                 throw new SnuggleLogicException("List item outside environment - this should not have occurred");
             }
         }
-        else if (itemToken.isCommand(GlobalBuiltins.CMD_ITEM)) {
+        else if (itemToken.isCommand(CorePackageDefinitions.CMD_ITEM)) {
             /* This is a standard LaTeX \item. This would have been substituted if it was used
              * in a legal position so we must conclude that it cannot be used here.
              */
-            builder.appendOrThrowError(parentElement, itemToken, ErrorCode.TDEL00);
+            builder.appendOrThrowError(parentElement, itemToken, CoreErrorCode.TDEL00);
         }
 
     }

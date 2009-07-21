@@ -6,13 +6,13 @@
 package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.LinkResolver;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
@@ -364,7 +364,7 @@ public final class DOMBuilder {
                 /* If used appropriately, this will have been dealt with during fixing, so we have
                  * Error: alignment used in the wrong place.
                  */
-                appendOrThrowError(parentElement, token, ErrorCode.TDEG00);
+                appendOrThrowError(parentElement, token, CoreErrorCode.TDEG00);
                 break;
                 
             default:
@@ -796,7 +796,7 @@ public final class DOMBuilder {
     
     /**
      * Checks the given raw XML Name to ensure that it confirms to the correct syntax, returning
-     * it unchanged if successful. If not valid, the {@link ErrorCode#TDEX03} is recorded.
+     * it unchanged if successful. If not valid, the {@link CoreErrorCode#TDEX03} is recorded.
      * 
      * @throws SnuggleParseException
      */
@@ -807,7 +807,7 @@ public final class DOMBuilder {
          */
         if (!XMLUtilities.isXMLName(rawName)) {
             /* Error: Bad XML Name */
-            appendOrThrowError(parentElement, nameToken, ErrorCode.TDEX03, rawName);
+            appendOrThrowError(parentElement, nameToken, CoreErrorCode.TDEX03, rawName);
             return null;
         }
         return rawName;
@@ -816,7 +816,7 @@ public final class DOMBuilder {
     /**
      * Checks the given XML Name as in {@link #validateXMLName(Element, Token, String)}, additionally
      * checking that an ID of the same name is not already in use in the output DOM. If it is,
-     * {@link ErrorCode#TDEX05} is recorded. Returns non-null on success, null on error.
+     * {@link CoreErrorCode#TDEX05} is recorded. Returns non-null on success, null on error.
      * 
      * @throws SnuggleParseException
      */
@@ -826,7 +826,7 @@ public final class DOMBuilder {
         if (validatedName!=null) {
             if (document.getElementById(validatedName)!=null) {
                 /* Error: ID already in use */
-                appendOrThrowError(parentElement, nameToken, ErrorCode.TDEX05, rawName);
+                appendOrThrowError(parentElement, nameToken, CoreErrorCode.TDEX05, rawName);
                 return null;
             }
         }
@@ -835,7 +835,7 @@ public final class DOMBuilder {
     
     /**
      * Checks the given raw URI to ensure that it is valid, returning a {@link URI} Object if
-     * valid or null if not. If not valid, the {@link ErrorCode#TDEX04} is recorded.
+     * valid or null if not. If not valid, the {@link CoreErrorCode#TDEX04} is recorded.
      * 
      * @throws SnuggleParseException
      */
@@ -847,7 +847,7 @@ public final class DOMBuilder {
         }
         catch (URISyntaxException e) {
             /* Error: not a URI */
-            appendOrThrowError(parentElement, token, ErrorCode.TDEX04, rawURI);
+            appendOrThrowError(parentElement, token, CoreErrorCode.TDEX04, rawURI);
             return null;
         }
         return result;
@@ -869,7 +869,7 @@ public final class DOMBuilder {
     //-------------------------------------------
 
     public Element appendOrThrowError(final Element parentElement, final Token token,
-            final ErrorCode errorCode, final Object... arguments)
+            final CoreErrorCode errorCode, final Object... arguments)
             throws SnuggleParseException {
         InputError error = new InputError(errorCode, token.getSlice(), arguments);
         sessionContext.registerError(error);

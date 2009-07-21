@@ -26,7 +26,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionPMathMLTests extends AbstractGoodUpConversionTest {
+public class MathUpConversionPMathMLTests extends AbstractGoodUpConversionXMLTest {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-pmathml-tests.txt";
     

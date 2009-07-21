@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FIXME: Document this type!
+ * Manages the values of user-defined variables.
  *
  * @author  David McKain
  * @version $Revision$

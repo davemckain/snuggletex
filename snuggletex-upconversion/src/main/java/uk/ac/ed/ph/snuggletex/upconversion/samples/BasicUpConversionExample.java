@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.XMLOutputOptions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
+import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 
 import java.io.IOException;
 
@@ -35,8 +36,11 @@ public final class BasicUpConversionExample {
         /* We will up-convert this LaTeX input */
         String input = "$$ \\frac{2x-y^2}{\\sin xy(x-2)} $$";
         
-        /* Set up SnuggleEngine and SnuggleSession in usual way */
+        /* Set up SnuggleEngine, remembering to register package providing up-conversion support */
         SnuggleEngine engine = new SnuggleEngine();
+        engine.addPackage(UpConversionPackageDefinitions.getPackage());
+        
+        /* Create session in usual way */
         SnuggleSession session = engine.createSession();
         
         /* Parse input. I won't bother checking it here */

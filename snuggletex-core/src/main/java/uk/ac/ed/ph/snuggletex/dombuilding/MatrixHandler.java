@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -81,7 +81,7 @@ public final class MatrixHandler implements EnvironmentHandler {
             rowColumns = columns.size();
             if (maxColumns>0 && rowColumns>maxColumns) {
                 /* Error: Each row in a this environment must have no more than NN columns */
-                builder.appendOrThrowError(mtrElement, rowToken, ErrorCode.TDEMM0, token.getEnvironment().getTeXName(), maxColumns);
+                builder.appendOrThrowError(mtrElement, rowToken, CoreErrorCode.TDEMM0, token.getEnvironment().getTeXName(), maxColumns);
                 continue;
             }
             for (int i=0; i<numColumns && i<rowColumns; i++) {

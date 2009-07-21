@@ -3,8 +3,9 @@
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.dombuilding;
+package uk.ac.ed.ph.snuggletex.upconversion.internal;
 
+import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.VariableManager;
@@ -21,7 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * FIXME: Document this type!
+ * Handler for the <tt>\\assume</tt> command.
  *
  * @author  David McKain
  * @version $Revision$

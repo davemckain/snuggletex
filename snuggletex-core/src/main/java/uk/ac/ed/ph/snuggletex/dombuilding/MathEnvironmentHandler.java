@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
@@ -31,7 +31,7 @@ public final class MathEnvironmentHandler implements EnvironmentHandler {
             builder.handleTokens(mrow, token.getContent(), false);
         }
         else {
-            boolean isDisplayMath = environment==GlobalBuiltins.ENV_DISPLAYMATH;
+            boolean isDisplayMath = environment==CorePackageDefinitions.ENV_DISPLAYMATH;
             builder.buildMathElement(parentElement, token, token.getContent(), isDisplayMath);
         }
     }

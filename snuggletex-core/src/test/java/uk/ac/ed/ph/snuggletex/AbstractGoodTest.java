@@ -68,21 +68,16 @@ public abstract class AbstractGoodTest {
         Assert.assertTrue(errors.isEmpty());
     }
     
+    protected SnuggleSession createSnuggleSession() {
+        return new SnuggleEngine().createSession();
+    }
+    
     protected Document runSnuggleProcessSuccessfully() throws Throwable {
         /* We'll drive the process manually as that gives us richer information if something
          * goes wrong.
          */
         
-        /* First set up a suitable configuration for these tests. In future, we may want to
-         * have tests in different configurations. (This would be easier if configs could be
-         * changed at run-time via LaTeX markup!)
-         */
-        SessionConfiguration configuration =  new SessionConfiguration();
-
-        /* Set up DOMOutputOptions */
-        DOMOutputOptions domOptions = createDOMOutputOptions();
-        
-        SnuggleSession session = new SnuggleEngine().createSession(configuration);
+        SnuggleSession session = createSnuggleSession();
         SnuggleInputReader inputReader = new SnuggleInputReader(session, new SnuggleInput(inputLaTeX));
         
         /* Tokenise */
@@ -106,6 +101,7 @@ public abstract class AbstractGoodTest {
         Element rootElement = resultDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "body");
         resultDocument.appendChild(rootElement);
         
+        DOMOutputOptions domOptions = createDOMOutputOptions();
         DOMBuildingController domBuildingController = new DOMBuildingController(session, domOptions);
         domBuildingController.buildDOMSubtree(rootElement, outerToken.getContents());
            

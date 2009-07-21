@@ -6,9 +6,9 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -44,7 +44,7 @@ public final class TabularHandler implements CommandHandler, EnvironmentHandler 
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
         /* Error: \hline (or similar) outside a table) */
-        builder.appendOrThrowError(parentElement, token, ErrorCode.TDETB3,
+        builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDETB3,
                 token.getCommand().getTeXName());
     }
     
@@ -93,7 +93,7 @@ public final class TabularHandler implements CommandHandler, EnvironmentHandler 
                     
                 default:
                     /* Error: can't handle column spec */
-                    builder.appendOrThrowError(parentElement, specToken, ErrorCode.TDETB1,
+                    builder.appendOrThrowError(parentElement, specToken, CoreErrorCode.TDETB1,
                             String.valueOf(c));
                     break;
             }
@@ -113,7 +113,7 @@ public final class TabularHandler implements CommandHandler, EnvironmentHandler 
         /* Make sure we actually specified a column! */
         if (columnClasses.isEmpty()) {
             /* Error: no columns! */
-            builder.appendOrThrowError(parentElement, specToken, ErrorCode.TDETB2);
+            builder.appendOrThrowError(parentElement, specToken, CoreErrorCode.TDETB2);
             /* We'll bail out here as nothing good will come of continuing! */
             return;
         }
@@ -128,7 +128,7 @@ public final class TabularHandler implements CommandHandler, EnvironmentHandler 
          */
         if (columnClasses.size() < numColumns) {
             /* Error: More columns than expected */
-            builder.appendOrThrowError(parentElement, specToken, ErrorCode.TDETB0,
+            builder.appendOrThrowError(parentElement, specToken, CoreErrorCode.TDETB0,
                     Integer.valueOf(columnClasses.size()), Integer.valueOf(numColumns));
         }
 
@@ -149,18 +149,18 @@ public final class TabularHandler implements CommandHandler, EnvironmentHandler 
         /* We'll iterate over each "row", which might include \\hline's which are not real rows */
         for (rowIndex=0; rowIndex<tableContents.size(); rowIndex++) {
             rowToken = tableContents.get(rowIndex);
-            if (rowToken.isCommand(GlobalBuiltins.CMD_HLINE)) {
+            if (rowToken.isCommand(CorePackageDefinitions.CMD_HLINE)) {
                 /* If we've got an \\hline, flag it to be added as a top border for the next proper row */
                 topBorderFlag = true;
                 continue;
             }
-            else if (rowToken.isCommand(GlobalBuiltins.CMD_TABLE_ROW)) {
+            else if (rowToken.isCommand(CorePackageDefinitions.CMD_TABLE_ROW)) {
                 /* This is a proper table row. Let's see if all of the remaining "rows" are
                  * \\hline and, if they are, add a bottom border.
                  */
                 bottomBorderFlag = false;
                 for (int i=rowIndex+1; i<tableContents.size(); i++) {
-                    if (tableContents.get(i).isCommand(GlobalBuiltins.CMD_HLINE)) {
+                    if (tableContents.get(i).isCommand(CorePackageDefinitions.CMD_HLINE)) {
                         bottomBorderFlag = true;
                     }
                     else {
@@ -226,16 +226,16 @@ public final class TabularHandler implements CommandHandler, EnvironmentHandler 
         int rowCount = 0;
         int colCountWithinRow = 0;
         for (FlowToken contentToken : tableContent) {
-            if (contentToken.isCommand(GlobalBuiltins.CMD_HLINE) || contentToken.getType()==TokenType.ERROR) {
+            if (contentToken.isCommand(CorePackageDefinitions.CMD_HLINE) || contentToken.getType()==TokenType.ERROR) {
                 continue;
             }
-            else if (contentToken.isCommand(GlobalBuiltins.CMD_TABLE_ROW)) {
+            else if (contentToken.isCommand(CorePackageDefinitions.CMD_TABLE_ROW)) {
                 rowCount++;
                 colCountWithinRow = 0;
                 CommandToken rowToken = (CommandToken) contentToken;
                 ArgumentContainerToken rowContents = rowToken.getArguments()[0];
                 for (FlowToken rowContentToken : rowContents) {
-                    if (rowContentToken.isCommand(GlobalBuiltins.CMD_TABLE_COLUMN)) {
+                    if (rowContentToken.isCommand(CorePackageDefinitions.CMD_TABLE_COLUMN)) {
                         colCountWithinRow++;
                     }
                     else {

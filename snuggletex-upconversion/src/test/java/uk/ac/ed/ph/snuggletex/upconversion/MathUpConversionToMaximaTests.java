@@ -9,7 +9,10 @@ import uk.ac.ed.ph.snuggletex.AbstractGoodMathTest;
 import uk.ac.ed.ph.snuggletex.AbstractGoodTest;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.MathTests;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
+import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;
@@ -115,5 +118,13 @@ public class MathUpConversionToMaximaTests extends AbstractGoodTest {
         DOMOutputOptions result = super.createDOMOutputOptions();
         result.setDOMPostProcessors(upconverter);
         return result;
+    }
+    
+    @Override
+    protected SnuggleSession createSnuggleSession() {
+        SnuggleEngine engine = new SnuggleEngine();
+        engine.addPackage(UpConversionPackageDefinitions.getPackage());
+        
+        return engine.createSession();
     }
 }

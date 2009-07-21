@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.CombinerTargetMatcher;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
@@ -26,7 +26,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 /**
- * Handles matched parentheses encapsulated within {@link GlobalBuiltins#ENV_BRACKETED}
+ * Handles matched parentheses encapsulated within {@link CorePackageDefinitions#ENV_BRACKETED}
  * environments. These have either been explicitly specified with <tt>\\left</tt> and
  * <tt>\\right</tt> or have been inferred by the {@link TokenFixer}.
  *

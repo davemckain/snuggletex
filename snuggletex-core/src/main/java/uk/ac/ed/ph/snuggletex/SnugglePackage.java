@@ -3,19 +3,30 @@
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.definitions;
+package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
+import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
+import uk.ac.ed.ph.snuggletex.definitions.CombinerTargetMatcher;
+import uk.ac.ed.ph.snuggletex.definitions.CommandType;
+import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Encapsulates a collection of {@link BuiltinCommand}s and {@link BuiltinEnvironment}s,
@@ -27,28 +38,54 @@ import java.util.Map;
  * @author  David McKain
  * @version $Revision:179 $
  */
-public final class DefinitionMap {
-    
-    /** Map of built-in commands, keyed on name */
-    public final Map<String, BuiltinCommand> builtinCommandMap;
-    
-    /** Map of built-in environments, keyed on name */
-    public final Map<String, BuiltinEnvironment> builtinEnvironmentMap;
+public final class SnugglePackage {
     
     /** Share instance of {@link InterpretableSimpleMathHandler} since it is stateless */
-    private final InterpretableSimpleMathHandler interpretableSimpleMathBuilder;
+    public static final InterpretableSimpleMathHandler interpretableSimpleMathBuilder = new InterpretableSimpleMathHandler();
     
-    public DefinitionMap() {
-        this.interpretableSimpleMathBuilder = new InterpretableSimpleMathHandler();
+    /** Short name, used when formatting {@link ErrorCode}s */
+    private final String name;
+    
+    /** Map of built-in commands, keyed on name */
+    private final Map<String, BuiltinCommand> builtinCommandMap;
+    
+    /** Map of built-in environments, keyed on name */
+    private final Map<String, BuiltinEnvironment> builtinEnvironmentMap;
+    
+    private final List<ErrorCode> errorCodes;
+    
+    /** {@link ResourceBundle} providing details for formatting {@link ErrorCode}s */
+    private ResourceBundle errorMessageBundle;
+    
+    public SnugglePackage(final String name) {
+        ConstraintUtilities.ensureNotNull(name, "name");
+        this.name = name;
         this.builtinCommandMap = new HashMap<String, BuiltinCommand>();
         this.builtinEnvironmentMap = new HashMap<String, BuiltinEnvironment>();
+        this.errorCodes = new ArrayList<ErrorCode>();
     }
     
-    public BuiltinCommand getCommandByTeXName(String texName) {
+    public String getName() {
+        return name;
+    }
+    
+    public List<ErrorCode> getErrorCodes() {
+        return errorCodes;
+    }
+
+    public ResourceBundle getErrorMessageBundle() {
+        return errorMessageBundle;
+    }
+
+    public void setErrorMessageBundle(ResourceBundle errorMessageBundle) {
+        this.errorMessageBundle = errorMessageBundle;
+    }
+
+    public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
         return builtinCommandMap.get(texName);
     }
     
-    public BuiltinEnvironment getEnvironmentByTeXName(String texName) {
+    public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
         return builtinEnvironmentMap.get(texName);
     }
     

@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
@@ -44,7 +44,7 @@ public final class ArrayHandler implements EnvironmentHandler {
         /* Make sure we got at least one column */
         if (alignSpecData.length()==0) {
             /* Error: no columns! */
-            builder.appendOrThrowError(parentElement, alignSpecToken, ErrorCode.TDEMA1);
+            builder.appendOrThrowError(parentElement, alignSpecToken, CoreErrorCode.TDEMA1);
             /* We'll bail out here as nothing good will come of continuing! */
             return;
         }
@@ -59,7 +59,7 @@ public final class ArrayHandler implements EnvironmentHandler {
                 case 'l': alignments.add("left"); break;
                 case 'r': alignments.add("right"); break;
                 default:
-                    builder.appendOrThrowError(parentElement, alignSpecToken, ErrorCode.TDEMA0,
+                    builder.appendOrThrowError(parentElement, alignSpecToken, CoreErrorCode.TDEMA0,
                             String.valueOf(c));
                     alignments.add("center"); /* We'll use this as a default */
                     break;
@@ -70,7 +70,7 @@ public final class ArrayHandler implements EnvironmentHandler {
         /* Make sure number of columns specified is at least as much as what was calculated */
         if (maxColumns < numColumns) {
             /* Error: More columns than expected */
-            builder.appendOrThrowError(parentElement, alignSpecToken, ErrorCode.TDEMA2,
+            builder.appendOrThrowError(parentElement, alignSpecToken, CoreErrorCode.TDEMA2,
                     Integer.valueOf(alignSpecData.length()), Integer.valueOf(numColumns));
         }
 

@@ -13,7 +13,8 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.CommandOrEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
@@ -58,7 +59,7 @@ public final class LaTeXTokeniser {
     
     /** 
      * Set of reserved commands. These cannot be redefined and are not all listed in
-     * {@link GlobalBuiltins}.
+     * {@link CorePackageDefinitions}.
      */
     public static final Set<String> reservedCommands = new HashSet<String>(Arrays.asList(new String[] {
         "begin",
@@ -308,7 +309,7 @@ public final class LaTeXTokeniser {
         
         /* Check that all environments have been closed, recording a client error for each that is not */
         while (!openEnvironmentStack.isEmpty()) {
-            topLevelResult.tokens.add(createError(ErrorCode.TTEE04, position, position,
+            topLevelResult.tokens.add(createError(CoreErrorCode.TTEE04, position, position,
                     openEnvironmentStack.pop()));
         }
 
@@ -353,7 +354,7 @@ public final class LaTeXTokeniser {
         /* Check that we got the required terminator */
         if (terminator!=null && !currentModeState.foundTerminator) {
             /* Error: Input ended before required terminator */
-            currentModeState.tokens.add(createError(ErrorCode.TTEG00, position, position, terminator));
+            currentModeState.tokens.add(createError(CoreErrorCode.TTEG00, position, position, terminator));
         }
         
         /* Revert to previous parsing state and return results of this parse */
@@ -518,7 +519,7 @@ public final class LaTeXTokeniser {
                 
             case '#':
                 /* Error: This is only allowed inside command/environment definitions */
-                return createError(ErrorCode.TTEG04, position, position+1);
+                return createError(CoreErrorCode.TTEG04, position, position+1);
                 
             default:
                 /* Mathematical symbol, operator, number etc... */
@@ -654,11 +655,11 @@ public final class LaTeXTokeniser {
             case '_':
             case '^':
                 /* Error: These are only allowed in MATH mode */
-                return createError(ErrorCode.TTEM03, position, position+1);
+                return createError(CoreErrorCode.TTEM03, position, position+1);
                 
             case '#':
                 /* Error: This is only allowed inside command/environment definitions */
-                return createError(ErrorCode.TTEG04, position, position+1);
+                return createError(CoreErrorCode.TTEG04, position, position+1);
 
             default:
                 /* Plain text or some paragraph nonsense */
@@ -765,14 +766,14 @@ public final class LaTeXTokeniser {
         /* Better also check that if the delimiter is '$' then we haven't ended up at '$$' */
         if (delimiter.equals("$") && workingDocument.charAt(position)=='$') {
             /* Error: $ ended by $$ */
-            return createError(ErrorCode.TTEM01, position, position+1);
+            return createError(CoreErrorCode.TTEM01, position, position+1);
         }
         
         /* Right, that's it! */
         FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
         ArgumentContainerToken contentToken = new ArgumentContainerToken(contentSlice, LaTeXMode.MATH, contentResult.tokens);
         FrozenSlice environmentSlice = workingDocument.freezeSlice(openDollarPosition, position);
-        BuiltinEnvironment environment = isDisplayMath ? GlobalBuiltins.ENV_DISPLAYMATH : GlobalBuiltins.ENV_MATH;
+        BuiltinEnvironment environment = isDisplayMath ? CorePackageDefinitions.ENV_DISPLAYMATH : CorePackageDefinitions.ENV_MATH;
         return new EnvironmentToken(environmentSlice, startLatexMode, environment, contentToken);
     }
     
@@ -806,13 +807,13 @@ public final class LaTeXTokeniser {
         int c = workingDocument.charAt(afterSlashIndex);
         if (c==-1) {
             /* Nothing following \\ */
-            result = createError(ErrorCode.TTEG01, position, afterSlashIndex, currentModeState.latexMode);
+            result = createError(CoreErrorCode.TTEG01, position, afterSlashIndex, currentModeState.latexMode);
         }
         else if (c=='(' || c=='[') {
             /* It's the start of a math environment specified using \( or \[ */
             if (currentModeState.latexMode==LaTeXMode.MATH) {
                 /* Error: Already in Math mode - not allowed \( or \[ */
-                result = createError(ErrorCode.TTEM00, position, afterSlashIndex);
+                result = createError(CoreErrorCode.TTEM00, position, afterSlashIndex);
             }
             else {
                 int startCommandIndex = position;
@@ -827,14 +828,14 @@ public final class LaTeXTokeniser {
                      * are probably lots of other errors caused by the missing terminator so we'll
                      * add this error *first* in the list for the environment.
                      */
-                    contentResult.tokens.add(0, createError(ErrorCode.TTEM02, startCommandIndex, position,
+                    contentResult.tokens.add(0, createError(CoreErrorCode.TTEM02, startCommandIndex, position,
                             "\\" + Character.valueOf((char) c), closer));
                 }
                 int endContentIndex = contentResult.computeLastTokenEndIndex();
                 FrozenSlice contentSlice = workingDocument.freezeSlice(startContentIndex, endContentIndex);
                 FrozenSlice mathSlice = workingDocument.freezeSlice(startCommandIndex, position);
                 ArgumentContainerToken contentToken = new ArgumentContainerToken(contentSlice, LaTeXMode.MATH, contentResult.tokens);
-                BuiltinEnvironment environment = (c=='(') ? GlobalBuiltins.ENV_MATH : GlobalBuiltins.ENV_DISPLAYMATH;
+                BuiltinEnvironment environment = (c=='(') ? CorePackageDefinitions.ENV_MATH : CorePackageDefinitions.ENV_DISPLAYMATH;
                 result = new EnvironmentToken(mathSlice, currentModeState.latexMode, environment, contentToken);
             }
         }
@@ -843,7 +844,7 @@ public final class LaTeXTokeniser {
              * been discovered at the time the environment was opened (above), so this is
              * always an error if we get here.
              */
-            result = createError(ErrorCode.TTEG03, position, position+2,
+            result = createError(CoreErrorCode.TTEG03, position, position+2,
                     workingDocument.freezeSlice(position, position+2).extract());
         }
         else {
@@ -908,13 +909,13 @@ public final class LaTeXTokeniser {
             /* Internal only! */
             result = handleUserDefinedEnvironmentControl();
         }
-        else if (commandName.equals(GlobalBuiltins.CMD_VERB.getTeXName())) {
+        else if (commandName.equals(CorePackageDefinitions.CMD_VERB.getTeXName())) {
             /* It's \\verb... which needs special parsing */
-            result = finishVerbToken(GlobalBuiltins.CMD_VERB);
+            result = finishVerbToken(CorePackageDefinitions.CMD_VERB);
         }
-        else if (commandName.equals(GlobalBuiltins.CMD_VERBSTAR.getTeXName())) {
+        else if (commandName.equals(CorePackageDefinitions.CMD_VERBSTAR.getTeXName())) {
             /* Same with \\verb* */
-            result = finishVerbToken(GlobalBuiltins.CMD_VERBSTAR);
+            result = finishVerbToken(CorePackageDefinitions.CMD_VERBSTAR);
         }
         else {
             /* It's a built-in or user-defined command. */
@@ -989,11 +990,11 @@ public final class LaTeXTokeniser {
         int delimitChar = workingDocument.charAt(startDelimitIndex);
         if (delimitChar==-1) {
             /* Error: Could not find delimiter */
-            return createError(ErrorCode.TTEV00, startTokenIndex, startDelimitIndex);
+            return createError(CoreErrorCode.TTEV00, startTokenIndex, startDelimitIndex);
         }
         else if (Character.isWhitespace(delimitChar)) {
             /* Error: delimiter is whitespace */
-            return createError(ErrorCode.TTEV00, startTokenIndex, startDelimitIndex+1);
+            return createError(CoreErrorCode.TTEV00, startTokenIndex, startDelimitIndex+1);
         }
         /* Now parse from the character after the delimiter until the next instance of
          * the delimiter is found. This should result in zero or one content tokens, plus
@@ -1010,7 +1011,7 @@ public final class LaTeXTokeniser {
                 verbatimContentToken = (SimpleToken) resultToken;
             }
             else if (resultToken.getType()==TokenType.ERROR) {
-                if (((ErrorToken) resultToken).getError().getErrorCode()!=ErrorCode.TTEG00) {
+                if (((ErrorToken) resultToken).getError().getErrorCode()!=CoreErrorCode.TTEG00) {
                     throw new SnuggleLogicException("Unexpected error when parsing \\verb content: " + resultToken);
                 }
             }
@@ -1030,7 +1031,7 @@ public final class LaTeXTokeniser {
         int newlineIndex = workingDocument.indexOf(contentSlice.startIndex, '\n');
         if (newlineIndex!=-1 && newlineIndex<contentSlice.endIndex) {
             /* Error: Line ended before end of \\verb content */
-            return createError(ErrorCode.TTEV01, startTokenIndex, contentSlice.endIndex+1);
+            return createError(CoreErrorCode.TTEV01, startTokenIndex, contentSlice.endIndex+1);
         }
         
         /* That's it! */
@@ -1069,7 +1070,7 @@ public final class LaTeXTokeniser {
             }
             else {
                 /* Undefined command */
-                result = createError(ErrorCode.TTEC00, startTokenIndex, position, commandName);
+                result = createError(CoreErrorCode.TTEC00, startTokenIndex, position, commandName);
             }
         }
         return result;
@@ -1088,17 +1089,17 @@ public final class LaTeXTokeniser {
         /* Make sure we can use this command in the current mode */
         if (!command.getAllowedModes().contains(currentModeState.latexMode)) {
             /* Not allowed to use this command in this mode */
-            return createError(ErrorCode.TTEC01, startTokenIndex, position,
+            return createError(CoreErrorCode.TTEC01, startTokenIndex, position,
                     command.getTeXName(), currentModeState.latexMode);
         }
         
         /* Command and environment definitions need to be handled specifically as their structure is quite
          * specific
          */
-        if (command==GlobalBuiltins.CMD_NEWCOMMAND || command==GlobalBuiltins.CMD_RENEWCOMMAND) {
+        if (command==CorePackageDefinitions.CMD_NEWCOMMAND || command==CorePackageDefinitions.CMD_RENEWCOMMAND) {
             return finishCommandDefinition(command);
         }
-        if (command==GlobalBuiltins.CMD_NEWENVIRONMENT || command==GlobalBuiltins.CMD_RENEWENVIRONMENT) {
+        if (command==CorePackageDefinitions.CMD_NEWENVIRONMENT || command==CorePackageDefinitions.CMD_RENEWENVIRONMENT) {
             return finishEnvironmentDefinition(command);
         }
 
@@ -1165,13 +1166,13 @@ public final class LaTeXTokeniser {
         FlowToken nextToken = readNextToken();
         if (nextToken==null) {
             /* Could not find target for this combiner */
-            return createError(ErrorCode.TTEC03, startTokenIndex, afterWhitespaceIndex,
+            return createError(CoreErrorCode.TTEC03, startTokenIndex, afterWhitespaceIndex,
                     command.getTeXName());
         }
         /* Make sure this next token is allowed to be combined with this one */
         if (!command.getCombinerTargetMatcher().isAllowed(nextToken)) {
             /* Inappropriate combiner target */
-            return createError(ErrorCode.TTEC04, startTokenIndex, nextToken.getSlice().endIndex,
+            return createError(CoreErrorCode.TTEC04, startTokenIndex, nextToken.getSlice().endIndex,
                     command.getTeXName());
         }
         /* Create combined token spanning the two "raw" tokens */
@@ -1335,7 +1336,7 @@ public final class LaTeXTokeniser {
                 }
                 else {
                     /* Error: Missing first (and only) argument. */
-                    return createError(ErrorCode.TTEC02, startTokenIndex, position,
+                    return createError(CoreErrorCode.TTEC02, startTokenIndex, position,
                             commandOrEnvironment.getTeXName(), Integer.valueOf(1));
                 }
             }
@@ -1344,7 +1345,7 @@ public final class LaTeXTokeniser {
                  * (There is one variant of this for commands and one for environments)
                  */
                 return createError(
-                        (commandOrEnvironment instanceof Command) ? ErrorCode.TTEC02 : ErrorCode.TTEE06,
+                        (commandOrEnvironment instanceof Command) ? CoreErrorCode.TTEC02 : CoreErrorCode.TTEE06,
                         startTokenIndex, position,
                         commandOrEnvironment.getTeXName(), Integer.valueOf(i+1));
             }
@@ -1459,7 +1460,7 @@ public final class LaTeXTokeniser {
                 int closeBracketIndex = findEndSquareBrackets(openBracketIndex);
                 if (closeBracketIndex==-1) {
                     /* Error: no matching ']' */
-                    return createError(ErrorCode.TTEG00, startTokenIndex, workingDocument.length(), ']');
+                    return createError(CoreErrorCode.TTEG00, startTokenIndex, workingDocument.length(), ']');
                 }
                 optionalArgument = workingDocument.extract(openBracketIndex+1, closeBracketIndex);
                 position = closeBracketIndex + 1; /* Move past ']' */
@@ -1482,7 +1483,7 @@ public final class LaTeXTokeniser {
                 int closeBraceIndex = findEndCurlyBrackets(openBraceIndex);
                 if (closeBraceIndex==-1) {
                     /* Error: no matching '}' */
-                    return createError(ErrorCode.TTEG00, startTokenIndex, workingDocument.length(), '}');
+                    return createError(CoreErrorCode.TTEG00, startTokenIndex, workingDocument.length(), '}');
                 }
                 requiredArguments[i] = workingDocument.extract(openBraceIndex+1, closeBraceIndex);
                 position = closeBraceIndex + 1; /* Move past '}' */
@@ -1498,7 +1499,7 @@ public final class LaTeXTokeniser {
                 FlowToken nextToken = readNextToken();
                 if (nextToken==null) {
                     /* Error: Missing first (and only) argument. */
-                    return createError(ErrorCode.TTEC02, startTokenIndex, position,
+                    return createError(CoreErrorCode.TTEC02, startTokenIndex, position,
                             commandOrEnvironment.getTeXName(), Integer.valueOf(1));
                 }
                 FrozenSlice nextSlice = nextToken.getSlice();
@@ -1507,7 +1508,7 @@ public final class LaTeXTokeniser {
             }
             else {
                 /* Error: Missing '#n' argument (where n=i+1) */
-                return createError(commandOrEnvironment instanceof Command ? ErrorCode.TTEC02 : ErrorCode.TTEE06,
+                return createError(commandOrEnvironment instanceof Command ? CoreErrorCode.TTEC02 : CoreErrorCode.TTEE06,
                         startTokenIndex, position,
                         commandOrEnvironment.getTeXName(), Integer.valueOf(i+1));
             }
@@ -1531,7 +1532,7 @@ public final class LaTeXTokeniser {
         String environmentName = advanceOverBracesAndEnvironmentName();
         if (environmentName==null) {
             /* Expected to find {envName} */
-            return createError(ErrorCode.TTEE01, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEE01, startTokenIndex, position);
         }
         
         /* Look up environment, taking user-defined on in preference to built-in */
@@ -1548,7 +1549,7 @@ public final class LaTeXTokeniser {
             }
             else {
                 /* Undefined environment name */
-                result = createError(ErrorCode.TTEE02, startTokenIndex, position, environmentName);
+                result = createError(CoreErrorCode.TTEE02, startTokenIndex, position, environmentName);
             }
         }
         return result;
@@ -1564,18 +1565,18 @@ public final class LaTeXTokeniser {
         String environmentName = advanceOverBracesAndEnvironmentName();
         if (environmentName==null) {
             /* Expected to find {envName} */
-            return createError(ErrorCode.TTEE01, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEE01, startTokenIndex, position);
         }
         
         /* First, we make sure this balances with what is open */
         String lastOpenName = openEnvironmentStack.isEmpty() ? null : openEnvironmentStack.peek();
         if (lastOpenName==null) {
             /* No environments are open */
-            return createError(ErrorCode.TTEE05, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEE05, startTokenIndex, position);
         }
         else if (!environmentName.equals(lastOpenName)) {
             /* Got end of envName, rather than one in the stack */
-            return createError(ErrorCode.TTEE00, startTokenIndex, position,
+            return createError(CoreErrorCode.TTEE00, startTokenIndex, position,
                     environmentName, lastOpenName);
 
         }
@@ -1599,7 +1600,7 @@ public final class LaTeXTokeniser {
             }
             else {
                 /* Undefined environment name */
-                result = createError(ErrorCode.TTEE02, startTokenIndex, position, environmentName);
+                result = createError(CoreErrorCode.TTEE02, startTokenIndex, position, environmentName);
             }
         }
         return result;
@@ -1658,7 +1659,7 @@ public final class LaTeXTokeniser {
         ErrorToken errorToken = null;
         if (!environment.getAllowedModes().contains(currentModeState.latexMode)) {
             /* Error: this environment can't be used in the current mode */
-            errorToken = createError(ErrorCode.TTEE03, startTokenIndex, position,
+            errorToken = createError(CoreErrorCode.TTEE03, startTokenIndex, position,
                     environment.getTeXName(), startLatexMode);
         }
         
@@ -1751,7 +1752,7 @@ public final class LaTeXTokeniser {
         String environmentName = environment.getTeXName();
         if (userEnvironmentsOpeningSet.contains(environmentName)) {
             /* Error: detected recursion */
-            return createError(ErrorCode.TTEUE4, startTokenIndex, position,
+            return createError(CoreErrorCode.TTEUE4, startTokenIndex, position,
                     environment.getTeXName());
         }
         
@@ -1854,7 +1855,7 @@ public final class LaTeXTokeniser {
         int c = workingDocument.charAt(position);
         if (c==-1) {
             /* Error: input terminated before name of new command */
-            return createError(ErrorCode.TTEUC0, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEUC0, startTokenIndex, position);
         }
         else if (c=='{') { /* It's {\name}, with possible whitespace */
             position++;
@@ -1864,16 +1865,16 @@ public final class LaTeXTokeniser {
         /* Try to read in \name */
         if (workingDocument.charAt(position)!='\\') {
             /* Error: command name must be preceded by \\ */
-            return createError(ErrorCode.TTEUC1, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEUC1, startTokenIndex, position);
         }
         String commandName = readCommandOrEnvironmentName(++position);
         if (commandName==null) {
             /* Error: input terminated before name of new command */
-            return createError(ErrorCode.TTEUC0, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEUC0, startTokenIndex, position);
         }
         else if (reservedCommands.contains(commandName)) {
             /* Error: Not allowed to redefine reserved command */
-            return createError(ErrorCode.TTEUC8, startTokenIndex, position+commandName.length(),
+            return createError(CoreErrorCode.TTEUC8, startTokenIndex, position+commandName.length(),
                     commandName);
         }
         position += commandName.length();
@@ -1882,7 +1883,7 @@ public final class LaTeXTokeniser {
             skipOverCommentsAndWhitespace();
             if (workingDocument.charAt(position)!='}') {
                 /* Error: No matching '}' after command name */
-                return createError(ErrorCode.TTEUC6, startTokenIndex, position);
+                return createError(CoreErrorCode.TTEUC6, startTokenIndex, position);
             }
             position++;
         }
@@ -1898,13 +1899,13 @@ public final class LaTeXTokeniser {
         c = workingDocument.charAt(position);
         if (c!='{') {
             /* Error: No command definition found */
-            return createError(ErrorCode.TTEUC3, startTokenIndex, position, commandName);
+            return createError(CoreErrorCode.TTEUC3, startTokenIndex, position, commandName);
         }
         int startCurlyIndex = position;
         int endCurlyIndex = findEndCurlyBrackets(position);
         if (endCurlyIndex==-1) {
             /* Error: Document ended before end of command definition */
-            return createError(ErrorCode.TTEUC2, startTokenIndex, workingDocument.length());
+            return createError(CoreErrorCode.TTEUC2, startTokenIndex, workingDocument.length());
         }
         
         /* Skip trailing whitespace */
@@ -1921,15 +1922,15 @@ public final class LaTeXTokeniser {
         /* Register the command so that it can be used, depending on whether we are doing a renew
          * or not. */
         Map<String, UserDefinedCommand> userCommandMap = sessionContext.getUserCommandMap();
-        boolean isRenewing = definitionCommand==GlobalBuiltins.CMD_RENEWCOMMAND;
+        boolean isRenewing = definitionCommand==CorePackageDefinitions.CMD_RENEWCOMMAND;
         boolean isCommandAlreadyDefined = userCommandMap.containsKey(commandName) || sessionContext.getBuiltinCommandByTeXName(commandName)!=null;
         if (isRenewing && !isCommandAlreadyDefined) {
             /* Command does not already exist so can't be renewed */
-            return createError(ErrorCode.TTEUC4, startTokenIndex, position, commandName);
+            return createError(CoreErrorCode.TTEUC4, startTokenIndex, position, commandName);
         }
         else if (!isRenewing && isCommandAlreadyDefined) {
             /* Command already exists so can't be "new"ed */
-            return createError(ErrorCode.TTEUC5, startTokenIndex, position, commandName);
+            return createError(CoreErrorCode.TTEUC5, startTokenIndex, position, commandName);
         }
         userCommandMap.put(commandName, userCommand);
         
@@ -1953,11 +1954,11 @@ public final class LaTeXTokeniser {
         String environmentName = advanceOverBracesAndEnvironmentName();
         if (environmentName==null) {
             /* Expected to find {envName} */
-            return createError(ErrorCode.TTEUE0, startTokenIndex, position);
+            return createError(CoreErrorCode.TTEUE0, startTokenIndex, position);
         }
         else if (reservedCommands.contains(environmentName)) {
             /* Error: Cannot redefine these special commands */
-            return createError(ErrorCode.TTEUC8, startTokenIndex, position+2+environmentName.length() /* Skip {envName} */,
+            return createError(CoreErrorCode.TTEUC8, startTokenIndex, position+2+environmentName.length() /* Skip {envName} */,
                     environmentName);
         }
         
@@ -1978,7 +1979,7 @@ public final class LaTeXTokeniser {
             c = workingDocument.charAt(position);
             if (c!='{') {
                 /* Missing definition for begin/end */
-                return createError(ErrorCode.TTEUE1, startTokenIndex, position,
+                return createError(CoreErrorCode.TTEUE1, startTokenIndex, position,
                         ((i==0) ? "begin" : "end"), environmentName);
             }
             int startCurlyIndex = position;
@@ -2001,15 +2002,15 @@ public final class LaTeXTokeniser {
         /* Register the environment so that it can be used, depending on whether we are doing a renew
          * or not. */
         Map<String, UserDefinedEnvironment> userEnvironmentMap = sessionContext.getUserEnvironmentMap();
-        boolean isRenewing = definitionCommand==GlobalBuiltins.CMD_RENEWENVIRONMENT;
+        boolean isRenewing = definitionCommand==CorePackageDefinitions.CMD_RENEWENVIRONMENT;
         boolean isEnvAlreadyDefined = userEnvironmentMap.containsKey(environmentName) || sessionContext.getBuiltinEnvironmentByTeXName(environmentName)!=null;
         if (isRenewing && !isEnvAlreadyDefined) {
             /* Error: Environment is not already defined so can't be renewed */
-            return createError(ErrorCode.TTEUE2, startTokenIndex, position, environmentName);
+            return createError(CoreErrorCode.TTEUE2, startTokenIndex, position, environmentName);
         }
         else if (!isRenewing && isEnvAlreadyDefined) {
             /* Error: Environment is already defined so can't be "new"ed */
-            return createError(ErrorCode.TTEUE3, startTokenIndex, position, environmentName);
+            return createError(CoreErrorCode.TTEUE3, startTokenIndex, position, environmentName);
         }
         userEnvironmentMap.put(environmentName, userEnvironment);
         
@@ -2070,7 +2071,7 @@ public final class LaTeXTokeniser {
             int closeSquareIndex = findEndSquareBrackets(position);
             if (closeSquareIndex==-1) {
                 /* Error: no ']' found! */
-                return createError(ErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
+                return createError(CoreErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
             }
             position = closeSquareIndex + 1; /* Move on to after ']' */
             String rawArgCount = workingDocument.extract(afterOpenSquare, closeSquareIndex).toString().trim();
@@ -2079,12 +2080,12 @@ public final class LaTeXTokeniser {
             }
             catch (NumberFormatException e) {
                 /* Error: Not an integer! */
-                return createError(ErrorCode.TTEUC7, startTokenIndex, position,
+                return createError(CoreErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
             if (requiredArgumentCount<1 || requiredArgumentCount>9) {
                 /* Error: Number of args must be between 1 and 9 inclusive */
-                return createError(ErrorCode.TTEUC7, startTokenIndex, position,
+                return createError(CoreErrorCode.TTEUC7, startTokenIndex, position,
                         commandOrEnvironmentName, rawArgCount);
             }
             skipOverCommentsAndWhitespace();
@@ -2093,7 +2094,7 @@ public final class LaTeXTokeniser {
                 closeSquareIndex = findEndSquareBrackets(position);
                 if (closeSquareIndex==-1) {
                     /* Error: no ']' found! */
-                    return createError(ErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
+                    return createError(CoreErrorCode.TTEUC9, startTokenIndex, workingDocument.length());
                 }
                 optionalArgument = workingDocument.extract(position+1, closeSquareIndex).toString();
                 position = closeSquareIndex + 1; /* Move past ']' */

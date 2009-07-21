@@ -5,9 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.AccentMap;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
@@ -115,13 +115,13 @@ public final class AccentHandler implements CommandHandler {
         List<FlowToken> contents = token.getArguments()[0].getContents();
         if (contents.size()==1 && contents.get(0).getType()!=TokenType.TEXT_MODE_TEXT) {
             /* Accents only apply to a single text token */
-            builder.appendOrThrowError(parentElement, token, ErrorCode.TDETA0);
+            builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDETA0);
             return;
         }
         CharSequence textContent = contents.isEmpty() ? null : contents.get(0).getSlice().extract();
         if (textContent==null || textContent.length()==0) {
             /* Accents applied to empty content */
-            builder.appendOrThrowError(parentElement, token, ErrorCode.TDETA1);
+            builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDETA1);
             return;
         }
         char firstChar = textContent.charAt(0);
@@ -134,7 +134,7 @@ public final class AccentHandler implements CommandHandler {
             /* Could not accent this character. This may be fixable if a suitable accented character
              * can be found that will display safely.
              */
-            builder.appendOrThrowError(parentElement, token, ErrorCode.TDETA2,
+            builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDETA2,
                     Character.toString(firstChar));
         }
     }

@@ -37,7 +37,7 @@ import org.w3c.dom.NodeList;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionTest {
+public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionXMLTest {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-cmathml-tests.txt";
     

@@ -5,10 +5,10 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -124,7 +124,7 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
                 newlineIndicesBuilder.add(Integer.valueOf(i));
             }
             if ((c<32 && !Character.isWhitespace(c) || c > 126)) {
-                InputError error = new InputError(ErrorCode.TTEG02, null,
+                InputError error = new InputError(CoreErrorCode.TTEG02, null,
                         Character.toString((char) c),
                         Integer.toHexString(c),
                         Integer.valueOf(i));

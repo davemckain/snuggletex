@@ -10,6 +10,7 @@ import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
@@ -21,6 +22,7 @@ import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.Slice;
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -39,12 +41,11 @@ import org.w3c.dom.Element;
  */
 public final class MessageFormatter {
     
-    public static final PropertyResourceBundle ERROR_MESSAGE_BUNDLE;
+    /** {@link ResourceBundle} providing templates for message bodies */
     public static final PropertyResourceBundle GENERAL_MESSAGE_BUNDLE;
     
     static {
         try {
-            ERROR_MESSAGE_BUNDLE = (PropertyResourceBundle) ResourceBundle.getBundle(Globals.ERROR_MESSAGES_PROPERTIES_BASENAME);
             GENERAL_MESSAGE_BUNDLE = (PropertyResourceBundle) ResourceBundle.getBundle(Globals.GENERAL_MESSAGES_PROPERTIES_BASENAME);
         }
         catch (MissingResourceException e) {
@@ -54,12 +55,22 @@ public final class MessageFormatter {
     
     /** Constructs an error message for the given {@link InputError}. */
     public static String getErrorMessage(InputError error) {
-        return getErrorMessage(error.getErrorCode().toString(), error.getArguments());
+        return getErrorMessage(error.getErrorCode(), error.getArguments());
     }
     
-    /** Constructs an error message for the given {@link InputError}. */
-    public static String getErrorMessage(String errorCode, Object[] arguments) {
-        return MessageFormat.format(ERROR_MESSAGE_BUNDLE.getString(errorCode), arguments);
+    /** Constructs an error message for the given {@link ErrorCode} and arguments. */
+    public static String getErrorMessage(ErrorCode errorCode, Object... arguments) {
+        ResourceBundle errorMessageBundle = errorCode.getPackage().getErrorMessageBundle();
+        String result;
+        if (errorMessageBundle!=null) {
+            /* Use ResourceBundle specified to format error */
+            result = MessageFormat.format(errorMessageBundle.getString(errorCode.toString()), arguments);
+        }
+        else {
+            /* No ResourceBundle specified, so do as best as we can */
+            result = "Error " + formatErrorCode(errorCode) + ": " + Arrays.toString(arguments);
+        }
+        return result;
     }
     
     /** Creates a full diagnosis of the given error */
@@ -67,6 +78,13 @@ public final class MessageFormatter {
         StringBuffer resultBuilder = new StringBuffer();
         appendErrorAsString(resultBuilder, error);
         return resultBuilder.toString();
+    }
+    
+    public static String formatErrorCode(ErrorCode errorCode) {
+        String packageName = errorCode.getPackage().getName();
+        String errorCodeName = errorCode.getName();
+        return CorePackageDefinitions.CORE_PACKAGE_NAME.equals(packageName)
+            ? errorCodeName : packageName + "/" + errorCodeName;
     }
     
     /**
@@ -79,7 +97,8 @@ public final class MessageFormatter {
      */
     public static Element formatErrorAsXML(Document ownerDocument, InputError error, boolean fullDetails) {
         Element result = ownerDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "error");
-        result.setAttribute("code", error.getErrorCode().name());
+        result.setAttribute("code", error.getErrorCode().getName());
+        result.setAttribute("package", error.getErrorCode().getPackage().getName());
         
         if (fullDetails) {
             /* Nicely format XML error content */
@@ -101,7 +120,7 @@ public final class MessageFormatter {
         result.setAttribute("class", "error");
         
         Element heading = ownerDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "h2");
-        heading.appendChild(ownerDocument.createTextNode("SnuggleTeX Error (" + error.getErrorCode() + ")"));
+        heading.appendChild(ownerDocument.createTextNode("SnuggleTeX Error (" + formatErrorCode(error.getErrorCode()) + ")"));
         
         Element pre = ownerDocument.createElementNS(W3CConstants.XHTML_NAMESPACE, "pre");
         
@@ -123,7 +142,7 @@ public final class MessageFormatter {
     
     public static void appendErrorAsString(StringBuffer messageBuilder, InputError error) {
         new MessageFormat(GENERAL_MESSAGE_BUNDLE.getString("error_as_string")).format(new Object[] {
-                error.getErrorCode().toString(), /* Error code */
+                formatErrorCode(error.getErrorCode()), /* Error code/package */
                 getErrorMessage(error) /* Error Message */
         }, messageBuilder, null);
         FrozenSlice errorSlice = error.getSlice();

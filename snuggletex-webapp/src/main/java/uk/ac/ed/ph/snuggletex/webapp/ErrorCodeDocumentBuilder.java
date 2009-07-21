@@ -5,9 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
-import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 import uk.ac.ed.ph.snuggletex.utilities.SnuggleUtilities;
 
 import java.io.File;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PropertyResourceBundle;
 
 /**
  * Builds a SnuggleTeX documentation page showing all of the error codes. This is called
@@ -62,8 +60,7 @@ public final class ErrorCodeDocumentBuilder {
         String currentCategory = null;
         String category;
         String codeName;
-        PropertyResourceBundle errorMessageBundle = MessageFormatter.ERROR_MESSAGE_BUNDLE;
-        for (ErrorCode errorCode : ErrorCode.values()) {
+        for (CoreErrorCode errorCode : CoreErrorCode.values()) {
             codeName = errorCode.name();
             category = codeName.substring(0,3);
             if (!category.equals(currentCategory)) {
@@ -84,7 +81,7 @@ public final class ErrorCodeDocumentBuilder {
                     + "}\\verb|"
                     + codeName
                     + "| & "
-                    + SnuggleUtilities.quoteTextForInput(errorMessageBundle.getString(codeName))
+                    + SnuggleUtilities.quoteTextForInput(errorCode.getPackage().getErrorMessageBundle().getString(codeName))
                     + " \\\\ \\hline");
         }
         if (currentCategory!=null) {

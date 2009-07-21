@@ -17,6 +17,7 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
+import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -71,6 +72,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         
         /* Parse the LaTeX */
         SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        engine.addPackage(UpConversionPackageDefinitions.getPackage());
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
         session.parseInput(input);

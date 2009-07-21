@@ -16,10 +16,10 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:mf="ext://uk.ac.ed.ph.snuggletex.utilities.MessageFormatter"
+  xmlns:util="ext://uk.ac.ed.ph.snuggletex.upconversion.UpConversionUtilities"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s m mf">
+  exclude-result-prefixes="xs s m util">
 
   <!-- Helper template for stylesheets that output PMathML. -->
   <xsl:template name="s:maybe-wrap-in-mrow" as="element()">
@@ -41,7 +41,7 @@ All Rights Reserved
     <xsl:param name="code" as="xs:string"/>
     <xsl:param name="context" as="element()+"/>
     <xsl:param name="arguments" as="xs:string*"/>
-    <s:fail code="{$code}" message="{mf:getErrorMessage($code, $arguments)}">
+    <s:fail code="{$code}" message="{util:getErrorMessage($code, $arguments)}">
       <xsl:for-each select="$arguments">
         <s:arg><xsl:value-of select="."/></s:arg>
       </xsl:for-each>

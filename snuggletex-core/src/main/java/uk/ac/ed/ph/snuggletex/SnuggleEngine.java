@@ -7,8 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.DefinitionMap;
-import uk.ac.ed.ph.snuggletex.definitions.GlobalBuiltins;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
@@ -24,8 +23,8 @@ import java.util.List;
  * 
  * <ul>
  *   <li>
- *     Create an instance of this engine and register any custom command/environment definitions
- *     you may want to support using {@link #registerDefinitions(DefinitionMap)}.
+ *     Create an instance of this engine and register any extra {@link SnugglePackage}s you have
+ *     created or want to use by calling {@link #addPackage(SnugglePackage)}.
  *   </li>
  *   <li>
  *     Use {@link #createSession()} to create a "session" that will take one (or more) input
@@ -45,8 +44,8 @@ import java.util.List;
  */
 public final class SnuggleEngine {
     
-    /** List of all currently registered {@link DefinitionMap}s used by this Engine. */
-    private final List<DefinitionMap> definitionMaps;
+    /** List of all currently registered {@link SnugglePackage}s used by this Engine. */
+    private final List<SnugglePackage> packages;
 
     /** Helper class to manage XSLT Stylesheets */
     private final StylesheetManager stylesheetManager;
@@ -76,7 +75,7 @@ public final class SnuggleEngine {
      * with your own code or want moe control over how things get cached.
      */
     public SnuggleEngine(StylesheetCache stylesheetCache) {
-        this.definitionMaps = new ArrayList<DefinitionMap>();
+        this.packages = new ArrayList<SnugglePackage>();
         this.defaultSessionConfiguration = null; /* (Lazy init) */
         this.defaultDOMOutputOptions = null; /* (Lazy init) */
         this.defaultXMLOutputOptions = null; /* (Lazy init) */
@@ -84,14 +83,14 @@ public final class SnuggleEngine {
         /* Create manager for XSLT stlyesheets using the given cache */
         this.stylesheetManager = new StylesheetManager(stylesheetCache);
         
-        /* Add in global definitions */
-        definitionMaps.add(GlobalBuiltins.getDefinitionMap());
+        /* Add in core package */
+        packages.add(CorePackageDefinitions.getPackage());
     }
     
     //-------------------------------------------------
     
-    public void registerDefinitions(DefinitionMap definitionMap) {
-        definitionMaps.add(definitionMap);
+    public void addPackage(SnugglePackage snugglePackage) {
+        packages.add(snugglePackage);
     }
     
     //-------------------------------------------------
@@ -107,11 +106,11 @@ public final class SnuggleEngine {
 
     //-------------------------------------------------
     
-    public BuiltinCommand getCommandByTeXName(String texName) {
+    public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
         ConstraintUtilities.ensureNotNull(texName, "texName");
         BuiltinCommand result = null;
-        for (DefinitionMap map : definitionMaps) {
-            result = map.getCommandByTeXName(texName);
+        for (SnugglePackage map : packages) {
+            result = map.getBuiltinCommandByTeXName(texName);
             if (result!=null) {
                 break;
             }
@@ -119,11 +118,11 @@ public final class SnuggleEngine {
         return result;
     }
     
-    public BuiltinEnvironment getEnvironmentByTeXName(String texName) {
+    public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
         ConstraintUtilities.ensureNotNull(texName, "texName");
         BuiltinEnvironment result = null;
-        for (DefinitionMap map : definitionMaps) {
-            result = map.getEnvironmentByTeXName(texName);
+        for (SnugglePackage map : packages) {
+            result = map.getBuiltinEnvironmentByTeXName(texName);
             if (result!=null) {
                 break;
             }
