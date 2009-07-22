@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 
 /**
@@ -52,6 +53,8 @@ public final class WebPageOutputOptionsTemplates {
                 
             case CROSS_BROWSER_XHTML:
                 options.setSerializationMethod(SerializationMethod.XHTML);
+                options.setDoctypePublic(W3CConstants.XHTML_11_MATHML_20_PUBLIC_DTD);
+                options.setDoctypeSystem(W3CConstants.XHTML_11_MATHML_20_SYSTEM_DTD);
                 break;
                 
             case MATHPLAYER_HTML:

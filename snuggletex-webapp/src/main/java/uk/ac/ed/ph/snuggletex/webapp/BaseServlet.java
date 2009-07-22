@@ -87,7 +87,7 @@ abstract class BaseServlet extends HttpServlet {
     protected Transformer getStylesheet(HttpServletRequest request, String classPathUri) throws ServletException {
         Transformer result;
         try {
-            result = getStylesheetManager().getStylesheet(classPathUri).newTransformer();
+            result = getStylesheetManager().getStylesheet(classPathUri, getTransformerFactory()).newTransformer();
         }
         catch (TransformerConfigurationException e) {
             throw new ServletException("Could not create Transformer from Templates", e);

@@ -17,6 +17,7 @@ import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.utilities.CSSUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,7 +28,6 @@ import java.util.Properties;
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -257,51 +257,52 @@ public final class WebPageBuilder {
      * @throws SnuggleRuntimeException if a serializer cannot be created.
      */
     private final Transformer createSerializer() {
-        /* Create either an identity transform (for XHTML) or one which converts XHTML to HTML
-         * for proper no-namespace HTML output.
+        /* Decide on serialization method, using XSLT 2.0's "xhtml" method if requested and
+         * available, falling back to "xml" otherwise.
          */
         TransformerFactory transformerFactory = XMLUtilities.createJAXPTransformerFactory();
+        boolean isXSLT20 = XMLUtilities.supportsXSLT20(transformerFactory);
         SerializationMethod serializationMethod = options.getSerializationMethod();
         if (serializationMethod==null) {
             serializationMethod = SerializationMethod.XML;
         }
-        Transformer serializer;
-        try {
-            if (options.getSerializationMethod()==SerializationMethod.HTML) {
-                serializer = sessionContext.getStylesheetManager()
-                    .getStylesheet(Globals.XHTML_TO_HTML_XSL_RESOURCE_NAME)
-                    .newTransformer();
-            }
-            else {
-                serializer = transformerFactory.newTransformer();
-            }
-        }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not create serializer", e);
-        }
-        
-        /* Decide on output method, using XSLT 2.0's "xhtml" method if requested and available,
-         * falling back to "xml" otherwise.
-         */
-        boolean xslt20 = XMLUtilities.supportsXSLT20(serializer);
         SerializationMethod effectiveMethod = serializationMethod;
-        if (effectiveMethod==SerializationMethod.XHTML && !xslt20) {
+        if (effectiveMethod==SerializationMethod.XHTML && !isXSLT20) {
             effectiveMethod = SerializationMethod.XML;
         }
-        serializer.setOutputProperty(OutputKeys.METHOD, effectiveMethod.getName());
-
+        
+        /* Create either an identity transform (for XHTML) or one which converts XHTML to HTML
+         * for proper no-namespace HTML output.
+         */
+        Transformer serializer;
+        StylesheetManager stylesheetManager = sessionContext.getStylesheetManager();
+        boolean useCharacterMap = options.isMappingCharacters();
+        if (options.getSerializationMethod()==SerializationMethod.HTML) {
+            /* Using HTML output, so convert XHTML to HTML in no namespace, optionally
+             * performing character mapping.
+             */
+            serializer = XMLUtilities.createSerializer(stylesheetManager, Globals.XHTML_TO_HTML_XSL_RESOURCE_NAME, useCharacterMap);
+        }
+        else {
+            /* Use vanilla serializer, or one doing character mapping */
+            serializer = XMLUtilities.createSerializer(stylesheetManager, null, useCharacterMap);
+        }
+        
         /* Set serialization properties as required for the type of output */
         WebPageType pageType = options.getWebPageType();
+        serializer.setOutputProperty(OutputKeys.METHOD, effectiveMethod.getName());
         serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()));
         serializer.setOutputProperty(OutputKeys.ENCODING, options.getEncoding());
         serializer.setOutputProperty(OutputKeys.MEDIA_TYPE, options.getContentType());
         serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
                 StringUtilities.toYesNo(!(pageType==WebPageType.CROSS_BROWSER_XHTML || pageType==WebPageType.UNIVERSAL_STYLESHEET)));
-        if (pageType==WebPageType.CROSS_BROWSER_XHTML) {
-            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, W3CConstants.XHTML_11_MATHML_20_PUBLIC_DTD);
-            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, W3CConstants.XHTML_11_MATHML_20_SYSTEM_DTD);
+        if (options.getDoctypePublic()!=null) {
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, options.getDoctypePublic());
         }
-        if (xslt20 && serializationMethod!=SerializationMethod.XML) {
+        if (options.getDoctypeSystem()!=null) {
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, options.getDoctypeSystem());
+        }
+        if (isXSLT20 && serializationMethod!=SerializationMethod.XML) {
             /* XSLT 2.0 allows us to explicitly stop serializer adding Content Type declaration,
              * which is something we've already done here.
              */

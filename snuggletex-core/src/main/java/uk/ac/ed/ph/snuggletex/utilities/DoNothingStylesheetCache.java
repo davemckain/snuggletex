@@ -16,11 +16,11 @@ import javax.xml.transform.Templates;
  */
 public final class DoNothingStylesheetCache implements StylesheetCache {
 
-    public Templates getStylesheet(String resourceName) {
+    public Templates getStylesheet(String key) {
         return null;
     }
     
-    public void putStylesheet(String resourceName, Templates stylesheet) {
+    public void putStylesheet(String key, Templates stylesheet) {
         /* (Do nothing) */
     }
 }

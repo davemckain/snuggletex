@@ -49,7 +49,7 @@ public final class XMLUnparseHandler implements EnvironmentHandler, CommandHandl
                 "UTF-8", /* (Use UTF-8) */
                 isBlock, /* (Indent if block mode) */
                 true, /* (Omit XML declaration) */
-                builder.getSessionContext().getStylesheetManager());
+                false, builder.getSessionContext().getStylesheetManager());
         NodeList childNodes = parentElement.getChildNodes();
         for (int i=childNodes.getLength()-1; i>=0; i--) {
             parentElement.removeChild(childNodes.item(i));

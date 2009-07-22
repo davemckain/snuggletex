@@ -34,20 +34,19 @@ import javax.xml.transform.Templates;
 public interface StylesheetCache {
    
     /**
-     * Tries to retrieve an XSLT stylesheet from the cache having the given resourceName
-     * (as used in {@link ClassLoader#getResourceAsStream(String)}).
+     * Tries to retrieve an XSLT stylesheet from the cache having the given key.
      * <p>
      * Return a previously cached {@link Templates} or null if your cache doesn't want to cache
      * this or if it does not contain the required result.
      */
-    Templates getStylesheet(String resourceName);
+    Templates getStylesheet(String key);
     
     /**
      * Instructs the cache that it might want to store the given XSLT stylesheet corresponding
-     * to the given resourceName.
+     * to the given key.
      * <p>
      * Implementations can safely choose to do absolutely nothing here if they want.
      */
-    void putStylesheet(String resourceName, Templates stylesheet);
+    void putStylesheet(String key, Templates stylesheet);
 
 }

@@ -27,11 +27,18 @@ public class SimpleStylesheetCache implements StylesheetCache {
         this.cacheMap = new HashMap<String, Templates>();
     }
     
-    public Templates getStylesheet(String resourceName) {
-        return cacheMap.get(resourceName);
+    public Templates getStylesheet(String key) {
+        return cacheMap.get(key);
     }
     
-    public void putStylesheet(String resourceName, Templates stylesheet) {
-        cacheMap.put(resourceName, stylesheet);
+    public void putStylesheet(String key, Templates stylesheet) {
+        cacheMap.put(key, stylesheet);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()
+            + "(map=" + cacheMap
+            + ")";
     }
 }

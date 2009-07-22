@@ -7,6 +7,9 @@ package uk.ac.ed.ph.snuggletex;
 
 import static uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities.concat;
 
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
+
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 
 /**
@@ -50,7 +53,9 @@ public class WebPageOutputOptions extends XMLOutputOptions {
         MOZILLA,
         
         /**
-         * "Cross-browser" XHTML + MathML; has XML declaration and DOCTYPE declaration.
+         * "Cross-browser" XHTML + MathML; has XML declaration and DOCTYPE declaration
+         * consisting of the Public identifier defined in {@link W3CConstants#XHTML_11_MATHML_20_PUBLIC_DTD}
+         * and System identifier defined in {@link W3CConstants#XHTML_11_MATHML_20_SYSTEM_DTD}.
          * The <tt>charset</tt> is declared only in the <tt>meta</tt> element in order
          * to appease MathPlayer.
          * <p>
@@ -168,6 +173,18 @@ public class WebPageOutputOptions extends XMLOutputOptions {
      */
     private SerializationMethod serializationMethod;
     
+    /**
+     * Public identifier for resulting document type declaration,
+     * as described in {@link OutputKeys#DOCTYPE_PUBLIC}.
+     */
+    private String doctypePublic;
+    
+    /**
+     * System identifier for resulting document type declaration,
+     * as described in {@link OutputKeys#DOCTYPE_SYSTEM}.
+     */
+    private String doctypeSystem;
+    
     /** 
      * MIME type for the resulting page.
      * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_CONTENT_TYPE}.
@@ -272,8 +289,26 @@ public class WebPageOutputOptions extends XMLOutputOptions {
     public void setSerializationMethod(SerializationMethod serializationMethod) {
         this.serializationMethod = serializationMethod;
     }
+    
+    
+    public String getDoctypePublic() {
+        return doctypePublic;
+    }
+    
+    public void setDoctypePublic(String doctypePublic) {
+        this.doctypePublic = doctypePublic;
+    }
 
     
+    public String getDoctypeSystem() {
+        return doctypeSystem;
+    }
+    
+    public void setDoctypeSystem(String doctypeSystem) {
+        this.doctypeSystem = doctypeSystem;
+    }
+
+
     public String getContentType() {
         return contentType;
     }

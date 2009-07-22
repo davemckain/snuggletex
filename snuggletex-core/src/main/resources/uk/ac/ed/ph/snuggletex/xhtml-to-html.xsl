@@ -39,8 +39,8 @@ $Id$
     </xsl:copy>
   </xsl:template>
 
-  <!-- Keep any PIs (since they are required by MathPlayer) -->
-  <xsl:template match="processing-instruction()">
+  <!-- Keep text, comments and any PIs (since they are required by MathPlayer) -->
+  <xsl:template match="text()|comment()|processing-instruction()">
     <xsl:copy-of select="."/>
   </xsl:template>
 

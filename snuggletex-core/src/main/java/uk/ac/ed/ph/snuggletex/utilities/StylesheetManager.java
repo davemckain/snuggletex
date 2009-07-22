@@ -56,8 +56,35 @@ public final class StylesheetManager {
      *   
      * @return compiled XSLT stylesheet.
      */
-    public Templates getStylesheet(String classPathUri) {
+    public Templates getStylesheet(final String classPathUri) {
         return getStylesheet(classPathUri, false);
+    }
+    
+    /**
+     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, using
+     * the given {@link TransformerFactory}, compiling and storing a stylesheet
+     * if the cache fails to return anything.
+     * 
+     * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
+     *   URI scheme in {@link ClassPathURIResolver}.
+     *   
+     * @return compiled XSLT stylesheet.
+     */
+    public Templates getStylesheet(final String classPathUri, final TransformerFactory transformerFactory) {
+        Templates result;
+        if (stylesheetCache==null) {
+            result = compileStylesheet(classPathUri, transformerFactory);
+        }
+        else {
+            synchronized(stylesheetCache) {
+                result = stylesheetCache.getStylesheet(classPathUri);
+                if (result==null) {
+                    result = compileStylesheet(classPathUri, transformerFactory);
+                    stylesheetCache.putStylesheet(classPathUri, result);
+                }
+            }
+        }
+        return result;
     }
     
     /**
@@ -74,24 +101,10 @@ public final class StylesheetManager {
      * @return compiled XSLT stylesheet.
      */
     public Templates getStylesheet(final String classPathUri, final boolean requireXSLT20) {
-        Templates result;
-        if (stylesheetCache==null) {
-            result = compileStylesheet(classPathUri, requireXSLT20);
-        }
-        else {
-            synchronized(stylesheetCache) {
-                result = stylesheetCache.getStylesheet(classPathUri);
-                if (result==null) {
-                    result = compileStylesheet(classPathUri, requireXSLT20);
-                    stylesheetCache.putStylesheet(classPathUri, result);
-                }
-            }
-        }
-        return result;
+        return getStylesheet(classPathUri, createTransformerFactory(requireXSLT20));
     }
     
-    
-    private Templates compileStylesheet(final String classPathUri, final boolean requireXSLT20) {
+    private TransformerFactory createTransformerFactory(final boolean requireXSLT20) {
         TransformerFactory transformerFactory;
         if (requireXSLT20) {
             transformerFactory = XMLUtilities.createSaxonTransformerFactory();
@@ -99,6 +112,10 @@ public final class StylesheetManager {
         else {
             transformerFactory = XMLUtilities.createJAXPTransformerFactory();
         }
+        return transformerFactory;
+    }
+    
+    private Templates compileStylesheet(final String classPathUri, final TransformerFactory transformerFactory) {
         return XMLUtilities.compileInternalStylesheet(transformerFactory, classPathUri);
     }
 }

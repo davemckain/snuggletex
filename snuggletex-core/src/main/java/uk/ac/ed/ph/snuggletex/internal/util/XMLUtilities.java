@@ -8,8 +8,10 @@ package uk.ac.ed.ph.snuggletex.internal.util;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
+import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,6 +28,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -96,9 +99,12 @@ public final class XMLUtilities {
     /**
      * Compiles an "internal" stylesheet located via the ClassPath at the given location.
      * <p>
-     * (This takes an explicit {@link TransformerFactory} as the first argument as some extensions
+     * This takes an explicit {@link TransformerFactory} as the first argument as some extensions
      * require XSLT 2.0 so will have created an explicit instance of SAXON's {@link TransformerFactory}
-     * to pass to this.)
+     * to pass to this.
+     * <p>
+     * <strong>NOTE:</strong> a {@link ClassPathURIResolver} will be set on the {@link TransformerFactory}
+     * passed here, which is a bit leaky. 
      *
      * @param transformerFactory
      * @param classPathUri absolute URI specifying the location of the stylesheet in the ClassPath,
@@ -125,6 +131,26 @@ public final class XMLUtilities {
     }
     
     /**
+     * Tests whether the given {@link TransformerFactory} is known to support XSLT 2.0.
+     * <p>
+     * Currently, this involves checking for a suitable version of SAXON; this will
+     * change once more processors become available.
+     */
+    public static boolean supportsXSLT20(final TransformerFactory tranformerFactory) {
+        return tranformerFactory.getClass().getName().startsWith("net.sf.saxon.");
+    }
+    
+    /**
+     * Tests whether the given {@link Templates} is known to support XSLT 2.0.
+     * <p>
+     * Currently, this involves checking for a suitable version of SAXON; this will
+     * change once more processors become available.
+     */
+    public static boolean supportsXSLT20(final Templates templates) {
+        return templates.getClass().getName().startsWith("net.sf.saxon.");
+    }
+    
+    /**
      * Tests whether the given {@link Transformer} is known to support XSLT 2.0.
      * <p>
      * Currently, this involves checking for a suitable version of SAXON; this will
@@ -133,6 +159,8 @@ public final class XMLUtilities {
     public static boolean supportsXSLT20(final Transformer tranformer) {
         return tranformer.getClass().getName().startsWith("net.sf.saxon.");
     }
+    
+    //------------------------------------------------------------------
     
     /**
      * Creates a (namespace-aware) DOM {@link DocumentBuilder}, throwing a {@link SnuggleRuntimeException}
@@ -180,6 +208,84 @@ public final class XMLUtilities {
         throw new IllegalArgumentException("Node is not a text Node");
     }
     
+    //------------------------------------------------------------------
+    
+    public static Transformer createSerializer(StylesheetManager stylesheetManager,
+            final String serializerUri, final boolean useCharacterMap) {
+        Transformer serializer;
+        TransformerFactory transformerFactory = createJAXPTransformerFactory();
+        transformerFactory.setURIResolver(ClassPathURIResolver.getInstance());
+        boolean mapCharacters = useCharacterMap && supportsXSLT20(transformerFactory);
+        try {
+            if (mapCharacters && serializerUri!=null) {
+                Templates serializerTemplates = cacheImporterStylesheet(transformerFactory,
+                        stylesheetManager.getStylesheetCache(),
+                        serializerUri, Globals.CHARACTER_MAPS_XSL_RESOURCE_NAME);
+                serializer = serializerTemplates.newTransformer();
+                serializer.setOutputProperty("use-character-maps", "output");
+            }
+            else if (serializerUri!=null) {
+                serializer = stylesheetManager.getStylesheet(serializerUri, transformerFactory)
+                    .newTransformer();
+            }
+            else if (mapCharacters) {
+                serializer = stylesheetManager.getStylesheet(Globals.SERIALIZE_WITH_CHARACTER_MAPS_XSL_RESOURCE_NAME, transformerFactory)
+                    .newTransformer();
+            }
+            else {
+                serializer = transformerFactory.newTransformer();
+            }
+        }
+        catch (TransformerConfigurationException e) {
+            throw new SnuggleRuntimeException("Could not create serializer", e);
+        }
+        return serializer;
+    }
+    
+    private static Templates cacheImporterStylesheet(final TransformerFactory transformerFactory,
+            StylesheetCache stylesheetCache, final String... importUris) {
+        Templates result;
+        if (stylesheetCache==null) {
+            result = compileImporterStylesheet(transformerFactory, importUris);
+        }
+        else {
+            String cacheKey = "snuggletex-serializer(" + StringUtilities.join(importUris, ",") + ")";
+            synchronized(stylesheetCache) {
+                result = stylesheetCache.getStylesheet(cacheKey);
+                if (result==null) {
+                    result = compileImporterStylesheet(transformerFactory, importUris);
+                    stylesheetCache.putStylesheet(cacheKey, result);
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Helper to create "driver" XSLT stylesheets that import the stylesheets at the given URIs,
+     * using the given {@link TransformerFactory}.
+     * 
+     * @param transformerFactory
+     * @param importUris
+     */
+    private static Templates compileImporterStylesheet(final TransformerFactory transformerFactory,
+            final String... importUris) {
+        StringBuilder xsltBuilder = new StringBuilder("<stylesheet version='1.0' xmlns='http://www.w3.org/1999/XSL/Transform'>\n");
+        for (String importUri : importUris) {
+            xsltBuilder.append("<import href='").append(importUri).append("'/>\n");
+        }
+        xsltBuilder.append("</stylesheet>");
+        String xslt = xsltBuilder.toString();
+        try {
+            return transformerFactory.newTemplates(new StreamSource(new StringReader(xslt)));
+        }
+        catch (TransformerConfigurationException e) {
+            throw new SnuggleRuntimeException("Could not compile stylesheet driver " + xslt, e);
+        }
+    }
+    
+    //------------------------------------------------------------------
+    
     /**
      * Serializes the given {@link Node} to a well-formed external parsed entity.
      * (If the given Node is an {@link Element} or a {@link Document} then the result
@@ -214,12 +320,21 @@ public final class XMLUtilities {
      * @param node DOM Node to serialize.
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
+     * @param applyCharacterMap whether to map certain Unicode characters to entities in 
+     *   the output (requires an XSLT 2.0 processor, ignored if not supported).
+     * @param stylesheetManager used to help compile and cache stylesheets used in this process.
      */
     public static String serializeNodeChildren(final Node node, final String encoding, final boolean indent,
-            final boolean omitXMLDeclaration, StylesheetManager stylesheetManager) {
+            final boolean omitXMLDeclaration, final boolean applyCharacterMap,
+            StylesheetManager stylesheetManager) {
         StringWriter resultWriter = new StringWriter();
+        
+        /* This process consists of an XSLT 1.0 transform to exrtact the child Nodes, plus
+         * a further optional XSLT 2.0 transform to map character references to named entities.
+         * We'll implement this as a mini DOM pipeline.
+         */
         try {
-            Transformer serializer = stylesheetManager.getStylesheet(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME).newTransformer();
+            Transformer serializer = createSerializer(stylesheetManager, Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME, applyCharacterMap);
             serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
             serializer.setOutputProperty(OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8");
@@ -230,6 +345,8 @@ public final class XMLUtilities {
         }
         return resultWriter.toString();
     }
+    
+    //------------------------------------------------------------------
     
     public static boolean isXMLName(String string) {
         return string!=null && string.matches("[a-zA-Z_:][a-zA-Z0-9_:.-]*");

@@ -303,7 +303,8 @@ public final class SnuggleSession implements SessionContext {
             return null;
         }
         return XMLUtilities.serializeNodeChildren(temporaryRoot, options.getEncoding(),
-                options.isIndenting(), true, getStylesheetManager());
+                options.isIndenting(), true, options.isMappingCharacters(),
+                getStylesheetManager());
     }
     
     /**
@@ -367,7 +368,7 @@ public final class SnuggleSession implements SessionContext {
             return null;
         }
         return XMLUtilities.serializeNodeChildren(temporaryRoot, XMLOutputOptions.DEFAULT_ENCODING,
-                indent, true, getStylesheetManager());
+                indent, true, false, getStylesheetManager());
     }
     
     //---------------------------------------------

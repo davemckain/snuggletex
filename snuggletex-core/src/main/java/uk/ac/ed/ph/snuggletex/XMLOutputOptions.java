@@ -36,10 +36,13 @@ public class XMLOutputOptions extends DOMOutputOptions {
      * Default is false.
      */
     private boolean indenting;
-
+    
+    private boolean mappingCharacters;
+    
     public XMLOutputOptions() {
         super();
         this.encoding = DEFAULT_ENCODING;
+        this.mappingCharacters = false;
     }
     
     
@@ -58,5 +61,14 @@ public class XMLOutputOptions extends DOMOutputOptions {
     
     public void setIndenting(boolean identing) {
         this.indenting = identing;
+    }
+
+    
+    public boolean isMappingCharacters() {
+        return mappingCharacters;
+    }
+
+    public void setMappingCharacters(boolean mappingCharacters) {
+        this.mappingCharacters = mappingCharacters;
     }
 }
