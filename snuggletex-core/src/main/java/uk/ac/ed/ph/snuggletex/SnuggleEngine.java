@@ -9,9 +9,11 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.DefaultTransformerFactoryChooser;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
+import uk.ac.ed.ph.snuggletex.utilities.TransformerFactoryChooser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,28 +62,54 @@ public final class SnuggleEngine {
     private DOMOutputOptions defaultXMLOutputOptions;
 
     /**
-     * Creates a new {@link SnuggleEngine} using a very simple cache for any
+     * Creates a new {@link SnuggleEngine} using a very simple internal cache for any
      * XSLT stylesheets required that simply stores them internally for the lifetime
-     * of the engine. This will be fine in most cases. If you want more control over
+     * of the engine. The {@link DefaultTransformerFactoryChooser} is used to choose
+     * XSLT implementations.
+     * <p>
+     * This will be fine in most cases. If you want more control over
      * this, consider the alternative constructor.
      */
     public SnuggleEngine() {
-        this(new SimpleStylesheetCache());
+        this(DefaultTransformerFactoryChooser.getInstance(), new SimpleStylesheetCache());
     }
 
     /**
      * Creates a new {@link SnuggleEngine} using the given {@link StylesheetCache}
      * for managing stylesheets. Use this if you want to integrate XSLT caching
-     * with your own code or want moe control over how things get cached.
+     * with your own code or want more control over how things get cached.
+     * The {@link DefaultTransformerFactoryChooser} is used to choose
+     * XSLT implementations.
      */
     public SnuggleEngine(StylesheetCache stylesheetCache) {
+        this(DefaultTransformerFactoryChooser.getInstance(), stylesheetCache);
+    }
+
+    /**
+     * Creates a new {@link SnuggleEngine} using the given {@link StylesheetCache}
+     * for managing stylesheets and given {@link TransformerFactoryChooser} for choosing which
+     * XSLT implementation to use. Use this if you want to integrate XSLT caching
+     * with your own code, want more control over how things get cached or want to control
+     * the selection of XSLT implementations.
+     */
+    public SnuggleEngine(TransformerFactoryChooser transformerFactoryChooser, StylesheetCache stylesheetCache) {
+        this(new StylesheetManager(transformerFactoryChooser, stylesheetCache));
+    }
+    
+    /**
+     * Creates a new {@link SnuggleEngine} using the given {@link StylesheetManager}
+     * for managing stylesheets. Use this if you want to integrate XSLT caching
+     * with your own code, want more control over how things get cached or want to control
+     * the selection of XSLT implementations.
+     */
+    public SnuggleEngine(StylesheetManager stylesheetManager) {
         this.packages = new ArrayList<SnugglePackage>();
         this.defaultSessionConfiguration = null; /* (Lazy init) */
         this.defaultDOMOutputOptions = null; /* (Lazy init) */
         this.defaultXMLOutputOptions = null; /* (Lazy init) */
         
         /* Create manager for XSLT stlyesheets using the given cache */
-        this.stylesheetManager = new StylesheetManager(stylesheetCache);
+        this.stylesheetManager = stylesheetManager;
         
         /* Add in core package */
         packages.add(CorePackageDefinitions.getPackage());
@@ -199,5 +227,4 @@ public final class SnuggleEngine {
         ConstraintUtilities.ensureNotNull(defaultDOMOptions, "defaultDOMOptions");
         this.defaultDOMOutputOptions = defaultDOMOptions;
     }
-
 }

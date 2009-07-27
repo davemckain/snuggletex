@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.utilities;
 
+import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
 import javax.xml.transform.Templates;
@@ -24,17 +25,32 @@ import javax.xml.transform.TransformerFactory;
  */
 public final class StylesheetManager {
     
+    private TransformerFactoryChooser transformerFactoryChooser;
     private StylesheetCache stylesheetCache;
     
     public StylesheetManager() {
-        this(null);
+        this(DefaultTransformerFactoryChooser.getInstance(), null);
     }
     
-    public StylesheetManager(final StylesheetCache cache) {
+    public StylesheetManager(StylesheetCache cache) {
+        this(DefaultTransformerFactoryChooser.getInstance(), cache);
+    }
+    
+    public StylesheetManager(TransformerFactoryChooser transformerFactoryChooser, StylesheetCache cache) {
+        this.transformerFactoryChooser = transformerFactoryChooser;
         this.stylesheetCache = cache;
     }
     
     //----------------------------------------------------------
+    
+    public TransformerFactoryChooser getTransformerFactoryChooser() {
+        return transformerFactoryChooser;
+    }
+
+    public void setTransformerFactoryChooser(TransformerFactoryChooser transformerFactoryChooser) {
+        this.transformerFactoryChooser = transformerFactoryChooser;
+    }
+
     
     public StylesheetCache getStylesheetCache() {
         return stylesheetCache;
@@ -45,11 +61,11 @@ public final class StylesheetManager {
     }
     
     //----------------------------------------------------------
-
+    
     /**
      * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache} using the
-     * JAXP Default {@link TransformerFactory}, compiling and storing one if the cache fails to
-     * return anything.
+     * current {@link TransformerFactoryChooser} to determine which {@link TransformerFactory}
+     * to use.
      * 
      * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
      *   URI scheme in {@link ClassPathURIResolver}.
@@ -61,36 +77,9 @@ public final class StylesheetManager {
     }
     
     /**
-     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, using
-     * the given {@link TransformerFactory}, compiling and storing a stylesheet
-     * if the cache fails to return anything.
-     * 
-     * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
-     *   URI scheme in {@link ClassPathURIResolver}.
-     *   
-     * @return compiled XSLT stylesheet.
-     */
-    public Templates getStylesheet(final String classPathUri, final TransformerFactory transformerFactory) {
-        Templates result;
-        if (stylesheetCache==null) {
-            result = compileStylesheet(classPathUri, transformerFactory);
-        }
-        else {
-            synchronized(stylesheetCache) {
-                result = stylesheetCache.getStylesheet(classPathUri);
-                if (result==null) {
-                    result = compileStylesheet(classPathUri, transformerFactory);
-                    stylesheetCache.putStylesheet(classPathUri, result);
-                }
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}, using either the
-     * JAXP Default {@link TransformerFactory} or SAXON (if requireXSLT20 is true),
-     * compiling and storing one if the cache fails to return anything.
+     * Helper method to retrieve an XSLT stylesheet from the {@link StylesheetCache}
+     * using the current {@link TransformerFactoryChooser} to determine which {@link TransformerFactory}
+     * to use.
      * 
      * @param classPathUri location of the XSLT stylesheet in the ClassPath, following the
      *   URI scheme in {@link ClassPathURIResolver}.
@@ -101,21 +90,52 @@ public final class StylesheetManager {
      * @return compiled XSLT stylesheet.
      */
     public Templates getStylesheet(final String classPathUri, final boolean requireXSLT20) {
-        return getStylesheet(classPathUri, createTransformerFactory(requireXSLT20));
-    }
-    
-    private TransformerFactory createTransformerFactory(final boolean requireXSLT20) {
-        TransformerFactory transformerFactory;
-        if (requireXSLT20) {
-            transformerFactory = XMLUtilities.createSaxonTransformerFactory();
+        Templates result;
+        if (stylesheetCache==null) {
+            result = compileStylesheet(classPathUri, requireXSLT20);
         }
         else {
-            transformerFactory = XMLUtilities.createJAXPTransformerFactory();
+            synchronized(stylesheetCache) {
+                result = stylesheetCache.getStylesheet(classPathUri);
+                if (result==null) {
+                    result = compileStylesheet(classPathUri, requireXSLT20);
+                    stylesheetCache.putStylesheet(classPathUri, result);
+                }
+            }
         }
+        return result;
+    }
+    
+    private Templates compileStylesheet(final String classPathUri, final boolean requireXSLT20) {
+        TransformerFactory transformerFactory = getTransformerFactory(requireXSLT20);
+        return XMLUtilities.compileInternalStylesheet(transformerFactory, classPathUri);
+    }
+    
+    public boolean supportsXSLT20() {
+        ensureChooserSpecified();
+        return transformerFactoryChooser.isXSLT20SupportAvailable();
+    }
+    
+    public TransformerFactory getTransformerFactory(final boolean requireXSLT20) {
+        ensureChooserSpecified();
+        
+        /* Choose appropriate TransformerFactory implementation */
+        TransformerFactory transformerFactory;
+        if (requireXSLT20) {
+            transformerFactory = transformerFactoryChooser.getSuitableXSLT10TransformerFactory();
+        }
+        else {
+            transformerFactory = transformerFactoryChooser.getSuitableXSLT20TransformerFactory();
+        }
+        
+        /* Configure URIResolver */
+        transformerFactory.setURIResolver(ClassPathURIResolver.getInstance());
         return transformerFactory;
     }
     
-    private Templates compileStylesheet(final String classPathUri, final TransformerFactory transformerFactory) {
-        return XMLUtilities.compileInternalStylesheet(transformerFactory, classPathUri);
+    private void ensureChooserSpecified() {
+        if (transformerFactoryChooser==null) {
+            throw new SnuggleRuntimeException("No TransformerFactoryChooser set on this StylesheetManager");
+        }
     }
 }

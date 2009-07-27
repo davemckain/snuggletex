@@ -71,7 +71,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         String inputLaTeX = rawInputLaTeX.replaceAll("\\s+", " ");
         
         /* Parse the LaTeX */
-        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        SnuggleEngine engine = createSnuggleEngine();
         engine.addPackage(UpConversionPackageDefinitions.getPackage());
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");

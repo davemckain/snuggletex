@@ -29,7 +29,6 @@ import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -53,7 +52,6 @@ public final class WebPageBuilder {
         this.sessionContext = sessionContext;
         this.options = options;
     }
-    
 
     public final Document createWebPage(final List<FlowToken> fixedTokens) throws SnuggleParseException {
         checkOptions();
@@ -260,8 +258,9 @@ public final class WebPageBuilder {
         /* Decide on serialization method, using XSLT 2.0's "xhtml" method if requested and
          * available, falling back to "xml" otherwise.
          */
-        TransformerFactory transformerFactory = XMLUtilities.createJAXPTransformerFactory();
-        boolean isXSLT20 = XMLUtilities.supportsXSLT20(transformerFactory);
+        boolean isXSLT20 = sessionContext.getStylesheetManager().supportsXSLT20();
+        
+        /* FIXME: Should we fail if XSLT 2.0 isn't available instead of silently changing? */
         SerializationMethod serializationMethod = options.getSerializationMethod();
         if (serializationMethod==null) {
             serializationMethod = SerializationMethod.XML;

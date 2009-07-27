@@ -44,7 +44,7 @@ public final class UpConvertingPostProcessor implements DOMPostProcessor {
     
     public Document postProcessDOM(Document workDocument, DOMOutputOptions unused,
             StylesheetManager stylesheetManager) {
-        return new MathMLUpConverter(stylesheetManager.getStylesheetCache())
+        return new MathMLUpConverter(stylesheetManager)
             .upConvertSnuggleTeXMathML(workDocument, upconversionParameterMap);
     }
 }

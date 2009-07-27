@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
@@ -67,9 +68,12 @@ abstract class BaseServlet extends HttpServlet {
         return getStylesheetManager().getStylesheetCache();
     }
     
-    @SuppressWarnings("unchecked")
     protected TransformerFactory getTransformerFactory() {
-        return ((ThreadLocal<TransformerFactory>) getServletContext().getAttribute(ContextInitialiser.TRANSFORMER_FACTORY_THREAD_LOCAL)).get();
+        return getStylesheetManager().getTransformerFactory(true);
+    }
+    
+    protected SnuggleEngine createSnuggleEngine() {
+        return new SnuggleEngine(getStylesheetManager());
     }
     
     /**
@@ -87,7 +91,7 @@ abstract class BaseServlet extends HttpServlet {
     protected Transformer getStylesheet(HttpServletRequest request, String classPathUri) throws ServletException {
         Transformer result;
         try {
-            result = getStylesheetManager().getStylesheet(classPathUri, getTransformerFactory()).newTransformer();
+            result = getStylesheetManager().getStylesheet(classPathUri).newTransformer();
         }
         catch (TransformerConfigurationException e) {
             throw new ServletException("Could not create Transformer from Templates", e);

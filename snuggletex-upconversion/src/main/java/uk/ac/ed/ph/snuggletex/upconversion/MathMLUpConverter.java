@@ -9,9 +9,11 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.SaxonTransformerFactoryChooser;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
+import uk.ac.ed.ph.snuggletex.utilities.TransformerFactoryChooser;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -91,24 +93,45 @@ public class MathMLUpConverter {
     private final StylesheetManager stylesheetManager;
     
     /**
-     * Creates a new up-converter using a simple internal cache.
+     * Creates a new up-converter using a simple internal cache, hard-coded to use Saxon for
+     * XSLT 2.0 support.
      * <p>
      * Use this constructor if you don't use XSLT yourself. In this case, you'll want your
      * instance of this class to be reused as much as possible to get the benefits of caching.
      */
     public MathMLUpConverter() {
-        this(new SimpleStylesheetCache());
+        this(SaxonTransformerFactoryChooser.getInstance(), new SimpleStylesheetCache());
     }
     
     /**
      * Creates a new up-converter using the given {@link StylesheetCache} to cache internal XSLT
-     * stylesheets.
+     * stylesheets, hard-coded to use Saxon for XSLT 2.0 support.
      * <p>
      * Use this constructor if you do your own XSLT caching that you want to integrate in, or
      * if the default doesn't do what you want.
      */
-    public MathMLUpConverter(final StylesheetCache stylesheetCache) {
-        this.stylesheetManager = new StylesheetManager(stylesheetCache);
+    public MathMLUpConverter(StylesheetCache stylesheetCache) {
+        this(SaxonTransformerFactoryChooser.getInstance(), stylesheetCache);
+    }
+    
+    /**
+     * Creates a new up-converter using the given {@link TransformerFactoryChooser} and
+     * {@link StylesheetCache} to cache internal XSLT stylesheets.
+     * <p>
+     * Use this constructor if you do your own XSLT caching that you want to integrate in, or
+     * if the default doesn't do what you want and/or if you want to override the choice of 
+     * Saxon for XSLT 2.0 support (which is currently a bad idea!)
+     */
+    public MathMLUpConverter(final TransformerFactoryChooser transformerFactoryChooser, StylesheetCache stylesheetCache) {
+        this(new StylesheetManager(transformerFactoryChooser, stylesheetCache));
+    }
+    
+    /**
+     * Creates a new up-converter using the given {@link StylesheetManager} for managing XSLT
+     * stylesheets and stuff.
+     */
+    public MathMLUpConverter(StylesheetManager stylesheetManager) {
+        this.stylesheetManager = stylesheetManager;
     }
     
     public Document upConvertSnuggleTeXMathML(final Document document, final Map<String, Object> upConversionOptions) {

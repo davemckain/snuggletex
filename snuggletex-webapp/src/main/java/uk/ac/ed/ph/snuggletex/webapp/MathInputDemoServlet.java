@@ -79,7 +79,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         }
         
         /* Parse the LaTeX */
-        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        SnuggleEngine engine = createSnuggleEngine();
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
         session.parseInput(input);

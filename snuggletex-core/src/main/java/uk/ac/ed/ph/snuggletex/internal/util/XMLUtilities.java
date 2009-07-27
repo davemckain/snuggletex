@@ -70,7 +70,7 @@ public final class XMLUtilities {
         return transformerFactory;
     }
     
-    private static void requireFeature(final TransformerFactory transformerFactory, final String feature) {
+    public static void requireFeature(final TransformerFactory transformerFactory, final String feature) {
         if (!transformerFactory.getFeature(feature)) {
             throw new SnuggleRuntimeException("TransformerFactory "
                     + transformerFactory.getClass().getName()
@@ -79,21 +79,38 @@ public final class XMLUtilities {
                     + " in order to be used with SnuggleTeX");
         }   
     }
+    
+    public static boolean isSaxonAvailable() {
+        try {
+            Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
 
     /**
      * Explicitly creates a Saxon 9 {@link TransformerFactory}, as used by the up-conversion
      * extensions.
      */
     public static TransformerFactory createSaxonTransformerFactory() {
+        TransformerFactory transformerFactory;
         try {
             /* We call up SAXON explicitly without going through the usual factory path */
-            return (TransformerFactory) Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME).newInstance();
+            transformerFactory = (TransformerFactory) Class.forName(SAXON_TRANSFORMER_FACTORY_CLASS_NAME).newInstance();
         }
         catch (Exception e) {
-            throw new SnuggleRuntimeException("Failed to explicitly instantiate SAXON "
+            throw new SnuggleRuntimeException("Failed to explicitly instantiate Saxon "
                     + SAXON_TRANSFORMER_FACTORY_CLASS_NAME
                     + " class - check your ClassPath!", e);
         }
+        /* Make sure we have DOM-based features */
+        requireFeature(transformerFactory, DOMSource.FEATURE);
+        requireFeature(transformerFactory, DOMResult.FEATURE);
+        
+        /* Must have been OK! */
+        return transformerFactory;
     }
     
     /**
@@ -133,31 +150,11 @@ public final class XMLUtilities {
     /**
      * Tests whether the given {@link TransformerFactory} is known to support XSLT 2.0.
      * <p>
-     * Currently, this involves checking for a suitable version of SAXON; this will
-     * change once more processors become available.
+     * (Currently, this involves checking for a suitable version of Saxon; this will
+     * change once more processors become available.)
      */
     public static boolean supportsXSLT20(final TransformerFactory tranformerFactory) {
         return tranformerFactory.getClass().getName().startsWith("net.sf.saxon.");
-    }
-    
-    /**
-     * Tests whether the given {@link Templates} is known to support XSLT 2.0.
-     * <p>
-     * Currently, this involves checking for a suitable version of SAXON; this will
-     * change once more processors become available.
-     */
-    public static boolean supportsXSLT20(final Templates templates) {
-        return templates.getClass().getName().startsWith("net.sf.saxon.");
-    }
-    
-    /**
-     * Tests whether the given {@link Transformer} is known to support XSLT 2.0.
-     * <p>
-     * Currently, this involves checking for a suitable version of SAXON; this will
-     * change once more processors become available.
-     */
-    public static boolean supportsXSLT20(final Transformer tranformer) {
-        return tranformer.getClass().getName().startsWith("net.sf.saxon.");
     }
     
     //------------------------------------------------------------------
@@ -211,29 +208,25 @@ public final class XMLUtilities {
     //------------------------------------------------------------------
     
     public static Transformer createSerializer(StylesheetManager stylesheetManager,
-            final String serializerUri, final boolean useCharacterMap) {
+            final String serializerUri, final boolean mapCharacters) {
         Transformer serializer;
-        TransformerFactory transformerFactory = createJAXPTransformerFactory();
-        transformerFactory.setURIResolver(ClassPathURIResolver.getInstance());
-        boolean mapCharacters = useCharacterMap && supportsXSLT20(transformerFactory);
         try {
             if (mapCharacters && serializerUri!=null) {
-                Templates serializerTemplates = cacheImporterStylesheet(transformerFactory,
-                        stylesheetManager.getStylesheetCache(),
+                Templates serializerTemplates = cacheImporterStylesheet(stylesheetManager, true,
                         serializerUri, Globals.CHARACTER_MAPS_XSL_RESOURCE_NAME);
                 serializer = serializerTemplates.newTransformer();
                 serializer.setOutputProperty("use-character-maps", "output");
             }
             else if (serializerUri!=null) {
-                serializer = stylesheetManager.getStylesheet(serializerUri, transformerFactory)
+                serializer = stylesheetManager.getStylesheet(serializerUri)
                     .newTransformer();
             }
             else if (mapCharacters) {
-                serializer = stylesheetManager.getStylesheet(Globals.SERIALIZE_WITH_CHARACTER_MAPS_XSL_RESOURCE_NAME, transformerFactory)
+                serializer = stylesheetManager.getStylesheet(Globals.SERIALIZE_WITH_CHARACTER_MAPS_XSL_RESOURCE_NAME, true)
                     .newTransformer();
             }
             else {
-                serializer = transformerFactory.newTransformer();
+                serializer = stylesheetManager.getTransformerFactoryChooser().getSuitableXSLT10TransformerFactory().newTransformer();
             }
         }
         catch (TransformerConfigurationException e) {
@@ -242,18 +235,20 @@ public final class XMLUtilities {
         return serializer;
     }
     
-    private static Templates cacheImporterStylesheet(final TransformerFactory transformerFactory,
-            StylesheetCache stylesheetCache, final String... importUris) {
+    private static Templates cacheImporterStylesheet(StylesheetManager stylesheetManager,
+            final boolean requireXSLT20, final String... importUris) {
         Templates result;
+        StylesheetCache stylesheetCache = stylesheetManager.getStylesheetCache();
+        TransformerFactory transformerFactory = stylesheetManager.getTransformerFactory(requireXSLT20);
         if (stylesheetCache==null) {
-            result = compileImporterStylesheet(transformerFactory, importUris);
+            result = compileImporterStylesheet(transformerFactory, requireXSLT20, importUris);
         }
         else {
-            String cacheKey = "snuggletex-serializer(" + StringUtilities.join(importUris, ",") + ")";
+            String cacheKey = "snuggletex-importer(" + StringUtilities.join(importUris, ",") + ")";
             synchronized(stylesheetCache) {
                 result = stylesheetCache.getStylesheet(cacheKey);
                 if (result==null) {
-                    result = compileImporterStylesheet(transformerFactory, importUris);
+                    result = compileImporterStylesheet(transformerFactory, requireXSLT20, importUris);
                     stylesheetCache.putStylesheet(cacheKey, result);
                 }
             }
@@ -269,8 +264,10 @@ public final class XMLUtilities {
      * @param importUris
      */
     private static Templates compileImporterStylesheet(final TransformerFactory transformerFactory,
-            final String... importUris) {
-        StringBuilder xsltBuilder = new StringBuilder("<stylesheet version='1.0' xmlns='http://www.w3.org/1999/XSL/Transform'>\n");
+            boolean requireXSLT20, final String... importUris) {
+        StringBuilder xsltBuilder = new StringBuilder("<stylesheet version='")
+            .append(requireXSLT20 ? "2.0" : "1.0")
+            .append("' xmlns='http://www.w3.org/1999/XSL/Transform'>\n");
         for (String importUri : importUris) {
             xsltBuilder.append("<import href='").append(importUri).append("'/>\n");
         }

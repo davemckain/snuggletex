@@ -239,7 +239,7 @@ public final class DocumentationServlet extends BaseServlet {
             throws ServletException, IOException {
         /* Parse macros.tex and source resource */
         InputStream macrosResource = ensureReadResource(MACROS_RESOURCE_LOCATION);
-        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        SnuggleEngine engine = createSnuggleEngine();
         SnuggleSession session = engine.createSession();
         session.parseInput(new SnuggleInput(macrosResource, "Web resource at " + MACROS_RESOURCE_LOCATION));
         session.parseInput(new SnuggleInput(texSourceStream, "Web resource at " + texSourceResourcePath));

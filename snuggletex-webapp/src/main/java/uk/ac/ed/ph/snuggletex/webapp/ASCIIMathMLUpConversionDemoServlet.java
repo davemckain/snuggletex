@@ -100,7 +100,7 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         options.setIndenting(true);
         options.setIncludingStyleElement(false);
         
-        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        SnuggleEngine engine = createSnuggleEngine();
         SnuggleSession session = engine.createSession();
         session.parseInput(new SnuggleInput("", "Dummy Input"));
         

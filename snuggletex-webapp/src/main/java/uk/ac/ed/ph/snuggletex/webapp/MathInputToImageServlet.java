@@ -57,7 +57,7 @@ public final class MathInputToImageServlet extends BaseServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Empty input");
         }
         /* Parse the LaTeX */
-        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        SnuggleEngine engine = createSnuggleEngine();
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput(inputLaTeX, "Form Input");
         session.parseInput(input);

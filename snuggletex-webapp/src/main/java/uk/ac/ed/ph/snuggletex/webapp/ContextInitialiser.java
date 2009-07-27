@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.DoNothingStylesheetCache;
+import uk.ac.ed.ph.snuggletex.utilities.SaxonTransformerFactoryChooser;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
@@ -14,7 +14,6 @@ import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.xml.transform.TransformerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +34,6 @@ public final class ContextInitialiser implements ServletContextListener {
     public static final String MAVEN_SITE_URL_PROPERTY_NAME = "maven.site.url";
     
     public static final String STYLESHEET_MANAGER_ATTRIBUTE_NAME = "stylesheetManager";
-    public static final String STYLESHEET_CACHE_ATTRIBUTE_NAME = "stylesheetCache";
-    public static final String TRANSFORMER_FACTORY_THREAD_LOCAL = "transformerFactoryThreadLocal";
     
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
@@ -46,15 +43,11 @@ public final class ContextInitialiser implements ServletContextListener {
         StylesheetCache stylesheetCache = cacheXSLT ? new SimpleStylesheetCache() : new DoNothingStylesheetCache();
         logger.info("Created new StylesheetCache of type " + stylesheetCache.getClass());
         
-        /* Create various other shared resources */
-        servletContext.setAttribute(STYLESHEET_CACHE_ATTRIBUTE_NAME, stylesheetCache);
-        servletContext.setAttribute(STYLESHEET_MANAGER_ATTRIBUTE_NAME, new StylesheetManager(stylesheetCache));
-        servletContext.setAttribute(TRANSFORMER_FACTORY_THREAD_LOCAL, new ThreadLocal<TransformerFactory>() {
-            @Override
-            protected TransformerFactory initialValue() {
-                return XMLUtilities.createSaxonTransformerFactory();
-            }
-        });
+        /* Create and store StylesheetManager, hard-coded to use Saxon */
+        StylesheetManager stylesheetManager = new StylesheetManager();
+        stylesheetManager.setStylesheetCache(stylesheetCache);
+        stylesheetManager.setTransformerFactoryChooser(SaxonTransformerFactoryChooser.getInstance());
+        servletContext.setAttribute(STYLESHEET_MANAGER_ATTRIBUTE_NAME, stylesheetManager);
         logger.info("Context initialised");
     }
     

@@ -83,7 +83,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         }
         
         /* Parse the LaTeX */
-        SnuggleEngine engine = new SnuggleEngine(getStylesheetCache());
+        SnuggleEngine engine = createSnuggleEngine();
         engine.addPackage(UpConversionPackageDefinitions.getPackage());
         SnuggleSession session = engine.createSession();
         SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
