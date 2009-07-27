@@ -90,6 +90,7 @@ public interface MathMLSymbol {
     public static final String PRIME = "\u2032";
     public static final String DAGGER = "\u2020";
     public static final String DDAGGER = "\u2021";
+    public static final String BULLET = "\u2022";
     public static final String APPLY_FUNCTION = "\u2061";
     public static final String INVISIBLE_TIMES = "\u2062";
     
@@ -141,7 +142,6 @@ public interface MathMLSymbol {
     public static final String SETMINUS = "\u2216";
     public static final String AST = "\u2217";
     public static final String CIRC = "\u2218";
-    public static final String BULLET = "\u2219";
     public static final String PROPTO = "\u221d";
     public static final String INFTY = "\u221e";
     public static final String MID = "\u2223";
@@ -217,6 +217,7 @@ public interface MathMLSymbol {
     public static final String TRIANGLERIGHT = "\u22b3";
     public static final String BIGWEDGE = "\u22c0";
     public static final String BIGVEE = "\u22c1";
+    public static final String DIAMOND = "\u22c4";
     public static final String CDOT = "\u22c5";
     public static final String STAR = "\u22c6";
     public static final String BOWTIE = "\u22c8";
@@ -228,20 +229,19 @@ public interface MathMLSymbol {
     public static final String CDOTS = "\u22ef";
     public static final String DDOTS = "\u22f1";
     
+    public static final String FROWN = "\u2322";
     public static final String SMILE = "\u2323";
-    public static final String FROWN = "\u2324";
     public static final String OPEN_ANGLE_BRACKET = "\u2329";
     public static final String CLOSE_ANGLE_BRACKET = "\u232a";
 
     public static final String BIGTRIANGLEUP = "\u25b3";
     public static final String TRIANGLE = "\u25b5";
     public static final String BIGTRIANGLEDOWN = "\u25bd";
-    public static final String DIAMOND = "\u25c7";
     public static final String BIGCIRC = "\u25cb";
     
     public static final String SPADESUIT = "\u2660";
-    public static final String HEARTSUIT = "\u2661";
-    public static final String DIAMONDSUIT = "\u2662";
+    public static final String HEARTSUIT = "\u2661"; /* (NB: This is not filled in, as per LaTeX. The MathML entity for heartsuit is mapped to U+2665) */
+    public static final String DIAMONDSUIT = "\u2662"; /* (NB: This is not filled in, as per LaTeX. The MathML entity for diamondsuit is mapped to U+2666) */
     public static final String CLUBSUIT = "\u2663";
     public static final String FLAT = "\u266d";
     public static final String NATURAL = "\u266e";
