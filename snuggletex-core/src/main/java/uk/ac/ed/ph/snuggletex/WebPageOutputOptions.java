@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex;
 import static uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities.concat;
 
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -278,6 +279,7 @@ public class WebPageOutputOptions extends XMLOutputOptions {
     }
     
     public void setWebPageType(WebPageType webPageType) {
+        ConstraintUtilities.ensureNotNull(webPageType, "webPageType");
         this.webPageType = webPageType;
     }
     
@@ -287,6 +289,7 @@ public class WebPageOutputOptions extends XMLOutputOptions {
     }
     
     public void setSerializationMethod(SerializationMethod serializationMethod) {
+        ConstraintUtilities.ensureNotNull(serializationMethod, "serializationMethod");
         this.serializationMethod = serializationMethod;
     }
     
@@ -314,6 +317,7 @@ public class WebPageOutputOptions extends XMLOutputOptions {
     }
     
     public void setContentType(String contentType) {
+        ConstraintUtilities.ensureNotNull(contentType, "contentType");
         this.contentType = contentType;
     }
 

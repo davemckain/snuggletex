@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 
 /**
  * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
@@ -26,23 +27,41 @@ public class XMLOutputOptions extends DOMOutputOptions {
     /** 
      * Encoding for the resulting page.
      * Default is {@link XMLOutputOptions#DEFAULT_ENCODING}.
+     * <p>
      * Must not be null.
      */
     private String encoding;
     
     /**
-     * Whether to indent the resulting web page or not.
+     * Whether to indent the resulting XML or not.
      * (This depends on how clever the underlying XSLT engine will be!)
      * Default is false.
      */
     private boolean indenting;
     
-    private boolean mappingCharacters;
+    /**
+     * Whether to include an XML declaration on the resulting output.
+     * Default is false.
+     */
+    private boolean includingXMLDeclaration;
+    
+    /**
+     * Specified whether to use named entities for certain MathML symbols rather than
+     * numeric character references.
+     * <p>
+     * Note that this requires an XSLT 2.0-compliant engine (e.g. Saxon, which is in the
+     * "full" SnuggleTeX distribution.)
+     * <p>
+     * (Also note that the resulting XML won't be parseable unless accompanied with a DTD
+     * defining the MathML entities!)
+     */
+    private boolean usingNamedEntities;
     
     public XMLOutputOptions() {
         super();
         this.encoding = DEFAULT_ENCODING;
-        this.mappingCharacters = false;
+        this.usingNamedEntities = false;
+        this.includingXMLDeclaration = false;
     }
     
     
@@ -51,6 +70,7 @@ public class XMLOutputOptions extends DOMOutputOptions {
     }
     
     public void setEncoding(String encoding) {
+        ConstraintUtilities.ensureNotNull(encoding, "encoding");
         this.encoding = encoding;
     }
     
@@ -62,13 +82,22 @@ public class XMLOutputOptions extends DOMOutputOptions {
     public void setIndenting(boolean identing) {
         this.indenting = identing;
     }
-
     
-    public boolean isMappingCharacters() {
-        return mappingCharacters;
+    
+    public boolean isIncludingXMLDeclaration() {
+        return includingXMLDeclaration;
+    }
+    
+    public void setIncludingXMLDeclaration(boolean includingXMLDeclaration) {
+        this.includingXMLDeclaration = includingXMLDeclaration;
     }
 
-    public void setMappingCharacters(boolean mappingCharacters) {
-        this.mappingCharacters = mappingCharacters;
+
+    public boolean isUsingNamedEntities() {
+        return usingNamedEntities;
+    }
+
+    public void setUsingNamedEntities(boolean usingNamedEntities) {
+        this.usingNamedEntities = usingNamedEntities;
     }
 }

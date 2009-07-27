@@ -56,10 +56,6 @@ abstract class BaseServlet extends HttpServlet {
         return result;
     }
     
-    protected ClassPathURIResolver getURIResolver() {
-        return ClassPathURIResolver.getInstance();
-    }
-    
     protected StylesheetManager getStylesheetManager() {
         return (StylesheetManager) getServletContext().getAttribute(ContextInitialiser.STYLESHEET_MANAGER_ATTRIBUTE_NAME);
     }

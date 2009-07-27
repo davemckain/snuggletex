@@ -53,6 +53,7 @@ public final class WebPageOutputOptionsTemplates {
                 
             case CROSS_BROWSER_XHTML:
                 options.setSerializationMethod(SerializationMethod.XHTML);
+                options.setIncludingXMLDeclaration(true);
                 options.setDoctypePublic(W3CConstants.XHTML_11_MATHML_20_PUBLIC_DTD);
                 options.setDoctypeSystem(W3CConstants.XHTML_11_MATHML_20_SYSTEM_DTD);
                 break;
@@ -68,11 +69,12 @@ public final class WebPageOutputOptionsTemplates {
                 options.setContentType("text/html");
                 break;
                 
-            case CLIENT_SIDE_XSLT_STYLESHEET:
+            case UNIVERSAL_STYLESHEET:
                 options.setSerializationMethod(SerializationMethod.XML);
+                options.setIncludingXMLDeclaration(true);
                 break;
                 
-            case UNIVERSAL_STYLESHEET:
+            case CLIENT_SIDE_XSLT_STYLESHEET:
                 options.setSerializationMethod(SerializationMethod.XML);
                 break;
                 

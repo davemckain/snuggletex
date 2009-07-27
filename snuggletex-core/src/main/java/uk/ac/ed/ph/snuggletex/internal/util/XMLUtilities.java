@@ -7,28 +7,19 @@ package uk.ac.ed.ph.snuggletex.internal.util;
 
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
-import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
-import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
-import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -114,40 +105,6 @@ public final class XMLUtilities {
     }
     
     /**
-     * Compiles an "internal" stylesheet located via the ClassPath at the given location.
-     * <p>
-     * This takes an explicit {@link TransformerFactory} as the first argument as some extensions
-     * require XSLT 2.0 so will have created an explicit instance of SAXON's {@link TransformerFactory}
-     * to pass to this.
-     * <p>
-     * <strong>NOTE:</strong> a {@link ClassPathURIResolver} will be set on the {@link TransformerFactory}
-     * passed here, which is a bit leaky. 
-     *
-     * @param transformerFactory
-     * @param classPathUri absolute URI specifying the location of the stylesheet in the ClassPath,
-     *   specified via the scheme mentioned in {@link ClassPathURIResolver}.
-     */
-    public static Templates compileInternalStylesheet(final TransformerFactory transformerFactory,
-            String classPathUri) {
-        ClassPathURIResolver uriResolver = ClassPathURIResolver.getInstance();
-        transformerFactory.setURIResolver(uriResolver);
-        Source resolved;
-        try {
-            resolved = uriResolver.resolve(classPathUri, "");
-            if (resolved==null) {
-                throw new SnuggleRuntimeException("Not a ClassPath URI: " + classPathUri);
-            }
-            return transformerFactory.newTemplates(resolved);
-        }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not compile internal stylesheet at " + classPathUri, e);
-        }
-        catch (TransformerException e) {
-            throw new SnuggleRuntimeException("Could not resolve internal stylesheet location " + classPathUri, e);
-        }
-    }
-    
-    /**
      * Tests whether the given {@link TransformerFactory} is known to support XSLT 2.0.
      * <p>
      * (Currently, this involves checking for a suitable version of Saxon; this will
@@ -207,100 +164,52 @@ public final class XMLUtilities {
     
     //------------------------------------------------------------------
     
-    public static Transformer createSerializer(StylesheetManager stylesheetManager,
-            final String serializerUri, final boolean mapCharacters) {
-        Transformer serializer;
-        try {
-            if (mapCharacters && serializerUri!=null) {
-                Templates serializerTemplates = cacheImporterStylesheet(stylesheetManager, true,
-                        serializerUri, Globals.CHARACTER_MAPS_XSL_RESOURCE_NAME);
-                serializer = serializerTemplates.newTransformer();
-                serializer.setOutputProperty("use-character-maps", "output");
-            }
-            else if (serializerUri!=null) {
-                serializer = stylesheetManager.getStylesheet(serializerUri)
-                    .newTransformer();
-            }
-            else if (mapCharacters) {
-                serializer = stylesheetManager.getStylesheet(Globals.SERIALIZE_WITH_CHARACTER_MAPS_XSL_RESOURCE_NAME, true)
-                    .newTransformer();
-            }
-            else {
-                serializer = stylesheetManager.getTransformerFactoryChooser().getSuitableXSLT10TransformerFactory().newTransformer();
-            }
-        }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not create serializer", e);
-        }
-        return serializer;
-    }
-    
-    private static Templates cacheImporterStylesheet(StylesheetManager stylesheetManager,
-            final boolean requireXSLT20, final String... importUris) {
-        Templates result;
-        StylesheetCache stylesheetCache = stylesheetManager.getStylesheetCache();
-        TransformerFactory transformerFactory = stylesheetManager.getTransformerFactory(requireXSLT20);
-        if (stylesheetCache==null) {
-            result = compileImporterStylesheet(transformerFactory, requireXSLT20, importUris);
-        }
-        else {
-            String cacheKey = "snuggletex-importer(" + StringUtilities.join(importUris, ",") + ")";
-            synchronized(stylesheetCache) {
-                result = stylesheetCache.getStylesheet(cacheKey);
-                if (result==null) {
-                    result = compileImporterStylesheet(transformerFactory, requireXSLT20, importUris);
-                    stylesheetCache.putStylesheet(cacheKey, result);
-                }
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Helper to create "driver" XSLT stylesheets that import the stylesheets at the given URIs,
-     * using the given {@link TransformerFactory}.
-     * 
-     * @param transformerFactory
-     * @param importUris
-     */
-    private static Templates compileImporterStylesheet(final TransformerFactory transformerFactory,
-            boolean requireXSLT20, final String... importUris) {
-        StringBuilder xsltBuilder = new StringBuilder("<stylesheet version='")
-            .append(requireXSLT20 ? "2.0" : "1.0")
-            .append("' xmlns='http://www.w3.org/1999/XSL/Transform'>\n");
-        for (String importUri : importUris) {
-            xsltBuilder.append("<import href='").append(importUri).append("'/>\n");
-        }
-        xsltBuilder.append("</stylesheet>");
-        String xslt = xsltBuilder.toString();
-        try {
-            return transformerFactory.newTemplates(new StreamSource(new StringReader(xslt)));
-        }
-        catch (TransformerConfigurationException e) {
-            throw new SnuggleRuntimeException("Could not compile stylesheet driver " + xslt, e);
-        }
-    }
-    
-    //------------------------------------------------------------------
-    
     /**
      * Serializes the given {@link Node} to a well-formed external parsed entity.
      * (If the given Node is an {@link Element} or a {@link Document} then the result
      * will be a well-formed XML String.)
      *
      * @param node DOM Node to serialize.
-     * @param encoding desired encoding, if null then UTF-8 is used.
-     * @param indent whether to indent the results or not
-     * @param omitXMLDeclaration whether to omit the XML declaration or not.
+     * @param outputPropertyKeysAndValues {@link Transformer} outputProperty key and value pairs.
      */
-    public static String serializeNode(final Node node, final String encoding, final boolean indent,
-            final boolean omitXMLDeclaration) {
+    public static String serializeNode(final Node node, final String... outputPropertyKeysAndValues) {
         StringWriter resultWriter = new StringWriter();
         try {
             Transformer serializer = createJAXPTransformerFactory().newTransformer();
-            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
-            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
-            serializer.setOutputProperty(OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8");
+            setOutputProperties(serializer, outputPropertyKeysAndValues);
+            serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Could not serialize DOM", e);
+        }
+        return resultWriter.toString();
+    }
+    
+    /**
+     * Serializes the given {@link Node} to a well-formed external parsed entity.
+     * (If the given Node is an {@link Element} or a {@link Document} then the result
+     * will be a well-formed XML String.)
+     * <p>
+     * (This may use an XSLT 2.0 stylesheet to help with named entities, hence the requirement for a
+     * {@link StylesheetManager}).
+     * 
+     * @param stylesheetManager used to help compile and cache stylesheets used in this process.
+     *
+     * @param node DOM Node to serialize.
+     * @param useNamedEntities whether to map certain Unicode characters to named entities in 
+     *   the output (requires an XSLT 2.0 processor, ignored if not supported).
+     * @param outputPropertyKeysAndValues {@link Transformer} outputProperty key and value pairs.
+     */
+    public static String serializeNode(StylesheetManager stylesheetManager, final Node node,
+            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
+        StringWriter resultWriter = new StringWriter();
+        
+        /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
+         * a further optional XSLT 2.0 transform to map character references to named entities.
+         */
+        try {
+            Transformer serializer = stylesheetManager.getSerializer(null, useNamedEntities);
+            setOutputProperties(serializer, outputPropertyKeysAndValues);
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
         }
         catch (Exception e) {
@@ -313,34 +222,47 @@ public final class XMLUtilities {
      * Serializes the <tt>children</tt> of given {@link Node} to a well-formed external parsed entity.
      * <p>
      * (This uses a little XSLT stylesheet to help, hence the requirement for a {@link StylesheetManager}).
-     *
-     * @param node DOM Node to serialize.
-     * @param indent whether to indent the results or not
-     * @param omitXMLDeclaration whether to omit the XML declaration or not.
-     * @param applyCharacterMap whether to map certain Unicode characters to entities in 
-     *   the output (requires an XSLT 2.0 processor, ignored if not supported).
+     * 
      * @param stylesheetManager used to help compile and cache stylesheets used in this process.
+     * @param node DOM Node to serialize.
+     * @param useNamedEntities whether to map certain Unicode characters to named entities in 
+     *   the output (requires an XSLT 2.0 processor, ignored if not supported).
+     * @param outputPropertyKeysAndValues {@link Transformer} outputProperty key and value pairs.
      */
-    public static String serializeNodeChildren(final Node node, final String encoding, final boolean indent,
-            final boolean omitXMLDeclaration, final boolean applyCharacterMap,
-            StylesheetManager stylesheetManager) {
+    public static String serializeNodeChildren(StylesheetManager stylesheetManager, final Node node,
+            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
         StringWriter resultWriter = new StringWriter();
         
-        /* This process consists of an XSLT 1.0 transform to exrtact the child Nodes, plus
+        /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
          * a further optional XSLT 2.0 transform to map character references to named entities.
-         * We'll implement this as a mini DOM pipeline.
          */
         try {
-            Transformer serializer = createSerializer(stylesheetManager, Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME, applyCharacterMap);
-            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(indent));
-            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
-            serializer.setOutputProperty(OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8");
+            Transformer serializer = stylesheetManager.getSerializer(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME, useNamedEntities);
+            setOutputProperties(serializer, outputPropertyKeysAndValues);
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
         }
         catch (Exception e) {
             throw new SnuggleRuntimeException("Could not serialize DOM", e);
         }
         return resultWriter.toString();
+    }
+    
+    /**
+     * Helper to set outputProperties on the given {@link Transformer} using the given "map"
+     * of key/value pairs, specified for convenience as an array.
+     * 
+     * @param transformer
+     * @param outputPropertyKeysAndValues
+     */
+    private static void setOutputProperties(Transformer transformer, final String... outputPropertyKeysAndValues) {
+        if (outputPropertyKeysAndValues.length % 2 !=0) {
+            throw new IllegalArgumentException("Expected an even number of arguments of the form key1, value1, key2, value2, ...");
+        }
+        for (int i=0; i<outputPropertyKeysAndValues.length; ) {
+            String key = outputPropertyKeysAndValues[i++];
+            String value = outputPropertyKeysAndValues[i++];
+            transformer.setOutputProperty(key, value);
+        }
     }
     
     //------------------------------------------------------------------

@@ -11,12 +11,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
-import net.sf.saxon.TransformerFactoryImpl;
-
 /**
  * This interface allows you to specify how XSLT implementations should be instantiated.
  * This can sometimes be useful if you want to explicitly avoid the standard JAXP
- * {@link TransformerFactoryImpl} loading mechanism.
+ * {@link TransformerFactory#newInstance()} loading mechanism.
  * <p>
  * This is managed via {@link StylesheetManager}.
  * <p>

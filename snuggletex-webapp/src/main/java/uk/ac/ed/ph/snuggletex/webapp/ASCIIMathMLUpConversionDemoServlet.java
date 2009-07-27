@@ -69,7 +69,7 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         asciiMathOutput = asciiMathOutput.trim();
         
         /* Do up-conversion and extract wreckage */
-        MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetCache());
+        MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetManager());
         Map<String, Object> upConversionOptions = new HashMap<String, Object>();
         Document upConvertedMathDocument = upConverter.upConvertASCIIMathML(asciiMathOutput, upConversionOptions);
         Element mathElement = upConvertedMathDocument.getDocumentElement(); /* NB: Document is <math/> here */

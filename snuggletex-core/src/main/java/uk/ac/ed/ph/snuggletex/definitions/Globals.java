@@ -68,13 +68,14 @@ public final class Globals {
     public static final String GENERAL_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/general-messages";
     public static final String CSS_PROPERTIES_NAME = "uk/ac/ed/ph/snuggletex/css.properties";
     
-    /** Specifies the ClassPath location of the Stylesheet used by {@link XMLUtilities#serializeNodeChildren(org.w3c.dom.Node, String, boolean, boolean, boolean, uk.ac.ed.ph.snuggletex.utilities.StylesheetManager)} */
+    /** Specifies the ClassPath location of the Stylesheet used by {@link XMLUtilities#serializeNodeChildren(uk.ac.ed.ph.snuggletex.utilities.StylesheetManager, org.w3c.dom.Node, boolean, String[])} */
     public static final String EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/extract-child-nodes.xsl";
     
-    /** Specifies character maps XSLT to use when serializing using character maps */
-    public static final String CHARACTER_MAPS_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/character-maps.xsl";
+    /** Specifies the location of the XSLT that converts MathML symbol characters to named entities */
+    public static final String MATHML_ENTITIES_MAP_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/mathml-entities-map.xsl";
     
-    public static final String SERIALIZE_WITH_CHARACTER_MAPS_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/serialize-with-character-maps.xsl";
+    /** Specifies the location of the XSLT that serializes and converts MathML symbol characters to named entities */
+    public static final String SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/serialize-with-named-entities.xsl";
     
     /** Specifies the ClassPath location of the XHTML -> HTML used for serializing as legacy HTML */
     public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";

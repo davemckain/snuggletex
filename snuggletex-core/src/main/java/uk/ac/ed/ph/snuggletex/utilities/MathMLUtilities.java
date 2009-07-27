@@ -9,10 +9,13 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import javax.xml.transform.OutputKeys;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,6 +74,11 @@ public final class MathMLUtilities {
         return serializeNode(document, encoding, true, true);
     }
     
+    public static String serializeDocument(final Document document, final String encoding,
+            final boolean indent) {
+        return serializeNode(document, encoding, indent, true);
+    }
+    
     /**
      * Convenience method that serializes the given DOM Document as a String (encoded in UTF-8).
      * <p>
@@ -81,9 +89,19 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
+    @Deprecated
     public static String serializeDocument(final Document document, final boolean indent,
             final boolean omitXMLDeclaration) {
         return serializeNode(document, null, indent, omitXMLDeclaration);
+    }
+    
+    public static String serializeDocument(final Document document, final String... outputPropertyKeysAndValues) {
+        return serializeNode(document, outputPropertyKeysAndValues);
+    }
+    
+    public static String serializeDocument(StylesheetManager stylesheetManager, final Document document,
+            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
+        return serializeNode(stylesheetManager, document, useNamedEntities, outputPropertyKeysAndValues);
     }
     
     /**
@@ -126,6 +144,10 @@ public final class MathMLUtilities {
         return serializeNode(element, encoding, true, true);
     }
     
+    public static String serializeElement(final Element element, final boolean indent) {
+        return serializeNode(element, null, indent, true);
+    }
+    
     /**
      * Convenience method that serializes the given DOM Element as a String (encoded in UTF-8).
      * <p>
@@ -136,6 +158,7 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
+    @Deprecated
     public static String serializeElement(final Element element, final boolean indent,
             final boolean omitXMLDeclaration) {
         return serializeNode(element, null, indent, omitXMLDeclaration);
@@ -153,21 +176,41 @@ public final class MathMLUtilities {
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      */
+    @Deprecated
     public static String serializeElement(final Element element, final String encoding,
             final boolean indent, final boolean omitXMLDeclaration) {
         return serializeNode(element, encoding, indent, omitXMLDeclaration);
     }
     
-    /**
-     * Does the actual donkey-work of the methods above.
-     *
-     * @param node DOM Node to serialize.
-     * @param indent whether to indent the results or not
-     * @param omitXMLDeclaration whether to omit the XML declaration or not.
-     */
+    public static String serializeElement(final Element element, final String encoding,
+            final boolean indent) {
+        return serializeNode(element, encoding, indent, true);
+    }
+    
+    public static String serializeElement(final Element element, final String... outputPropertyKeysAndValues) {
+        return serializeNode(element, outputPropertyKeysAndValues);
+    }
+    
+    public static String serializeElement(StylesheetManager stylesheetManager, final Element element,
+            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
+        return serializeNode(stylesheetManager, element, useNamedEntities, outputPropertyKeysAndValues);
+    }
+    
+    private static String serializeNode(final Node node, final String... outputPropertyKeysAndValues) {
+        return XMLUtilities.serializeNode(node, outputPropertyKeysAndValues);
+    }
+    
     private static String serializeNode(final Node node, final String encoding,
             final boolean indent, final boolean omitXMLDeclaration) {
-        return XMLUtilities.serializeNode(node, encoding, indent, omitXMLDeclaration);
+        return XMLUtilities.serializeNode(node,
+                OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8",
+                OutputKeys.INDENT, StringUtilities.toYesNo(indent),
+                OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
+    }
+    
+    private static String serializeNode(StylesheetManager stylesheetManager, final Node node,
+            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
+        return XMLUtilities.serializeNode(stylesheetManager, node, useNamedEntities, outputPropertyKeysAndValues);
     }
     
     //---------------------------------------------------------------------

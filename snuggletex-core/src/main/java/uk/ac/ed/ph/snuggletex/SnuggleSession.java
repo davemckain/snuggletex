@@ -17,6 +17,7 @@ import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.WebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.OutputKeys;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -302,9 +304,11 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        return XMLUtilities.serializeNodeChildren(temporaryRoot, options.getEncoding(),
-                options.isIndenting(), true, options.isMappingCharacters(),
-                getStylesheetManager());
+        return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot,
+                options.isUsingNamedEntities(),
+                OutputKeys.ENCODING, options.getEncoding(),
+                OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()),
+                OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(!options.isIncludingXMLDeclaration()));
     }
     
     /**
@@ -367,8 +371,10 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        return XMLUtilities.serializeNodeChildren(temporaryRoot, XMLOutputOptions.DEFAULT_ENCODING,
-                indent, true, false, getStylesheetManager());
+        return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot, false,
+                OutputKeys.ENCODING, XMLOutputOptions.DEFAULT_ENCODING,
+                OutputKeys.INDENT, StringUtilities.toYesNo(indent),
+                OutputKeys.OMIT_XML_DECLARATION, "yes");
     }
     
     //---------------------------------------------

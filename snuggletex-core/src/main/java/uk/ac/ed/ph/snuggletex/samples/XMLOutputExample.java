@@ -29,11 +29,11 @@ public final class XMLOutputExample {
         SnuggleSession session = engine.createSession();
         
         /* Parse some very basic Math Mode input */
-        SnuggleInput input = new SnuggleInput("Hello $\\alpha + \\beta$");
+        SnuggleInput input = new SnuggleInput("Hello $\\alpha \\cap \\beta$");
         session.parseInput(input);
         
         XMLOutputOptions options = new XMLOutputOptions();
-        options.setMappingCharacters(true);
+        options.setUsingNamedEntities(true);
         options.setEncoding("UTF-8");
         
         /* Convert the results to an XML String, which in this case will
