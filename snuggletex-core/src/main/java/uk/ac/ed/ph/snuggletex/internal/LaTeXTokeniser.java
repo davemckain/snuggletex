@@ -391,7 +391,9 @@ public final class LaTeXTokeniser {
 //                + ", tokMode=" + currentModeState.tokenisationMode
 //                + ", latexMode=" + currentModeState.latexMode
 //                + ", terminator=" + currentModeState.terminator
+//                + ", modeStackSize=" + modeStack.size()
 //                + ", envsOpen=" + openEnvironmentStack
+//                + ", errorCount=" + sessionContext.getErrors().size()
 //                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
         
         /* In MATH Mode, we skip over any leading whitespace and comments; in TEXT modes we skip
@@ -520,6 +522,10 @@ public final class LaTeXTokeniser {
             case '#':
                 /* Error: This is only allowed inside command/environment definitions */
                 return createError(CoreErrorCode.TTEG04, position, position+1);
+                
+            case '$':
+                /* Error: dollar sign inside Math mode */
+                return createError(CoreErrorCode.TTEM04, position, position+1);
                 
             default:
                 /* Mathematical symbol, operator, number etc... */

@@ -43,6 +43,15 @@ TTEG03,TTEG00,TTEM02
 ^
 TTEM03
 ====
+$$ $ $$
+TTEM04
+====
+\( $ \)
+TTEM04
+====
+\[ $ \]
+TTEM04
+====
 \verb x
 TTEV00
 ====
@@ -253,7 +262,7 @@ TTEG00
 ====
 # See TTEM01, though this is different.
 $$x$
-TTEG00
+TTEM04,TTEG00
 ====
 \newcommand{\test}{\begin{itemize}}\test
 TTEE04
@@ -297,11 +306,15 @@ TTEG03,TTEG00,TTEM02
 $#$
 TTEG04
 ====
-## Regression: this was causing an Exception before but should not give a client error
+## Regression: this was causing an Exception before but should now give a client error
 $\mbox^$
 TTEM03
 ====
 ## Regression: This was causing an NPE
 ${\mathrm}{x}$
-TTEC02,TTEG00
+TTEC02,TTEM04,TTEG00
+====
+## This one behaves differently from LaTeX, which continues with no error and skips the '$' characters
+\( $$ \)
+TTEM04,TTEM04
 ====

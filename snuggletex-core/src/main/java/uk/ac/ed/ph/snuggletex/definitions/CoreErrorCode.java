@@ -42,6 +42,7 @@ public enum CoreErrorCode implements ErrorCode {
     TTEM01(),
     TTEM02(),
     TTEM03(),
+    TTEM04(),
     TTEV00(),
     TTEV01(),
     TTEC00(),
