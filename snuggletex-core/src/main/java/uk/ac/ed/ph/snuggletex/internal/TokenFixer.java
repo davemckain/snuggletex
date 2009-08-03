@@ -49,9 +49,6 @@ public final class TokenFixer {
     
     private final SessionContext sessionContext;
     
-    /** Whether to infer structures in maths */
-    public boolean tryInferStructure = true;
-    
     public TokenFixer(final SessionContext sessionContext) {
         this.sessionContext = sessionContext;
     }
