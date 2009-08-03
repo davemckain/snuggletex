@@ -5,15 +5,14 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
-
-import javax.xml.transform.OutputKeys;
+import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -48,12 +47,11 @@ public final class XMLUnparseHandler implements EnvironmentHandler, CommandHandl
         
         /* Serialize child content to text and replace all children with this text inside
          * an appropriate container  */
+        SerializationOptions options = new StandaloneSerializationOptions();
+        options.setIndenting(isBlock);
+        options.setEncoding("UTF-8");
         String parentContentUnparsed = XMLUtilities.serializeNodeChildren(builder.getSessionContext().getStylesheetManager(),
-                parentElement,
-                false, /* (Do not use entity names) */
-                OutputKeys.ENCODING, "UTF-8",
-                OutputKeys.INDENT, StringUtilities.toYesNo(isBlock), /* (Indent if block mode) */
-                OutputKeys.OMIT_XML_DECLARATION, "yes");
+                parentElement, options);
         NodeList childNodes = parentElement.getChildNodes();
         for (int i=childNodes.getLength()-1; i>=0; i--) {
             parentElement.removeChild(childNodes.item(i));
@@ -63,5 +61,4 @@ public final class XMLUnparseHandler implements EnvironmentHandler, CommandHandl
                 parentContentUnparsed, true);
         resultElement.setAttribute("class", "unparsed-xml");
     }
-
 }

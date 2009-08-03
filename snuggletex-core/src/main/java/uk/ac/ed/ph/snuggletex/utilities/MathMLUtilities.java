@@ -7,15 +7,13 @@ package uk.ac.ed.ph.snuggletex.utilities;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 
 import java.io.IOException;
 import java.io.StringReader;
-
-import javax.xml.transform.OutputKeys;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -95,13 +93,13 @@ public final class MathMLUtilities {
         return serializeNode(document, null, indent, omitXMLDeclaration);
     }
     
-    public static String serializeDocument(final Document document, final String... outputPropertyKeysAndValues) {
-        return serializeNode(document, outputPropertyKeysAndValues);
+    public static String serializeDocument(final Document document, final SerializationOptions serializationOptions) {
+        return serializeNode(document, serializationOptions);
     }
     
     public static String serializeDocument(StylesheetManager stylesheetManager, final Document document,
-            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
-        return serializeNode(stylesheetManager, document, useNamedEntities, outputPropertyKeysAndValues);
+            final SerializationOptions serializationOptions) {
+        return serializeNode(stylesheetManager, document, serializationOptions);
     }
     
     /**
@@ -187,30 +185,31 @@ public final class MathMLUtilities {
         return serializeNode(element, encoding, indent, true);
     }
     
-    public static String serializeElement(final Element element, final String... outputPropertyKeysAndValues) {
-        return serializeNode(element, outputPropertyKeysAndValues);
+    public static String serializeElement(final Element element,  final SerializationOptions serializationOptions) {
+        return serializeNode(element, serializationOptions);
     }
     
     public static String serializeElement(StylesheetManager stylesheetManager, final Element element,
-            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
-        return serializeNode(stylesheetManager, element, useNamedEntities, outputPropertyKeysAndValues);
+            final SerializationOptions serializationOptions) {
+        return serializeNode(stylesheetManager, element, serializationOptions);
     }
     
-    private static String serializeNode(final Node node, final String... outputPropertyKeysAndValues) {
-        return XMLUtilities.serializeNode(node, outputPropertyKeysAndValues);
+    private static String serializeNode(final Node node, final SerializationOptions serializationOptions) {
+        return XMLUtilities.serializeNode(node, serializationOptions);
     }
     
     private static String serializeNode(final Node node, final String encoding,
             final boolean indent, final boolean omitXMLDeclaration) {
-        return XMLUtilities.serializeNode(node,
-                OutputKeys.ENCODING, encoding!=null ? encoding : "UTF-8",
-                OutputKeys.INDENT, StringUtilities.toYesNo(indent),
-                OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(omitXMLDeclaration));
+        SerializationOptions serializationOptions = new StandaloneSerializationOptions();
+        serializationOptions.setEncoding(encoding!=null ? encoding : "UTF-8");
+        serializationOptions.setIndenting(indent);
+        serializationOptions.setIncludingXMLDeclaration(!omitXMLDeclaration);
+        return XMLUtilities.serializeNode(node, serializationOptions);
     }
     
     private static String serializeNode(StylesheetManager stylesheetManager, final Node node,
-            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
-        return XMLUtilities.serializeNode(stylesheetManager, node, useNamedEntities, outputPropertyKeysAndValues);
+            final SerializationOptions serializationOptions) {
+        return XMLUtilities.serializeNode(stylesheetManager, node, serializationOptions);
     }
     
     //---------------------------------------------------------------------

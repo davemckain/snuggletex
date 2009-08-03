@@ -17,10 +17,10 @@ import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.WebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
-import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.IOException;
@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.OutputKeys;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -304,11 +303,7 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot,
-                options.isUsingNamedEntities(),
-                OutputKeys.ENCODING, options.getEncoding(),
-                OutputKeys.INDENT, StringUtilities.toYesNo(options.isIndenting()),
-                OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(!options.isIncludingXMLDeclaration()));
+        return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot, options);
     }
     
     /**
@@ -371,10 +366,10 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot, false,
-                OutputKeys.ENCODING, XMLOutputOptions.DEFAULT_ENCODING,
-                OutputKeys.INDENT, StringUtilities.toYesNo(indent),
-                OutputKeys.OMIT_XML_DECLARATION, "yes");
+        SerializationOptions serializationOptions = new StandaloneSerializationOptions();
+        serializationOptions.setEncoding(XMLOutputOptions.DEFAULT_ENCODING);
+        serializationOptions.setIndenting(indent);
+        return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot, serializationOptions);
     }
     
     //---------------------------------------------

@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -71,12 +72,13 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         /* Do up-conversion and extract wreckage */
         MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetManager());
         Map<String, Object> upConversionOptions = new HashMap<String, Object>();
+        SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
         Document upConvertedMathDocument = upConverter.upConvertASCIIMathML(asciiMathOutput, upConversionOptions);
         Element mathElement = upConvertedMathDocument.getDocumentElement(); /* NB: Document is <math/> here */
-        String parallelMathML = MathMLUtilities.serializeElement(mathElement, "ASCII");
-        String pMathMLUpConverted = MathMLUtilities.serializeDocument(MathMLUtilities.isolateFirstSemanticsBranch(mathElement), "ASCII");
+        String parallelMathML = MathMLUtilities.serializeElement(mathElement, sourceSerializationOptions);
+        String pMathMLUpConverted = MathMLUtilities.serializeDocument(MathMLUtilities.isolateFirstSemanticsBranch(mathElement), sourceSerializationOptions);
         Document cMathMLDocument = MathMLUtilities.isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
-        String cMathML = cMathMLDocument!=null ? MathMLUtilities.serializeDocument(cMathMLDocument, "ASCII") : null;
+        String cMathML = cMathMLDocument!=null ? MathMLUtilities.serializeDocument(cMathMLDocument, sourceSerializationOptions) : null;
         String maximaInput = MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         
         logger.info("ASCIIMathML Input: {}", asciiMathInput);

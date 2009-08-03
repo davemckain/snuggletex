@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
+import uk.ac.ed.ph.snuggletex.XMLOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 
 /**
@@ -35,7 +36,7 @@ public final class JEuclidUtilities {
      * @param downConvertFirst
      * @param callback
      */
-    public static void setupJEuclidPostProcessors(WebPageOutputOptions options,
+    public static void setupJEuclidPostProcessors(XMLOutputOptions options,
             boolean downConvertFirst, MathMLImageSavingCallback callback) {
         if (downConvertFirst) {
             options.setDOMPostProcessors(

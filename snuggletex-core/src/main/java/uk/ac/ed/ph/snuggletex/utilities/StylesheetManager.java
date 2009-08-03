@@ -5,12 +5,15 @@
  */
 package uk.ac.ed.ph.snuggletex.utilities;
 
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.SerializationOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 
 import java.io.StringReader;
 
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -100,6 +103,16 @@ public final class StylesheetManager {
         ensureChooserSpecified();
         return transformerFactoryChooser.isXSLT20SupportAvailable();
     }
+    
+    public void requireXSLT20(String requirement) {
+        if (!supportsXSLT20()) {
+            throw new SnuggleRuntimeException(requirement
+                    + " requires an XSLT 2.0 processor. Your TransformerFactoryChooser "
+                    + transformerFactoryChooser
+                    + " could not provide such a processor. Please check that an XSLT 2.0 processor (e.g. Saxon) is available"
+                    + " and your TransformerFactoryChooser is configured to provide this");
+        }
+    }
 
     /**
      * Obtains the XSLT stylesheet at the given ClassPathURI, using the {@link StylesheetCache}
@@ -162,29 +175,42 @@ public final class StylesheetManager {
     }
     
     /**
-     * Obtains a serializer stylesheet based on the stylesheet at the given URI, optionally
-     * re-configured to map certain numeric character references to named entities. (This requires
-     * XSLT 2.0 support.)
+     * Obtains a serializer stylesheet based on the stylesheet at the given URI, configured
+     * as per  the given {@link SerializationOptions}. (Some options may require XSLT 2.0 support.)
      * 
      * @param serializerUri URI for the required serializing stylesheet, null for the default
      *   serializer.
-     * @param useNamedEntities set to true if you want to map certain numeric character
-     *   references to named entities.
+     * @param serializationOptions desired {@link SerializationOptions}
+     * 
+     * @throws SnuggleRuntimeException if the serializer could not be created, or if an XSLT 2.0 processor
+     *   was required but could not be obtained.
      */
-    public Transformer getSerializer(final String serializerUri, final boolean useNamedEntities) {
+    public Transformer getSerializer(final String serializerUri, final SerializationOptions serializationOptions) {
+        /* See if serializer needs any XSLT 2.0 features, failing if XSLT 2.0 is not available */
+        if (!supportsXSLT20()) {
+            if (serializationOptions.isUsingNamedEntities()) {
+                requireXSLT20("The SerializatonOptions.usingNamedEntities property");
+            }
+            if (serializationOptions.getSerializationMethod()==SerializationMethod.XHTML) {
+                requireXSLT20("SerializatonMethod.XHTML");
+            }
+        }
+        /* Now create appropriate serializer */
         Transformer serializer;
         try {
-            if (useNamedEntities && serializerUri!=null) {
+            if (serializationOptions.isUsingNamedEntities() && serializerUri!=null) {
+                /* Need to create a special serializer which does character mapping as well */
                 serializer = cacheImporterStylesheet(true, serializerUri, Globals.MATHML_ENTITIES_MAP_XSL_RESOURCE_NAME)
                     .newTransformer();
             }
-            else if (!useNamedEntities && serializerUri!=null) {
-                serializer = getStylesheet(serializerUri)
+            else if (serializationOptions.isUsingNamedEntities()) {
+                /* Use character mapping serializer */
+                serializer = getStylesheet(Globals.SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME, true)
                     .newTransformer();
             }
-            else if (useNamedEntities && serializerUri==null) {
-                System.out.println("USING " + Globals.SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME);
-                serializer = getStylesheet(Globals.SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME, true)
+            else if (serializerUri!=null) {
+                /* Use default serializer */
+                serializer = getStylesheet(serializerUri)
                     .newTransformer();
             }
             else {
@@ -194,6 +220,17 @@ public final class StylesheetManager {
         catch (TransformerConfigurationException e) {
             throw new SnuggleRuntimeException("Could not create serializer", e);
         }
+        /* Now configure it as per options */
+        serializer.setOutputProperty(OutputKeys.METHOD, serializationOptions.getSerializationMethod().getName());
+        serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(serializationOptions.isIndenting()));
+        serializer.setOutputProperty(OutputKeys.ENCODING, serializationOptions.getEncoding());
+        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(!serializationOptions.isIncludingXMLDeclaration()));
+        if (serializationOptions.getDoctypePublic()!=null) {
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, serializationOptions.getDoctypePublic());
+        }
+        if (serializationOptions.getDoctypeSystem()!=null) {
+            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, serializationOptions.getDoctypeSystem());
+        }       
         return serializer;
     }
     

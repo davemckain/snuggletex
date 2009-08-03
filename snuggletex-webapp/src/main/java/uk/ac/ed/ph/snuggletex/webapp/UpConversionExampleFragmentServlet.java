@@ -5,8 +5,16 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.extractAnnotationString;
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isolateAnnotationXML;
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isolateFirstSemanticsBranch;
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeDocument;
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeElement;
+
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -18,7 +26,6 @@ import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
-import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.IOException;
@@ -110,22 +117,23 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
                 parsingErrors.add(MessageFormatter.formatErrorAsXML(resultDocument, error, true));
             }
         }
-        else if (resultNodeList.getLength()==1 && MathMLUtilities.isMathMLElement(resultNodeList.item(0), "math")) {
+        else if (resultNodeList.getLength()==1 && isMathMLElement(resultNodeList.item(0), "math")) {
             /* Result is a single <math/> element, which looks correct. Note that up-conversion
              * might not have succeeded though.
              */
             mathElement = (Element) resultNodeList.item(0);
-            pMathMLInitial = MathMLUtilities.serializeElement(mathElement, "ASCII");
+            SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
+            pMathMLInitial = serializeElement(mathElement, sourceSerializationOptions);
             
             /* Do up-conversion and extract wreckage */
             MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetCache());
             Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathElement.getOwnerDocument(), upConvertingPostProcessor.getUpconversionParameterMap());
             mathElement = (Element) upConvertedMathDocument.getDocumentElement().getFirstChild();
-            parallelMathML = MathMLUtilities.serializeElement(mathElement, "ASCII");
-            pMathMLUpConverted = MathMLUtilities.serializeDocument(MathMLUtilities.isolateFirstSemanticsBranch(mathElement), "ASCII");
-            Document cMathMLDocument = MathMLUtilities.isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
-            cMathML = cMathMLDocument!=null ? MathMLUtilities.serializeDocument(cMathMLDocument, "ASCII") : null;
-            maximaInput = MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
+            parallelMathML = serializeElement(mathElement, sourceSerializationOptions);
+            pMathMLUpConverted = serializeDocument(isolateFirstSemanticsBranch(mathElement), sourceSerializationOptions);
+            Document cMathMLDocument = isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
+            cMathML = cMathMLDocument!=null ? serializeDocument(cMathMLDocument, sourceSerializationOptions) : null;
+            maximaInput = extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         }
         else {
             /* This could have been caused by input like 'x \] hello \[ x', which would end

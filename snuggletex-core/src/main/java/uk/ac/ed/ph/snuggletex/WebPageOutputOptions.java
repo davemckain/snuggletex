@@ -10,7 +10,6 @@ import static uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities.concat;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 
 /**
@@ -137,54 +136,8 @@ public class WebPageOutputOptions extends XMLOutputOptions {
         ;
     }
     
-    /**
-     * Trivial enumeration of the 3 serialization methods we support.
-     * <p>
-     * <strong>NOTE:</strong> XHTML is only supported if you are using an XSLT 2.0
-     * processor. If not supported, you will get XML output.
-     */
-    public static enum SerializationMethod {
-        
-        XML("xml"),
-        XHTML("xhtml"),
-        HTML("html"),
-        ;
-        
-        private final String name;
-        
-        private SerializationMethod(final String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-    
     /** Desired "type" of web page to be constructed. Must not be null. */
     private WebPageType webPageType;
-    
-    /**
-     * {@link SerializationMethod} to use when generating the final output.
-     * Default is {@link SerializationMethod#XML}.
-     * This must not be null.
-     * <p>
-     * Note that {@link SerializationMethod#XHTML} is only supported properly if you are using
-     * an XSLT 2.0 processor; otherwise it reverts to {@link SerializationMethod#XML}
-     */
-    private SerializationMethod serializationMethod;
-    
-    /**
-     * Public identifier for resulting document type declaration,
-     * as described in {@link OutputKeys#DOCTYPE_PUBLIC}.
-     */
-    private String doctypePublic;
-    
-    /**
-     * System identifier for resulting document type declaration,
-     * as described in {@link OutputKeys#DOCTYPE_SYSTEM}.
-     */
-    private String doctypeSystem;
     
     /** 
      * MIME type for the resulting page.
@@ -268,7 +221,6 @@ public class WebPageOutputOptions extends XMLOutputOptions {
         super();
         this.contentType = WebPageOutputOptionsTemplates.DEFAULT_CONTENT_TYPE;
         this.webPageType = WebPageType.MOZILLA;
-        this.serializationMethod = SerializationMethod.XML;
         this.lang = WebPageOutputOptionsTemplates.DEFAULT_LANG;
         this.includingStyleElement = true;
     }
@@ -284,34 +236,6 @@ public class WebPageOutputOptions extends XMLOutputOptions {
     }
     
     
-    public SerializationMethod getSerializationMethod() {
-        return serializationMethod;
-    }
-    
-    public void setSerializationMethod(SerializationMethod serializationMethod) {
-        ConstraintUtilities.ensureNotNull(serializationMethod, "serializationMethod");
-        this.serializationMethod = serializationMethod;
-    }
-    
-    
-    public String getDoctypePublic() {
-        return doctypePublic;
-    }
-    
-    public void setDoctypePublic(String doctypePublic) {
-        this.doctypePublic = doctypePublic;
-    }
-
-    
-    public String getDoctypeSystem() {
-        return doctypeSystem;
-    }
-    
-    public void setDoctypeSystem(String doctypeSystem) {
-        this.doctypeSystem = doctypeSystem;
-    }
-
-
     public String getContentType() {
         return contentType;
     }

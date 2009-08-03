@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.SerializationOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
@@ -29,8 +29,11 @@ public final class WebPageOutputOptionsTemplates {
      * In particular, the following properties are set to appropriate values:
      * <ul>
      *   <li>{@link WebPageOutputOptions#setContentType(String)}</li>
-     *   <li>{@link WebPageOutputOptions#setSerializationMethod(SerializationMethod)}</li>
      *   <li>{@link WebPageOutputOptions#setPrefixingMathML(boolean)}</li>
+     *   <li>{@link XMLOutputOptions#setSerializationMethod(SerializationMethod)}</li>
+     *   <li>{@link XMLOutputOptions#setDoctypePublic(String)}</li>
+     *   <li>{@link XMLOutputOptions#setDoctypeSystem(String)}</li>
+     *   <li>{@link XMLOutputOptions#setIncludingXMLDeclaration(boolean)}</li>
      * </ul>
      * You may set other properties (or override these ones!) afterwards as required.
      * 

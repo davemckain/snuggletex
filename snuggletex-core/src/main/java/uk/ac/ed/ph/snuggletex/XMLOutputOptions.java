@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
-import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
 
 /**
  * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
@@ -19,85 +19,68 @@ import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
  * @author  David McKain
  * @version $Revision: 400 $
  */
-public class XMLOutputOptions extends DOMOutputOptions {
+public class XMLOutputOptions extends DOMOutputOptions implements SerializationOptions {
     
-    /** Default encoding to use */
-    public static final String DEFAULT_ENCODING = "UTF-8";
-    
-    /** 
-     * Encoding for the resulting page.
-     * Default is {@link XMLOutputOptions#DEFAULT_ENCODING}.
-     * <p>
-     * Must not be null.
-     */
-    private String encoding;
-    
-    /**
-     * Whether to indent the resulting XML or not.
-     * (This depends on how clever the underlying XSLT engine will be!)
-     * Default is false.
-     */
-    private boolean indenting;
-    
-    /**
-     * Whether to include an XML declaration on the resulting output.
-     * Default is false.
-     */
-    private boolean includingXMLDeclaration;
-    
-    /**
-     * Specified whether to use named entities for certain MathML symbols rather than
-     * numeric character references.
-     * <p>
-     * Note that this requires an XSLT 2.0-compliant engine (e.g. Saxon, which is in the
-     * "full" SnuggleTeX distribution.)
-     * <p>
-     * (Also note that the resulting XML won't be parseable unless accompanied with a DTD
-     * defining the MathML entities!)
-     */
-    private boolean usingNamedEntities;
+    private final StandaloneSerializationOptions serializationOptions;
     
     public XMLOutputOptions() {
         super();
-        this.encoding = DEFAULT_ENCODING;
-        this.usingNamedEntities = false;
-        this.includingXMLDeclaration = false;
+        this.serializationOptions = new StandaloneSerializationOptions();
     }
-    
-    
+
+    public SerializationMethod getSerializationMethod() {
+        return serializationOptions.getSerializationMethod();
+    }
+
+    public void setSerializationMethod(SerializationMethod serializationMethod) {
+        serializationOptions.setSerializationMethod(serializationMethod);
+    }
+
     public String getEncoding() {
-        return encoding;
+        return serializationOptions.getEncoding();
     }
-    
+
     public void setEncoding(String encoding) {
-        ConstraintUtilities.ensureNotNull(encoding, "encoding");
-        this.encoding = encoding;
+        serializationOptions.setEncoding(encoding);
     }
-    
 
     public boolean isIndenting() {
-        return indenting;
-    }
-    
-    public void setIndenting(boolean identing) {
-        this.indenting = identing;
-    }
-    
-    
-    public boolean isIncludingXMLDeclaration() {
-        return includingXMLDeclaration;
-    }
-    
-    public void setIncludingXMLDeclaration(boolean includingXMLDeclaration) {
-        this.includingXMLDeclaration = includingXMLDeclaration;
+        return serializationOptions.isIndenting();
     }
 
+    public void setIndenting(boolean identing) {
+        serializationOptions.setIndenting(identing);
+    }
+
+    public boolean isIncludingXMLDeclaration() {
+        return serializationOptions.isIncludingXMLDeclaration();
+    }
+
+    public void setIncludingXMLDeclaration(boolean includingXMLDeclaration) {
+        serializationOptions.setIncludingXMLDeclaration(includingXMLDeclaration);
+    }
 
     public boolean isUsingNamedEntities() {
-        return usingNamedEntities;
+        return serializationOptions.isUsingNamedEntities();
     }
 
     public void setUsingNamedEntities(boolean usingNamedEntities) {
-        this.usingNamedEntities = usingNamedEntities;
+        serializationOptions.setUsingNamedEntities(usingNamedEntities);
+    }
+
+    public String getDoctypePublic() {
+        return serializationOptions.getDoctypePublic();
+    }
+
+    public void setDoctypePublic(String doctypePublic) {
+        serializationOptions.setDoctypePublic(doctypePublic);
+    }
+
+    public String getDoctypeSystem() {
+        return serializationOptions.getDoctypeSystem();
+    }
+
+    public void setDoctypeSystem(String doctypeSystem) {
+        serializationOptions.setDoctypeSystem(doctypeSystem);
     }
 }

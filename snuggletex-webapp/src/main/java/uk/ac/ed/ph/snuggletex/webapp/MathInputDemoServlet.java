@@ -5,6 +5,9 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeElement;
+
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
@@ -16,7 +19,6 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.IOException;
@@ -26,7 +28,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 
 import org.slf4j.Logger;
@@ -97,6 +98,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
         session.buildDOMSubtree(resultRoot, domOptions);
         
+        
         /* See if parsing succeeded and generated a single <math/> element. We'll only continue
          * up-converting if this happened.
          */
@@ -113,13 +115,11 @@ public final class MathInputDemoServlet extends BaseServlet {
                 parsingErrors.add(MessageFormatter.formatErrorAsXML(resultDocument, error, true));
             }
         }
-        else if (resultNodeList.getLength()==1 && MathMLUtilities.isMathMLElement(resultNodeList.item(0), "math")) {
+        else if (resultNodeList.getLength()==1 && isMathMLElement(resultNodeList.item(0), "math")) {
             /* Result is a single <math/> element, which looks correct. */
             resultMathMLElement = (Element) resultNodeList.item(0);
-            resultMathMLSource = MathMLUtilities.serializeElement(getStylesheetManager(),
-                    resultMathMLElement, true,
-                    OutputKeys.INDENT, "yes",
-                    OutputKeys.OMIT_XML_DECLARATION, "yes");
+            resultMathMLSource = serializeElement(getStylesheetManager(), resultMathMLElement,
+                    createMathMLSourceSerializationOptions());
         }
         else {
             /* This could have been caused by input like 'x \] hello \[ x', which would end

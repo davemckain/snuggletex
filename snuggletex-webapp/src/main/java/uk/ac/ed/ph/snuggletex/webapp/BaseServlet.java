@@ -5,9 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
+import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
@@ -16,7 +18,6 @@ import java.io.InputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -97,15 +98,14 @@ abstract class BaseServlet extends HttpServlet {
         result.setParameter("maven-site-url", ensureGetContextInitParam(ContextInitialiser.MAVEN_SITE_URL_PROPERTY_NAME));
         return result;
     }
-
-    protected Transformer createSerializer() throws TransformerConfigurationException {
-        Transformer serializer = getTransformerFactory().newTransformer();
-        serializer.setOutputProperty(OutputKeys.INDENT, "yes");
-        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        serializer.setOutputProperty(OutputKeys.ENCODING, "US-ASCII");
-        return serializer;
-    }
     
+    protected SerializationOptions createMathMLSourceSerializationOptions() {
+        SerializationOptions result = new StandaloneSerializationOptions();
+        result.setIndenting(true);
+        result.setUsingNamedEntities(true);
+        return result;
+    }
+
     /**
      * Convenience method which picks the most appropriate MathML-based {@link WebPageType}
      * for the current UserAgent, returning null if the UserAgent does not appear to support

@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
 
+import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
@@ -114,6 +115,10 @@ public final class XMLUtilities {
         return tranformerFactory.getClass().getName().startsWith("net.sf.saxon.");
     }
     
+    public static boolean supportsXSLT20(final Transformer tranformer) {
+        return tranformer.getClass().getName().startsWith("net.sf.saxon.");
+    }
+    
     //------------------------------------------------------------------
     
     /**
@@ -170,19 +175,10 @@ public final class XMLUtilities {
      * will be a well-formed XML String.)
      *
      * @param node DOM Node to serialize.
-     * @param outputPropertyKeysAndValues {@link Transformer} outputProperty key and value pairs.
+     * @param serializationOptions XML serialization options
      */
-    public static String serializeNode(final Node node, final String... outputPropertyKeysAndValues) {
-        StringWriter resultWriter = new StringWriter();
-        try {
-            Transformer serializer = createJAXPTransformerFactory().newTransformer();
-            setOutputProperties(serializer, outputPropertyKeysAndValues);
-            serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Could not serialize DOM", e);
-        }
-        return resultWriter.toString();
+    public static String serializeNode(final Node node, final SerializationOptions serializationOptions) {
+        return serializeNode(new StylesheetManager(), node, serializationOptions);
     }
     
     /**
@@ -196,20 +192,17 @@ public final class XMLUtilities {
      * @param stylesheetManager used to help compile and cache stylesheets used in this process.
      *
      * @param node DOM Node to serialize.
-     * @param useNamedEntities whether to map certain Unicode characters to named entities in 
-     *   the output (requires an XSLT 2.0 processor, ignored if not supported).
-     * @param outputPropertyKeysAndValues {@link Transformer} outputProperty key and value pairs.
+     * @param serializationOptions XML serialization options
      */
     public static String serializeNode(StylesheetManager stylesheetManager, final Node node,
-            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
+            final SerializationOptions serializationOptions) {
         StringWriter resultWriter = new StringWriter();
         
         /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
          * a further optional XSLT 2.0 transform to map character references to named entities.
          */
         try {
-            Transformer serializer = stylesheetManager.getSerializer(null, useNamedEntities);
-            setOutputProperties(serializer, outputPropertyKeysAndValues);
+            Transformer serializer = stylesheetManager.getSerializer(null, serializationOptions);
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
         }
         catch (Exception e) {
@@ -225,44 +218,24 @@ public final class XMLUtilities {
      * 
      * @param stylesheetManager used to help compile and cache stylesheets used in this process.
      * @param node DOM Node to serialize.
-     * @param useNamedEntities whether to map certain Unicode characters to named entities in 
-     *   the output (requires an XSLT 2.0 processor, ignored if not supported).
-     * @param outputPropertyKeysAndValues {@link Transformer} outputProperty key and value pairs.
+     * @param serializationOptions XML serialization options
      */
     public static String serializeNodeChildren(StylesheetManager stylesheetManager, final Node node,
-            final boolean useNamedEntities, final String... outputPropertyKeysAndValues) {
+            final SerializationOptions serializationOptions) {
         StringWriter resultWriter = new StringWriter();
         
         /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
          * a further optional XSLT 2.0 transform to map character references to named entities.
          */
         try {
-            Transformer serializer = stylesheetManager.getSerializer(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME, useNamedEntities);
-            setOutputProperties(serializer, outputPropertyKeysAndValues);
+            Transformer serializer = stylesheetManager.getSerializer(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME,
+                    serializationOptions);
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
         }
         catch (Exception e) {
             throw new SnuggleRuntimeException("Could not serialize DOM", e);
         }
         return resultWriter.toString();
-    }
-    
-    /**
-     * Helper to set outputProperties on the given {@link Transformer} using the given "map"
-     * of key/value pairs, specified for convenience as an array.
-     * 
-     * @param transformer
-     * @param outputPropertyKeysAndValues
-     */
-    private static void setOutputProperties(Transformer transformer, final String... outputPropertyKeysAndValues) {
-        if (outputPropertyKeysAndValues.length % 2 !=0) {
-            throw new IllegalArgumentException("Expected an even number of arguments of the form key1, value1, key2, value2, ...");
-        }
-        for (int i=0; i<outputPropertyKeysAndValues.length; ) {
-            String key = outputPropertyKeysAndValues[i++];
-            String value = outputPropertyKeysAndValues[i++];
-            transformer.setOutputProperty(key, value);
-        }
     }
     
     //------------------------------------------------------------------
