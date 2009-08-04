@@ -19,6 +19,16 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.2.0" date="TBC" description="Version 1.2.0 (SVN revision ???)">
+      <action dev="davemckain" type="update" date="2009-08-03">
+        Extracted the parts of XMLOutputOptions pertaining to XML serialization to an
+        interface called SerializationOptions, with a "standalone" implementation that
+        replaces and simplifies the various overloaded serialization methods in MathMLUtilities
+        and friends. Most of these existing methods have been kept for the time being, but
+        marked as deprecated. Also did some further tidying to StylesheetManager, moving some
+        code previously in XMLUtilities here where it can be more easily managed.
+        Finally, the demo webapp now outputs named entities in MathML source
+        fragments, which is more useful for demonstration purposes.
+      </action>
       <action dev="davemckain" type="fix" date="2009-08-03">
         Fixed overly permissive handling of extraneous '$' characters when parsing math mode.
         <fixes issue="2831470"/>

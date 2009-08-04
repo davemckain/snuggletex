@@ -15,6 +15,8 @@ import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
  * @see DOMOutputOptions
  * @see WebPageOutputOptions
  * @see WebPageOutputOptionsTemplates
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision: 400 $

@@ -14,6 +14,8 @@ import javax.xml.XMLConstants;
  * These supplement the core XML-related constants in {@link XMLConstants}.
  * <p>
  * (This is copied from <tt>ph-commons-util</tt>.)
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision: 663 $

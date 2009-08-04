@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * Manages the values of user-defined variables.
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision$

@@ -29,19 +29,20 @@ public final class XMLOutputExample {
         SnuggleSession session = engine.createSession();
         
         /* Parse some very basic Math Mode input */
-        SnuggleInput input = new SnuggleInput("Hello $\\alpha \\cap \\beta$");
+        SnuggleInput input = new SnuggleInput("$$\\alpha \\cap \\beta$$");
         session.parseInput(input);
         
         XMLOutputOptions options = new XMLOutputOptions();
-        options.setUsingNamedEntities(true);
         options.setEncoding("UTF-8");
+        if (engine.getStylesheetManager().supportsXSLT20()) {
+            /* User has an XSLT 2.0 processor, so let's output named entities for readability */
+            options.setUsingNamedEntities(true);
+        }
         
         /* Convert the results to an XML String, which in this case will
          * be a single MathML <math>...</math> element. */
         String xmlString = session.buildXMLString(options);
         System.out.println("Input " + input.getString()
                 + " was converted to:\n" + xmlString);
-        
-        System.out.println(engine.getStylesheetManager().getStylesheetCache());
     }
 }

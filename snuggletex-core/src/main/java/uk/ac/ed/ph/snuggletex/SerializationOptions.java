@@ -20,6 +20,8 @@ import javax.xml.transform.OutputKeys;
  * 
  * @see XMLOutputOptions
  * @see StandaloneSerializationOptions
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision: 400 $

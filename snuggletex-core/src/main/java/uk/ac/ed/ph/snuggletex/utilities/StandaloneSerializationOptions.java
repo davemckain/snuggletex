@@ -12,6 +12,8 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 /**
  * Implementation of {@link SerializationOptions} that can be used for some of the utility
  * methods in {@link MathMLUtilities}.
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision: 400 $

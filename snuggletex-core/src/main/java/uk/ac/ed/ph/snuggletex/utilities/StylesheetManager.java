@@ -180,14 +180,14 @@ public final class StylesheetManager {
      * 
      * @param serializerUri URI for the required serializing stylesheet, null for the default
      *   serializer.
-     * @param serializationOptions desired {@link SerializationOptions}
+     * @param serializationOptions desired {@link SerializationOptions}, null for default options
      * 
      * @throws SnuggleRuntimeException if the serializer could not be created, or if an XSLT 2.0 processor
      *   was required but could not be obtained.
      */
     public Transformer getSerializer(final String serializerUri, final SerializationOptions serializationOptions) {
         /* See if serializer needs any XSLT 2.0 features, failing if XSLT 2.0 is not available */
-        if (!supportsXSLT20()) {
+        if (serializationOptions!=null && !supportsXSLT20()) {
             if (serializationOptions.isUsingNamedEntities()) {
                 requireXSLT20("The SerializatonOptions.usingNamedEntities property");
             }
@@ -195,15 +195,15 @@ public final class StylesheetManager {
                 requireXSLT20("SerializatonMethod.XHTML");
             }
         }
-        /* Now create appropriate serializer */
         Transformer serializer;
         try {
-            if (serializationOptions.isUsingNamedEntities() && serializerUri!=null) {
+            /* Now create appropriate serializer */
+            if (serializationOptions!=null && serializationOptions.isUsingNamedEntities() && serializerUri!=null) {
                 /* Need to create a special serializer which does character mapping as well */
                 serializer = cacheImporterStylesheet(true, serializerUri, Globals.MATHML_ENTITIES_MAP_XSL_RESOURCE_NAME)
                     .newTransformer();
             }
-            else if (serializationOptions.isUsingNamedEntities()) {
+            else if (serializationOptions!=null && serializationOptions.isUsingNamedEntities()) {
                 /* Use character mapping serializer */
                 serializer = getStylesheet(Globals.SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME, true)
                     .newTransformer();
@@ -221,16 +221,18 @@ public final class StylesheetManager {
             throw new SnuggleRuntimeException("Could not create serializer", e);
         }
         /* Now configure it as per options */
-        serializer.setOutputProperty(OutputKeys.METHOD, serializationOptions.getSerializationMethod().getName());
-        serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(serializationOptions.isIndenting()));
-        serializer.setOutputProperty(OutputKeys.ENCODING, serializationOptions.getEncoding());
-        serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(!serializationOptions.isIncludingXMLDeclaration()));
-        if (serializationOptions.getDoctypePublic()!=null) {
-            serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, serializationOptions.getDoctypePublic());
+        if (serializationOptions!=null) {
+            serializer.setOutputProperty(OutputKeys.METHOD, serializationOptions.getSerializationMethod().getName());
+            serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(serializationOptions.isIndenting()));
+            serializer.setOutputProperty(OutputKeys.ENCODING, serializationOptions.getEncoding());
+            serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(!serializationOptions.isIncludingXMLDeclaration()));
+            if (serializationOptions.getDoctypePublic()!=null) {
+                serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, serializationOptions.getDoctypePublic());
+            }
+            if (serializationOptions.getDoctypeSystem()!=null) {
+                serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, serializationOptions.getDoctypeSystem());
+            }  
         }
-        if (serializationOptions.getDoctypeSystem()!=null) {
-            serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, serializationOptions.getDoctypeSystem());
-        }       
         return serializer;
     }
     

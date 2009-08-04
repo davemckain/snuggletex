@@ -19,7 +19,9 @@ import javax.xml.transform.dom.DOMSource;
  * This is managed via {@link StylesheetManager}.
  * <p>
  * The default implementation is {@link DefaultTransformerFactoryChooser} which is used
- * unless you explicitly request something different. 
+ * unless you explicitly request something different.
+ * 
+ * @since 1.2.0
  * 
  * @see DefaultTransformerFactoryChooser
  * @see SaxonTransformerFactoryChooser
