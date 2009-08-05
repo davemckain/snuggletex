@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 
 /**
  * Trivial base class for servlets in the demo webapp
@@ -63,10 +62,6 @@ abstract class BaseServlet extends HttpServlet {
     
     protected StylesheetCache getStylesheetCache() {
         return getStylesheetManager().getStylesheetCache();
-    }
-    
-    protected TransformerFactory getTransformerFactory() {
-        return getStylesheetManager().getTransformerFactory(true);
     }
     
     protected SnuggleEngine createSnuggleEngine() {
