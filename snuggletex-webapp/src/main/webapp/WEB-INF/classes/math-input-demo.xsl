@@ -15,10 +15,9 @@ All Rights Reserved
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:mu="ext://uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities"
   xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
-  exclude-result-prefixes="xs m s mu">
+  exclude-result-prefixes="xs m s">
 
   <!-- Import basic formatting stylesheet -->
   <xsl:import href="format-output.xsl"/>
