@@ -20,11 +20,11 @@ All Rights Reserved
     <module>snuggletex-upconversion</module>
   </modules>
   <properties>
-    <junit.version>4.6</junit.version>
-    <easymock.version>2.3</easymock.version>
-    <jeuclid.version>3.1.5</jeuclid.version>
-    <saxon9.version>9.1.0.6</saxon9.version>
-    <slf4j.version>1.5.6</slf4j.version>
+    <junit.version>4.7</junit.version>
+    <easymock.version>2.5.2</easymock.version>
+    <jeuclid.version>3.1.8</jeuclid.version>
+    <saxon9.version>9.1.0.7</saxon9.version>
+    <slf4j.version>1.5.8</slf4j.version>
     <log4j.version>1.2.14</log4j.version>
     <maven.site.url>http://snuggletex.sourceforge.net/maven/</maven.site.url>
   </properties>
