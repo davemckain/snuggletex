@@ -58,8 +58,8 @@ public final class SnuggleEngine {
     /** Default {@link DOMOutputOptions} */
     private DOMOutputOptions defaultDOMOutputOptions;
     
-    /** Default {@link XMLOutputOptions} */
-    private DOMOutputOptions defaultXMLOutputOptions;
+    /** Default {@link XMLStringOutputOptions} */
+    private XMLStringOutputOptions defaultXMLStringOutputOptions;
 
     /**
      * Creates a new {@link SnuggleEngine} using a very simple internal cache for any
@@ -106,7 +106,7 @@ public final class SnuggleEngine {
         this.packages = new ArrayList<SnugglePackage>();
         this.defaultSessionConfiguration = null; /* (Lazy init) */
         this.defaultDOMOutputOptions = null; /* (Lazy init) */
-        this.defaultXMLOutputOptions = null; /* (Lazy init) */
+        this.defaultXMLStringOutputOptions = null; /* (Lazy init) */
         
         /* Create manager for XSLT stlyesheets using the given cache */
         this.stylesheetManager = stylesheetManager;
@@ -198,16 +198,16 @@ public final class SnuggleEngine {
     }
 
     
-    public DOMOutputOptions getDefaultXMLOutputOptions() {
-        if (defaultXMLOutputOptions==null) {
-            defaultXMLOutputOptions = new XMLOutputOptions();
+    public XMLStringOutputOptions getDefaultXMLStringOutputOptions() {
+        if (defaultXMLStringOutputOptions==null) {
+            defaultXMLStringOutputOptions = new XMLStringOutputOptions();
         }
-        return defaultXMLOutputOptions;
+        return defaultXMLStringOutputOptions;
     }
 
-    public void setDefaultXMLOutputOptions(DOMOutputOptions defaultXMLOutputOptions) {
-        ConstraintUtilities.ensureNotNull(defaultXMLOutputOptions, "defaultXMLOutputOptions");
-        this.defaultXMLOutputOptions = defaultXMLOutputOptions;
+    public void setDefaultXMLStringOutputOptions(XMLStringOutputOptions defaultXMLOutputOptions) {
+        ConstraintUtilities.ensureNotNull(defaultXMLOutputOptions, "defaultXMLStringOutputOptions");
+        this.defaultXMLStringOutputOptions = defaultXMLOutputOptions;
     }
 
 

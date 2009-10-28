@@ -14,11 +14,11 @@ import javax.xml.transform.OutputKeys;
  * Interface specifying various options for serializing XML produced by SnuggleTeX
  * and some of its utility classes.
  * <p>
- * The main implementation of this is {@link XMLOutputOptions}, which you can use
+ * The main implementation of this is {@link XMLStringOutputOptions}, which you can use
  * for normal SnuggleTeX functionality. There is also a {@link StandaloneSerializationOptions}
  * implementation that can be used for various utility classes, such as {@link MathMLUtilities}.
  * 
- * @see XMLOutputOptions
+ * @see XMLStringOutputOptions
  * @see StandaloneSerializationOptions
  * 
  * @since 1.2.0

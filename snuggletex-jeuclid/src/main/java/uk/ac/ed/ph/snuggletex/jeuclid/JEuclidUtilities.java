@@ -5,11 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.jeuclid;
 
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
-import uk.ac.ed.ph.snuggletex.XMLOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 
 /**
@@ -24,7 +24,7 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 public final class JEuclidUtilities {
     
     /**
-     * Takes an existing {@link WebPageOutputOptions} and configures it to convert
+     * Takes an existing {@link DOMOutputOptions} and configures it to convert
      * MathML to images using JEuclid, optionally down-converting simple expressions to XHTML
      * beforehand.
      * <p>
@@ -32,11 +32,11 @@ public final class JEuclidUtilities {
      * want to use other {@link DOMPostProcessor}s, then you will have to work out whether they
      * fit in with this process and configure things manually.
      * 
-     * @param options existing {@link WebPageOutputOptions} Object
+     * @param options existing {@link DOMOutputOptions} Object
      * @param downConvertFirst
      * @param callback
      */
-    public static void setupJEuclidPostProcessors(XMLOutputOptions options,
+    public static void setupJEuclidPostProcessors(DOMOutputOptions options,
             boolean downConvertFirst, MathMLImageSavingCallback callback) {
         if (downConvertFirst) {
             options.setDOMPostProcessors(

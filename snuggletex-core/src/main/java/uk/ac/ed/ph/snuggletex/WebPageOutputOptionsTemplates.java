@@ -30,10 +30,10 @@ public final class WebPageOutputOptionsTemplates {
      * <ul>
      *   <li>{@link WebPageOutputOptions#setContentType(String)}</li>
      *   <li>{@link WebPageOutputOptions#setPrefixingMathML(boolean)}</li>
-     *   <li>{@link XMLOutputOptions#setSerializationMethod(SerializationMethod)}</li>
-     *   <li>{@link XMLOutputOptions#setDoctypePublic(String)}</li>
-     *   <li>{@link XMLOutputOptions#setDoctypeSystem(String)}</li>
-     *   <li>{@link XMLOutputOptions#setIncludingXMLDeclaration(boolean)}</li>
+     *   <li>{@link XMLStringOutputOptions#setSerializationMethod(SerializationMethod)}</li>
+     *   <li>{@link XMLStringOutputOptions#setDoctypePublic(String)}</li>
+     *   <li>{@link XMLStringOutputOptions#setDoctypeSystem(String)}</li>
+     *   <li>{@link XMLStringOutputOptions#setIncludingXMLDeclaration(boolean)}</li>
      * </ul>
      * You may set other properties (or override these ones!) afterwards as required.
      * 

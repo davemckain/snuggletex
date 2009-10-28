@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex.samples;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.XMLOutputOptions;
+import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
  * @author  David McKain
  * @version $Revision$
  */
-public final class XMLOutputExample {
+public final class XMLStringOutputExample {
     
     public static void main(String[] args) throws IOException {
         /* Create vanilla SnuggleEngine and new SnuggleSession */
@@ -32,7 +32,7 @@ public final class XMLOutputExample {
         SnuggleInput input = new SnuggleInput("$$\\alpha \\cap \\beta$$");
         session.parseInput(input);
         
-        XMLOutputOptions options = new XMLOutputOptions();
+        XMLStringOutputOptions options = new XMLStringOutputOptions();
         options.setEncoding("UTF-8");
         if (engine.getStylesheetManager().supportsXSLT20()) {
             /* User has an XSLT 2.0 processor, so let's output named entities for readability */

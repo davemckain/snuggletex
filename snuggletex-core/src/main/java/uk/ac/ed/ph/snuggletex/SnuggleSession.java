@@ -275,7 +275,7 @@ public final class SnuggleSession implements SessionContext {
     /**
      * Creates a well-formed external general parsed entity out of the currently parsed tokens.
      * <p>
-     * The default {@link XMLOutputOptions} specified in the {@link SnuggleEngine} will be
+     * The default {@link XMLStringOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
      *
      * @return resulting XML if the process completed successfully, null if the process was
@@ -283,19 +283,19 @@ public final class SnuggleSession implements SessionContext {
      *   the first error.  
      */
     public String buildXMLString() {
-        return buildXMLString(engine.getDefaultXMLOutputOptions());
+        return buildXMLString(engine.getDefaultXMLStringOutputOptions());
     }
     
     /**
      * Creates a well-formed external general parsed entity out of the currently parsed tokens.
      * <p>
-     * The given {@link XMLOutputOptions} Object is used to configure the process.
+     * The given {@link XMLStringOutputOptions} Object is used to configure the process.
      * 
      * @return resulting XML if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error. 
      */
-    public String buildXMLString(final XMLOutputOptions options) {
+    public String buildXMLString(final XMLStringOutputOptions options) {
         DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
         Document document = documentBuilder.newDocument();
         Element temporaryRoot = document.createElement("root");
@@ -319,7 +319,7 @@ public final class SnuggleSession implements SessionContext {
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error.
      *   
-     * @deprecated Use {@link #buildXMLString(XMLOutputOptions)} instead
+     * @deprecated Use {@link #buildXMLString(XMLStringOutputOptions)} instead
      */
     @Deprecated
     public String buildXMLString(boolean indent) {
@@ -336,7 +336,7 @@ public final class SnuggleSession implements SessionContext {
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error.
      *   
-     * @deprecated Use {@link #buildXMLString(XMLOutputOptions)} instead.
+     * @deprecated Use {@link #buildXMLString(XMLStringOutputOptions)} instead.
      */
     @Deprecated
     public String buildXMLString(final DOMOutputOptions options) {
@@ -355,7 +355,7 @@ public final class SnuggleSession implements SessionContext {
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error.
      *   
-     * @deprecated Use {@link #buildXMLString(XMLOutputOptions)} instead.
+     * @deprecated Use {@link #buildXMLString(XMLStringOutputOptions)} instead.
      */
     @Deprecated
     public String buildXMLString(final DOMOutputOptions options, final boolean indent) {
@@ -367,7 +367,7 @@ public final class SnuggleSession implements SessionContext {
             return null;
         }
         SerializationOptions serializationOptions = new StandaloneSerializationOptions();
-        serializationOptions.setEncoding(XMLOutputOptions.DEFAULT_ENCODING);
+        serializationOptions.setEncoding(XMLStringOutputOptions.DEFAULT_ENCODING);
         serializationOptions.setIndenting(indent);
         return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot, serializationOptions);
     }

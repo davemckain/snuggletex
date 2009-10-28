@@ -13,7 +13,7 @@ import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import javax.xml.transform.Transformer;
 
 /**
- * Builds on {@link XMLOutputOptions} to add in options for configuring how to build a
+ * Builds on {@link XMLStringOutputOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleSession}
  * (e.g. {@link SnuggleSession#createWebPage(WebPageOutputOptions)}).
  * <p>
@@ -24,13 +24,13 @@ import javax.xml.transform.Transformer;
  * know exactly what you want to do.
  * 
  * @see DOMOutputOptions
- * @see XMLOutputOptions
+ * @see XMLStringOutputOptions
  * @see WebPageOutputOptionsTemplates
  *
  * @author  David McKain
  * @version $Revision$
  */
-public class WebPageOutputOptions extends XMLOutputOptions {
+public class WebPageOutputOptions extends XMLStringOutputOptions {
     
     /**
      * Enumerates the different web page "types" supported. This is used both by

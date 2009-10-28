@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex.upconversion.samples;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.XMLOutputOptions;
+import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 
@@ -55,12 +55,12 @@ public final class BasicUpConversionExample {
          * defaults here.
          */
         UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor();
-        XMLOutputOptions options = new XMLOutputOptions();
-        options.addDOMPostProcessors(upConverter);
-        options.setIndenting(true);
+        XMLStringOutputOptions xmlStringOutputOptions = new XMLStringOutputOptions();
+        xmlStringOutputOptions.addDOMPostProcessors(upConverter);
+        xmlStringOutputOptions.setIndenting(true);
         
         /* Do the up-conversion process */
-        String result = session.buildXMLString(options);
+        String result = session.buildXMLString(xmlStringOutputOptions);
         System.out.println("Up-Conversion process generated: " + result);
     }
 }

@@ -8,9 +8,10 @@ package uk.ac.ed.ph.snuggletex;
 import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
 
 /**
- * Builds on {@link DOMOutputOptions} to add in options for configuring how to build a
- * web page using the relevant methods in {@link SnuggleSession}
- * (e.g. {@link SnuggleSession#buildXMLString(XMLOutputOptions)}).
+ * Builds on {@link DOMOutputOptions} to add in options for configuring how to build an
+ * serialized output consisting of an XML (or possibly HTML) String using the relevant methods
+ * in {@link SnuggleSession}
+ * (e.g. {@link SnuggleSession#buildXMLString(XMLStringOutputOptions)}).
  * 
  * @see DOMOutputOptions
  * @see WebPageOutputOptions
@@ -21,11 +22,11 @@ import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
  * @author  David McKain
  * @version $Revision: 400 $
  */
-public class XMLOutputOptions extends DOMOutputOptions implements SerializationOptions {
+public class XMLStringOutputOptions extends DOMOutputOptions implements SerializationOptions {
     
     private final StandaloneSerializationOptions serializationOptions;
     
-    public XMLOutputOptions() {
+    public XMLStringOutputOptions() {
         super();
         this.serializationOptions = new StandaloneSerializationOptions();
     }
