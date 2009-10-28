@@ -30,8 +30,8 @@ All Rights Reserved
   </properties>
   <repositories>
     <repository>
-      <id>www.ph.ed.ac.uk</id>
-      <url>http://www.ph.ed.ac.uk/maven2</url>
+      <id>www2.ph.ed.ac.uk</id>
+      <url>http://www2.ph.ed.ac.uk/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -89,7 +89,7 @@ All Rights Reserved
       <id>davemckain</id>
       <name>David McKain</name>
       <email>david.mckain&#xa0;[at]&#xa0;ed.ac.uk</email>
-      <url>http://www.ph.ed.ac.uk/~dmckain/</url>
+      <url>http://www2.ph.ed.ac.uk/~dmckain/</url>
       <organization>School of Physics and Astronomy, University of Edinburgh</organization>
       <organizationUrl>http://www.ph.ed.ac.uk</organizationUrl>
       <roles>
