@@ -37,7 +37,7 @@ public final class AccentHandler implements CommandHandler {
     /** Combining character to use when forming MathML accents (0 if this builder doesn't support MATH mode) */
     private final char combiningCharacter;
     
-    /** Name of resulting MathML element (null if this builder doesn't support MATH mode) */
+    /** Name of resulting MathML element (must not be null) */
     private final String mathMLElementName;
     
     public AccentHandler(final AccentMap accentMap, final char combiningCharacter, final String mathMLElementName) {
@@ -94,13 +94,16 @@ public final class AccentHandler implements CommandHandler {
         else {
             /* Construct combiner operator */
             Element result = builder.appendMathMLElement(parentElement, mathMLElementName);
-            result.setAttribute("accent", "true");
-            
+            if (mathMLElementName.equals("mover")) {
+                result.setAttribute("accent", "true");
+            }
+            else if (mathMLElementName.equals("munder")) {
+                result.setAttribute("accentunder", "true");
+            }
             builder.handleMathTokensAsSingleElement(result, content);
             builder.appendMathMLOperatorElement(result, Character.toString(combiningCharacter));
         }
     }
-    
     
     /**
      * LaTeX only adds an accent to the first character of the first token, and only if it is

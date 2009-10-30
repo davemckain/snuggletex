@@ -408,7 +408,7 @@ Hello<span class="rm">There</span>
 <span class="underline">Hello</span>
 ====
 $\underline{x}$
-<math xmlns="http://www.w3.org/1998/Math/MathML"><munder accent="true"><mi>x</mi><mo>&#xaf;</mo></munder></math>
+<math xmlns="http://www.w3.org/1998/Math/MathML"><munder accentunder="true"><mi>x</mi><mo>&#xaf;</mo></munder></math>
 ====
 1\% Following
 1% Following
