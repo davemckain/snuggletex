@@ -34,6 +34,25 @@ All Rights Reserved
   <listener>
     <listener-class>uk.ac.ed.ph.snuggletex.webapp.ContextInitialiser</listener-class>
   </listener>
+  <!-- Trivial filter that redirects certain URLs inside this webapp to cater
+  for me changing my mind and moving things around all of the time. -->
+  <filter>
+    <filter-name>RedirectionFilter</filter-name>
+    <filter-class>uk.ac.ed.ph.snuggletex.webapp.RedirectionFilter</filter-class>
+    <init-param>
+      <!-- Enter redirection data here as pairs of the form "regexp target", where
+      both regexp and target will apply to the part of the request URI after
+      the context path -->
+      <param-name>redirections</param-name>
+      <param-value>
+        ^/bob /UpConversionDemo
+      </param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>RedirectionFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <servlet>
     <description>
       Manages generation and caching of documentation resources
