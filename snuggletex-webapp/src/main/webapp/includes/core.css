@@ -54,6 +54,15 @@ h3 {
   padding: 0 0 8px 0;
 }
 
+#header td#logo {
+  width: 84px;
+  height: 84px;
+}
+
+#header img {
+  border: none;
+}
+
 #topnavigation {
   margin: 0.5em 20px 0.5em 0;
   list-style-image: url(arrow.gif);

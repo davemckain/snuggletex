@@ -69,11 +69,11 @@ All Rights Reserved
     <body id="{$pageId}">
       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="header">
         <tr>
-          <td width="84" align="left" valign="top">
+          <td align="left" valign="top" id="logo">
             <a href="http://www.ed.ac.uk" class="headertext"><img
               src="{$context-path}/includes/uoe_logo.jpg"
-              alt="The University of Edinburgh" id="logo" name="logo"
-              width="84" height="84" border="0" /></a>
+              alt="The University of Edinburgh"
+              width="84" height="84" /></a>
           </td>
           <td align="left">
             <h3>THE UNIVERSITY of EDINBURGH</h3>
@@ -155,13 +155,13 @@ All Rights Reserved
           <xsl:attribute name="class">selected</xsl:attribute>
         </xsl:if>
         <xsl:value-of select="@name"/>
-        <xsl:if test="descendant-or-self::s:node[@id=$pageId]">
-          <!-- Current page is deeper, so show it as well -->
-          <ul>
-            <xsl:apply-templates select="s:node" mode="make-navigation"/>
-          </ul>
-        </xsl:if>
       </a>
+      <xsl:if test="descendant-or-self::s:node[@id=$pageId] and exists(s:node)">
+        <!-- Current page is deeper, so show it as well -->
+        <ul>
+          <xsl:apply-templates select="s:node" mode="make-navigation"/>
+        </ul>
+      </xsl:if>
     </li>
   </xsl:template>
 

@@ -13,7 +13,9 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.SerializationOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.jeuclid.JEuclidUtilities;
 import uk.ac.ed.ph.snuggletex.jeuclid.SimpleMathMLImageSavingCallback;
@@ -255,6 +257,12 @@ public final class DocumentationServlet extends BaseServlet {
             /* Create folder for storing MathML images. */
             File imageOutputDirectory = IOUtilities.ensureDirectoryCreated(mapResourcePath(imageOutputDirectoryResourcePath));
             ImageSavingCallback callback = new ImageSavingCallback(imageOutputDirectory, imageOutputBaseURL);
+            
+            /* We'll actually generate XHTML 1.0 Strict here so that I can be
+             * anally retentive about having valid documentation! */
+            options.setDoctypePublic(W3CConstants.XHTML_10_STRICT_PUBLIC_IDENTIFIER);
+            options.setDoctypeSystem(W3CConstants.XHTML_10_STRICT_SYSTEM_IDENTIFIER);
+            options.setSerializationMethod(SerializationMethod.XHTML);
             
             /* Configure JEuclid post-processor, with down-conversion */
             JEuclidUtilities.setupJEuclidPostProcessors(options, true, callback);
