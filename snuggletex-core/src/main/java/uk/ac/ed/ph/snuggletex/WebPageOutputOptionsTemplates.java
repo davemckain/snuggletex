@@ -57,8 +57,8 @@ public final class WebPageOutputOptionsTemplates {
             case CROSS_BROWSER_XHTML:
                 options.setSerializationMethod(SerializationMethod.XHTML);
                 options.setIncludingXMLDeclaration(true);
-                options.setDoctypePublic(W3CConstants.XHTML_11_MATHML_20_PUBLIC_DTD);
-                options.setDoctypeSystem(W3CConstants.XHTML_11_MATHML_20_SYSTEM_DTD);
+                options.setDoctypePublic(W3CConstants.XHTML_11_MATHML_20_PUBLIC_IDENTIFIER);
+                options.setDoctypeSystem(W3CConstants.XHTML_11_MATHML_20_SYSTEM_IDENTIFIER);
                 break;
                 
             case MATHPLAYER_HTML:

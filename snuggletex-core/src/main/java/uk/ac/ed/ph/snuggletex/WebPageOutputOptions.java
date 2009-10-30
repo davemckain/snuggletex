@@ -54,8 +54,8 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
         
         /**
          * "Cross-browser" XHTML + MathML; has XML declaration and DOCTYPE declaration
-         * consisting of the Public identifier defined in {@link W3CConstants#XHTML_11_MATHML_20_PUBLIC_DTD}
-         * and System identifier defined in {@link W3CConstants#XHTML_11_MATHML_20_SYSTEM_DTD}.
+         * consisting of the Public identifier defined in {@link W3CConstants#XHTML_11_MATHML_20_PUBLIC_IDENTIFIER}
+         * and System identifier defined in {@link W3CConstants#XHTML_11_MATHML_20_SYSTEM_IDENTIFIER}.
          * The <tt>charset</tt> is declared only in the <tt>meta</tt> element in order
          * to appease MathPlayer.
          * <p>
@@ -69,7 +69,6 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          */
         CROSS_BROWSER_XHTML,
 
-        
         /**
          * HTML + MathML intended for Internet Explorer 6/7 with the MathPlayer plug-in.
          * <p>
