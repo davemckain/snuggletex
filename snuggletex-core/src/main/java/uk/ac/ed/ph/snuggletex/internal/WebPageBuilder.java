@@ -151,9 +151,12 @@ public final class WebPageBuilder {
         
         String lang = options.getLang();
         if (lang!=null) {
-            /* Set language either as 'xml:lang' or plain old 'lang' */
+            /* Set language either as 'xml:lang' or plain old 'lang', or maybe both */
             if (pageType==WebPageType.MATHPLAYER_HTML || pageType==WebPageType.PROCESSED_HTML) {
                 html.setAttribute("lang", lang);
+                if (options.getSerializationMethod()!=SerializationMethod.HTML) {
+                    html.setAttributeNS(XMLConstants.XML_NS_URI, "xml:lang", lang);
+                }
             }
             else {
                 html.setAttributeNS(XMLConstants.XML_NS_URI, "xml:lang", lang);
