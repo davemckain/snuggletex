@@ -219,8 +219,12 @@ All Rights Reserved
 
   <xsl:function name="s:fix-href" as="xs:string">
     <xsl:param name="href" as="xs:string"/>
-    <xsl:sequence select="if (starts-with($href, 'maven://')) then concat($maven-site-url, substring-after($href, 'maven://'))
-      else if (starts-with($href, '/')) then concat($context-path, $href) else $href"/>
+    <xsl:sequence select="if (starts-with($href, 'docs://'))
+        then concat($context-path, $navigation//s:node[@id=substring-after($href, 'docs://')]/@href)
+      else if (starts-with($href, 'maven://'))
+        then concat($maven-site-url, substring-after($href, 'maven://'))
+      else if (starts-with($href, '/')) then concat($context-path, $href)
+      else $href"/>
   </xsl:function>
 
 </xsl:stylesheet>

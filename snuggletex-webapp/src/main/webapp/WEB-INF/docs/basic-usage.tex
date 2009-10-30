@@ -21,10 +21,10 @@ A \verb|SnuggleSession| represents a single SnuggleTeX conversion "job",
 which typically consists of the following steps:
 
 \begin{enumerate}
-  \item Parse one or more \href[\verb|SnuggleInput|s]{inputs.html}.
-  \item Generate one or more Outputs (either \href[XML/DOM Outputs]{dom-output.html}
-  or \href[Web Pages]{web-output.html}).
-  \item (Check for any \href[errors]{error-reporting.html} in the LaTeX reported
+  \item Parse one or more \href[\verb|SnuggleInput|s]{docs://inputs}.
+  \item Generate one or more Outputs (either \href[XML/DOM Outputs]{docs://domOutput}
+  or \href[Web Pages]{docs://webOutput}).
+  \item (Check for any \href[errors]{docs://errors} in the LaTeX reported
         by the above processes\ldots)
 \end{enumerate}
 
@@ -34,11 +34,11 @@ To create a new \verb|SnuggleSession|, you use:
 
 This creates a fresh job using the current default settings in your
 \verb|SnuggleEngine|. You can then call methods described in
-\href[Inputs]{inputs.html}, \href[Error Reporting]{error-reporting.html}
-and \href[Creating XML/DOM Outputs]{dom-output.html} or
-\href[Creating Web Pages]{web-output.html} to do whatever it is you want to do.
+\href[Inputs]{docs://inputs}, \href[Error Reporting]{docs://errors}
+and \href[Creating XML/DOM Outputs]{docs://domOutput} or
+\href[Creating Web Pages]{docs://webOutput} to do whatever it is you want to do.
 
-See the \href[First Example]{first-example.html} for a simple working
+See the \href[First Example]{docs://firstExample} for a simple working
 example of how everything comes together.
 
 You can discard a \verb|SnuggleSession| once it has done everything

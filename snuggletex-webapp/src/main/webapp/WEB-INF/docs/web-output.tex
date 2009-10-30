@@ -2,7 +2,7 @@
 
 SnuggleTeX tries to make it easy to create web pages suitable for use
 on various browser platforms, creating XHTML+MathML web pages by default.
-It can also generate \href[Legacy Web Pages]{legacy-web-pages.html} via
+It can also generate \href[Legacy Web Pages]{docs://legacyWebPages} via
 the optional JEuclid extension.
 
 \subsection*{Usage Recipe}
@@ -11,8 +11,8 @@ the optional JEuclid extension.
 
 \item
   You must first decide what kind of web page you would like to generate.
-  These are listed in the \href[XHTML+MathML Web Page Types]{web-page-types.html}
-  page. (You might prefer to create a \href[Legacy Web Page]{legacy-web-pages.html}.)
+  These are listed in the \href[XHTML+MathML Web Page Types]{docs://webPageTypes}
+  page. (You might prefer to create a \href[Legacy Web Page]{docs://legacyWebPages}.)
 
 \item
   Pass your selected \verb|WebPageType| to
@@ -34,7 +34,7 @@ the optional JEuclid extension.
     \item Whether to apply your own XSLT Stylesheets (passed as JAXP \verb|Transformer| Objects)
       to the resulting page before it is serialized. (This is useful if you want to add
       in custom headers and footers or otherwise soup up the outputs you get.)
-    \item \ldots plus the same options as for generating \href[XML/DOM Outputs]{dom-output.html}.
+    \item \ldots plus the same options as for generating \href[XML/DOM Outputs]{docs://domOutput}.
   \end{itemize}
 
 \item
