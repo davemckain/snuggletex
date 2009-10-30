@@ -41,7 +41,7 @@ All Rights Reserved
     <h3>Input</h3>
     <p>
       This demo lets you try out the experimental
-      <a href="documentation/semantic-upconversion.html">Semantic Enrichment</a>
+      <a href="{s:fix-href('docs://upconversion')}">Semantic Enrichment</a>
       process, converting simple LaTeX inputs to semantically richer Presentation MathML,
       Content MathML and Maxima input syntax.
     </p>
