@@ -46,7 +46,7 @@ As an example of error reporting, if you paste the above example into the
 \[ A = \mat{\mat{\silly}{2}{3}{4}}{2}{3}{4} \]
 \end{verbatim}
 
-then you will see the following error message:
+then you would see the following error message:
 
 \begin{verbatim}
 Undefined command \silly
@@ -62,9 +62,10 @@ SnuggleTeX also supports defining new Commands and Environments via its Java API
 (\emph{Note:} This feature is not yet fully developed so it is currently not as
 rich as it ought to be!)
 
-To do this, you create a \verb|DefinitionMap|, which has a number of methods for
-defining new Commands and Environments. This can then be registered to a \verb|SnuggleEngine|
-using the \verb|registerDefinitions()| method, making them available to any \verb|SnuggleSession|s
+To do this, you create a \verb|Package|, which has a number of methods for
+defining new Commands and Environments, along with custom errors codes of your choosing.
+This can then be registered to a \verb|SnuggleEngine| using the
+\verb|addPackage()| method, making them available to any \verb|SnuggleSession|s
 created by the engine.
 
 The most complicated part of this process is specifying how each Command and

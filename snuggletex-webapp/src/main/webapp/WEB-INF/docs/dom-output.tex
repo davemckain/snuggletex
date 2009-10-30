@@ -29,20 +29,23 @@ The simplest outputs that SnuggleTeX can create are low-level XML/DOM-based outp
 
 \subsection*{Configuration}
 
-You can configure exactly how this works using a \verb|DOMOutputOptions| Object,
-which is a simple JavaBean that lets you control details such as:
+You can configure exactly how this works using a \verb|DOMOutputOptions| Object
+for DOM outputs, or its subclass \verb|XMLStringOutputOptions| Object for XML
+outputs. These are both simple JavaBeans that let you control details such as:
 
 \begin{itemize}
   \item Prefixing of XHTML, MathML (and SnuggleTeX) XML elements;
   \item Whether to annotate MathML with the LaTeX input;
   \item Whether and how to report LaTeX errors within the XML output;
   \item What to do with any URLs (e.g. those specified with the \verb|\href| command);
-  \item Whether to inline CSS using \verb|style| attributes. (This can be useful if your XML
+  \item Whether to inline CSS using \verb|style| attributes; (This can be useful if your XML
     is going to end up inside some kind of XML application that doesn't support user-specified
     CSS stylesheets. See \href[CSS Stylesheet Notes]{stylesheets.html} for more discussion of
     these points.)
   \item Whether you want to ``post-process'' the newly created DOM \verb|Node|s before they get
-    added to the final DOM tree.
+    added to the final DOM tree;
+  \item How the resulting XML string should be serialized.
 \end{itemize}
 
-Have a look at the API documentation for \verb|DOMOutputOptions| for more information.
+Have a look at the API documentation for \verb|DOMOutputOptions| and
+\verb|XMLStringOutputOptions| for more information.

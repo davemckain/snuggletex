@@ -62,7 +62,7 @@ All Rights Reserved
         <!-- Input Form -->
         <h3>Input</h3>
         <p>
-          This demo is similar to the <a href="UpConversionDemo">MathML Up-Conversion Demo</a>
+          This demo is similar to the <a href="UpConversionDemo">MathML Semantic Enrichnment Demo</a>
           but uses
           <a href="http://www1.chapman.edu/~jipsen/asciimath.html">ASCIIMathML</a> as
           an alternative input format.

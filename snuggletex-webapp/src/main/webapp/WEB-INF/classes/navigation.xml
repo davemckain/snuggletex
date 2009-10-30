@@ -26,8 +26,8 @@ All Rights Reserved
   <section name="Demos &amp; Samples">
     <node id="mathInputDemo" href="/MathInputDemo" name="Simple Math Input Demo"/>
     <node id="fullLaTeXInputDemo" href="/FullLaTeXInputDemo" name="Full LaTeX Input Demo"/>
-    <node id="upConversionDemo" href="/UpConversionDemo" name="MathML Semantic Up-Conversion Demo"/>
-    <node id="asciiMathMLUpConversionDemo" href="/ASCIIMathMLUpConversionDemo" name="ASCIIMathML Up-Conversion Demo"/>
+    <node id="upConversionDemo" href="/UpConversionDemo" name="MathML Semantic Enrichment Demo"/>
+    <node id="asciiMathMLUpConversionDemo" href="/ASCIIMathMLUpConversionDemo" name="ASCIIMathML Enrichment Demo"/>
     <node id="samples" href="/documentation/latex-samples.html" name="Web Output Samples"/>
   </section>
   <section name="User Guide">
@@ -55,7 +55,7 @@ All Rights Reserved
       <node id="xmlCommands" href="/documentation/xml-commands.html" name="XML-related Commands"/>
     </node>
     <node id="advanced" href="/documentation/advanced-usage.html" name="Advanced Usage"/>
-    <node id="upconversion" href="/documentation/semantic-upconversion.html" name="Semantic Up-Conversion">
+    <node id="upconversion" href="/documentation/semantic-upconversion.html" name="Semantic Enrichment">
       <node id="pmathmlEnhancement" href="/documentation/pmathml-enhancement.html" name="Presentation MathML Enhancement"/>
       <node id="cmathml" href="/documentation/content-mathml.html" name="Generating Content MathML"/>
       <node id="maxima" href="/documentation/maxima-input.html" name="Generating Maxima Input"/>
