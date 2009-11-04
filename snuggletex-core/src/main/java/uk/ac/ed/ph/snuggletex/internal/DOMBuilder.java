@@ -6,6 +6,7 @@
 package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.LinkResolver;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
@@ -869,7 +870,7 @@ public final class DOMBuilder {
     //-------------------------------------------
 
     public Element appendOrThrowError(final Element parentElement, final Token token,
-            final CoreErrorCode errorCode, final Object... arguments)
+            final ErrorCode errorCode, final Object... arguments)
             throws SnuggleParseException {
         InputError error = new InputError(errorCode, token.getSlice(), arguments);
         sessionContext.registerError(error);
