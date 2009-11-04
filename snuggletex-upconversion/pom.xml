@@ -44,6 +44,26 @@ All Rights Reserved
           </includes>
         </configuration>
       </plugin>
+      <!--
+      Plugin for running the examples.
+      Example usage:
+
+      $ mvn exec:exec -Dexample.class=uk.ac.ed.ph.snuggletex.upconversion.samples.AssumptionExample
+
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <executable>java</executable>
+          <classpathScope>runtime</classpathScope>
+          <arguments>
+            <argument>-classpath</argument>
+            <classpath/>
+            <argument>${example.class}</argument>
+          </arguments>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
