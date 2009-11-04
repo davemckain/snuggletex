@@ -19,8 +19,20 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.2.0" date="TBC" description="Version 1.2.0 (SVN revision ???)">
+      <action dev="davemckain" type="update" date="2009-10-30">
+        Web page builder now always adds xml:lang attribute when generating XHTML or XML outputs.
+      </action>
+      <action dev="davemckain" type="update" date="2009-10-30">
+        Changed public/system identifiers to -//W3C//DTD XHTML 1.1 plus MathML 2.0//EN
+        and http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd when generating web pages
+        of type CROSS_BROWSER_XHTML.
+      </action>
+      <action dev="davemckain" type="fix" date="2009-10-30">
+        SnuggleTeX was incorrectly creating 'accent' attributes instead of 'accentunder'
+        attributes when creating munder elements.
+      </action>
       <action dev="davemckain" type="update" date="2009-08-03">
-        Extracted the parts of XMLOutputOptions pertaining to XML serialization to an
+        Extracted the parts of XMLStringOutputOptions pertaining to XML serialization to an
         interface called SerializationOptions, with a "standalone" implementation that
         replaces and simplifies the various overloaded serialization methods in MathMLUtilities
         and friends. Most of these existing methods have been kept for the time being, but
@@ -75,7 +87,7 @@ All Rights Reserved
         very few people.
       </action>
       <action dev="davemckain" type="add" date="2009-07-15">
-        Added new XMLOutputOptions Object, sitting between DOMOutputOptions and WebPageOutputOptions.
+        Added new XMLStringOutputOptions Object, sitting between DOMOutputOptions and WebPageOutputOptions.
         New versions of SnuggleSession.buildXMLString() have been added to reflect this; the existing
         ones are now deprecated and will be removed at the next major release.
       </action>
