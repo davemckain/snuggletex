@@ -85,7 +85,6 @@ All Rights Reserved
   <xsl:function name="local:is-legal-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:variable name="function-targets" select="$assumptions/s:assume[@property='function']/s:target" as="element(s:target)*"/>
     <xsl:sequence select="local:is-predefined-function($element)
       or $element[self::msup and local:is-predefined-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]

@@ -31,9 +31,6 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:param name="s:assume-exponential-e" select="true()" as="xs:boolean"/>
-  <xsl:param name="s:assume-imaginary-i" select="true()" as="xs:boolean"/>
-  <xsl:param name="s:assume-constant-pi" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-brackets-vector" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-braces-set" select="true()" as="xs:boolean"/>
   <xsl:param name="s:assume-square-list" select="true()" as="xs:boolean"/>
@@ -287,7 +284,10 @@ All Rights Reserved
       </xsl:when>
       <xsl:when test="count($elements)=1">
         <!-- Non-function and non-operator "Atom" -->
-        <xsl:apply-templates select="$elements[1]" mode="pmathml-to-cmathml"/>
+        <xsl:call-template name="local:handle-atom">
+          <xsl:with-param name="element" select="$elements"/>
+          <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+        </xsl:call-template>
       </xsl:when>
       <xsl:when test="empty($elements)">
         <!-- Empty -> empty -->
@@ -965,6 +965,42 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
+  <!-- Handles a single "atom", which might be an assumed symbol -->
+  <xsl:template name="local:handle-atom" as="element()*">
+    <xsl:param name="element" as="element()"/>
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <!-- See if this atom is an assumed symbol -->
+    <xsl:variable name="symbol-assumption" select="s:get-symbol-assumption($element, $assumptions)" as="element(s:assumption)?"/>
+    <xsl:choose>
+      <xsl:when test="exists($symbol-assumption)">
+        <!-- It is, so perform appropriate assumption -->
+        <xsl:variable name="property" select="$symbol-assumption/@property"/>
+        <xsl:choose>
+          <xsl:when test="$property='exponentialNumber'">
+            <exponentiale/>
+          </xsl:when>
+          <xsl:when test="$property='imaginaryNumber'">
+            <imaginaryi/>
+          </xsl:when>
+          <xsl:when test="$property='constantPi'">
+            <pi/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:message terminate="yes">
+              Unhandled symbol assumption <xsl:copy-of select="$symbol-assumption"/>
+            </xsl:message>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Handle as normal -->
+        <xsl:apply-templates select="$element" mode="pmathml-to-cmathml"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- ************************************************************ -->
+
   <xsl:template match="mrow" mode="pmathml-to-cmathml" as="element()*">
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="*"/>
@@ -1037,26 +1073,29 @@ All Rights Reserved
     </apply>
   </xsl:template>
 
-  <!-- (Optional) Treat $e^.$ as exponential -->
-  <xsl:template match="msup[*[1][self::mi and .='e' and $s:assume-exponential-e]]" mode="pmathml-to-cmathml" as="element(apply)">
-    <apply>
-      <exp/>
-      <xsl:call-template name="local:process-group">
-        <xsl:with-param name="elements" select="*[2]"/>
-      </xsl:call-template>
-    </apply>
-  </xsl:template>
-
-  <!-- We interpret <msup/> as a power -->
+  <!-- We interpret <msup/> as a power, with optional assumptions about exponentials as well -->
   <xsl:template match="msup" mode="pmathml-to-cmathml" as="element(apply)">
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
     <apply>
-      <power/>
-      <xsl:call-template name="local:process-group">
-        <xsl:with-param name="elements" select="*[1]"/>
-      </xsl:call-template>
-      <xsl:call-template name="local:process-group">
-        <xsl:with-param name="elements" select="*[2]"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="s:is-assumed-symbol(*[1], $assumptions, 'exponentialNumber')">
+          <!-- It's e^x -->
+          <exp/>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="*[2]"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- Standard power construct -->
+          <power/>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="*[1]"/>
+          </xsl:call-template>
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="*[2]"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </apply>
   </xsl:template>
 
@@ -1118,20 +1157,6 @@ All Rights Reserved
 
   <xsl:template match="mi[.='&#x221e;']" mode="pmathml-to-cmathml" as="element(infinity)">
     <infinity/>
-  </xsl:template>
-
-  <!-- Optional Special identifiers -->
-
-  <xsl:template match="mi[.='e' and $s:assume-exponential-e]" mode="pmathml-to-cmathml" as="element(exponentiale)">
-    <exponentiale/>
-  </xsl:template>
-
-  <xsl:template match="mi[.='i' and $s:assume-imaginary-i]" mode="pmathml-to-cmathml" as="element(imaginaryi)">
-    <imaginaryi/>
-  </xsl:template>
-
-  <xsl:template match="mi[.='&#x3c0;' and $s:assume-constant-pi]" mode="pmathml-to-cmathml" as="element(pi)">
-    <pi/>
   </xsl:template>
 
   <!-- ************************************************************ -->

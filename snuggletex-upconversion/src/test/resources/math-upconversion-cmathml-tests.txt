@@ -536,24 +536,22 @@ x^{!}
   <factorial/>
 </apply>
 ====
-## e is interepreted as the exponential number by default
+## e, i and \pi are treated as a normal identifiers by default.
+e
+<ci>e</ci>
+====
+i
+<ci>i</ci>
+====
+\pi
+<ci>&#x3c0;</ci>
+====
 e^x
 <apply>
-  <exp/>
+  <power/>
+  <ci>e</ci>
   <ci>x</ci>
 </apply>
-====
-## e is interepreted as the exponential number by default
-e
-<exponentiale/>
-====
-## i is interprested as the imaginary number by default
-i
-<imaginaryi/>
-====
-## pi is interpreted as the constant pi
-\pi
-<pi/>
 ====
 ## special identifiers
 \emptyset
@@ -1070,4 +1068,19 @@ f(x)
 ====
 \assumeSymbol{f_n}{function} $f_n(x)$
 <apply><ci type="function"><msub><mi>f</mi><mi>n</mi></msub></ci><ci>x</ci></apply>
+====
+\assumeSymbol{e}{exponentialNumber} $e$
+<exponentiale/>
+====
+\assumeSymbol{e}{exponentialNumber} $e^x$
+<apply>
+  <exp/>
+  <ci>x</ci>
+</apply>
+====
+\assumeSymbol{i}{imaginaryNumber} $i$
+<imaginaryi/>
+====
+\assumeSymbol{\pi}{constantPi} $\pi$
+<pi/>
 ====

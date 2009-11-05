@@ -39,8 +39,8 @@ public final class AssumptionExample {
     
     public static void main(String[] args) throws IOException {
         /* We will up-convert this LaTeX input */
- //       String input = "\\assumeSymbol{f_n}{function}\\assumeSymbol{2}{function} $$ 2x + f_n(x) + f_n^2(x) + g_n(x) $$";
-        String input = "\\assumeSymbol{f}{function} \\unassumeSymbol{f} $f(x)$";
+        String input = "\\assumeSymbol{e}{exponentialNumber} \\assumeSymbol{j}{imaginaryNumber} "
+            + "\\assumeSymbol{\\pi}{constantPi} $e^{i\\pi}=-1$";
         
         /* Set up SnuggleEngine, remembering to register package providing up-conversion support */
         SnuggleEngine engine = new SnuggleEngine();
@@ -62,7 +62,7 @@ public final class AssumptionExample {
          */
         Map<String, Object> parameterMap = new HashMap<String, Object>();
         parameterMap.put(UpConversionParameters.SHOW_ASSUMPTIONS, Boolean.TRUE);
-        parameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.FALSE);
+        parameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.TRUE);
         parameterMap.put(UpConversionParameters.DO_MAXIMA, Boolean.FALSE);
         UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor(parameterMap);
         XMLStringOutputOptions xmlStringOutputOptions = new XMLStringOutputOptions();

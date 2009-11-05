@@ -31,7 +31,7 @@ public final class AssumeSymbolHandler extends AssumeHandlerBase {
     @SuppressWarnings("unchecked")
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
-        /* First argument is the symbol that this assumption will apply to, which is
+        /* First argument is the target symbol that this assumption will apply to, which is
          * a blob of MathML. This will be "checked" in the XSLT to make sure we can handle
          * this correctly.
          */
@@ -43,10 +43,10 @@ public final class AssumeSymbolHandler extends AssumeHandlerBase {
             return;
         }
         
-        /* Second argument is the type of assumption being made */
-        String assumptionType = builder.extractStringValue(token.getArguments()[1]);
-        if (!SYMBOL_ASSUMPTION_TYPES_SET.contains(assumptionType)) {
-            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAETP0, assumptionType);
+        /* Second argument is the property being assumed */
+        String assumptionProperty = builder.extractStringValue(token.getArguments()[1]);
+        if (!SYMBOL_ASSUMPTION_PROPERTIES_SET.contains(assumptionProperty)) {
+            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAETP0, assumptionProperty);
             return;
         }
         
@@ -60,7 +60,7 @@ public final class AssumeSymbolHandler extends AssumeHandlerBase {
 
         /* Wrap up the target for storing in the assumptions map */
         ElementMapKeyWrapper symbolTarget = new ElementMapKeyWrapper(assumptionTarget);
-        symbolAssumptionsMap.put(symbolTarget, assumptionType);
+        symbolAssumptionsMap.put(symbolTarget, assumptionProperty);
         
         /* Now output all current assumptions */
         buildAssumptionsElement(builder, parentElement);

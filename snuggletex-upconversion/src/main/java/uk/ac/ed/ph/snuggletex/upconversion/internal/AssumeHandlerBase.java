@@ -35,18 +35,19 @@ abstract class AssumeHandlerBase implements CommandHandler {
     public static final String ASSUME_VARIABLE_NAMESPACE = "assume-database";
     public static final String SYMBOL_ASSUMPTIONS_VARIABLE_NAME = "symbol-assumptions";
     
-    public static final String[] SYMBOL_ASSUMPTION_TYPES = {
+    public static final String[] SYMBOL_ASSUMPTION_PROPERTIES = {
         "function",
-        "imaginary",
-        "exponential"
+        "imaginaryNumber",
+        "exponentialNumber",
+        "constantPi"
     };
     
-    protected static final Set<String> SYMBOL_ASSUMPTION_TYPES_SET;
+    protected static final Set<String> SYMBOL_ASSUMPTION_PROPERTIES_SET;
     
     static {
-        SYMBOL_ASSUMPTION_TYPES_SET = new HashSet<String>();
-        for (String type : SYMBOL_ASSUMPTION_TYPES) {
-            SYMBOL_ASSUMPTION_TYPES_SET.add(type);
+        SYMBOL_ASSUMPTION_PROPERTIES_SET = new HashSet<String>();
+        for (String property : SYMBOL_ASSUMPTION_PROPERTIES) {
+            SYMBOL_ASSUMPTION_PROPERTIES_SET.add(property);
         }
     }
     
@@ -59,11 +60,11 @@ abstract class AssumeHandlerBase implements CommandHandler {
         if (symbolAssumptionsMap!=null) {
             for (Entry<ElementMapKeyWrapper, String> symbolAssumptionEntry : symbolAssumptionsMap.entrySet()) {
                 Element assumptionTarget = symbolAssumptionEntry.getKey().getSymbolElement();
-                String assumptionType = symbolAssumptionEntry.getValue();
+                String assumptionProperty = symbolAssumptionEntry.getValue();
                 
                 Element assumeElement = builder.appendSnuggleElement(assumptionsContainer, "assumption");
-                assumeElement.setAttribute("type", assumptionType);
-                assumeElement.setAttribute("class", "symbol");
+                assumeElement.setAttribute("property", assumptionProperty);
+                assumeElement.setAttribute("type", "symbol");
                 Element assumeTargetElement = builder.appendSnuggleElement(assumeElement, "target");
                 Node assumptionTargetCopy = assumptionTarget.cloneNode(true);
                 assumeTargetElement.appendChild(assumptionTargetCopy);
