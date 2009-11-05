@@ -21,21 +21,6 @@ All Rights Reserved
   xmlns="http://www.w3.org/1998/Math/MathML"
   exclude-result-prefixes="xs s m util">
 
-  <!-- Helper template for stylesheets that output PMathML. -->
-  <xsl:template name="s:maybe-wrap-in-mrow" as="element()">
-    <xsl:param name="elements" as="element()*" required="yes"/>
-    <xsl:choose>
-      <xsl:when test="count($elements)=1">
-        <xsl:copy-of select="$elements"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <mrow>
-          <xsl:copy-of select="$elements"/>
-        </mrow>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
   <!-- Creates an "up-conversion failure" element <s:fail/> with the given arguments -->
   <xsl:function name="s:make-error" as="element(s:fail)">
     <xsl:param name="code" as="xs:string"/>

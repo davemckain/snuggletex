@@ -29,7 +29,9 @@ import java.util.Arrays;
  * </ul>
  * 
  * See {@link UpConversionUtilities} for methods to help with this, including a method
- * for converting these into error message Strings. 
+ * for converting these into error message Strings.
+ * 
+ * @since 1.1.0
  * 
  * @see UpConversionUtilities
  *

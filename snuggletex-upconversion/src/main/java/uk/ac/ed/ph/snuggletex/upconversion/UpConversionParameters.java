@@ -14,6 +14,14 @@ package uk.ac.ed.ph.snuggletex.upconversion;
 public interface UpConversionParameters {
     
     /**
+     * Set to {@link Boolean#TRUE} to add an annotation to each MathML element showing
+     * what assumptions were being made at that particular point.
+     * <p>
+     * Default: {@link Boolean#FALSE}.
+     */
+    String SHOW_ASSUMPTIONS = "show-assumptions";
+    
+    /**
      * Set to {@link Boolean#TRUE} if you want to convert to Content MathML,
      * {@link Boolean#FALSE} otherwise.
      * <p>

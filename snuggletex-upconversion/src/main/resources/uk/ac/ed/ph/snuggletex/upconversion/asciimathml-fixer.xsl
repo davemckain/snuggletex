@@ -20,7 +20,8 @@ All Rights Reserved
   exclude-result-prefixes="xs m s"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
-  <xsl:import href="common.xsl"/>
+  <xsl:import href="pmathml-utilities.xsl"/>
+  <xsl:import href="snuggletex-utilities.xsl"/>
   <xsl:strip-space elements="m:*"/>
   <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
 

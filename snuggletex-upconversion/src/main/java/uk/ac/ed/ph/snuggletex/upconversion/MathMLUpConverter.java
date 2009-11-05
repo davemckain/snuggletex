@@ -62,6 +62,8 @@ import org.xml.sax.SAXException;
  *   </li>
  * </ul>
  * 
+ * @since 1.1.0
+ * 
  * @author  David McKain
  * @version $Revision$
  */

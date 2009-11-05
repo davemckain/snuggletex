@@ -9,10 +9,13 @@ import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionParameters;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Basic example of up-converting some simple LaTeX input to Content MathML and Maxima forms.
@@ -27,16 +30,17 @@ import java.io.IOException;
  *   <li>saxon9.jar, saxon9-dom.jar</li> (These are required as the conversion process uses XSLT 2.0)
  * </ul>
  * 
- * @since 1.1.0
+ * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
-public final class BasicUpConversionExample {
+public final class AssumptionExample {
     
     public static void main(String[] args) throws IOException {
         /* We will up-convert this LaTeX input */
-        String input = "$$ \\frac{2x-y^2}{\\sin xy(x-2)} $$";
+ //       String input = "\\assumeSymbol{f_n}{function}\\assumeSymbol{2}{function} $$ 2x + f_n(x) + f_n^2(x) + g_n(x) $$";
+        String input = "\\assumeSymbol{f}{function} \\unassumeSymbol{f} $f(x)$";
         
         /* Set up SnuggleEngine, remembering to register package providing up-conversion support */
         SnuggleEngine engine = new SnuggleEngine();
@@ -56,7 +60,11 @@ public final class BasicUpConversionExample {
          * pass in options controlling the process; we'll use the (sensible)
          * defaults here.
          */
-        UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor();
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        parameterMap.put(UpConversionParameters.SHOW_ASSUMPTIONS, Boolean.TRUE);
+        parameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.FALSE);
+        parameterMap.put(UpConversionParameters.DO_MAXIMA, Boolean.FALSE);
+        UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor(parameterMap);
         XMLStringOutputOptions xmlStringOutputOptions = new XMLStringOutputOptions();
         xmlStringOutputOptions.addDOMPostProcessors(upConverter);
         xmlStringOutputOptions.setIndenting(true);
@@ -65,5 +73,6 @@ public final class BasicUpConversionExample {
         /* Do the up-conversion process */
         String result = session.buildXMLString(xmlStringOutputOptions);
         System.out.println("Up-Conversion process generated: " + result);
+        System.out.println("Errors: " + session.getErrors());
     }
 }

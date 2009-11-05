@@ -3,7 +3,7 @@
 # Input format is:
 #
 # LaTeX (interpreted inside $...$)
-# EITHER CMathML annotation branch OR !ErrorCode
+# EITHER CMathML annotation branch OR !ErrorCode (up-conversion only)
 # ==== (divider)
 #
 # Lines starting with '#' are documentation and are stripped out when running tests
@@ -1056,12 +1056,18 @@ x_{1,2}
 f
 <ci>f</ci>
 ====
-\assume{function}{f} $f$
+\assumeSymbol{f}{function} $f$
 <ci type="function">f</ci>
 ====
 f(x)
 <apply><times/><ci>f</ci><ci>x</ci></apply>
 ====
-\assume{function}{f} $f(x)$
-<apply><fn><ci type="function">f</ci></fn><ci>x</ci></apply>
+\assumeSymbol{f}{function} $f(x)$
+<apply><ci type="function">f</ci><ci>x</ci></apply>
+====
+\assumeSymbol{f_n}{function} $f_n$
+<ci type="function"><msub><mi>f</mi><mi>n</mi></msub></ci>
+====
+\assumeSymbol{f_n}{function} $f_n(x)$
+<apply><ci type="function"><msub><mi>f</mi><mi>n</mi></msub></ci><ci>x</ci></apply>
 ====

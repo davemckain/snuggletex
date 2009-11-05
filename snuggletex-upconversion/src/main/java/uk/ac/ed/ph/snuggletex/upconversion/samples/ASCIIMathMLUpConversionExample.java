@@ -52,6 +52,8 @@ import org.xml.sax.SAXException;
  * XSLT processors in most respects) then you might find that SAXON becomes your JAXP default
  * processor, which you can override as you require as it is invoked here explicitly, rather than
  * using {@link TransformerFactory#newInstance()}.
+ * 
+ * @since 1.1.0
  *
  * @author  David McKain
  * @version $Revision$

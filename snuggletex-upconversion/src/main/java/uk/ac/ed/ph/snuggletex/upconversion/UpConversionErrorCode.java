@@ -13,6 +13,8 @@ import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitio
  * Enumerates the various types of client-induced errors that can arise when using the SnuggleTeX
  * Up-Conversion process.
  * 
+ * @since 1.2.0
+ * 
  * @author  David McKain
  * @version $Revision:179 $
  */
@@ -43,7 +45,12 @@ public enum UpConversionErrorCode implements ErrorCode {
     UMFG03(),
     UMFG04(),
     UMFFX0(),
-    UMFOP0()
+    UMFOP0(),
+    
+    /* Assumption failures */
+    UAETP0(),
+    UAETG0(),
+    UAETG1(),
     
     ;
     

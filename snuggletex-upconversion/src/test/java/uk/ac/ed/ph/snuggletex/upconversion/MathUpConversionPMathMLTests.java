@@ -58,11 +58,6 @@ public class MathUpConversionPMathMLTests extends AbstractGoodUpConversionXMLTes
     }
     
     @Override
-    protected boolean showTokensOnFailure() {
-        return false;
-    }
-    
-    @Override
     @Test
     public void runTest() throws Throwable {
         super.runTest();

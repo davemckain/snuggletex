@@ -25,6 +25,8 @@ import org.w3c.dom.NodeList;
 /**
  * Some static utility methods for the up-conversion process, including methods for extracting
  * errors.
+ * 
+ * @since 1.1.0
  *
  * @author  David McKain
  * @version $Revision$

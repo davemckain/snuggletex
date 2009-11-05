@@ -13,10 +13,7 @@ import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.xml.transform.TransformerFactory;
 
 import junit.framework.Assert;
 
@@ -84,41 +81,11 @@ public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionXMLTes
         }
     }
 
-    /**
-     * Overridden to cope with up-conversion failures, checking them against the given error code.
-     */
-    @Override
-    protected void verifyResultDocument(TransformerFactory transformerFactory, Document resultDocument) throws Throwable {
-        List<UpConversionFailure> upConversionFailures = UpConversionUtilities.extractUpConversionFailures(resultDocument);
-        String result;
-        if (upConversionFailures.isEmpty()) {
-            /* Should have succeeded, so verify as normal */
-            super.verifyResultDocument(transformerFactory, resultDocument);
-        }
-        else {
-            /* Make sure we get the correct error code(s) */
-            result = expectedXML.replaceAll("<.+?>", ""); /* (Yes, it's not really XML in this case!) */
-            if (result.charAt(0)!='!') {
-                Assert.fail("Did not expect up-conversion errors!");
-            }
-            String[] expectedErrorCodes = result.substring(1).split(",\\s*");
-            Assert.assertEquals(expectedErrorCodes.length, upConversionFailures.size());
-            for (int i=0; i<expectedErrorCodes.length; i++) {
-                Assert.assertEquals(expectedErrorCodes[i], upConversionFailures.get(i).getErrorCode().toString());
-            }
-        }
-    }
-
     @Override
     protected DOMOutputOptions createDOMOutputOptions() {
         DOMOutputOptions result = super.createDOMOutputOptions();
         result.setDOMPostProcessors(upconverter);
         return result;
-    }
-    
-    @Override
-    protected boolean showTokensOnFailure() {
-        return false;
     }
     
     @Override

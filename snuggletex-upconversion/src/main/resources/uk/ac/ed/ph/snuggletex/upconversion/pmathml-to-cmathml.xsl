@@ -24,7 +24,9 @@ All Rights Reserved
   exclude-result-prefixes="xs m s local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
-  <xsl:import href="common.xsl"/>
+  <xsl:import href="pmathml-utilities.xsl"/>
+  <xsl:import href="snuggletex-utilities.xsl"/>
+  <xsl:import href="assumptions.xsl"/>
   <xsl:strip-space elements="m:*"/>
 
   <!-- ************************************************************ -->
@@ -47,16 +49,6 @@ All Rights Reserved
       <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
     </xsl:call-template>
   </xsl:template>
-
-  <!-- ************************************************************ -->
-
-  <!--
-  Handy utility function for checking whether an element is an <mo/>
-  -->
-  <xsl:function name="local:is-operator" as="xs:boolean">
-    <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean($element[self::mo])"/>
-  </xsl:function>
 
   <!-- ************************************************************ -->
 
@@ -90,13 +82,13 @@ All Rights Reserved
 
   <xsl:function name="local:is-standard-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="boolean(local:is-operator($element) and contains($local:standard-operator-characters, string($element)))"/>
+    <xsl:sequence select="boolean(s:is-operator($element) and contains($local:standard-operator-characters, string($element)))"/>
   </xsl:function>
 
   <xsl:function name="local:is-matching-standard-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="operator" as="element(local:operator)"/>
-    <xsl:sequence select="boolean(local:is-operator($element) and contains($operator/@inputs, string($element)))"/>
+    <xsl:sequence select="boolean(s:is-operator($element) and contains($operator/@inputs, string($element)))"/>
   </xsl:function>
 
   <!-- ************************************************************ -->
@@ -132,7 +124,7 @@ All Rights Reserved
 
   <xsl:function name="local:is-relation-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="local:is-operator($element)
+    <xsl:sequence select="s:is-operator($element)
       and ($local:supported-relation-operators[@input=string($element)]
         or $local:supported-relation-operators[@input-negated=string($element)])"/>
   </xsl:function>
@@ -150,7 +142,7 @@ All Rights Reserved
 
   <xsl:function name="local:is-prefix-operator" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:sequence select="local:is-operator($element)
+    <xsl:sequence select="s:is-operator($element)
       and exists(local:get-prefix-operator(string($element)))"/>
   </xsl:function>
 
@@ -214,34 +206,21 @@ All Rights Reserved
       else ()"/>
   </xsl:function>
 
-  <!--
-  Helper to extract all of the "simple" assumed functions specified by the user.
-  These are things like 'f' but not 'f_n'.
-
-  TODO: Need to handle f_n and f_n^p as well.
-  TODO: Need to signal error if bad arguments are passed.
-  -->
-  <xsl:function name="local:get-simple-assumed-functions" as="xs:string*">
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:variable name="function-targets" select="$assumptions/s:assume[@property='function']/s:target" as="element(s:target)*"/>
-    <xsl:variable name="simple-function-targets" select="$function-targets[mi and count(node())=1]" as="element(s:target)*"/>
-    <xsl:sequence select="for $t in $simple-function-targets return string($t/mi)"/>
-  </xsl:function>
-
-  <xsl:function name="local:is-simple-assumed-function" as="xs:boolean">
+  <xsl:function name="local:is-assumed-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:sequence select="boolean($element[self::mi and local:get-simple-assumed-functions($assumptions)=string(.)])"/>
+    <xsl:sequence select="boolean($element[s:is-assumed-function(., $assumptions)
+        or (s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $assumptions))])"/>
   </xsl:function>
 
-  <xsl:function name="local:is-supported-function-construct" as="xs:boolean">
+  <xsl:function name="local:is-legal-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?"/>
     <xsl:sequence select="local:is-supported-function($element)
       or $element[self::msup and local:is-supported-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]
       or $element[self::msubsup and *[1][self::mi and .='log']]
-      or local:is-simple-assumed-function($element, $assumptions)
+      or local:is-assumed-function-construct($element, $assumptions)
       "/>
   </xsl:function>
 
@@ -287,9 +266,9 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[1][local:is-supported-function-construct(., $assumptions)]">
+      <xsl:when test="$elements[1][local:is-legal-function-construct(., $assumptions)]">
         <!-- Supported function (not necessarily applied) -->
-        <xsl:call-template name="local:handle-supported-function-group">
+        <xsl:call-template name="local:handle-legal-function-group">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
         </xsl:call-template>
@@ -344,7 +323,7 @@ All Rights Reserved
         <xsl:element name="{$cmathml-name}"/>
       </xsl:when>
       <xsl:when test="count($elements)=2 and local:is-matching-standard-operator($elements[1], $operator)
-          and not(local:is-operator($elements[2]))">
+          and not(s:is-operator($elements[2]))">
         <!-- Prefix context -->
         <xsl:choose>
           <xsl:when test="not($allow-unary)">
@@ -436,7 +415,7 @@ All Rights Reserved
         <xsl:element name="{$cmathml-name}"/>
       </xsl:when>
       <xsl:when test="count($elements)=2 and local:is-matching-standard-operator($elements[1], $operator)
-          and not(local:is-operator($elements[2]))">
+          and not(s:is-operator($elements[2]))">
         <!-- Unary/prefix context -->
         <xsl:choose>
           <xsl:when test="not($allow-unary)">
@@ -458,7 +437,7 @@ All Rights Reserved
         <!-- Fail: n-ary with n>2 not allowed -->
         <xsl:copy-of select="s:make-error('UCFOP3', $elements, ($cmathml-name))"/>
       </xsl:when>
-      <xsl:when test="count($elements) &lt; 3 or $elements[position()!=2][local:is-operator(.)] or not($elements[2][local:is-matching-standard-operator(., $operator)])">
+      <xsl:when test="count($elements) &lt; 3 or $elements[position()!=2][s:is-operator(.)] or not($elements[2][local:is-matching-standard-operator(., $operator)])">
         <!-- Fail: bad grouping for binary operator -->
         <xsl:copy-of select="s:make-error('UCFOP2', $elements, ($cmathml-name))"/>
       </xsl:when>
@@ -635,6 +614,8 @@ All Rights Reserved
     </xsl:choose>
   </xsl:function>
 
+  <!-- ************************************************************ -->
+
   <!--
   Group containing a supported function, say 'f'.
 
@@ -645,7 +626,7 @@ All Rights Reserved
   (3) 'fogox' which is treated as 'fo(gox)'
 
   -->
-  <xsl:template name="local:handle-supported-function-group" as="element()+">
+  <xsl:template name="local:handle-legal-function-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
     <xsl:choose>
@@ -653,12 +634,14 @@ All Rights Reserved
         <!-- This is case (1) above -->
         <xsl:variable name="function" select="$elements[1]" as="element()"/>
         <xsl:choose>
-          <xsl:when test="local:is-simple-assumed-function($function, $assumptions)">
-            <!-- Simple function -->
-            <ci type="function"><xsl:value-of select="string($function)"/></ci>
+          <xsl:when test="local:is-assumed-function-construct($function, $assumptions)">
+            <!-- Assumed function construct (e.g. plain f, or f^2 or f^{-1}) -->
+            <xsl:call-template name="local:map-assumed-function-construct">
+              <xsl:with-param name="construct" select="$function"/>
+            </xsl:call-template>
           </xsl:when>
           <xsl:otherwise>
-            <!-- Pre-defined supported function -->
+            <!-- Must be pre-defined supported function construct -->
             <xsl:variable name="function-output" as="element(local:function-mapping)">
               <xsl:call-template name="local:map-supported-function">
                 <xsl:with-param name="operator-element" select="$function"/>
@@ -691,10 +674,12 @@ All Rights Reserved
               </xsl:call-template>
             </xsl:variable>
             <xsl:choose>
-              <xsl:when test="local:is-simple-assumed-function($first-function, $assumptions)">
-                <!-- Simple function application -->
+              <xsl:when test="local:is-assumed-function-construct($first-function, $assumptions)">
+                <!-- Assumed function construct application (e.g. plain f, or f^2 or f^{-1}) -->
                 <apply>
-                  <fn><ci type="function"><xsl:value-of select="string($first-function)"/></ci></fn>
+                  <xsl:call-template name="local:map-assumed-function-construct">
+                    <xsl:with-param name="construct" select="$first-function"/>
+                  </xsl:call-template>
                   <xsl:copy-of select="$operands"/>
                 </apply>
               </xsl:when>
@@ -860,6 +845,53 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="local:map-assumed-function-construct" as="element()">
+    <xsl:param name="construct" as="element()" required="yes"/>
+    <xsl:choose>
+      <xsl:when test="$construct[s:is-power(.) and s:get-power-exponent(.)[self::mn and .='-1']]">
+        <!-- Inverse function -->
+        <apply>
+          <inverse/>
+          <xsl:call-template name="local:create-cmathml-function">
+            <xsl:with-param name="element" select="s:get-power-base($construct)"/>
+          </xsl:call-template>
+        </apply>
+      </xsl:when>
+      <xsl:when test="$construct[s:is-power(.) and s:get-power-exponent(.)[self::mn and number(.) &gt;= 1]]">
+        <!-- Function to a power -->
+        <apply>
+          <power/>
+          <xsl:call-template name="local:create-cmathml-function">
+            <xsl:with-param name="element" select="s:get-power-base($construct)"/>
+          </xsl:call-template>
+          <xsl:apply-templates select="s:get-power-exponent($construct)" mode="pmathml-to-cmathml"/>
+        </apply>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Function -->
+        <xsl:call-template name="local:create-cmathml-function">
+          <xsl:with-param name="element" select="$construct"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="local:create-cmathml-function" as="element(ci)">
+    <xsl:param name="element" as="element()"/>
+    <ci type="function">
+      <xsl:choose>
+        <xsl:when test="$element[self::mi]">
+          <xsl:value-of select="string($element)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:copy-of select="$element"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </ci>
+  </xsl:template>
+
+  <!-- ************************************************************ -->
+
   <!--
   Group starting with a prefix operator, say 'p'. Main possibilities:
 
@@ -883,7 +915,7 @@ All Rights Reserved
         <!-- This is (2) -->
         <xsl:variable name="operands" as="element()+" select="$elements[position()!=1]"/>
         <xsl:choose>
-          <xsl:when test="$operands[local:is-operator(.)]">
+          <xsl:when test="$operands[s:is-operator(.)]">
             <!-- Fail: bad combination of operators -->
             <xsl:copy-of select="s:make-error('UCFOP5', $elements, ())"/>
           </xsl:when>

@@ -17,6 +17,8 @@ import org.w3c.dom.Document;
  * Implementation of {@link DOMPostProcessor} that bootstraps into {@link MathMLUpConverter},
  * providing the functionality offered by it.
  * 
+ * @since 1.1.0
+ * 
  * @see MathMLUpConverter
  *
  * @author  David McKain

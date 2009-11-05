@@ -426,16 +426,23 @@ operator("/")
 \hbar+1
 !UMFG03
 ====
-## Assume test
+###########################################################
+# Assumption tests
 f
 f
 ====
-\assume{function}{f} $f$
+\assumeSymbol{f}{function} $f$
 f
 ====
 f(x)
 f * x
 ====
-\assume{function}{f} $f(x)$
+\assumeSymbol{f}{function} $f(x)$
 f(x)
+====
+\assumeSymbol{f_n}{function} $f_n(x)$
+f[n](x)
+====
+\assumeSymbol{f_{n_k}}{function} $f_{n_k}(x)$
+f[n[k]](x)
 ====

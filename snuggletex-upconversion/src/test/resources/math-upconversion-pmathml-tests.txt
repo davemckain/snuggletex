@@ -3,7 +3,7 @@
 # Input format is:
 #
 # LaTeX (interpreted inside $...$)
-# Resulting child content of MathML <math/> element
+# EITHER enriched PMathML OR !ErrorCode (up-conversion only)
 # ==== (divider)
 #
 # Lines starting with '#' are documentation and are stripped out when running tests
@@ -680,6 +680,9 @@ x_{1,2}
 <mo>&#x2062;</mo>
 <mi>z</mi>
 ====
+###########################################################
+# Assumption tests
+#
 ## By default, we don't interpret this as a function...
 f(x)
 <mi>f</mi>
@@ -688,9 +691,47 @@ f(x)
   <mi>x</mi>
 </mfenced>
 ====
-## ...but this can be requested using \assume
-\assume{function}{f} $f(x)$
+## ...but this can be requested using \assumeSymbol
+\assumeSymbol{f}{function} $f(x)$
 <mi>f</mi>
+<mo>&#x2061;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+</mfenced>
+====
+\assumeSymbol{f}{function}\unassumeSymbol{f} $f(x)$
+<mi>f</mi>
+<mo>&#x2062;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+</mfenced>
+====
+\assumeSymbol{f}{function} $f^2(x)$
+<msup>
+  <mi>f</mi>
+  <mn>2</mn>
+</msup>
+<mo>&#x2061;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+</mfenced>
+====
+\assumeSymbol{f_n}{function} $f_n(x)$
+<msub>
+  <mi>f</mi>
+  <mi>n</mi>
+</msub>
+<mo>&#x2061;</mo>
+<mfenced open='(' close=')'>
+  <mi>x</mi>
+</mfenced>
+====
+\assumeSymbol{f_n}{function} $f_n^{-1}(x)$
+<msubsup>
+  <mi>f</mi>
+  <mi>n</mi>
+  <mn>-1</mn>
+</msubsup>
 <mo>&#x2061;</mo>
 <mfenced open='(' close=')'>
   <mi>x</mi>

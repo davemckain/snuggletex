@@ -25,7 +25,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   exclude-result-prefixes="xs s local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
-  <xsl:import href="common.xsl"/>
+  <xsl:import href="snuggletex-utilities.xsl"/>
 
   <!-- ************************************************************ -->
 
@@ -473,15 +473,15 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </xsl:template>
 
   <!--
-  Assumed function application
+  Custom function application.
 
   <apply>
-    <fn><ci type="function">f</ci></fn>
+    <ci type="function">f</ci>
     <ci>x</ci>
   </apply>
   -->
-  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::fn]]" mode="cmathml-to-maxima" as="node()+">
-    <xsl:variable name="function" as="element(ci)" select="fn[1]/ci"/>
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::ci and @type='function']]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:variable name="function" as="element(ci)" select="*[1]"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
     <xsl:text>(</xsl:text>

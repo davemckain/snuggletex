@@ -21,6 +21,8 @@ import java.util.ResourceBundle;
 
 /**
  * This defines the {@link SnugglePackage} providing up-conversion functionality.
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision: 457 $
@@ -48,8 +50,8 @@ public final class UpConversionPackageDefinitions {
             throw new SnuggleRuntimeException(e);
         }
         
-         
         /* Special commands for making up-conversion assumptions. */
-        upConversionPackage.addComplexCommand("assume", false, 2, TEXT_MODE_ONLY, new LaTeXMode[] { LR, MATH }, new AssumeHandler(), IGNORE);
+        upConversionPackage.addComplexCommand("assumeSymbol", false, 2, TEXT_MODE_ONLY, new LaTeXMode[] { MATH, LR }, new AssumeSymbolHandler(), IGNORE);
+        upConversionPackage.addComplexCommand("unassumeSymbol", false, 1, TEXT_MODE_ONLY, new LaTeXMode[] { MATH }, new UnassumeSymbolHandler(), IGNORE);
      }
 }

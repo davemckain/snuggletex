@@ -8,25 +8,6 @@ supporting various types of MathML results.
 
 This may be applied to an entire XHTML + MathML document.
 
-Assumptions can be specified in the following form:
-
-<s:assumptions>
-  <s:assume property="function">
-    <s:target>
-      <mi>f</mi>
-    </s:target>
-    <s:target>
-      <mi>g</mi>
-    </s:target>
-  </s:assume>
-  <s:assume property="imaginary-i">
-    <s:target>
-      <mi>i</mi>
-    </s:target>
-  </s:assume>
-  ...
-</s:assumptions>
-
 Copyright (c) 2009 The University of Edinburgh
 All Rights Reserved
 
@@ -42,7 +23,8 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:import href="common.xsl"/>
+  <xsl:import href="snuggletex-utilities.xsl"/>
+  <xsl:import href="pmathml-utilities.xsl"/>
   <xsl:import href="pmathml-enhancer.xsl"/>
   <xsl:import href="pmathml-to-cmathml.xsl"/>
   <xsl:import href="cmathml-to-maxima.xsl"/>
@@ -51,8 +33,10 @@ All Rights Reserved
 
   <xsl:param name="s:do-content-mathml" as="xs:boolean" select="true()"/>
   <xsl:param name="s:do-maxima" as="xs:boolean" select="true()"/>
+  <xsl:param name="s:show-assumptions" as="xs:boolean" select="false()"/>
 
   <xsl:variable name="s:snuggletex-annotation" as="xs:string" select="'SnuggleTeX'"/>
+  <xsl:variable name="s:assumptions-annotation" as="xs:string" select="'SnuggleTeX-Assumptions'"/>
   <xsl:variable name="s:latex-annotation" as="xs:string" select="'LaTeX'"/>
   <xsl:variable name="s:content-mathml-annotation" as="xs:string" select="'MathML-Content'"/>
   <xsl:variable name="s:content-failures-annotation" as="xs:string" select="'MathML-Content-upconversion-failures'"/>
@@ -72,7 +56,7 @@ All Rights Reserved
   </xsl:template>
 
   <!--
-  When we find an <s:assumption/>, leave it out of the result tree but
+  When we find an <s:assumptions/>, leave it out of the result tree but
   make it the current assumption for the next node.
   -->
   <xsl:template match="s:assumptions" mode="sibling-traversal">
@@ -186,7 +170,7 @@ All Rights Reserved
       <math>
         <xsl:copy-of select="@*"/>
         <xsl:choose>
-          <xsl:when test="$s:do-content-mathml or $s:do-maxima or exists($annotations)">
+          <xsl:when test="$s:show-assumptions or $s:do-content-mathml or $s:do-maxima or exists($annotations)">
             <!-- We're definitely going to be doing annotations here! -->
             <semantics>
               <!-- Put in the enhanced Presentation MathML first -->
@@ -227,6 +211,12 @@ All Rights Reserved
                   </annotation>
                 </xsl:when>
               </xsl:choose>
+              <!-- Maybe add assumptions annotation -->
+              <xsl:if test="$s:show-assumptions">
+                <annotation-xml encoding="{$s:assumptions-annotation}">
+                  <xsl:copy-of select="$current-assumptions"/>
+                </annotation-xml>
+              </xsl:if>
             </semantics>
           </xsl:when>
           <xsl:otherwise>
