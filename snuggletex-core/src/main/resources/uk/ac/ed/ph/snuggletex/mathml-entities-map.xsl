@@ -12,7 +12,9 @@ $Id$
   <xsl:output use-character-maps="mathml-entities"/>
 
   <xsl:character-map name="mathml-entities">
+    <!-- (Not sure this is a good idea!)
     <xsl:output-character character="&#x006a;" string="&amp;jmath;"/>
+    -->
     <xsl:output-character character="&#x00ac;" string="&amp;not;"/>
     <xsl:output-character character="&#x00b1;" string="&amp;pm;"/>
     <xsl:output-character character="&#x00c5;" string="&amp;Aring;"/>
