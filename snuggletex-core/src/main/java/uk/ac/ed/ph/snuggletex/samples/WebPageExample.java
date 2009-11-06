@@ -44,7 +44,7 @@ public final class WebPageExample {
         options.setTitle("My Web Page");
         options.setAddingTitleHeading(true);
         options.setIndenting(true);
-        options.setAddingMathAnnotations(true);
+        options.setAddingMathSourceAnnotations(true);
         options.setIncludingStyleElement(false);    
         
         /* Now we ask SnuggleTeX to generate the resulting web page. By default, it outputs to

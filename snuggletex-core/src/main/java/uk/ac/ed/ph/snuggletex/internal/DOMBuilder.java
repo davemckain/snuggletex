@@ -19,6 +19,7 @@ import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayHandler;
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -714,11 +715,57 @@ public final class DOMBuilder {
     
     /**
      * Builds a MathML <tt>math</tt> element for the given Token token, using contentToken
-     * to provide the content.
+     * to provide the content, descending into child Nodes as normal.
      */
     public void buildMathElement(final Element parentElement,
-            final Token token, final ArgumentContainerToken contentToken,
-            final boolean isDisplayMath) throws SnuggleParseException {
+            final Token token, final ArgumentContainerToken mathContentToken,
+            final boolean isDisplayMath)
+            throws SnuggleParseException {
+        buildMathElement(parentElement, token, mathContentToken, isDisplayMath, defaultMathContentBuilderCallback);
+    }
+    
+    /**
+     * Internal callback interface that specifies how to build the real content of a MathML
+     * element.
+     */
+    public static interface MathContentBuilderCallback {
+        
+        public void buildMathElementContent(final Element contentContainerElement,
+                final ArgumentContainerToken mathContentToken, final boolean isAnnotated)
+                throws SnuggleParseException;
+    }
+    
+    /**
+     * Trivial instance of {@link MathContentBuilderCallback} that simply descends into child
+     * tokens, handling the annotated/non-annotated case as required.
+     */
+    private final MathContentBuilderCallback defaultMathContentBuilderCallback = new MathContentBuilderCallback() {
+        
+        public void buildMathElementContent(final Element contentContainerElement,
+                final ArgumentContainerToken mathContentToken, final boolean isAnnotated)
+                throws SnuggleParseException {
+            if (isAnnotated) {
+                /* If annotated, then need to ensure we only generate one child Node */
+                handleMathTokensAsSingleElement(contentContainerElement, mathContentToken);
+            }
+            else {
+                handleTokens(contentContainerElement, mathContentToken, false);
+            }
+        }
+    };
+    
+    /**
+     * Builds a MathML <tt>math</tt> element for the given Token token, using contentToken
+     * to provide the content, using the given {@link MathContentBuilderCallback} to
+     * supply the content.
+     * <p>
+     * This is useful for things like {@link EqnArrayHandler} which generate a rather specific
+     * structure.
+     */
+    public void buildMathElement(final Element parentElement,
+            final Token token, final ArgumentContainerToken mathContentToken,
+            final boolean isDisplayMath, final MathContentBuilderCallback mathContentBuilderCallback)
+            throws SnuggleParseException {
         /* Change outputContext */
         pushOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
         
@@ -729,26 +776,25 @@ public final class DOMBuilder {
         }
         
         /* Build up content, with annotation if necessary */
-        if (options.isAddingMathAnnotations()) {
+        if (options.isAddingMathSourceAnnotations()) {
             /* The structure here is <semantics>...<annotation/></semantics>
-             * where the first child of <semantics> is the resulting MathML.
-             * (Therefore, we need to wrap the MathML in an <mrow/> if there is
-             * more than one top level element here)
+             * where the first child of <semantics> is the resulting MathML
+             * build by the callback, which must be a single element in this case.
              */
             Element semantics = appendMathMLElement(math, "semantics");
             
             /* Descend into Math content */
-            handleMathTokensAsSingleElement(semantics, contentToken);
+            mathContentBuilderCallback.buildMathElementContent(semantics, mathContentToken, true);
 
             /* Maybe create source annotation */
-            if (options.isAddingMathAnnotations()) {
+            if (options.isAddingMathSourceAnnotations()) {
                 Element sourceAnnotation = appendMathMLTextElement(semantics, "annotation",
                         token.getSlice().extract().toString(), true);
                 sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
             }
         }
         else {
-            handleTokens(math, contentToken, false);
+            mathContentBuilderCallback.buildMathElementContent(math, mathContentToken, false);
         }
         /* Reset OutputContext */
         popOutputContext();

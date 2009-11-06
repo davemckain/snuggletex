@@ -94,7 +94,7 @@ public final class MathInputDemoServlet extends BaseServlet {
         resultDocument.appendChild(resultRoot);
         DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
-        domOptions.setAddingMathAnnotations(true);
+        domOptions.setAddingMathSourceAnnotations(true);
         domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
         session.buildDOMSubtree(resultRoot, domOptions);
         
@@ -166,7 +166,7 @@ public final class MathInputDemoServlet extends BaseServlet {
          */
         WebPageOutputOptions webOptions = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         webOptions.setMathVariantMapping(true);
-        webOptions.setAddingMathAnnotations(true);
+        webOptions.setAddingMathSourceAnnotations(true);
         webOptions.setIndenting(true);
         webOptions.setIncludingStyleElement(false);
         

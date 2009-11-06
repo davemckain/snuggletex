@@ -70,7 +70,7 @@ public final class MathInputToImageServlet extends BaseServlet {
             WebPageOutputOptions options = JEuclidUtilities.createWebPageOptions(false, callback);
             options.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
             options.setMathVariantMapping(true);
-            options.setAddingMathAnnotations(false);
+            options.setAddingMathSourceAnnotations(false);
             options.setIndenting(false);
             
             /* Generate web page result, which we'll actually throw away! The important side effect

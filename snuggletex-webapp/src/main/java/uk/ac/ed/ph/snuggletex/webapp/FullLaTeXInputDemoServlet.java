@@ -91,7 +91,7 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
         /* Set up web output options */
         WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         options.setMathVariantMapping(true);
-        options.setAddingMathAnnotations(true);
+        options.setAddingMathSourceAnnotations(true);
         options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setIndenting(true);
         options.setIncludingStyleElement(false);

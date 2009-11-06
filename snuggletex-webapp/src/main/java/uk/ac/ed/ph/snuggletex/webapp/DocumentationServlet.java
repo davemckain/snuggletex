@@ -250,7 +250,7 @@ public final class DocumentationServlet extends BaseServlet {
         WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
         options.setMathVariantMapping(true);
-        options.setAddingMathAnnotations(true);
+        options.setAddingMathSourceAnnotations(true);
         options.setIndenting(true);
         options.setIncludingStyleElement(false);
         if (webPageType==WebPageType.PROCESSED_HTML) {

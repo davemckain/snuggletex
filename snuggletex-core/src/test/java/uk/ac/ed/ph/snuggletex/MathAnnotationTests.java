@@ -49,7 +49,7 @@ public final class MathAnnotationTests {
         session.parseInput(new SnuggleInput(inputMathLaTeX));
         
         DOMOutputOptions domOptions = new DOMOutputOptions();
-        domOptions.setAddingMathAnnotations(true);
+        domOptions.setAddingMathSourceAnnotations(true);
         NodeList result = session.buildDOMSubtree(domOptions);
         
         Assert.assertEquals(1, result.getLength());

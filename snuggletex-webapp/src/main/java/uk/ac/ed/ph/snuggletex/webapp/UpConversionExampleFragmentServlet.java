@@ -92,7 +92,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         resultDocument.appendChild(resultRoot);
         DOMOutputOptions domOptions = new DOMOutputOptions();
         domOptions.setMathVariantMapping(true);
-        domOptions.setAddingMathAnnotations(true);
+        domOptions.setAddingMathSourceAnnotations(true);
         domOptions.setErrorOutputOptions(ErrorOutputOptions.NO_OUTPUT);
         session.buildDOMSubtree(resultRoot, domOptions);
         
@@ -178,7 +178,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
         options.setDOMPostProcessors(upConvertingPostProcessor);
         options.setMathVariantMapping(true);
-        options.setAddingMathAnnotations(true);
+        options.setAddingMathSourceAnnotations(true);
         options.setIndenting(true);
         options.setIncludingStyleElement(false);
         

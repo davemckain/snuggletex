@@ -16,8 +16,6 @@ import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -71,9 +69,8 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         
         /* Do up-conversion and extract wreckage */
         MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetManager());
-        Map<String, Object> upConversionOptions = new HashMap<String, Object>();
         SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
-        Document upConvertedMathDocument = upConverter.upConvertASCIIMathML(asciiMathOutput, upConversionOptions);
+        Document upConvertedMathDocument = upConverter.upConvertASCIIMathML(asciiMathOutput, null);
         Element mathElement = upConvertedMathDocument.getDocumentElement(); /* NB: Document is <math/> here */
         String parallelMathML = MathMLUtilities.serializeElement(mathElement, sourceSerializationOptions);
         String pMathMLUpConverted = MathMLUtilities.serializeDocument(MathMLUtilities.isolateFirstSemanticsBranch(mathElement), sourceSerializationOptions);

@@ -69,7 +69,7 @@ public class DOMOutputOptions implements Cloneable {
     private ErrorOutputOptions errorOutputOptions;
     
     /** Set to true to annotate MathML elements with the original SnuggleTeX source. */
-    private boolean addingMathAnnotations;
+    private boolean addingMathSourceAnnotations;
     
     /** 
      * Set to true to inline CSS styling (i.e. uses <tt>style</tt> attributes). This is useful
@@ -181,7 +181,7 @@ public class DOMOutputOptions implements Cloneable {
         this.errorOutputOptions = ErrorOutputOptions.NO_OUTPUT;
         this.domPostProcessors = null;
         this.inliningCSS = false;
-        this.addingMathAnnotations = false;
+        this.addingMathSourceAnnotations = false;
         this.inlineCSSProperties = null;
         this.prefixingXHTML = false;
         this.prefixingMathML = false;
@@ -222,14 +222,26 @@ public class DOMOutputOptions implements Cloneable {
     public void setInlineCSSProperties(Properties inlineCSSProperties) {
         this.inlineCSSProperties = inlineCSSProperties;
     }
-
-
-    public boolean isAddingMathAnnotations() {
-        return addingMathAnnotations;
+    
+    
+    public boolean isAddingMathSourceAnnotations() {
+        return addingMathSourceAnnotations;
     }
     
-    public void setAddingMathAnnotations(boolean addingMathAnnotations) {
-        this.addingMathAnnotations = addingMathAnnotations;
+    public void setAddingMathSourceAnnotations(boolean addingMathSourceAnnotations) {
+        this.addingMathSourceAnnotations = addingMathSourceAnnotations;
+    }
+
+    /** @deprecated Use {@link #isAddingMathSourceAnnotations()} instead */
+    @Deprecated
+    public boolean isAddingMathAnnotations() {
+        return isAddingMathSourceAnnotations();
+    }
+
+    /** @deprecated Use {@link #setAddingMathSourceAnnotations(boolean)} instead */
+    @Deprecated
+    public void setAddingMathAnnotations(boolean addingMathSourceAnnotations) {
+        setAddingMathSourceAnnotations(addingMathSourceAnnotations);
     }
     
     
