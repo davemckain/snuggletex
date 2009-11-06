@@ -9,11 +9,20 @@
 # Lines starting with '#' are documentation and are stripped out when running tests
 #
 \assumeSymbol{f}{silly} $f$
-UAETP0
+UAES00
 ====
 \assumeSymbol{f^3}{function} $f$
-UAETG0
-====
+UAES01
+=====
 \unassumeSymbol{f}
-UAETG1
+UAES02
+====
+\unassumeProperty{silly}
+UAEP00
+====
+\assumeProperty{roundBracketsAs}{badcrumble}
+UAEP01
+====
+\unassumeProperty{roundBracketsAs}
+UAEP02
 ====

@@ -51,6 +51,8 @@ public final class UpConversionPackageDefinitions {
         }
         
         /* Special commands for making up-conversion assumptions. */
+        upConversionPackage.addComplexCommand("assumeProperty", false, 2, TEXT_MODE_ONLY, new LaTeXMode[] { LR, LR }, new AssumePropertyHandler(), IGNORE);
+        upConversionPackage.addComplexCommand("unassumeProperty", false, 1, TEXT_MODE_ONLY, new LaTeXMode[] { LR }, new UnassumePropertyHandler(), IGNORE);
         upConversionPackage.addComplexCommand("assumeSymbol", false, 2, TEXT_MODE_ONLY, new LaTeXMode[] { MATH, LR }, new AssumeSymbolHandler(), IGNORE);
         upConversionPackage.addComplexCommand("unassumeSymbol", false, 1, TEXT_MODE_ONLY, new LaTeXMode[] { MATH }, new UnassumeSymbolHandler(), IGNORE);
      }

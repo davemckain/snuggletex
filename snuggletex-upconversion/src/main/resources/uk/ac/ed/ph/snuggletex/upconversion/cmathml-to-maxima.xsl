@@ -552,6 +552,10 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:text>%pi</xsl:text>
   </xsl:template>
 
+  <xsl:template match="eulergamma" mode="cmathml-to-maxima" as="text()">
+    <xsl:text>%gamma</xsl:text>
+  </xsl:template>
+
   <!-- ************************************************************ -->
 
   <!--

@@ -26,6 +26,7 @@ public enum UpConversionErrorCode implements ErrorCode {
     UCFG00(),
     UCFG01(),
     UCFG02(),
+    UCFG03(),
     UCFOP0(),
     UCFOP1(),
     UCFOP2(),
@@ -47,10 +48,13 @@ public enum UpConversionErrorCode implements ErrorCode {
     UMFFX0(),
     UMFOP0(),
     
-    /* Assumption failures */
-    UAETP0(),
-    UAETG0(),
-    UAETG1(),
+    /* Assumption errors */
+    UAEP00(),
+    UAEP01(),
+    UAEP02(),
+    UAES00(),
+    UAES01(),
+    UAES02(),
     
     ;
     

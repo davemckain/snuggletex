@@ -23,6 +23,10 @@ x
 \alpha
 %alpha
 ====
+## Note that \pi is always treated as the constant pi by Maxima, as is \gamma
+\pi
+%pi
+====
 ## Demonstrates flattening subscripted identifiers for Maxima
 x_1
 x[1]
@@ -178,16 +182,13 @@ x * y
 inf
 ====
 i
-%i
+i
 ====
 e
-%e
-====
-\pi
-%pi
+e
 ====
 e^x
-exp(x)
+e^x
 ====
 \ln y
 log(y)
@@ -396,9 +397,6 @@ sin
 \sin^{-1}{}
 asin
 ====
-e^{}
-exp
-====
 ## This one is very pathological, but I'll accept for the time being
 {}+{}
 operator("+")
@@ -445,4 +443,23 @@ f[n](x)
 ====
 \assumeSymbol{f_{n_k}}{function} $f_{n_k}(x)$
 f[n[k]](x)
+====
+\assumeSymbol{i}{imaginaryNumber} $i$
+%i
+====
+\assumeSymbol{e}{exponentialNumber} $e$
+%e
+====
+\assumeSymbol{\pi}{constantPi} $\pi$
+%pi
+====
+\assumeSymbol{\gamma}{eulerGamma} $\gamma$
+%gamma
+====
+\assumeSymbol{e}{exponentialNumber} $e^x$
+exp(x)
+====
+# Corner case
+\assumeSymbol{e}{exponentialNumber} $e^{}$
+exp
 ====

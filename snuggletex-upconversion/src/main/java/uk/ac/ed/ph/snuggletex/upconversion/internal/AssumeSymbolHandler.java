@@ -7,19 +7,17 @@ package uk.ac.ed.ph.snuggletex.upconversion.internal;
 
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.internal.VariableManager;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionErrorCode;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Handler for the <tt>\\assumeSymbol{target}{type}</tt> command.
+ * Handler for the <tt>\\assumeSymbol{target}{property}</tt> command.
  * 
  * @since 1.2.0
  *
@@ -28,7 +26,6 @@ import org.w3c.dom.NodeList;
  */
 public final class AssumeSymbolHandler extends AssumeHandlerBase {
     
-    @SuppressWarnings("unchecked")
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
         /* First argument is the target symbol that this assumption will apply to, which is
@@ -38,29 +35,25 @@ public final class AssumeSymbolHandler extends AssumeHandlerBase {
         builder.pushOutputContext(OutputContext.MATHML_INLINE);
         NodeList assumptionTargetRaw = builder.extractNodeListValue(token.getArguments()[0]);
         builder.popOutputContext();
-        Element assumptionTarget = ensureLegalTargetSymbol(builder, parentElement, token, assumptionTargetRaw);
+        Element assumptionTarget = ensureLegalSymbolTarget(builder, parentElement, token, assumptionTargetRaw);
         if (assumptionTarget==null) {
             return;
         }
         
         /* Second argument is the property being assumed */
-        String assumptionProperty = builder.extractStringValue(token.getArguments()[1]);
-        if (!SYMBOL_ASSUMPTION_PROPERTIES_SET.contains(assumptionProperty)) {
-            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAETP0, assumptionProperty);
+        String assumptionType = builder.extractStringValue(token.getArguments()[1]);
+        if (!SYMBOL_ASSUMPTION_TYPES.contains(assumptionType)) {
+            /* Error: Unrecognised assumption property for symbol */
+            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAES00, assumptionType);
             return;
         }
         
         /* Retrieve symbol assumptions map */
-        VariableManager variableManager = builder.getVariableManager();
-        Map<ElementMapKeyWrapper, String> symbolAssumptionsMap = (Map<ElementMapKeyWrapper, String>) variableManager.getVariable(ASSUME_VARIABLE_NAMESPACE, SYMBOL_ASSUMPTIONS_VARIABLE_NAME);
-        if (symbolAssumptionsMap==null) {
-            symbolAssumptionsMap = new HashMap<ElementMapKeyWrapper, String>();
-            variableManager.setVariable(ASSUME_VARIABLE_NAMESPACE, SYMBOL_ASSUMPTIONS_VARIABLE_NAME, symbolAssumptionsMap);
-        }
+        Map<ElementMapKeyWrapper, String> symbolAssumptionsMap = getSymbolAssumptionsMap(builder);
 
         /* Wrap up the target for storing in the assumptions map */
         ElementMapKeyWrapper symbolTarget = new ElementMapKeyWrapper(assumptionTarget);
-        symbolAssumptionsMap.put(symbolTarget, assumptionProperty);
+        symbolAssumptionsMap.put(symbolTarget, assumptionType);
         
         /* Now output all current assumptions */
         buildAssumptionsElement(builder, parentElement);

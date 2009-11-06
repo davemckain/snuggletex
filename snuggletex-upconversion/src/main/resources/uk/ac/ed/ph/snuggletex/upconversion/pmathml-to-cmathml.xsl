@@ -31,12 +31,6 @@ All Rights Reserved
 
   <!-- ************************************************************ -->
 
-  <xsl:param name="s:assume-brackets-vector" select="true()" as="xs:boolean"/>
-  <xsl:param name="s:assume-braces-set" select="true()" as="xs:boolean"/>
-  <xsl:param name="s:assume-square-list" select="true()" as="xs:boolean"/>
-
-  <!-- ************************************************************ -->
-
   <!-- Entry point -->
   <xsl:template name="s:pmathml-to-cmathml" as="element()*">
     <xsl:param name="elements" as="element()*"/>
@@ -970,24 +964,28 @@ All Rights Reserved
     <xsl:param name="element" as="element()"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
     <!-- See if this atom is an assumed symbol -->
-    <xsl:variable name="symbol-assumption" select="s:get-symbol-assumption($element, $assumptions)" as="element(s:assumption)?"/>
+    <xsl:variable name="symbol" select="s:get-symbol-assumption($element, $assumptions)" as="element(s:symbol)?"/>
     <xsl:choose>
-      <xsl:when test="exists($symbol-assumption)">
+      <xsl:when test="exists($symbol)">
         <!-- It is, so perform appropriate assumption -->
-        <xsl:variable name="property" select="$symbol-assumption/@property"/>
+        <xsl:variable name="assume" select="$symbol/@assume" as="xs:string"/>
         <xsl:choose>
-          <xsl:when test="$property='exponentialNumber'">
+          <xsl:when test="$assume='exponentialNumber'">
             <exponentiale/>
           </xsl:when>
-          <xsl:when test="$property='imaginaryNumber'">
+          <xsl:when test="$assume='imaginaryNumber'">
             <imaginaryi/>
           </xsl:when>
-          <xsl:when test="$property='constantPi'">
+          <xsl:when test="$assume='constantPi'">
             <pi/>
+          </xsl:when>
+          <xsl:when test="$assume='eulerGamma'">
+            <eulergamma/>
           </xsl:when>
           <xsl:otherwise>
             <xsl:message terminate="yes">
-              Unhandled symbol assumption <xsl:copy-of select="$symbol-assumption"/>
+              Unhandled symbol assumption
+              <xsl:copy-of select="$symbol"/>
             </xsl:message>
           </xsl:otherwise>
         </xsl:choose>
@@ -1007,46 +1005,49 @@ All Rights Reserved
     </xsl:call-template>
   </xsl:template>
 
-  <!-- Treat a,b,c with no opener and closer as a list -->
-  <xsl:template match="mfenced[$s:assume-square-list and @open='' and @close='']" mode="pmathml-to-cmathml" as="element(list)">
-    <list>
-      <xsl:apply-templates mode="pmathml-to-cmathml"/>
-    </list>
-  </xsl:template>
-
-  <xsl:template match="mfenced[@open='(' and @close=')' and count(*)=1]" mode="pmathml-to-cmathml" as="element()*">
-    <!-- Treat this as (...), which basically means we treat the content as a single group -->
-    <xsl:call-template name="local:process-group">
-      <xsl:with-param name="elements" select="*[1]"/>
-    </xsl:call-template>
-  </xsl:template>
-
-  <!-- (Optional) Treat (a,b,c,...) with more than 1 element as a vector -->
-  <xsl:template match="mfenced[$s:assume-brackets-vector and @open='(' and @close=')' and count(*)&gt;1]" mode="pmathml-to-cmathml" as="element(vector)">
-    <vector>
-      <xsl:apply-templates mode="pmathml-to-cmathml"/>
-    </vector>
-  </xsl:template>
-
-  <!-- (Optional) Treat [a,b,c,...] as a list -->
-  <xsl:template match="mfenced[$s:assume-square-list and @open='[' and @close=']']" mode="pmathml-to-cmathml" as="element(list)">
-    <list>
-      <xsl:apply-templates mode="pmathml-to-cmathml"/>
-    </list>
-  </xsl:template>
-
-  <!-- (Optional) Treat {a,b,c,...} as a set -->
-  <xsl:template match="mfenced[$s:assume-braces-set and @open='{' and @close='}']" mode="pmathml-to-cmathml" as="element(set)">
-    <!-- We treat this as a set of elements -->
-    <set>
-      <xsl:apply-templates mode="pmathml-to-cmathml"/>
-    </set>
-  </xsl:template>
-
-  <!-- Failure fallback for other types of fences -->
-  <xsl:template match="mfenced" mode="pmathml-to-cmathml" as="element(s:fail)">
-    <!-- Failure: can't handle this type of fence -->
-    <xsl:copy-of select="s:make-error('UCFG02', ., (@open, @close))"/>
+  <xsl:template match="mfenced" mode="pmathml-to-cmathml">
+    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <!-- Decide what type of container to emit. It's no coincidence that I chose
+    the property values here to be equal to the name of the resulting Content
+    MathML containers! -->
+    <xsl:variable name="value" as="xs:string?" select="
+      if (@open='(' and @close=')' and count(*)=1) then s:get-property-assumption($assumptions, 'trivialRoundBracketsAs', 'none')
+      else if (@open='(' and @close=')') then s:get-property-assumption($assumptions, 'roundBracketsAs', 'vector')
+      else if (@open='[' and @close=']') then s:get-property-assumption($assumptions, 'squareBracketsAs', 'list')
+      else if (@open='{' and @close='}') then s:get-property-assumption($assumptions, 'bracesAs', 'set')
+      else if (@open='' and @close='') then s:get-property-assumption($assumptions, 'emptyBracketsAs', 'list')
+      else ()
+    "/>
+    <xsl:choose>
+      <xsl:when test="$value='error'">
+        <!-- Failure: handling of this type of fence has been forbidden by assumption -->
+        <xsl:copy-of select="s:make-error('UCFG03', ., (@open, @close))"/>
+      </xsl:when>
+      <xsl:when test="$value='none'">
+        <!-- Brackets are grouping only, so descend into children -->
+        <xsl:for-each select="*">
+          <xsl:call-template name="local:process-group">
+            <xsl:with-param name="elements" select="."/>
+            <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+          </xsl:call-template>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:when test="exists($value)">
+        <!-- Special meaning, which maps to Content MathML element container of the same name -->
+        <xsl:element name="{$value}">
+          <xsl:for-each select="*">
+            <xsl:call-template name="local:process-group">
+              <xsl:with-param name="elements" select="."/>
+              <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+            </xsl:call-template>
+          </xsl:for-each>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- Failure: can't handle this type of fence -->
+        <xsl:copy-of select="s:make-error('UCFG02', ., (@open, @close))"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- Numbers. TODO: Different notations? -->

@@ -39,8 +39,7 @@ public final class AssumptionExample {
     
     public static void main(String[] args) throws IOException {
         /* We will up-convert this LaTeX input */
-        String input = "\\assumeSymbol{e}{exponentialNumber} \\assumeSymbol{j}{imaginaryNumber} "
-            + "\\assumeSymbol{\\pi}{constantPi} $e^{i\\pi}=-1$";
+        String input = "$f(2,y)$";
         
         /* Set up SnuggleEngine, remembering to register package providing up-conversion support */
         SnuggleEngine engine = new SnuggleEngine();

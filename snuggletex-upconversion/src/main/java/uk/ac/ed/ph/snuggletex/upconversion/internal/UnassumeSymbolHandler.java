@@ -7,12 +7,10 @@ package uk.ac.ed.ph.snuggletex.upconversion.internal;
 
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
-import uk.ac.ed.ph.snuggletex.internal.VariableManager;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionErrorCode;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.w3c.dom.Element;
@@ -28,7 +26,6 @@ import org.w3c.dom.NodeList;
  */
 public final class UnassumeSymbolHandler extends AssumeHandlerBase {
     
-    @SuppressWarnings("unchecked")
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
         /* First argument is the symbol that this assumption will apply to, which is
@@ -38,18 +35,13 @@ public final class UnassumeSymbolHandler extends AssumeHandlerBase {
         builder.pushOutputContext(OutputContext.MATHML_INLINE);
         NodeList assumptionTargetRaw = builder.extractNodeListValue(token.getArguments()[0]);
         builder.popOutputContext();
-        Element assumptionTarget = ensureLegalTargetSymbol(builder, parentElement, token, assumptionTargetRaw);
+        Element assumptionTarget = ensureLegalSymbolTarget(builder, parentElement, token, assumptionTargetRaw);
         if (assumptionTarget==null) {
             return;
         }
         
         /* Retrieve symbol assumptions map */
-        VariableManager variableManager = builder.getVariableManager();
-        Map<ElementMapKeyWrapper, String> symbolAssumptionsMap = (Map<ElementMapKeyWrapper, String>) variableManager.getVariable(ASSUME_VARIABLE_NAMESPACE, SYMBOL_ASSUMPTIONS_VARIABLE_NAME);
-        if (symbolAssumptionsMap==null) {
-            symbolAssumptionsMap = new HashMap<ElementMapKeyWrapper, String>();
-            variableManager.setVariable(ASSUME_VARIABLE_NAMESPACE, SYMBOL_ASSUMPTIONS_VARIABLE_NAME, symbolAssumptionsMap);
-        }
+        Map<ElementMapKeyWrapper, String> symbolAssumptionsMap = getSymbolAssumptionsMap(builder);
         
         /* Remove assumption from map, raising an error if nothing is already assumed */
         ElementMapKeyWrapper symbolTarget = new ElementMapKeyWrapper(assumptionTarget);
@@ -57,7 +49,8 @@ public final class UnassumeSymbolHandler extends AssumeHandlerBase {
             symbolAssumptionsMap.remove(symbolTarget);
         }
         else {
-            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAETG1);
+            /* Error: nothing assumed about symbol */
+            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAES02);
         }
         
         /* Now output all current assumptions */

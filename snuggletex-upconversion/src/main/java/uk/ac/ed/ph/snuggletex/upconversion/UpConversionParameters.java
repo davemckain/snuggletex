@@ -38,30 +38,6 @@ public interface UpConversionParameters {
     String DO_MAXIMA = "do-maxima";
     
     /**
-     * Set to {@link Boolean#TRUE} if you want a comma-separated fence bound with matching
-     * round brackets and containing 2 or more child elements to be treated as a vector.
-     * <p>
-     * Default: {@link Boolean#TRUE}.
-     */
-    String ASSUME_BRACKETS_VECTOR = "assume-brackets-vector";
-    
-    /**
-     * Set to {@link Boolean#TRUE} if you want a comma-separated fence bound with matching
-     * braces to be treated as a set.
-     * <p>
-     * Default: {@link Boolean#TRUE}.
-     */
-    String ASSUME_BRACES_SET = "assume-braces-set";
-    
-    /**
-     * Set to {@link Boolean#TRUE} if you want a comma-separated fence bound with matching
-     * square brackets to be treated as a list.
-     * <p>
-     * Default: {@link Boolean#TRUE}.
-     */
-    String ASSUME_SQUARE_LIST = "assume-square-list";
-    
-    /**
      * Specifies the name of a Maxima function to use when faced with unapplied operators.
      * <p>
      * Default: operator

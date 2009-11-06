@@ -573,6 +573,10 @@ x_1
 \left( x \right]
 !UCFG02
 ====
+## Forbidden fence
+\assumeProperty{roundBracketsAs}{error} $(x,y)$
+!UCFG03
+====
 ## Round brackets with more than 1 element become vectors by default
 (1,2)
 <vector>
@@ -1083,4 +1087,13 @@ f(x)
 ====
 \assumeSymbol{\pi}{constantPi} $\pi$
 <pi/>
+====
+\assumeSymbol{\gamma}{eulerGamma} $\gamma$
+<eulergamma/>
+====
+\assumeProperty{roundBracketsAs}{list} $(1,2)$
+<list>
+  <cn>1</cn>
+  <cn>2</cn>
+</list>
 ====

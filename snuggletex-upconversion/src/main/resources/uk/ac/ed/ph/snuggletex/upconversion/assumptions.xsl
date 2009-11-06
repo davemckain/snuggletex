@@ -17,19 +17,31 @@ All Rights Reserved
   exclude-result-prefixes="xs s"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
-  <xsl:function name="s:get-symbol-assumption" as="element(s:assumption)?">
+  <xsl:function name="s:get-property-assumption" as="xs:string?">
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="name" as="xs:string"/>
+    <xsl:sequence select="$assumptions/s:property[@name=$name]/@value"/>
+  </xsl:function>
+
+  <xsl:function name="s:get-property-assumption" as="xs:string">
+    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="name" as="xs:string"/>
+    <xsl:param name="default" as="xs:string"/>
+    <xsl:variable name="explicit" select="s:get-property-assumption($assumptions, $name)" as="xs:string?"/>
+    <xsl:sequence select="if (exists($explicit)) then $explicit else $default"/>
+  </xsl:function>
+
+  <xsl:function name="s:get-symbol-assumption" as="element(s:symbol)?">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:variable name="assumed-symbols" as="element(s:assumption)*"
-      select="$assumptions/s:assumption[@type='symbol']" />
-    <xsl:sequence select="$assumed-symbols[deep-equal(s:target/*, $element)]"/>
+    <xsl:sequence select="$assumptions/s:symbol[deep-equal(*, $element)]"/>
   </xsl:function>
 
   <xsl:function name="s:is-assumed-symbol" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:param name="property" as="xs:string"/>
-    <xsl:sequence select="exists($assumptions/s:assumption[@type='symbol' and @property=$property]/s:target[deep-equal($element, *)])"/>
+    <xsl:param name="assume" as="xs:string"/>
+    <xsl:sequence select="exists($assumptions/s:symbol[@assume=$assume and deep-equal($element, *)])"/>
   </xsl:function>
 
   <xsl:function name="s:is-assumed-function" as="xs:boolean">
