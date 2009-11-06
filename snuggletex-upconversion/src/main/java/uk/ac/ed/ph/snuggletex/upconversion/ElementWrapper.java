@@ -3,7 +3,7 @@
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.upconversion.internal;
+package uk.ac.ed.ph.snuggletex.upconversion;
 
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
@@ -14,16 +14,18 @@ import org.w3c.dom.Element;
 /**
  * Trivial "wrapper" for a DOM {@link Element} that makes it suitable for storing
  * in a {@link Map}.
+ * 
+ * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision$
  */
-final class ElementMapKeyWrapper {
+public final class ElementWrapper {
     
     private final Element symbolElement;
     private final int hashCode;
     
-    public ElementMapKeyWrapper(final Element symbolElement) {
+    public ElementWrapper(final Element symbolElement) {
         this.symbolElement = symbolElement;
         this.hashCode = MathMLUtilities.serializeElement(symbolElement).hashCode();
     }
@@ -34,10 +36,10 @@ final class ElementMapKeyWrapper {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj==null || !(obj instanceof ElementMapKeyWrapper)) {
+        if (obj==null || !(obj instanceof ElementWrapper)) {
             return false;
         }
-        ElementMapKeyWrapper other = (ElementMapKeyWrapper) obj;
+        ElementWrapper other = (ElementWrapper) obj;
         return symbolElement.isEqualNode(other.getSymbolElement());
     }
     

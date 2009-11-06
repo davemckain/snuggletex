@@ -10,8 +10,6 @@ import uk.ac.ed.ph.snuggletex.MathTests;
 import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,10 +39,10 @@ public class MathUpConversionPMathMLTests extends AbstractGoodUpConversionXMLTes
         super(inputLaTeXMaths, expectedMathMLContent);
         
         /* Set up up-converter so that it only generates fixed up Presentation MathML */
-        Map<String, Object> upconversionParameterMap = new HashMap<String, Object>();
-        upconversionParameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.FALSE);
-        upconversionParameterMap.put(UpConversionParameters.DO_MAXIMA, Boolean.FALSE);
-        upconverter = new UpConvertingPostProcessor(upconversionParameterMap);
+        UpConversionOptions upConversionOptions = new UpConversionOptions();
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "false");
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "false");
+        upconverter = new UpConvertingPostProcessor(upConversionOptions);
     }
 
     /**

@@ -16,9 +16,7 @@ import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitio
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
@@ -52,8 +50,10 @@ public class MathUpConversionToMaximaTests extends AbstractGoodTest {
         this.expectedMaxima = expectedMaxima;
         
         /* Set up up-converter */
-        Map<String, Object> upconversionParameterMap = new HashMap<String, Object>();
-        upconverter = new UpConvertingPostProcessor(upconversionParameterMap);
+        UpConversionOptions upConversionOptions = new UpConversionOptions();
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "true");
+        upconverter = new UpConvertingPostProcessor(upConversionOptions);
     }
     
     @Parameters

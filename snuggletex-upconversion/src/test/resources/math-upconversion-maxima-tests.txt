@@ -463,3 +463,9 @@ exp(x)
 \assumeSymbol{e}{exponentialNumber} $e^{}$
 exp
 ====
+\setUpConversionOption{maximaOperatorFunction}{hello} $+$
+hello("+")
+====
+\setUpConversionOption{maximaUnitsFunction}{wendy} $\units{kg}$
+wendy("kg")
+====

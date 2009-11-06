@@ -9,9 +9,9 @@ import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder.OutputContext;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
-import uk.ac.ed.ph.snuggletex.upconversion.UpConversionErrorCode;
-
-import java.util.Map;
+import uk.ac.ed.ph.snuggletex.upconversion.IllegalUpconversionOptionException;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptions;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionUtilities;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,7 +24,7 @@ import org.w3c.dom.NodeList;
  * @author  David McKain
  * @version $Revision$
  */
-public final class UnassumeSymbolHandler extends AssumeHandlerBase {
+public final class UnassumeSymbolHandler extends UpConversionHandlerBase {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
@@ -40,20 +40,18 @@ public final class UnassumeSymbolHandler extends AssumeHandlerBase {
             return;
         }
         
-        /* Retrieve symbol assumptions map */
-        Map<ElementMapKeyWrapper, String> symbolAssumptionsMap = getSymbolAssumptionsMap(builder);
-        
-        /* Remove assumption from map, raising an error if nothing is already assumed */
-        ElementMapKeyWrapper symbolTarget = new ElementMapKeyWrapper(assumptionTarget);
-        if (symbolAssumptionsMap.containsKey(symbolTarget)) {
-            symbolAssumptionsMap.remove(symbolTarget);
+        /* Make the change */
+        UpConversionOptions options = ensureGetAuthorUpconversionOptions(builder);
+        try {
+            options.unassumeSymbol(assumptionTarget);
         }
-        else {
-            /* Error: nothing assumed about symbol */
-            builder.appendOrThrowError(parentElement, token, UpConversionErrorCode.UAES02);
+        catch (IllegalUpconversionOptionException e) {
+            builder.appendOrThrowError(parentElement, token, e.getErrorCode(), (Object[]) e.getArguments());
+            return;
+ 
         }
         
-        /* Now output all current assumptions */
-        buildAssumptionsElement(builder, parentElement);
+        /* Now output all current assumptions for the XSLT to use */
+        UpConversionUtilities.appendDOMElement(options, builder.getDocument(), parentElement, false);
     }
 }

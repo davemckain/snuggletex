@@ -29,17 +29,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <!-- ************************************************************ -->
 
-  <xsl:param name="s:maxima-operator-function" select="'operator'" as="xs:string"/>
-  <xsl:param name="s:maxima-units-function" select="'units'" as="xs:string"/>
-
-  <!-- ************************************************************ -->
-
   <!-- Entry Point -->
   <xsl:template name="s:cmathml-to-maxima" as="node()*">
     <xsl:param name="elements" as="item()*"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:apply-templates select="$elements" mode="cmathml-to-maxima">
-      <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+      <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
     </xsl:apply-templates>
   </xsl:template>
 
@@ -183,11 +178,6 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     </xsl:for-each>
   </xsl:function>
 
-  <xsl:function name="local:make-unapplied-operator" as="xs:string">
-    <xsl:param name="operator" as="xs:string"/>
-    <xsl:value-of select="concat($s:maxima-operator-function, '(&quot;', $operator, '&quot;)')"/>
-  </xsl:function>
-
   <!-- ************************************************************ -->
 
   <!--
@@ -202,18 +192,21 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   operator("+")
   -->
   <xsl:template match="*[local:is-operator(.)]" mode="cmathml-to-maxima" as="text()">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="operator" select="local:get-operator(.)" as="element()"/>
-    <xsl:value-of select="local:unapply-operator($operator, false())"/>
+    <xsl:value-of select="local:unapply-operator($operator, false(), $upconversion-options)"/>
   </xsl:template>
 
   <xsl:function name="local:unapply-operator" as="xs:string">
     <xsl:param name="operator" as="element()"/>
     <xsl:param name="negate" as="xs:boolean"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:variable name="maxima-raw-name" as="xs:string?" select="$operator/@maxima-unapplied-operator"/>
     <xsl:choose>
       <xsl:when test="$maxima-raw-name">
         <xsl:copy-of select="local:make-unapplied-operator(if ($negate)
-          then concat('not', $maxima-raw-name) else $maxima-raw-name)"/>
+          then concat('not', $maxima-raw-name) else $maxima-raw-name,
+          $upconversion-options)"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">
@@ -222,6 +215,13 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:function>
+
+  <xsl:function name="local:make-unapplied-operator" as="xs:string">
+    <xsl:param name="operator" as="xs:string"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
+    <xsl:variable name="maxima-operator-function" select="s:get-upconversion-option($upconversion-options, 'maximaOperatorFunction')" as="xs:string"/>
+    <xsl:value-of select="concat($maxima-operator-function, '(&quot;', $operator, '&quot;)')"/>
   </xsl:function>
 
   <!--
@@ -239,8 +239,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   operator("not+")
   -->
   <xsl:template match="apply[count(*)=2 and *[1][self::not] and local:is-operator(*[2])]" mode="cmathml-to-maxima" as="text()">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="operator" as="element()" select="local:get-operator(*[2])"/>
-    <xsl:value-of select="local:unapply-operator($operator, true())"/>
+    <xsl:value-of select="local:unapply-operator($operator, true(), $upconversion-options)"/>
   </xsl:template>
 
   <!--
@@ -258,8 +259,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   operator("+")
   -->
   <xsl:template match="apply[count(*)=1 and local:is-operator(*[1])]" mode="cmathml-to-maxima" as="text()">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="operator" as="element()" select="local:get-operator(*[1])"/>
-    <xsl:value-of select="local:unapply-operator($operator, false())"/>
+    <xsl:value-of select="local:unapply-operator($operator, false(), $upconversion-options)"/>
   </xsl:template>
 
   <!--
@@ -524,7 +526,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </xsl:template>
 
   <xsl:template match="semantics[@definitionURL='http://www.ph.ed.ac.uk/snuggletex/units']/csymbol" mode="cmathml-to-maxima" as="text()">
-    <xsl:value-of select="concat($s:maxima-units-function, '(&quot;', ., '&quot;)')"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
+    <xsl:variable name="maxima-units-function" select="s:get-upconversion-option($upconversion-options, 'maximaUnitsFunction')" as="xs:string"/>
+    <xsl:value-of select="concat($maxima-units-function, '(&quot;', ., '&quot;)')"/>
   </xsl:template>
 
   <!-- ************************************************************ -->

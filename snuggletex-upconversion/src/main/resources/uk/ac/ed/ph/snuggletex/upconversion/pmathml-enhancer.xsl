@@ -31,7 +31,7 @@ All Rights Reserved
 
   <xsl:import href="pmathml-utilities.xsl"/>
   <xsl:import href="snuggletex-utilities.xsl"/>
-  <xsl:import href="assumptions.xsl"/>
+  <xsl:import href="upconversion-options.xsl"/>
   <xsl:strip-space elements="m:*"/>
 
   <!-- ************************************************************ -->
@@ -39,10 +39,10 @@ All Rights Reserved
   <!-- Entry point -->
   <xsl:template name="s:enhance-pmathml">
     <xsl:param name="elements" as="element()*"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="$elements"/>
-      <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+      <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -84,13 +84,13 @@ All Rights Reserved
   -->
   <xsl:function name="local:is-legal-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:sequence select="local:is-predefined-function($element)
       or $element[self::msup and local:is-predefined-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]
       or $element[self::msubsup and *[1][self::mi and .='log']]
-      or $element[s:is-assumed-function(., $assumptions)]
-      or $element[s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $assumptions)]
+      or $element[s:is-assumed-function(., $upconversion-options)]
+      or $element[s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $upconversion-options)]
       "/>
   </xsl:function>
 
@@ -225,8 +225,8 @@ All Rights Reserved
 
   <xsl:function name="local:is-prefix-or-function" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:sequence select="boolean(local:is-legal-function-construct($element, $assumptions)
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
+    <xsl:sequence select="boolean(local:is-legal-function-construct($element, $upconversion-options)
       or local:is-prefix-operator($element))"/>
   </xsl:function>
 
@@ -259,12 +259,12 @@ All Rights Reserved
   -->
   <xsl:function name="local:is-implicit-product-starter" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:variable name="previous" as="element()?" select="$element/preceding-sibling::*[1]"/>
     <xsl:sequence select="boolean(
       not(exists($previous)) (: case 1 :)
       or ($previous[self::mfenced]) (: case 2 :)
-      or (local:is-prefix-or-function($element, $assumptions) and not(local:is-prefix-or-function($previous, $assumptions))) (: case 3 :)
+      or (local:is-prefix-or-function($element, $upconversion-options) and not(local:is-prefix-or-function($previous, $upconversion-options))) (: case 3 :)
       or (not(local:is-postfix-operator($element)) and local:is-postfix-operator($previous) (: case 4 :)))"/>
   </xsl:function>
 
@@ -544,8 +544,8 @@ All Rights Reserved
 
   <xsl:template name="local:infer-implicit-product-subgroups" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
-    <xsl:for-each-group select="$elements" group-starting-with="*[local:is-implicit-product-starter(., $assumptions)]">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
+    <xsl:for-each-group select="$elements" group-starting-with="*[local:is-implicit-product-starter(., $upconversion-options)]">
       <!-- Add an invisible times if we're the second multiplicative group -->
       <xsl:if test="position()!=1">
         <mo>&#x2062;</mo>
@@ -555,7 +555,7 @@ All Rights Reserved
         <xsl:with-param name="elements" as="element()*">
           <xsl:call-template name="local:apply-prefix-functions-and-operators">
             <xsl:with-param name="elements" select="current-group()"/>
-            <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+            <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
           </xsl:call-template>
         </xsl:with-param>
       </xsl:call-template>
@@ -564,11 +564,11 @@ All Rights Reserved
 
   <xsl:template name="local:apply-prefix-functions-and-operators" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="first-element" as="element()" select="$elements[1]"/>
     <xsl:variable name="after-first-element" as="element()*" select="$elements[position()!=1]"/>
     <xsl:choose>
-      <xsl:when test="local:is-legal-function-construct($first-element, $assumptions) and exists($after-first-element)">
+      <xsl:when test="local:is-legal-function-construct($first-element, $upconversion-options) and exists($after-first-element)">
         <!-- This is a (prefix) function application. Copy the operator as-is -->
         <xsl:copy-of select="$first-element"/>
         <!-- Add an "Apply Function" operator -->
@@ -578,7 +578,7 @@ All Rights Reserved
           <xsl:with-param name="elements" as="element()+">
             <xsl:call-template name="local:apply-prefix-functions-and-operators">
               <xsl:with-param name="elements" select="$after-first-element"/>
-              <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+              <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
             </xsl:call-template>
           </xsl:with-param>
         </xsl:call-template>
@@ -591,7 +591,7 @@ All Rights Reserved
             <xsl:with-param name="elements" as="element()*">
               <xsl:call-template name="local:apply-prefix-functions-and-operators">
                 <xsl:with-param name="elements" select="$after-first-element"/>
-                <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+                <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
               </xsl:call-template>
             </xsl:with-param>
           </xsl:call-template>
@@ -603,7 +603,7 @@ All Rights Reserved
           <xsl:with-param name="elements" as="element()*">
             <xsl:call-template name="local:apply-postfix-operators">
               <xsl:with-param name="elements" select="$elements"/>
-              <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+              <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
             </xsl:call-template>
           </xsl:with-param>
         </xsl:call-template>

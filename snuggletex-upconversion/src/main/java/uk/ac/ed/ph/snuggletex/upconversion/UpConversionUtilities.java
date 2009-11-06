@@ -6,8 +6,10 @@
 package uk.ac.ed.ph.snuggletex.upconversion;
 
 import static uk.ac.ed.ph.snuggletex.SnuggleConstants.SNUGGLETEX_NAMESPACE;
+import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.OPTION_DEFINITIONS;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -159,5 +161,40 @@ public final class UpConversionUtilities {
                 }
             }
         }
+    }
+    
+    //-------------------------------------------------------
+    
+    public static void appendDOMElement(UpConversionOptions options, Document document, 
+            Element containerElement, boolean applyDefaults) {
+        Element optionsContainer = appendSnuggleElement(document, containerElement, "upconversion-options");
+        
+        /* Specified options */
+        if (options!=null) {
+            for (String name : OPTION_DEFINITIONS.keySet()) {
+                if (applyDefaults || options.isOptionSpecified(name)) {
+                    String value = options.getOptionValue(name, applyDefaults);
+                    
+                    Element optionElement = appendSnuggleElement(document, optionsContainer, "option");
+                    optionElement.setAttribute("name", name);
+                    optionElement.setAttribute("value", value);
+                }
+            }
+            
+            /* Symbol assumptions */
+            for (ElementWrapper elementWrapper : options.getAssumedSymbols()) {
+                String assumptionType = options.getSymbolAssumptionType(elementWrapper);
+                
+                Element assumeElement = appendSnuggleElement(document, optionsContainer, "symbol");
+                assumeElement.setAttribute("assume", assumptionType);
+                Node assumptionTargetCopy = elementWrapper.getSymbolElement().cloneNode(true);
+                assumeElement.appendChild(assumptionTargetCopy);
+            }
+        }
+    }
+    
+    private static Element appendSnuggleElement(Document document, Element parentElement, String localName) {
+        return (Element) parentElement.appendChild(document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE,
+                "s:" + localName));
     }
 }

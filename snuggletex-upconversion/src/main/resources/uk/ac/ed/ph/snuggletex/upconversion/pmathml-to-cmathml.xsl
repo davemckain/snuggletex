@@ -26,7 +26,7 @@ All Rights Reserved
 
   <xsl:import href="pmathml-utilities.xsl"/>
   <xsl:import href="snuggletex-utilities.xsl"/>
-  <xsl:import href="assumptions.xsl"/>
+  <xsl:import href="upconversion-options.xsl"/>
   <xsl:strip-space elements="m:*"/>
 
   <!-- ************************************************************ -->
@@ -34,10 +34,10 @@ All Rights Reserved
   <!-- Entry point -->
   <xsl:template name="s:pmathml-to-cmathml" as="element()*">
     <xsl:param name="elements" as="element()*"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="$elements"/>
-      <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+      <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -199,19 +199,19 @@ All Rights Reserved
 
   <xsl:function name="local:is-assumed-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
-    <xsl:sequence select="boolean($element[s:is-assumed-function(., $assumptions)
-        or (s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $assumptions))])"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
+    <xsl:sequence select="boolean($element[s:is-assumed-function(., $upconversion-options)
+        or (s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $upconversion-options))])"/>
   </xsl:function>
 
   <xsl:function name="local:is-legal-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:sequence select="local:is-supported-function($element)
       or $element[self::msup and local:is-supported-function(*[1])]
       or $element[self::msub and *[1][self::mi and .='log']]
       or $element[self::msubsup and *[1][self::mi and .='log']]
-      or local:is-assumed-function-construct($element, $assumptions)
+      or local:is-assumed-function-construct($element, $upconversion-options)
       "/>
   </xsl:function>
 
@@ -220,7 +220,7 @@ All Rights Reserved
   <!-- Application of groups by the precedence order built by pmathml-enhancer.xsl -->
   <xsl:template name="local:process-group" as="element()*">
     <xsl:param name="elements" as="element()*" required="yes"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:choose>
       <xsl:when test="$elements[self::mspace]">
         <!-- Strip off <mspace/> and reapply this template to whatever is left -->
@@ -257,11 +257,11 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[1][local:is-legal-function-construct(., $assumptions)]">
+      <xsl:when test="$elements[1][local:is-legal-function-construct(., $upconversion-options)]">
         <!-- Supported function (not necessarily applied) -->
         <xsl:call-template name="local:handle-legal-function-group">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+          <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[1][local:is-prefix-operator(.)]">
@@ -280,7 +280,7 @@ All Rights Reserved
         <!-- Non-function and non-operator "Atom" -->
         <xsl:call-template name="local:handle-atom">
           <xsl:with-param name="element" select="$elements"/>
-          <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+          <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="empty($elements)">
@@ -622,13 +622,13 @@ All Rights Reserved
   -->
   <xsl:template name="local:handle-legal-function-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
         <!-- This is case (1) above -->
         <xsl:variable name="function" select="$elements[1]" as="element()"/>
         <xsl:choose>
-          <xsl:when test="local:is-assumed-function-construct($function, $assumptions)">
+          <xsl:when test="local:is-assumed-function-construct($function, $upconversion-options)">
             <!-- Assumed function construct (e.g. plain f, or f^2 or f^{-1}) -->
             <xsl:call-template name="local:map-assumed-function-construct">
               <xsl:with-param name="construct" select="$function"/>
@@ -668,7 +668,7 @@ All Rights Reserved
               </xsl:call-template>
             </xsl:variable>
             <xsl:choose>
-              <xsl:when test="local:is-assumed-function-construct($first-function, $assumptions)">
+              <xsl:when test="local:is-assumed-function-construct($first-function, $upconversion-options)">
                 <!-- Assumed function construct application (e.g. plain f, or f^2 or f^{-1}) -->
                 <apply>
                   <xsl:call-template name="local:map-assumed-function-construct">
@@ -962,9 +962,9 @@ All Rights Reserved
   <!-- Handles a single "atom", which might be an assumed symbol -->
   <xsl:template name="local:handle-atom" as="element()*">
     <xsl:param name="element" as="element()"/>
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <!-- See if this atom is an assumed symbol -->
-    <xsl:variable name="symbol" select="s:get-symbol-assumption($element, $assumptions)" as="element(s:symbol)?"/>
+    <xsl:variable name="symbol" select="s:get-symbol-assumption($element, $upconversion-options)" as="element(s:symbol)?"/>
     <xsl:choose>
       <xsl:when test="exists($symbol)">
         <!-- It is, so perform appropriate assumption -->
@@ -1006,16 +1006,16 @@ All Rights Reserved
   </xsl:template>
 
   <xsl:template match="mfenced" mode="pmathml-to-cmathml">
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <!-- Decide what type of container to emit. It's no coincidence that I chose
     the property values here to be equal to the name of the resulting Content
     MathML containers! -->
     <xsl:variable name="value" as="xs:string?" select="
-      if (@open='(' and @close=')' and count(*)=1) then s:get-property-assumption($assumptions, 'trivialRoundBracketsAs', 'none')
-      else if (@open='(' and @close=')') then s:get-property-assumption($assumptions, 'roundBracketsAs', 'vector')
-      else if (@open='[' and @close=']') then s:get-property-assumption($assumptions, 'squareBracketsAs', 'list')
-      else if (@open='{' and @close='}') then s:get-property-assumption($assumptions, 'bracesAs', 'set')
-      else if (@open='' and @close='') then s:get-property-assumption($assumptions, 'emptyBracketsAs', 'list')
+      if (@open='(' and @close=')' and count(*)=1) then s:get-upconversion-option($upconversion-options, 'trivialRoundBracketsAs')
+      else if (@open='(' and @close=')') then s:get-upconversion-option($upconversion-options, 'roundBracketsAs')
+      else if (@open='[' and @close=']') then s:get-upconversion-option($upconversion-options, 'squareBracketsAs')
+      else if (@open='{' and @close='}') then s:get-upconversion-option($upconversion-options, 'bracesAs')
+      else if (@open='' and @close='') then s:get-upconversion-option($upconversion-options, 'emptyBracketsAs')
       else ()
     "/>
     <xsl:choose>
@@ -1028,7 +1028,7 @@ All Rights Reserved
         <xsl:for-each select="*">
           <xsl:call-template name="local:process-group">
             <xsl:with-param name="elements" select="."/>
-            <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+            <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
           </xsl:call-template>
         </xsl:for-each>
       </xsl:when>
@@ -1038,7 +1038,7 @@ All Rights Reserved
           <xsl:for-each select="*">
             <xsl:call-template name="local:process-group">
               <xsl:with-param name="elements" select="."/>
-              <xsl:with-param name="assumptions" select="$assumptions" tunnel="yes"/>
+              <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
             </xsl:call-template>
           </xsl:for-each>
         </xsl:element>
@@ -1074,12 +1074,12 @@ All Rights Reserved
     </apply>
   </xsl:template>
 
-  <!-- We interpret <msup/> as a power, with optional assumptions about exponentials as well -->
+  <!-- We interpret <msup/> as a power, with optional upconversion-options about exponentials as well -->
   <xsl:template match="msup" mode="pmathml-to-cmathml" as="element(apply)">
-    <xsl:param name="assumptions" as="element(s:assumptions)?" tunnel="yes"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <apply>
       <xsl:choose>
-        <xsl:when test="s:is-assumed-symbol(*[1], $assumptions, 'exponentialNumber')">
+        <xsl:when test="s:is-assumed-symbol(*[1], $upconversion-options, 'exponentialNumber')">
           <!-- It's e^x -->
           <exp/>
           <xsl:call-template name="local:process-group">

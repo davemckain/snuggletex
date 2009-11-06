@@ -12,8 +12,6 @@ import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -49,10 +47,10 @@ public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionXMLTes
         super(inputLaTeXMaths, expectedMathMLContent);
         
         /* Set up up-converter */
-        Map<String, Object> upconversionParameterMap = new HashMap<String, Object>();
-        upconversionParameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.TRUE);
-        upconversionParameterMap.put(UpConversionParameters.DO_MAXIMA, Boolean.FALSE);
-        upconverter = new UpConvertingPostProcessor(upconversionParameterMap);
+        UpConversionOptions upConversionOptions = new UpConversionOptions();
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "false");
+        upconverter = new UpConvertingPostProcessor(upConversionOptions);
     }
 
     /**

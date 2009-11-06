@@ -17,8 +17,6 @@ import uk.ac.ed.ph.snuggletex.utilities.TransformerFactoryChooser;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -27,6 +25,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -136,22 +135,16 @@ public class MathMLUpConverter {
         this.stylesheetManager = stylesheetManager;
     }
     
-    public Document upConvertSnuggleTeXMathML(final Document document, final Map<String, Object> upConversionOptions) {
+    public Document upConvertSnuggleTeXMathML(final Document document, final UpConversionOptions upConversionOptions) {
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             /* Create required XSLT */
             Templates upconverterStylesheet = stylesheetManager.getStylesheet(UPCONVERTER_XSL_LOCATION, true);
             Transformer upconverter = upconverterStylesheet.newTransformer();
             
-            /* Set any specified parameters */
-            if (upConversionOptions!=null) {
-                for (Entry<String, Object> entry : upConversionOptions.entrySet()) {
-                    /* (Recall that the actual stylesheets assume the parameters are in the SnuggleTeX
-                     * namespace, so we need to use {uri}localName format for the parameter name.) */
-                    upconverter.setParameter("{" + SnuggleConstants.SNUGGLETEX_NAMESPACE + "}" + entry.getKey(),
-                            entry.getValue());
-                }
-            }
+            /* Pass UpConversionOptions, substituting default where not set */
+            upconverter.setParameter("{" + SnuggleConstants.SNUGGLETEX_NAMESPACE + "}global-upconversion-options",
+                    createUpConversionOptionsElement(upConversionOptions));
             
             /* Do the transform */
             upconverter.transform(new DOMSource(document), new DOMResult(resultDocument));
@@ -161,8 +154,15 @@ public class MathMLUpConverter {
         }
         return resultDocument;
     }
+    
+    private Element createUpConversionOptionsElement(final UpConversionOptions upConversionOptions) {
+        Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
+        Element root = (Element) document.appendChild(document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root"));
+        UpConversionUtilities.appendDOMElement(upConversionOptions, document, root, true);
+        return (Element) root.getFirstChild();
+    }
 
-    public Document upConvertASCIIMathML(final Document asciiMathMLDocument, final Map<String, Object> upConversionOptions) {
+    public Document upConvertASCIIMathML(final Document asciiMathMLDocument, final UpConversionOptions upConversionOptions) {
         /* First of all we convert the ASCIIMathML into something equivalent to SnuggleTeX output */
         Document fixedDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
@@ -183,7 +183,7 @@ public class MathMLUpConverter {
      * @param rawASCIIMathML
      * @param upConversionOptions
      */
-    public Document upConvertASCIIMathML(final String rawASCIIMathML, final Map<String, Object> upConversionOptions) {
+    public Document upConvertASCIIMathML(final String rawASCIIMathML, final UpConversionOptions upConversionOptions) {
         Document inputDocument;
         try {
             inputDocument = XMLUtilities.createNSAwareDocumentBuilder().parse(new InputSource(new StringReader(rawASCIIMathML)));

@@ -9,8 +9,6 @@ import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
-import java.util.Map;
-
 import org.w3c.dom.Document;
 
 /**
@@ -26,27 +24,27 @@ import org.w3c.dom.Document;
  */
 public final class UpConvertingPostProcessor implements DOMPostProcessor {
     
-    private Map<String, Object> upconversionParameterMap;
+    private UpConversionOptions upconversionOptions;
     
     public UpConvertingPostProcessor() {
         this(null);
     }
     
-    public UpConvertingPostProcessor(Map<String, Object> upconversionParameterMap) {
-        this.upconversionParameterMap = upconversionParameterMap;
+    public UpConvertingPostProcessor(UpConversionOptions upconversionParameterMap) {
+        this.upconversionOptions = upconversionParameterMap;
     }
 
-    public Map<String, Object> getUpconversionParameterMap() {
-        return upconversionParameterMap;
+    public UpConversionOptions getUpconversionParameterMap() {
+        return upconversionOptions;
     }
     
-    public void setUpconversionParameterMap(Map<String, Object> upconversionParameterMap) {
-        this.upconversionParameterMap = upconversionParameterMap;
+    public void setUpconversionParameterMap(UpConversionOptions upconversionParameterMap) {
+        this.upconversionOptions = upconversionParameterMap;
     }
     
     public Document postProcessDOM(Document workDocument, DOMOutputOptions unused,
             StylesheetManager stylesheetManager) {
         return new MathMLUpConverter(stylesheetManager)
-            .upConvertSnuggleTeXMathML(workDocument, upconversionParameterMap);
+            .upConvertSnuggleTeXMathML(workDocument, upconversionOptions);
     }
 }

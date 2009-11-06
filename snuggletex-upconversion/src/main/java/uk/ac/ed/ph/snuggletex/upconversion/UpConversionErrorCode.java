@@ -49,12 +49,12 @@ public enum UpConversionErrorCode implements ErrorCode {
     UMFOP0(),
     
     /* Assumption errors */
-    UAEP00(),
-    UAEP01(),
-    UAEP02(),
-    UAES00(),
-    UAES01(),
-    UAES02(),
+    UAEOP0(),
+    UAEOP1(),
+    UAEOP2(),
+    UAESY0(),
+    UAESY1(),
+    UAESY2(),
     
     ;
     

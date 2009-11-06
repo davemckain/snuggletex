@@ -8,15 +8,14 @@ package uk.ac.ed.ph.snuggletex.upconversion.samples;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
-import uk.ac.ed.ph.snuggletex.upconversion.UpConversionParameters;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.UnwrappedParallelMathMLDOM;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +31,7 @@ import org.xml.sax.SAXException;
  * some raw MathML extracted from ASCIIMathML.
  * <p>
  * (You can do the same with the raw MathML produced by SnuggleTeX as well; you just have to
- * call a {@link MathMLUpConverter#upConvertSnuggleTeXMathML(Document, Map)}) instead of the
+ * call a {@link MathMLUpConverter#upConvertSnuggleTeXMathML(Document, UpConversionOptions)}) instead of the
  * method for SnuggleTeX. When using SnuggleTeX normally, all of this can be invoked during
  * the snuggling process by adding a {@link UpConvertingPostProcessor} to the List returned
  * by {@link DOMOutputOptions#getDOMPostProcessors()}.)
@@ -137,18 +136,18 @@ public class ASCIIMathMLUpConversionExample {
          */
         MathMLUpConverter upConverter = new MathMLUpConverter();
         
-        /* You can control aspects of the conversion using a simple Map as follows.
+        /* You can control aspects of the conversion as follows.
          * (Note: all of the values set below are actually defaults but I've put them in for
-         * demo purposes. Have a look at UpConversionParameters for all of the possibilities.)
+         * demo purposes.)
          */
-        Map<String, Object> upconversionParameters = new HashMap<String, Object>();
-        upconversionParameters.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.TRUE);
-        upconversionParameters.put(UpConversionParameters.DO_MAXIMA, Boolean.TRUE);
+        UpConversionOptions upConversionOptions = new UpConversionOptions();
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "true");
         
         /* Now we do the up-conversion magic, which produces a new DOM Document. */
-        Document upconvertedDocument;
+        Document upConvertedDocument;
         try {
-            upconvertedDocument = upConverter.upConvertASCIIMathML(asciiMathMLDocument, upconversionParameters);
+            upConvertedDocument = upConverter.upConvertASCIIMathML(asciiMathMLDocument, upConversionOptions);
         }
         catch (SnuggleRuntimeException e) {
             /* This indicates a bug in the process so is currently notified via an unchecked
@@ -162,11 +161,11 @@ public class ASCIIMathMLUpConversionExample {
         /* Demo of some utility methods for extracting results */
         
         /* 1. This is a convenience for serializing the resulting DOM Document back to an XML String */
-        String resultingMathMLString = MathMLUtilities.serializeDocument(upconvertedDocument);
+        String resultingMathMLString = MathMLUtilities.serializeDocument(upConvertedDocument);
         System.out.println("Resulting MathML is:\n" + resultingMathMLString);
         
         /* 2. This demonstrates extracting a single annotation */
-        String maximaAnnotation = MathMLUtilities.extractAnnotationString(upconvertedDocument.getDocumentElement(),
+        String maximaAnnotation = MathMLUtilities.extractAnnotationString(upConvertedDocument.getDocumentElement(),
                 MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         System.out.println("Maxima Annotation was:\n" + maximaAnnotation);
         
@@ -175,7 +174,7 @@ public class ASCIIMathMLUpConversionExample {
          * Use this if you need most/all of the annotations as it saves having to walk the DOM
          * tree over and over.
          */
-        UnwrappedParallelMathMLDOM unwrappedDOM = MathMLUtilities.unwrapParallelMathMLDOM(upconvertedDocument.getDocumentElement());
+        UnwrappedParallelMathMLDOM unwrappedDOM = MathMLUtilities.unwrapParallelMathMLDOM(upConvertedDocument.getDocumentElement());
         System.out.println("First branch of parallel MathML DOM was:\n"
                 + MathMLUtilities.serializeElement(unwrappedDOM.getFirstBranch()));
         // Etc... 

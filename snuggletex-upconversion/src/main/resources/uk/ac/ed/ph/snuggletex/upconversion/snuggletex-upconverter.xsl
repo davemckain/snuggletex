@@ -17,8 +17,9 @@ All Rights Reserved
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
+  xmlns:local="http://www.ph.ed.ac.uk/snuggletex/snuggletex-upconverter"
   xmlns="http://www.w3.org/1998/Math/MathML"
-  exclude-result-prefixes="xs s m"
+  exclude-result-prefixes="xs s m local"
   xpath-default-namespace="http://www.w3.org/1998/Math/MathML">
 
   <!-- ************************************************************ -->
@@ -28,15 +29,16 @@ All Rights Reserved
   <xsl:import href="pmathml-enhancer.xsl"/>
   <xsl:import href="pmathml-to-cmathml.xsl"/>
   <xsl:import href="cmathml-to-maxima.xsl"/>
+  <xsl:import href="upconversion-options.xsl"/>
 
   <xsl:output method="xml" indent="yes"/>
 
-  <xsl:param name="s:do-content-mathml" as="xs:boolean" select="true()"/>
-  <xsl:param name="s:do-maxima" as="xs:boolean" select="true()"/>
-  <xsl:param name="s:show-assumptions" as="xs:boolean" select="false()"/>
+  <xsl:param name="s:global-upconversion-options" as="element(s:upconversion-options)" required="yes"/>
+
+  <!-- ************************************************************ -->
 
   <xsl:variable name="s:snuggletex-annotation" as="xs:string" select="'SnuggleTeX'"/>
-  <xsl:variable name="s:assumptions-annotation" as="xs:string" select="'SnuggleTeX-Assumptions'"/>
+  <xsl:variable name="s:snuggletex-upconversion-options-annotation" as="xs:string" select="'SnuggleTeX-upconversion-options'"/>
   <xsl:variable name="s:latex-annotation" as="xs:string" select="'LaTeX'"/>
   <xsl:variable name="s:content-mathml-annotation" as="xs:string" select="'MathML-Content'"/>
   <xsl:variable name="s:content-failures-annotation" as="xs:string" select="'MathML-Content-upconversion-failures'"/>
@@ -47,22 +49,22 @@ All Rights Reserved
 
   <!--
   We will actually traverse the document by sibling recursion so that we
-  can always have the most recently set assumptions to hand at each point.
+  can always have the most "recently" set upconversion-options to hand at each point.
   -->
   <xsl:template match="/">
     <xsl:apply-templates select="node()[1]" mode="sibling-traversal">
-      <xsl:with-param name="current-assumptions" select="()"/>
+      <xsl:with-param name="current-upconversion-options" select="()"/>
     </xsl:apply-templates>
   </xsl:template>
 
   <!--
-  When we find an <s:assumptions/>, leave it out of the result tree but
+  When we find an <s:upconversion-options/>, leave it out of the result tree but
   make it the current assumption for the next node.
   -->
-  <xsl:template match="s:assumptions" mode="sibling-traversal">
-    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+  <xsl:template match="s:upconversion-options" mode="sibling-traversal">
+    <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
     <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
-      <xsl:with-param name="current-assumptions" select="."/>
+      <xsl:with-param name="current-upconversion-options" select="."/>
     </xsl:apply-templates>
   </xsl:template>
 
@@ -71,12 +73,12 @@ All Rights Reserved
   and then traverse on to next siblings.
   -->
   <xsl:template match="math" mode="sibling-traversal">
-    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
     <xsl:apply-templates select="." mode="process-math">
-      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+      <xsl:with-param name="current-upconversion-options" select="$current-upconversion-options"/>
     </xsl:apply-templates>
     <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
-      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+      <xsl:with-param name="current-upconversion-options" select="$current-upconversion-options"/>
     </xsl:apply-templates>
   </xsl:template>
 
@@ -85,77 +87,90 @@ All Rights Reserved
   Finally, traverse following siblings.
   -->
   <xsl:template match="*" as="element()" mode="sibling-traversal">
-    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="node()[1]" mode="sibling-traversal">
-        <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+        <xsl:with-param name="current-upconversion-options" select="$current-upconversion-options"/>
       </xsl:apply-templates>
     </xsl:copy>
     <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
-      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+      <xsl:with-param name="current-upconversion-options" select="$current-upconversion-options"/>
     </xsl:apply-templates>
   </xsl:template>
 
   <!-- Keep text, comments and PIs intact -->
   <xsl:template match="text()|comment()|processing-instruction()" mode="sibling-traversal">
-    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+    <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
     <xsl:copy-of select="."/>
     <xsl:apply-templates select="following-sibling::node()[1]" mode="sibling-traversal">
-      <xsl:with-param name="current-assumptions" select="$current-assumptions"/>
+      <xsl:with-param name="current-upconversion-options" select="$current-upconversion-options"/>
     </xsl:apply-templates>
   </xsl:template>
 
   <!-- ************************************************************ -->
 
   <xsl:template match="math" mode="process-math" as="element(math)">
-    <!-- Current in-scope assumptions -->
-    <xsl:param name="current-assumptions" as="element(s:assumptions)?"/>
+    <!-- Current in-scope options -->
+    <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
+
+    <!-- Merge these options with global ones passed from Java -->
+    <xsl:variable name="effective-options" select="local:compute-effective-upconversion-options($current-upconversion-options)" as="element(s:upconversion-options)"/>
+    <xsl:variable name="do-content-mathml" select="s:get-boolean-option($effective-options, 'doContentMathML')" as="xs:boolean"/>
+    <xsl:variable name="do-maxima" select="s:get-boolean-option($effective-options, 'doMaxima')" as="xs:boolean"/>
+    <xsl:variable name="add-options-annotation" select="s:get-boolean-option($effective-options, 'addOptionsAnnotation')" as="xs:boolean"/>
+
     <!-- Extract the actual PMathML content and any existing annotations.
          (The criterion for whether there are any top level annotations will
          be that we have a <semantics/> element with at least 2 children.) -->
     <xsl:variable name="presentation-mathml" select="if (semantics[*[2]]) then (if (semantics/mrow) then semantics/mrow/* else semantics/*[1]) else *" as="element()*"/>
     <xsl:variable name="annotations" select="if (semantics[*[2]]) then semantics/*[position() != 1] else ()" as="element()*"/>
+
     <!-- We always perform enhancement of the Presentation MathML, creating a new Document Node -->
     <xsl:variable name="enhanced-pmathml">
       <xsl:call-template name="s:enhance-pmathml">
         <xsl:with-param name="elements" select="$presentation-mathml"/>
-        <xsl:with-param name="assumptions" select="$current-assumptions"/>
+        <xsl:with-param name="upconversion-options" select="$effective-options"/>
       </xsl:call-template>
     </xsl:variable>
+
     <!-- Maybe convert Presentation MathML to Content MathML, creating another new Document Node -->
     <xsl:variable name="cmathml">
-      <xsl:if test="$s:do-content-mathml or $s:do-maxima">
+      <xsl:if test="$do-content-mathml or $do-maxima">
         <xsl:call-template name="s:pmathml-to-cmathml">
           <xsl:with-param name="elements" select="$enhanced-pmathml/*"/>
-          <xsl:with-param name="assumptions" select="$current-assumptions"/>
+          <xsl:with-param name="upconversion-options" select="$effective-options"/>
         </xsl:call-template>
       </xsl:if>
     </xsl:variable>
+
     <!-- Extract any failures in this process -->
     <xsl:variable name="cmathml-failures" as="element(s:fail)*">
       <xsl:copy-of select="$cmathml//s:fail"/>
     </xsl:variable>
+
     <!-- Maybe convert Content MathML to Maxima input. (This is normally a sequence of
          xs:string but might contain failure elements as well so we need to be careful) -->
     <xsl:variable name="maxima-raw" as="item()*">
       <xsl:choose>
-        <xsl:when test="not($s:do-maxima) or exists($cmathml-failures)">
+        <xsl:when test="not($do-maxima) or exists($cmathml-failures)">
           <!-- Don't bother converting if asked not to or if we failed earlier on -->
           <xsl:sequence select="()"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:call-template name="s:cmathml-to-maxima">
             <xsl:with-param name="elements" select="$cmathml/*"/>
-            <xsl:with-param name="assumptions" select="$current-assumptions"/>
+            <xsl:with-param name="upconversion-options" select="$effective-options"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+
     <!-- Extract any failures arising here -->
     <xsl:variable name="maxima-failures" as="element(s:fail)*">
       <xsl:copy-of select="$maxima-raw[self::s:fail]"/>
     </xsl:variable>
+
     <!-- Formulate the final Maxima string, stripping off the outer pair of brackets
          if present. (This is sane as if they occur then they bracket the entire expression. -->
     <xsl:variable name="maxima-with-brackets" as="xs:string?"
@@ -165,12 +180,13 @@ All Rights Reserved
         if (starts-with($maxima-with-brackets, '(') and ends-with($maxima-with-brackets, ')'))
         then substring($maxima-with-brackets, 2, string-length($maxima-with-brackets) - 2)
         else $maxima-with-brackets"/>
+
     <!-- Build up the resulting MathML math element -->
     <xsl:variable name="result" as="element(math)">
       <math>
         <xsl:copy-of select="@*"/>
         <xsl:choose>
-          <xsl:when test="$s:show-assumptions or $s:do-content-mathml or $s:do-maxima or exists($annotations)">
+          <xsl:when test="$add-options-annotation or $do-content-mathml or $do-maxima or exists($annotations)">
             <!-- We're definitely going to be doing annotations here! -->
             <semantics>
               <!-- Put in the enhanced Presentation MathML first -->
@@ -184,7 +200,7 @@ All Rights Reserved
                     <xsl:copy-of select="$cmathml-failures"/>
                   </annotation-xml>
                 </xsl:when>
-                <xsl:when test="$s:do-content-mathml">
+                <xsl:when test="$do-content-mathml">
                   <annotation-xml encoding="{$s:content-mathml-annotation}">
                     <xsl:copy-of select="$cmathml/*"/>
                   </annotation-xml>
@@ -205,16 +221,16 @@ All Rights Reserved
                     <xsl:copy-of select="$maxima-failures"/>
                   </annotation-xml>
                 </xsl:when>
-                <xsl:when test="$s:do-maxima and not(exists($cmathml-failures))">
+                <xsl:when test="$do-maxima and not(exists($cmathml-failures))">
                   <annotation encoding="{$s:maxima-annotation}">
                     <xsl:value-of select="$maxima"/>
                   </annotation>
                 </xsl:when>
               </xsl:choose>
               <!-- Maybe add assumptions annotation -->
-              <xsl:if test="$s:show-assumptions">
-                <annotation-xml encoding="{$s:assumptions-annotation}">
-                  <xsl:apply-templates select="$current-assumptions" mode="apply-snuggletex-prefix"/>
+              <xsl:if test="$add-options-annotation">
+                <annotation-xml encoding="{$s:snuggletex-upconversion-options-annotation}">
+                  <xsl:apply-templates select="$effective-options" mode="apply-snuggletex-prefix"/>
                 </annotation-xml>
               </xsl:if>
             </semantics>
@@ -234,10 +250,8 @@ All Rights Reserved
         </xsl:choose>
       </math>
     </xsl:variable>
-    <!--
-    Finally we fix up the resulting MathML to make sure all MathML elements have the
-    same namespace prefix as the element originally matched.
-    -->
+    <!-- Finally we fix up the resulting MathML to make sure all MathML elements have the
+         same namespace prefix as the element originally matched.  -->
     <xsl:choose>
       <xsl:when test="name()!=local-name()">
         <!-- A prefix is being used, so apply prefixes to all elements -->
@@ -252,6 +266,41 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
+  <!-- ************************************************************ -->
+
+  <!-- Helper function to compute the effective up-conversion options from the given
+  instance specified in the original LaTeX, applying global values if nothing has been
+  overridden.
+  -->
+  <xsl:function name="local:compute-effective-upconversion-options" as="element(s:upconversion-options)">
+    <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
+    <xsl:choose>
+      <xsl:when test="exists($current-upconversion-options)">
+        <!-- Merge current options over global options. -->
+        <s:upconversion-options>
+          <!-- Options have fixed names, so can iterate over one -->
+          <xsl:for-each select="$s:global-upconversion-options/s:option">
+            <xsl:variable name="global" select="." as="element(s:option)"/>
+            <xsl:variable name="override" select="$current-upconversion-options/s:option[@name=$global/@name]" as="element(s:option)?"/>
+            <xsl:sequence select="if (exists($override)) then $override else $global"/>
+          </xsl:for-each>
+          <!-- Symbol assumptions can be defined arbitrarily, so we take local ones
+          and then globals that don't have a local override -->
+          <xsl:copy-of select="$current-upconversion-options/s:symbol"/>
+          <xsl:for-each select="$s:global-upconversion-options/s:symbol">
+            <xsl:variable name="global" select="." as="element(s:symbol)"/>
+            <xsl:variable name="override" select="$current-upconversion-options/s:symbol[deep-equal($global/*, *)]" as="element(s:symbol)?"/>
+            <xsl:sequence select="if (exists($override)) then () else $global"/>
+          </xsl:for-each>
+        </s:upconversion-options>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- No current options, so just use globals as-is -->
+        <xsl:sequence select="$s:global-upconversion-options"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 
   <xsl:template match="m:*" mode="apply-mathml-prefix">
     <xsl:param name="prefix" as="xs:string"/>
@@ -287,7 +336,4 @@ All Rights Reserved
     </xsl:copy>
   </xsl:template>
 
-
 </xsl:stylesheet>
-
-

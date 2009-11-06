@@ -9,13 +9,12 @@ import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
-import uk.ac.ed.ph.snuggletex.upconversion.UpConversionParameters;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
+import uk.ac.ed.ph.snuggletex.upconversion.IllegalUpconversionOptionException;
 import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitions;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Basic example of up-converting some simple LaTeX input to Content MathML and Maxima forms.
@@ -37,9 +36,9 @@ import java.util.Map;
  */
 public final class AssumptionExample {
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, IllegalUpconversionOptionException {
         /* We will up-convert this LaTeX input */
-        String input = "$f(2,y)$";
+        String input = "\\setUpConversionOption{doContentMathML}{true} \\assumeSymbol{f}{function} $f(x)+(1,2)$";
         
         /* Set up SnuggleEngine, remembering to register package providing up-conversion support */
         SnuggleEngine engine = new SnuggleEngine();
@@ -51,19 +50,16 @@ public final class AssumptionExample {
         /* Parse input. I won't bother checking it here */
         session.parseInput(new SnuggleInput(input));
         
-        /* We are going to up-convert, creating a simple XML String output.
-         * For that, we use DOMOutputOptions and pass an UpConvertingPostProcessor
-         * to it, which hooks in the up-conversion process.
-         * 
-         * Note that the constructor for UpConvertingPostProcesor allows us to
-         * pass in options controlling the process; we'll use the (sensible)
-         * defaults here.
-         */
-        Map<String, Object> parameterMap = new HashMap<String, Object>();
-        parameterMap.put(UpConversionParameters.SHOW_ASSUMPTIONS, Boolean.TRUE);
-        parameterMap.put(UpConversionParameters.DO_CONTENT_MATHML, Boolean.TRUE);
-        parameterMap.put(UpConversionParameters.DO_MAXIMA, Boolean.FALSE);
-        UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor(parameterMap);
+        /* Create default options */
+        UpConversionOptions defaultOptions = new UpConversionOptions();
+        defaultOptions.setSpecifiedOption("doContentMathML", "true");
+        defaultOptions.setSpecifiedOption("doMaxima", "true");
+        defaultOptions.setSpecifiedOption("addOptionsAnnotation", "true");
+        
+        /* Create UpConvertingPostProcessor to perform the up-conversion. */
+        UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor(defaultOptions);
+        
+        /* Create simple XML String output */
         XMLStringOutputOptions xmlStringOutputOptions = new XMLStringOutputOptions();
         xmlStringOutputOptions.addDOMPostProcessors(upConverter);
         xmlStringOutputOptions.setIndenting(true);
