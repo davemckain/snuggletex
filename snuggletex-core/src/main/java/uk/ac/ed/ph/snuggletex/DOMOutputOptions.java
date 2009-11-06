@@ -133,6 +133,9 @@ public class DOMOutputOptions implements Cloneable {
      * Prefix to use when prefixing SnuggleTeX-specific XML element names.
      * Only used if {@link #prefixingSnuggleXML} is true and ignored if prefix is null.
      * <p>
+     * (Note that this currently has no effect on any SnuggleTeX elements generated within
+     * MathML elements.)
+     * <p>
      * Default is {@link #DEFAULT_SNUGGLETEX_XML_PREFIX}.
      * Must be non-null and a valid NCName.
      */

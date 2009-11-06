@@ -214,7 +214,7 @@ All Rights Reserved
               <!-- Maybe add assumptions annotation -->
               <xsl:if test="$s:show-assumptions">
                 <annotation-xml encoding="{$s:assumptions-annotation}">
-                  <xsl:copy-of select="$current-assumptions"/>
+                  <xsl:apply-templates select="$current-assumptions" mode="apply-snuggletex-prefix"/>
                 </annotation-xml>
               </xsl:if>
             </semantics>
@@ -242,7 +242,7 @@ All Rights Reserved
       <xsl:when test="name()!=local-name()">
         <!-- A prefix is being used, so apply prefixes to all elements -->
         <xsl:variable name="mathml-prefix" select="substring-before(name(), ':')" as="xs:string"/>
-        <xsl:apply-templates select="$result" mode="apply-prefixes">
+        <xsl:apply-templates select="$result" mode="apply-mathml-prefix">
           <xsl:with-param name="prefix" select="$mathml-prefix"/>
         </xsl:apply-templates>
       </xsl:when>
@@ -253,25 +253,40 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="m:*" mode="apply-prefixes">
+  <xsl:template match="m:*" mode="apply-mathml-prefix">
     <xsl:param name="prefix" as="xs:string"/>
     <xsl:element name="{concat($prefix, ':', local-name())}" namespace="http://www.w3.org/1998/Math/MathML">
       <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="apply-prefixes">
+      <xsl:apply-templates mode="apply-mathml-prefix">
         <xsl:with-param name="prefix" select="$prefix"/>
       </xsl:apply-templates>
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="node()" mode="apply-prefixes">
+  <xsl:template match="node()" mode="apply-mathml-prefix">
     <xsl:param name="prefix" as="xs:string"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="apply-prefixes">
+      <xsl:apply-templates mode="apply-mathml-prefix">
         <xsl:with-param name="prefix" select="$prefix"/>
       </xsl:apply-templates>
     </xsl:copy>
   </xsl:template>
+
+  <xsl:template match="s:*" mode="apply-snuggletex-prefix">
+    <xsl:element name="s:{local-name()}">
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="apply-snuggletex-prefix"/>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="node()" mode="apply-snuggletex-prefix">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="apply-snuggletex-prefix"/>
+    </xsl:copy>
+  </xsl:template>
+
 
 </xsl:stylesheet>
 
