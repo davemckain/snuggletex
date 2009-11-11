@@ -52,6 +52,6 @@ public final class UnassumeSymbolHandler extends UpConversionHandlerBase {
         }
         
         /* Now output all current assumptions for the XSLT to use */
-        UpConversionUtilities.appendDOMElement(options, builder.getDocument(), parentElement, false);
+        UpConversionUtilities.appendUpConversionOptionsElement(builder.getDocument(), parentElement, options, false);
     }
 }

@@ -47,22 +47,22 @@ public final class BasicUpConversionExample {
         
         /* Parse input. I won't bother checking it here */
         session.parseInput(new SnuggleInput(input));
-        
-        /* We are going to up-convert, creating a simple XML String output.
-         * For that, we use DOMOutputOptions and pass an UpConvertingPostProcessor
-         * to it, which hooks in the up-conversion process.
-         * 
-         * Note that the constructor for UpConvertingPostProcesor allows us to
-         * pass in options controlling the process; we'll use the (sensible)
-         * defaults here.
+
+        /* Create an UpConvertingPostProcesor that hooks into the DOM generation
+         * process to do all of the work. We'll use its (sensible) default behaviour
+         * here; options can be passed to this constructor to tweak things.
          */
         UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor();
+        
+        /* We're going to create a simple XML String output, which we configure
+         * as follow. Note how we hook the up-conversion into this options Object.
+         */
         XMLStringOutputOptions xmlStringOutputOptions = new XMLStringOutputOptions();
         xmlStringOutputOptions.addDOMPostProcessors(upConverter);
         xmlStringOutputOptions.setIndenting(true);
         xmlStringOutputOptions.setUsingNamedEntities(true);
         
-        /* Do the up-conversion process */
+        /* Build up the resulting XML */
         String result = session.buildXMLString(xmlStringOutputOptions);
         System.out.println("Up-Conversion process generated: " + result);
     }

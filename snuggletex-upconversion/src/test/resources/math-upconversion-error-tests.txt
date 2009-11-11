@@ -20,9 +20,9 @@ UAESY2
 \setUpConversionOption{silly}{thing}
 UAEOP0
 ====
-\setUpConversionOption{roundBracketsAs}{badcrumble}
+\setUpConversionOption{roundBracketHandling}{badcrumble}
 UAEOP1
 ====
-\unsetUpConversionOption{roundBracketsAs}
+\unsetUpConversionOption{roundBracketHandling}
 UAEOP2
 ====

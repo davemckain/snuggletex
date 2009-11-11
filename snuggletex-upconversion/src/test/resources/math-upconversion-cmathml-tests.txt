@@ -574,7 +574,7 @@ x_1
 !UCFG02
 ====
 ## Forbidden fence
-\setUpConversionOption{roundBracketsAs}{error} $(x,y)$
+\setUpConversionOption{roundFenceHandling}{error} $(x,y)$
 !UCFG03
 ====
 ## Round brackets with more than 1 element become vectors by default
@@ -1091,7 +1091,7 @@ f(x)
 \assumeSymbol{\gamma}{eulerGamma} $\gamma$
 <eulergamma/>
 ====
-\setUpConversionOption{roundBracketsAs}{list} $(1,2)$
+\setUpConversionOption{roundFenceHandling}{list} $(1,2)$
 <list>
   <cn>1</cn>
   <cn>2</cn>

@@ -6,7 +6,7 @@
 package uk.ac.ed.ph.snuggletex.upconversion;
 
 import static uk.ac.ed.ph.snuggletex.SnuggleConstants.SNUGGLETEX_NAMESPACE;
-import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.OPTION_DEFINITIONS;
+import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.OPTION_DEFINITIONS;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
@@ -165,15 +165,22 @@ public final class UpConversionUtilities {
     
     //-------------------------------------------------------
     
-    public static void appendDOMElement(UpConversionOptions options, Document document, 
-            Element containerElement, boolean applyDefaults) {
+    /**
+     * Writes out the given {@link UpConversionOptions} Object as a child Element of the
+     * given element, using a simple ad-hoc XML format.
+     * <p>
+     * This is used internally to pass Java-specified options to the stylesheets that perform
+     * the up-conversion process and may be useful in other situations as well.
+     */
+    public static void appendUpConversionOptionsElement(Document document, Element containerElement, 
+            final UpConversionOptions options, final boolean applyDefaults) {
         Element optionsContainer = appendSnuggleElement(document, containerElement, "upconversion-options");
         
         /* Specified options */
         if (options!=null) {
             for (String name : OPTION_DEFINITIONS.keySet()) {
                 if (applyDefaults || options.isOptionSpecified(name)) {
-                    String value = options.getOptionValue(name, applyDefaults);
+                    String value = options.getEffectiveOptionValue(name, applyDefaults);
                     
                     Element optionElement = appendSnuggleElement(document, optionsContainer, "option");
                     optionElement.setAttribute("name", name);

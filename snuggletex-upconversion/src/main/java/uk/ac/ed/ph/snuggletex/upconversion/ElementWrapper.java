@@ -14,6 +14,9 @@ import org.w3c.dom.Element;
 /**
  * Trivial "wrapper" for a DOM {@link Element} that makes it suitable for storing
  * in a {@link Map}.
+ * <p>
+ * It makes a hash code out by serializing the {@link Element} as an XML String and then
+ * computing the hashcode of the resulting String, so this is perhaps not very efficient.
  * 
  * @since 1.2.0
  *

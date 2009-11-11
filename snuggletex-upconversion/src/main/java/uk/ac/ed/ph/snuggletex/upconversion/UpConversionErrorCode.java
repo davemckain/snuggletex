@@ -48,7 +48,7 @@ public enum UpConversionErrorCode implements ErrorCode {
     UMFFX0(),
     UMFOP0(),
     
-    /* Assumption errors */
+    /* Options and Assumption errors */
     UAEOP0(),
     UAEOP1(),
     UAEOP2(),

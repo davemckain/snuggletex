@@ -158,7 +158,7 @@ public class MathMLUpConverter {
     private Element createUpConversionOptionsElement(final UpConversionOptions upConversionOptions) {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element root = (Element) document.appendChild(document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root"));
-        UpConversionUtilities.appendDOMElement(upConversionOptions, document, root, true);
+        UpConversionUtilities.appendUpConversionOptionsElement(document, root, upConversionOptions, true);
         return (Element) root.getFirstChild();
     }
 

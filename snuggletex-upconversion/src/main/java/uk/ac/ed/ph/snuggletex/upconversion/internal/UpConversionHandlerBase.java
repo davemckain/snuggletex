@@ -5,8 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.upconversion.internal;
 
-import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.OPTIONS_VARIABLE_NAME;
-import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.UPCONVERSION_NAMESPACE;
+import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.OPTIONS_VARIABLE_NAME;
+import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.UPCONVERSION_VARIABLE_NAMESPACE;
 
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
@@ -32,10 +32,10 @@ abstract class UpConversionHandlerBase implements CommandHandler {
     
     protected UpConversionOptions ensureGetAuthorUpconversionOptions(DOMBuilder builder) {
         VariableManager variableManager = builder.getVariableManager();
-        UpConversionOptions options = (UpConversionOptions) variableManager.getVariable(UPCONVERSION_NAMESPACE, OPTIONS_VARIABLE_NAME);
+        UpConversionOptions options = (UpConversionOptions) variableManager.getVariable(UPCONVERSION_VARIABLE_NAMESPACE, OPTIONS_VARIABLE_NAME);
         if (options==null) {
             options = new UpConversionOptions();
-            variableManager.setVariable(UPCONVERSION_NAMESPACE, OPTIONS_VARIABLE_NAME, options);
+            variableManager.setVariable(UPCONVERSION_VARIABLE_NAMESPACE, OPTIONS_VARIABLE_NAME, options);
         }
         return options;
     }

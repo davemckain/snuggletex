@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.upconversion.IllegalUpconversionOptionException;
@@ -38,7 +39,7 @@ public final class AssumptionExample {
     
     public static void main(String[] args) throws IOException, IllegalUpconversionOptionException {
         /* We will up-convert this LaTeX input */
-        String input = "\\setUpConversionOption{doContentMathML}{true} \\assumeSymbol{f}{function} $f(x)+(1,2)$";
+        String input = "\\setUpConversionOption{doContentMathML}{true} \\assumeSymbol{f}{function} $f(x)+\\{1,2\\}$";
         
         /* Set up SnuggleEngine, remembering to register package providing up-conversion support */
         SnuggleEngine engine = new SnuggleEngine();
@@ -50,11 +51,11 @@ public final class AssumptionExample {
         /* Parse input. I won't bother checking it here */
         session.parseInput(new SnuggleInput(input));
         
-        /* Create default options */
+        /* Create suitable default options */
         UpConversionOptions defaultOptions = new UpConversionOptions();
-        defaultOptions.setSpecifiedOption("doContentMathML", "true");
-        defaultOptions.setSpecifiedOption("doMaxima", "true");
-        defaultOptions.setSpecifiedOption("addOptionsAnnotation", "true");
+        defaultOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        defaultOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_MAXIMA_NAME, "true");
+        defaultOptions.setSpecifiedOption(UpConversionOptionDefinitions.ADD_OPTIONS_ANNOTATION_NAME, "true");
         
         /* Create UpConvertingPostProcessor to perform the up-conversion. */
         UpConvertingPostProcessor upConverter = new UpConvertingPostProcessor(defaultOptions);

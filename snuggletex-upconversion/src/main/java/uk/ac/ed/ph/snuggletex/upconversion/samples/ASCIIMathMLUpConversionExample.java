@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex.upconversion.samples;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
-import uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptions;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
@@ -141,8 +141,8 @@ public class ASCIIMathMLUpConversionExample {
          * demo purposes.)
          */
         UpConversionOptions upConversionOptions = new UpConversionOptions();
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "true");
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_MAXIMA_NAME, "true");
         
         /* Now we do the up-conversion magic, which produces a new DOM Document. */
         Document upConvertedDocument;

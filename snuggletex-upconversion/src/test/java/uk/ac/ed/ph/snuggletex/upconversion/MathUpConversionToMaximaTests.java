@@ -51,8 +51,8 @@ public class MathUpConversionToMaximaTests extends AbstractGoodTest {
         
         /* Set up up-converter */
         UpConversionOptions upConversionOptions = new UpConversionOptions();
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "true");
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_MAXIMA_NAME, "true");
         upconverter = new UpConvertingPostProcessor(upConversionOptions);
     }
     

@@ -1011,11 +1011,11 @@ All Rights Reserved
     the property values here to be equal to the name of the resulting Content
     MathML containers! -->
     <xsl:variable name="value" as="xs:string?" select="
-      if (@open='(' and @close=')' and count(*)=1) then s:get-upconversion-option($upconversion-options, 'trivialRoundBracketsAs')
-      else if (@open='(' and @close=')') then s:get-upconversion-option($upconversion-options, 'roundBracketsAs')
-      else if (@open='[' and @close=']') then s:get-upconversion-option($upconversion-options, 'squareBracketsAs')
-      else if (@open='{' and @close='}') then s:get-upconversion-option($upconversion-options, 'bracesAs')
-      else if (@open='' and @close='') then s:get-upconversion-option($upconversion-options, 'emptyBracketsAs')
+      if (@open='(' and @close=')' and count(*)=1) then s:get-upconversion-option($upconversion-options, 'roundBracketHandling')
+      else if (@open='(' and @close=')') then s:get-upconversion-option($upconversion-options, 'roundFenceHandling')
+      else if (@open='[' and @close=']') then s:get-upconversion-option($upconversion-options, 'squareFenceHandling')
+      else if (@open='{' and @close='}') then s:get-upconversion-option($upconversion-options, 'curlyFenceHandling')
+      else if (@open='' and @close='') then s:get-upconversion-option($upconversion-options, 'emptyFenceHandling')
       else ()
     "/>
     <xsl:choose>
@@ -1023,7 +1023,7 @@ All Rights Reserved
         <!-- Failure: handling of this type of fence has been forbidden by assumption -->
         <xsl:copy-of select="s:make-error('UCFG03', ., (@open, @close))"/>
       </xsl:when>
-      <xsl:when test="$value='none'">
+      <xsl:when test="$value='grouping'">
         <!-- Brackets are grouping only, so descend into children -->
         <xsl:for-each select="*">
           <xsl:call-template name="local:process-group">
@@ -1032,7 +1032,7 @@ All Rights Reserved
           </xsl:call-template>
         </xsl:for-each>
       </xsl:when>
-      <xsl:when test="exists($value)">
+      <xsl:when test="$value=('list', 'set', 'vector')">
         <!-- Special meaning, which maps to Content MathML element container of the same name -->
         <xsl:element name="{$value}">
           <xsl:for-each select="*">
@@ -1043,9 +1043,14 @@ All Rights Reserved
           </xsl:for-each>
         </xsl:element>
       </xsl:when>
-      <xsl:otherwise>
+      <xsl:when test="not(exists($value))">
         <!-- Failure: can't handle this type of fence -->
         <xsl:copy-of select="s:make-error('UCFG02', ., (@open, @close))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="yes">
+          Unexpected value <xsl:value-of select="$value"/>
+        </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

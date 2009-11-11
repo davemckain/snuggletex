@@ -32,7 +32,7 @@ public final class UnsetUpConversionOptionHandler extends UpConversionHandlerBas
         /* Make the change */
         UpConversionOptions options = ensureGetAuthorUpconversionOptions(builder);
         try {
-            options.clearOption(propertyName);
+            options.clearSpecifiedOption(propertyName);
         }
         catch (IllegalUpconversionOptionException e) {
             builder.appendOrThrowError(parentElement, token, e.getErrorCode(), (Object[]) e.getArguments());
@@ -40,6 +40,6 @@ public final class UnsetUpConversionOptionHandler extends UpConversionHandlerBas
         }
         
         /* Now output all current assumptions for the XSLT to use */
-        UpConversionUtilities.appendDOMElement(options, builder.getDocument(), parentElement, false);
+        UpConversionUtilities.appendUpConversionOptionsElement(builder.getDocument(), parentElement, options, false);
     }
 }

@@ -5,10 +5,10 @@
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
 
-import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.OPTION_DEFINITIONS;
-import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.SYMBOL_ASSUMPTION_TYPES;
+import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.OPTION_DEFINITIONS;
+import static uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.SYMBOL_ASSUMPTION_TYPES;
 
-import uk.ac.ed.ph.snuggletex.upconversion.UpConversionDefinitions.OptionValueDefinition;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.OptionValueDefinition;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,10 @@ import java.util.Set;
 import org.w3c.dom.Element;
 
 /**
- * FIXME: Document this type!
+ * Encapsulates the various options and assumptions that can be used when running the
+ * up-conversion process.
+ * <p>
+ * (These can be set explicitly via this Java API, or using custom LaTeX macros as well.)
  *
  * @since 1.2.0
  * 
@@ -26,35 +29,37 @@ import org.w3c.dom.Element;
  */
 public final class UpConversionOptions {
     
-    private final Map<String, String> options;
+    private final Map<String, String> specifiedOptionMap;
     
     private final Map<ElementWrapper, String> symbolAssumptions;
     
     public UpConversionOptions() {
-        this.options = new HashMap<String, String>();
+        this.specifiedOptionMap = new HashMap<String, String>();
         this.symbolAssumptions = new HashMap<ElementWrapper, String>();
     }
     
+    //-------------------------------------------------------------
+    
     public boolean isOptionSpecified(final String name) {
-        return options.containsKey(name);
+        return specifiedOptionMap.containsKey(name);
     }
     
     public Set<String> getSpecifiedOptionNames() {
-        return options.keySet();
+        return specifiedOptionMap.keySet();
     }
     
     public String getSpecifiedOptionValue(final String name) {
         if (!OPTION_DEFINITIONS.containsKey(name)) {
             throw new IllegalUpconversionOptionException(UpConversionErrorCode.UAEOP0, name);
         }
-        return options.get(name);
+        return specifiedOptionMap.get(name);
     }
     
-    public String getOptionValue(final String name, final boolean applyDefault) {
+    public String getEffectiveOptionValue(final String name, final boolean applyDefault) {
         if (!OPTION_DEFINITIONS.containsKey(name)) {
             throw new IllegalUpconversionOptionException(UpConversionErrorCode.UAEOP0, name);
         }
-        return options.containsKey(name) ? options.get(name) : (applyDefault ? OPTION_DEFINITIONS.get(name).getDefaultValue() : null);
+        return specifiedOptionMap.containsKey(name) ? specifiedOptionMap.get(name) : (applyDefault ? OPTION_DEFINITIONS.get(name).getDefaultValue() : null);
     }
     
     /**
@@ -69,20 +74,22 @@ public final class UpConversionOptions {
         if (valueSpace!=null && !valueSpace.contains(value)) {
             throw new IllegalUpconversionOptionException(UpConversionErrorCode.UAEOP1, name, value);
         }
-        options.put(name, value);
+        specifiedOptionMap.put(name, value);
     }
     
     /**
      * @throws IllegalUpconversionOptionException
      */
-    public void clearOption(final String name) {
-        if (options.containsKey(name)) {
-            options.remove(name);
+    public void clearSpecifiedOption(final String name) {
+        if (specifiedOptionMap.containsKey(name)) {
+            specifiedOptionMap.remove(name);
         }
         else {
             throw new IllegalUpconversionOptionException(UpConversionErrorCode.UAEOP2, name);
         }
     }
+    
+    //-------------------------------------------------------------
     
     public Set<ElementWrapper> getAssumedSymbols() {
         return symbolAssumptions.keySet();

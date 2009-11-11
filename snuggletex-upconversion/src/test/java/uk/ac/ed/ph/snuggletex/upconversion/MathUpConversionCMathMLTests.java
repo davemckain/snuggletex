@@ -48,8 +48,8 @@ public class MathUpConversionCMathMLTests extends AbstractGoodUpConversionXMLTes
         
         /* Set up up-converter */
         UpConversionOptions upConversionOptions = new UpConversionOptions();
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "true");
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "false");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_CONTENT_MATHML_NAME, "true");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_MAXIMA_NAME, "false");
         upconverter = new UpConvertingPostProcessor(upConversionOptions);
     }
 

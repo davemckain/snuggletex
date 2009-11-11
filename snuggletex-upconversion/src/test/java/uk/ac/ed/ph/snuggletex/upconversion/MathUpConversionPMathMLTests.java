@@ -40,8 +40,8 @@ public class MathUpConversionPMathMLTests extends AbstractGoodUpConversionXMLTes
         
         /* Set up up-converter so that it only generates fixed up Presentation MathML */
         UpConversionOptions upConversionOptions = new UpConversionOptions();
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_CONTENT_MATHML_NAME, "false");
-        upConversionOptions.setSpecifiedOption(UpConversionDefinitions.DO_MAXIMA_NAME, "false");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_CONTENT_MATHML_NAME, "false");
+        upConversionOptions.setSpecifiedOption(UpConversionOptionDefinitions.DO_MAXIMA_NAME, "false");
         upconverter = new UpConvertingPostProcessor(upConversionOptions);
     }
 
