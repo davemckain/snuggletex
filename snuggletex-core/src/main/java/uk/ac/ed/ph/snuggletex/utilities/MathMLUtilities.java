@@ -59,7 +59,7 @@ public final class MathMLUtilities {
      */
     public static String serializeDocument(final Document document) {
         ConstraintUtilities.ensureNotNull(document, "document");
-        return serializeNode(document, null);
+        return serializeNode(document, "UTF-8", true, true);
     }
     
     /**
@@ -124,9 +124,9 @@ public final class MathMLUtilities {
     
     /**
      * Convenience method that serializes the given DOM Document as a String (encoded in UTF-8).
-     * <p>
-     * (This can be used in more general cases than MathML, through experienced programmers
-     * may want more control over what happens here.)
+     * 
+     * @deprecated Use one of the alternative methods, including
+     *  {@link #serializeDocument(Document, SerializationOptions)} for ultimate control.
      *
      * @param document DOM element to serialize
      * @param indent whether to indent the results or not
@@ -142,9 +142,9 @@ public final class MathMLUtilities {
     /**
      * Convenience method that serializes the given DOM Document as a String, using the
      * specified encoding.
-     * <p>
-     * (This can be used in more general cases than MathML, through experienced programmers
-     * may want more control over what happens here.)
+     * 
+     * @deprecated Use one of the alternative methods, including
+     *  {@link #serializeDocument(Document, SerializationOptions)} for ultimate control.
      *
      * @param document DOM element to serialize
      * @param encoding desired encoding, null is interpreted as UTF-8.
@@ -168,7 +168,7 @@ public final class MathMLUtilities {
      */
     public static String serializeElement(final Element element) {
         ConstraintUtilities.ensureNotNull(element, "element");
-        return serializeNode(element, null);
+        return serializeNode(element, "UTF-8", true, true);
     }
     
     /**
@@ -231,9 +231,9 @@ public final class MathMLUtilities {
     
     /**
      * Convenience method that serializes the given DOM Element as a String (encoded in UTF-8).
-     * <p>
-     * (This can be used in more general cases than MathML, through experienced programmers
-     * may want more control over what happens here.)
+     * 
+     * @deprecated Use one of the alternative methods, including
+     *  {@link #serializeElement(Element, SerializationOptions)} for ultimate control.
      *
      * @param element DOM element to serialize
      * @param indent whether to indent the results or not
@@ -249,9 +249,9 @@ public final class MathMLUtilities {
     /**
      * Convenience method that serializes the given DOM Element as a String, using
      * the given parameters.
-     * <p>
-     * (This can be used in more general cases than MathML, through experienced programmers
-     * may want more control over what happens here.)
+     * 
+     * @deprecated Use one of the alternative methods, including
+     *  {@link #serializeElement(Element, SerializationOptions)} for ultimate control.
      *
      * @param element DOM element to serialize
      * @param encoding desired encoding, null is interpreted as UTF-8.
