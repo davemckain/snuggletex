@@ -1049,7 +1049,7 @@ All Rights Reserved
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">
-          Unexpected value <xsl:value-of select="$value"/>
+          Did not expect $value to be computed as '<xsl:value-of select="$value"/>'
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
