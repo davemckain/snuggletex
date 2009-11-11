@@ -86,7 +86,7 @@ All Rights Reserved
   All other elements will be given a shallow copy, then traverse into children.
   Finally, traverse following siblings.
   -->
-  <xsl:template match="*" as="element()" mode="sibling-traversal">
+  <xsl:template match="*" mode="sibling-traversal">
     <xsl:param name="current-upconversion-options" as="element(s:upconversion-options)?"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
