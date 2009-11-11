@@ -142,7 +142,7 @@ public class MathMLUpConverter {
             Templates upconverterStylesheet = stylesheetManager.getStylesheet(UPCONVERTER_XSL_LOCATION, true);
             Transformer upconverter = upconverterStylesheet.newTransformer();
             
-            /* Pass UpConversionOptions, substituting default where not set */
+            /* Pass UpConversionOptions, using default as required */
             upconverter.setParameter("{" + SnuggleConstants.SNUGGLETEX_NAMESPACE + "}global-upconversion-options",
                     createUpConversionOptionsElement(upConversionOptions));
             

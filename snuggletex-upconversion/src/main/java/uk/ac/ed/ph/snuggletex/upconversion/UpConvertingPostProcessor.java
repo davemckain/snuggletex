@@ -30,19 +30,19 @@ public final class UpConvertingPostProcessor implements DOMPostProcessor {
         this(null);
     }
     
-    public UpConvertingPostProcessor(UpConversionOptions upconversionParameterMap) {
-        this.upconversionOptions = upconversionParameterMap;
+    public UpConvertingPostProcessor(UpConversionOptions upconversionOptions) {
+        this.upconversionOptions = upconversionOptions;
     }
 
-    public UpConversionOptions getUpconversionParameterMap() {
+    public UpConversionOptions getUpconversionOptions() {
         return upconversionOptions;
     }
     
-    public void setUpconversionParameterMap(UpConversionOptions upconversionParameterMap) {
-        this.upconversionOptions = upconversionParameterMap;
+    public void setUpconversionOptions(UpConversionOptions upconversionOptions) {
+        this.upconversionOptions = upconversionOptions;
     }
     
-    public Document postProcessDOM(Document workDocument, DOMOutputOptions unused,
+    public Document postProcessDOM(Document workDocument, final DOMOutputOptions unused,
             StylesheetManager stylesheetManager) {
         return new MathMLUpConverter(stylesheetManager)
             .upConvertSnuggleTeXMathML(workDocument, upconversionOptions);

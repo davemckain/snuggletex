@@ -13,11 +13,13 @@ import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.OptionValueDefinition;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -171,24 +173,44 @@ public final class UpConversionUtilities {
      * <p>
      * This is used internally to pass Java-specified options to the stylesheets that perform
      * the up-conversion process and may be useful in other situations as well.
+     * 
+     * @param document Document to append to
+     * @param containerElement Element that will be the parent of the resulting DOM fragment
+     * @param options {@link UpConversionOptions} to write, may be null.
+     * @param applyDefaults if true, then default values for each option are written out
+     *   when not explicitly specified or if {@link UpConversionOptions} is null.
      */
     public static void appendUpConversionOptionsElement(Document document, Element containerElement, 
             final UpConversionOptions options, final boolean applyDefaults) {
         Element optionsContainer = appendSnuggleElement(document, containerElement, "upconversion-options");
-        
-        /* Specified options */
-        if (options!=null) {
+
+        if (options==null) {
+            if (applyDefaults) {
+                /* Write out default option values */
+                for (Entry<String, OptionValueDefinition> entry : OPTION_DEFINITIONS.entrySet()) {
+                    String name = entry.getKey();
+                    String defaultValue = entry.getValue().getDefaultValue();
+                    Element optionElement = appendSnuggleElement(document, optionsContainer, "option");
+                    optionElement.setAttribute("name", name);
+                    optionElement.setAttribute("value", defaultValue);
+                }
+                /* (There are no default symbol assumptions) */
+            }
+            else {
+                /* (Nothing to do) */
+            }
+        }
+        else {
+            /* Write out specified options, substituting defaults if requested */
             for (String name : OPTION_DEFINITIONS.keySet()) {
                 if (applyDefaults || options.isOptionSpecified(name)) {
                     String value = options.getEffectiveOptionValue(name, applyDefaults);
-                    
                     Element optionElement = appendSnuggleElement(document, optionsContainer, "option");
                     optionElement.setAttribute("name", name);
                     optionElement.setAttribute("value", value);
                 }
             }
-            
-            /* Symbol assumptions */
+            /* Write out specified Symbol assumptions */
             for (ElementWrapper elementWrapper : options.getAssumedSymbols()) {
                 String assumptionType = options.getSymbolAssumptionType(elementWrapper);
                 
