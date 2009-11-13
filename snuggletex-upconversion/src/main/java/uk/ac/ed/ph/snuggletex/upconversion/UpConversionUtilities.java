@@ -37,6 +37,12 @@ import org.w3c.dom.NodeList;
  */
 public final class UpConversionUtilities {
     
+    /** 
+     * Local name of XML container element when writing out options using
+     * {@link #appendUpConversionOptionsElement(Document, Element, UpConversionOptions, boolean)}
+     */
+    public static final String UPCONVERSION_OPTIONS_XML_LOCAL_NAME = "upconversion-options";
+    
     /**
      * Returns a full error message for the given {@link UpConversionFailure}, using
      * the SnuggleTeX {@link MessageFormatter} class to do the hard work.
@@ -174,6 +180,8 @@ public final class UpConversionUtilities {
      * This is used internally to pass Java-specified options to the stylesheets that perform
      * the up-conversion process and may be useful in other situations as well.
      * 
+     * @since 1.2.0
+     * 
      * @param document Document to append to
      * @param containerElement Element that will be the parent of the resulting DOM fragment
      * @param options {@link UpConversionOptions} to write, may be null.
@@ -182,7 +190,7 @@ public final class UpConversionUtilities {
      */
     public static void appendUpConversionOptionsElement(Document document, Element containerElement, 
             final UpConversionOptions options, final boolean applyDefaults) {
-        Element optionsContainer = appendSnuggleElement(document, containerElement, "upconversion-options");
+        Element optionsContainer = appendSnuggleElement(document, containerElement, UpConversionUtilities.UPCONVERSION_OPTIONS_XML_LOCAL_NAME);
 
         if (options==null) {
             if (applyDefaults) {
