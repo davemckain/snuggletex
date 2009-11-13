@@ -19,6 +19,9 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.2.0" date="TBC" description="Version 1.2.0 (SVN revision ???)">
+      <action dev="davemckain" type="fix" date="2009-11-13">
+        WebPageOutputOptionsTemplates now sets content type correctly when generating MOZILLA pages.
+      </action>
       <action dev="davemckain" type="update" date="2009-10-30">
         Web page builder now always adds xml:lang attribute when generating XHTML or XML outputs.
       </action>

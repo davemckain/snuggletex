@@ -52,6 +52,7 @@ public final class WebPageOutputOptionsTemplates {
         switch (webPageType) {
             case MOZILLA:
                 options.setSerializationMethod(SerializationMethod.XHTML);
+                options.setContentType("application/xhtml+xml");
                 break;
                 
             case CROSS_BROWSER_XHTML:
