@@ -9,13 +9,11 @@ import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeElement;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -145,17 +143,6 @@ public final class MathInputDemoServlet extends BaseServlet {
             }
         }
         
-        /* Decide what type of page to output based on UserAgent */
-        WebPageType webPageType= chooseBestWebPageType(request);
-        boolean mathMLCapable = webPageType!=null;
-        
-        /* If UserAgent can't handle MathML then we'll use HTML output and get the XSLT
-         * to replace the MathML with a reference to an image rendition of it.
-         */
-        if (webPageType==null) {
-            webPageType = WebPageType.PROCESSED_HTML;
-        }
-        
         /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
          * even though most of the interesting page content is going to be fed in as stylesheet
          * parameters.
@@ -164,20 +151,9 @@ public final class MathInputDemoServlet extends BaseServlet {
          * we produced manually above, though this will actually be recreated using the standard
          * SnuggleTeX process.)
          */
-        WebPageOutputOptions webOptions = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
-        webOptions.setMathVariantMapping(true);
-        webOptions.setAddingMathSourceAnnotations(true);
-        webOptions.setIndenting(true);
-        webOptions.setIncludingStyleElement(false);
         
-        /* We will actually generate a XHTML+CSS+Images page, even if the browser can cope
-         * with MathmL as this gives us a nice way of showing both types of output in this
-         * case as we can simply pass the resulting MathML Element in as a parameter. Woo hoo!
-         */
-        webOptions.setDOMPostProcessors(
-                new DownConvertingPostProcessor(),
-                new MathMLToImageLinkPostProcessor(request.getContextPath())
-        );
+        WebPageOutputOptions webOptions = chooseBestBaseWebPageOutputOptions(request);
+        boolean mathMLCapable = webOptions.getWebPageType()!=WebPageType.PROCESSED_HTML;
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);

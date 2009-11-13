@@ -76,11 +76,13 @@ All Rights Reserved
           of this while you type. Hit <tt>Go!</tt> to see the resulting outputs, which take
           the MathML produced by ASCIIMathML and do interesting things to it.
         </p>
-        <form method="post" class="input">
-          ASCIIMath Input:
-          <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"/>
-          <input type="hidden" id="asciiMathML" name="asciiMathML"/>
-          <input type="submit" value="Go!"/>
+        <form method="post" class="input" action="{$context-path}/ASCIIMathMLUpConversionDemo">
+          <div class="inputBox">
+            ASCIIMath Input:
+            <input id="asciiMathInput" name="asciiMathInput" type="text" value="{$ascii-math-input}"/>
+            <input type="hidden" id="asciiMathML" name="asciiMathML"/>
+            <input type="submit" value="Go!"/>
+          </div>
         </form>
 
         <h3>Live Preview</h3>

@@ -99,6 +99,7 @@
   font-size: 150%;
   background-color: #f2d7da;
   -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
 }
 
 #maininner h3 {
@@ -144,6 +145,7 @@ tt, code {
   padding: 0.5em;
   margin: 0.5em 0;
   -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
 }
 
 pre.verbatim, .note, .result {
@@ -152,36 +154,62 @@ pre.verbatim, .note, .result {
   color: #333366;
   border: 1px solid #333366;
   -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
 }
 
-form.input {
-  background-color: #ccffcc;
+.inputBox {
   background-color: #f2d7da;
   border: 2px solid black;
-  padding: 2em;
   color: black;
   -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  padding: 2em;
   text-align: center;
   font-size: larger;
 }
 
-form.input textarea, form.input input {
-  background-color: #ffeeee;
+.optionsBox {
+  background-color: #f2d7da;
+  border: 1px solid black;
+  color: black;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 0.5em;
+  padding: 1em;
+}
+
+form.input textarea {
+  width: 100%;
+  background-color: #fff7f7;
+}
+
+form.input input[type='text'] {
+  background-color: #fff7f7;
+}
+
+form.input input[type='button'] {
+  background-color: #fff7f7;
+}
+
+form.input input[type='submit'] {
+  background-color: #fff7f7;
 }
 
 .error {
   -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
 }
 
 table.failures {
   width: 100%;
   -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
 }
 
 table.failures th {
   background-color: #8a87f2;
   padding: 0.5em;
   -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
   text-align: center;
 }
 
@@ -189,6 +217,7 @@ table.failures td {
   background-color: #dad7f2;
   padding: 0.1em 0.5em;
   -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
   text-align: center;
 }
 
@@ -229,6 +258,7 @@ a.upconversionExample {
   background-color: #eeeeee;
   border: 1px solid #dddddd;
   -moz-border-radius: 0.3em;
+  -webkit-border-radius: 0.3em;
 }
 
 /************************************************************/

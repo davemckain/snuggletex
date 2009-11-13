@@ -6,21 +6,18 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.extractAnnotationString;
-import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isolateAnnotationXML;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isolateFirstSemanticsBranch;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeDocument;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeElement;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
-import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -59,7 +56,17 @@ public final class UpConversionDemoServlet extends BaseServlet {
     private static Logger logger = LoggerFactory.getLogger(UpConversionDemoServlet.class);
     
     /** Default input to use when first showing the page */
-    private static final String DEFAULT_INPUT = "\\frac{2x-y^2}{\\sin xy(x-2)}";
+    private static final String DEFAULT_INPUT = "\\frac{2f(x)-e^x}{\\sin xy^2(x-2)}";
+    
+    /** Default assumptions to use when first showing the page */
+    private static final String DEFAULT_UPCONVERSION_OPTIONS =
+        "\\assumeSymbol{e}{exponentialNumber}\n"
+        + "\\assumeSymbol{f}{function}\n"
+        + "\\assumeSymbol{f_n}{function}\n"
+        + "\\assumeSymbol{g}{function}\n"
+        + "\\assumeSymbol{i}{imaginaryNumber}\n"
+        + "\\assumeSymbol{\\pi}{constantPi}\n"
+        + "\\assumeSymbol{\\gamma}{eulerGamma}";
     
     /** Location of XSLT controlling page layout */
     private static final String DISPLAY_XSLT_LOCATION = "classpath:/upconversion-demo.xsl";
@@ -89,12 +96,17 @@ public final class UpConversionDemoServlet extends BaseServlet {
             inputLaTeX = DEFAULT_INPUT;
         }
         
-        /* Parse the LaTeX */
+        /* Same with assumptions */
+        String rawUpConversionOptions = request.getParameter("upConversionOptions");
+        String upConversionOptions = rawUpConversionOptions!=null ? rawUpConversionOptions : DEFAULT_UPCONVERSION_OPTIONS;
+        boolean hasChangedUpConversionOptions = rawUpConversionOptions!=null && !rawUpConversionOptions.equals(DEFAULT_UPCONVERSION_OPTIONS);
+        
+        /* Parse the assumptions & LaTeX */
         SnuggleEngine engine = createSnuggleEngine();
         engine.addPackage(UpConversionPackageDefinitions.getPackage());
         SnuggleSession session = engine.createSession();
-        SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
-        session.parseInput(input);
+        session.parseInput(new SnuggleInput(upConversionOptions, "Assumptions Input"));
+        session.parseInput(new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Math Input"));
         
         /* Create raw DOM, without any up-conversion for the time being. I've done this
          * so that we can show how much the PMathML hopefully improves after up-conversion!
@@ -113,7 +125,8 @@ public final class UpConversionDemoServlet extends BaseServlet {
          */
         NodeList resultNodeList = resultRoot.getChildNodes();
         List<InputError> errors = session.getErrors();
-        Element mathElement = null;
+        
+        Element mathMLElement = null;
         String parallelMathML = null;
         String pMathMLInitial = null;
         String pMathMLUpConverted = null;
@@ -123,6 +136,8 @@ public final class UpConversionDemoServlet extends BaseServlet {
         UpConvertingPostProcessor upConvertingPostProcessor = new UpConvertingPostProcessor();
         SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
         boolean badInput = false;
+        
+        /* Check for any errors and that the shape of the result is as expected */
         if (!errors.isEmpty()) {
             /* Input error occurred */
             parsingErrors = new ArrayList<Element>();
@@ -130,38 +145,40 @@ public final class UpConversionDemoServlet extends BaseServlet {
                 parsingErrors.add(MessageFormatter.formatErrorAsXML(resultDocument, error, true));
             }
         }
-        else if (resultNodeList.getLength()==1 && isMathMLElement(resultNodeList.item(0), "math")) {
-            /* Result is a single <math/> element, which looks correct. Note that up-conversion
-             * might not have succeeded though.
+        else {
+            /* Make sure there is exactly one MathML element, and any number of upconversion options
+             * specifiers.
              */
-            mathElement = (Element) resultNodeList.item(0);
-            pMathMLInitial = serializeElement(mathElement, sourceSerializationOptions);
+            mathMLElement = extractMathMLElement(resultNodeList, true);
+            if (mathMLElement==null) {
+                badInput = true;
+            }
+        }
+        
+        /* Happy path! */
+        if (mathMLElement!=null) {
+            /* We found exactly one MathML element out of raw results */
+            pMathMLInitial = serializeElement(mathMLElement, sourceSerializationOptions);
             
             /* Do up-conversion and extract wreckage */
             MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetCache());
-            Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathElement.getOwnerDocument(), upConvertingPostProcessor.getUpconversionParameterMap());
-            mathElement = (Element) upConvertedMathDocument.getDocumentElement().getFirstChild();
-            parallelMathML = serializeElement(mathElement, sourceSerializationOptions);
-            pMathMLUpConverted = serializeDocument(isolateFirstSemanticsBranch(mathElement), sourceSerializationOptions);
-            Document cMathMLDocument = isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
-            cMathML = cMathMLDocument!=null ? serializeDocument(cMathMLDocument, "ASCII") : null;
-            maximaInput = extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
-        }
-        else {
-            /* This could have been caused by input like 'x \] hello \[ x', which would end
-             * up escaping out of Math mode for a while, causing 3 Nodes to be generated in
-             * this case.
-             */
-            badInput = true;
+            Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathMLElement.getOwnerDocument(), upConvertingPostProcessor.getUpconversionOptions());
+            
+            mathMLElement = extractMathMLElement(upConvertedMathDocument.getDocumentElement().getChildNodes(), false);
+            parallelMathML = serializeElement(mathMLElement, sourceSerializationOptions);
+            
+            pMathMLUpConverted = serializeDocument(isolateFirstSemanticsBranch(mathMLElement), sourceSerializationOptions);
+            Document cMathMLDocument = isolateAnnotationXML(mathMLElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
+            cMathML = cMathMLDocument!=null ? serializeDocument(cMathMLDocument, sourceSerializationOptions) : null;
+            maximaInput = extractAnnotationString(mathMLElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         }
         
         /* Log things nicely if input was specified by user */
         if (rawInputLaTeX!=null) {
-            if (errors.isEmpty()) {
-                logger.info("Input: {}", inputLaTeX);
-                logger.info("Final MathML: {}", parallelMathML);
-            }
-            else {
+            if (badInput || !errors.isEmpty()) {
+                if (hasChangedUpConversionOptions) {
+                    logger.warn("Up-Conversion Options: {}", upConversionOptions);
+                }
                 logger.warn("Input: {}", inputLaTeX);
                 logger.warn("Final MathML: {}", parallelMathML);
                 logger.warn("Error count: {}", errors.size());
@@ -169,15 +186,13 @@ public final class UpConversionDemoServlet extends BaseServlet {
                     logger.warn("Error: " + MessageFormatter.formatErrorAsString(error));
                 }
             }
-        }
-        
-        /* Decide what type of page to output based on UserAgent, following
-         * same logic as MathInputDemoServlet
-         */
-        WebPageType webPageType= chooseBestWebPageType(request);
-        boolean mathMLCapable = webPageType!=null;
-        if (webPageType==null) {
-            webPageType = WebPageType.PROCESSED_HTML;
+            else {
+                if (hasChangedUpConversionOptions) {
+                    logger.info("Up-Conversion Options: {}", upConversionOptions);
+                }
+                logger.info("Input: {}", inputLaTeX);
+                logger.info("Final MathML: {}", parallelMathML);
+            }
         }
         
         /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
@@ -188,22 +203,10 @@ public final class UpConversionDemoServlet extends BaseServlet {
          * we produced manually above, though this will actually be recreated using the standard
          * SnuggleTeX process.)
          */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
-        options.setDOMPostProcessors(upConvertingPostProcessor);
-        options.setMathVariantMapping(true);
-        options.setAddingMathSourceAnnotations(true);
-        options.setIndenting(true);
-        options.setIncludingStyleElement(false);
-        
-        /* If browser can't handle MathML, we'll add post-processors to down-convert
-         * simple expressions to XHTML + CSS and replace the remaining MathML islands
-         * with dynamically generated images.
-         */
-        if (webPageType==WebPageType.PROCESSED_HTML) {
-            options.setDOMPostProcessors(
-                    new DownConvertingPostProcessor(),
-                    new MathMLToImageLinkPostProcessor(request.getContextPath())
-            );
+        WebPageOutputOptions webOptions = chooseBestBaseWebPageOutputOptions(request);
+        boolean mathMLCapable = webOptions.getWebPageType()!=WebPageType.PROCESSED_HTML;
+        if (mathMLCapable) {
+            webOptions.setDOMPostProcessors(upConvertingPostProcessor);
         }
         
         /* Create XSLT to generate the resulting page */
@@ -211,6 +214,7 @@ public final class UpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
+        viewStylesheet.setParameter("upconversion-options", upConversionOptions);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
         viewStylesheet.setParameter("parallel-mathml", parallelMathML);
@@ -218,11 +222,11 @@ public final class UpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpConverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
-        options.setStylesheets(viewStylesheet);
+        webOptions.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(options, response, response.getOutputStream());
+            session.writeWebPage(webOptions, response, response.getOutputStream());
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);

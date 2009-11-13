@@ -45,8 +45,8 @@ All Rights Reserved
       Simply enter a LaTeX math mode expression into the box below and hit
       <tt>Go!</tt> to see the resulting output and MathML.
     </p>
-    <form method="post" class="input">
-      <div>
+    <form method="post" class="input" action="{$context-path}/MathInputDemo">
+      <div class="inputBox">
         LaTeX Math Mode Input: <input id="input" name="input" type="text" value="{$latex-input}"/>
         <input type="submit" value="Go!" />
         <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />

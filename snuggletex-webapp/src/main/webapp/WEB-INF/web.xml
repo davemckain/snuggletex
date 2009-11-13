@@ -20,10 +20,6 @@ All Rights Reserved
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
   <context-param>
-    <param-name>caching.xslt</param-name>
-    <param-value>false</param-value>
-  </context-param>
-  <context-param>
     <param-name>snuggletex.version</param-name>
     <param-value>${project.version}</param-value>
   </context-param>

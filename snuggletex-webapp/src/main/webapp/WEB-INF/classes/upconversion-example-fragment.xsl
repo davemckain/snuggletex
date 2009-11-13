@@ -22,6 +22,8 @@ All Rights Reserved
 
   <xsl:import href="demo-utilities.xsl"/>
 
+  <xsl:param name="is-mathml-capable" as="xs:boolean" select="false()"/>
+  <xsl:param name="is-internet-explorer" as="xs:boolean" select="false()"/>
   <xsl:param name="latex-input" as="xs:string" required="yes"/>
   <xsl:param name="is-bad-input" as="xs:boolean" required="yes"/>
   <xsl:param name="parsing-errors" as="element(s:error)*"/>

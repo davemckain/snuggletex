@@ -5,10 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.utilities.DoNothingStylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.SaxonTransformerFactoryChooser;
 import uk.ac.ed.ph.snuggletex.utilities.SimpleStylesheetCache;
-import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import javax.servlet.ServletContext;
@@ -38,14 +36,11 @@ public final class ContextInitialiser implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
         
-        /* Create appropriate implementation of StylesheetCache, as specified by init param */
-        boolean cacheXSLT = "true".equals(servletContext.getInitParameter(CACHE_XSLT_PROPERTY_NAME));
-        StylesheetCache stylesheetCache = cacheXSLT ? new SimpleStylesheetCache() : new DoNothingStylesheetCache();
-        logger.info("Created new StylesheetCache of type " + stylesheetCache.getClass());
-        
-        /* Create and store StylesheetManager, hard-coded to use Saxon */
+        /* Create and store StylesheetManager, hard-coded to use Saxon with caching
+         * turned on as we're loading via the ClassPath so there's no point trying to turn
+         * it off. */
         StylesheetManager stylesheetManager = new StylesheetManager();
-        stylesheetManager.setStylesheetCache(stylesheetCache);
+        stylesheetManager.setStylesheetCache(new SimpleStylesheetCache());
         stylesheetManager.setTransformerFactoryChooser(SaxonTransformerFactoryChooser.getInstance());
         servletContext.setAttribute(STYLESHEET_MANAGER_ATTRIBUTE_NAME, stylesheetManager);
         logger.info("Context initialised");

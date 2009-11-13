@@ -6,7 +6,6 @@
 package uk.ac.ed.ph.snuggletex.webapp;
 
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.extractAnnotationString;
-import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isolateAnnotationXML;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isolateFirstSemanticsBranch;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeDocument;
@@ -22,6 +21,7 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.MathMLUpConverter;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConvertingPostProcessor;
@@ -81,11 +81,10 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         SnuggleEngine engine = createSnuggleEngine();
         engine.addPackage(UpConversionPackageDefinitions.getPackage());
         SnuggleSession session = engine.createSession();
-        SnuggleInput input = new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Form Input");
-        session.parseInput(input);
+        session.parseInput(new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Query Input"));
         
-        /* The next bit is exactly the same as with the full servlet.
-         * FIXME: Refactor this better!
+        /* Create raw DOM, without any up-conversion for the time being. I've done this
+         * so that we can show how much the PMathML hopefully improves after up-conversion!
          */
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element resultRoot = resultDocument.createElement("root");
@@ -101,7 +100,8 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
          */
         NodeList resultNodeList = resultRoot.getChildNodes();
         List<InputError> errors = session.getErrors();
-        Element mathElement = null;
+        
+        Element mathMLElement = null;
         String parallelMathML = null;
         String pMathMLInitial = null;
         String pMathMLUpConverted = null;
@@ -109,7 +109,10 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         String maximaInput = null;
         List<Element> parsingErrors = null;
         UpConvertingPostProcessor upConvertingPostProcessor = new UpConvertingPostProcessor();
+        SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
         boolean badInput = false;
+        
+        /* Check for any errors and that the shape of the result is as expected */
         if (!errors.isEmpty()) {
             /* Input error occurred */
             parsingErrors = new ArrayList<Element>();
@@ -117,30 +120,32 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
                 parsingErrors.add(MessageFormatter.formatErrorAsXML(resultDocument, error, true));
             }
         }
-        else if (resultNodeList.getLength()==1 && isMathMLElement(resultNodeList.item(0), "math")) {
-            /* Result is a single <math/> element, which looks correct. Note that up-conversion
-             * might not have succeeded though.
+        else {
+            /* Make sure there is exactly one MathML element, and any number of upconversion options
+             * specifiers.
              */
-            mathElement = (Element) resultNodeList.item(0);
-            SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
-            pMathMLInitial = serializeElement(mathElement, sourceSerializationOptions);
+            mathMLElement = extractMathMLElement(resultNodeList, true);
+            if (mathMLElement==null) {
+                badInput = true;
+            }
+        }
+        
+        /* Happy path! */
+        if (mathMLElement!=null) {
+            /* We found exactly one MathML element out of raw results */
+            pMathMLInitial = serializeElement(mathMLElement, sourceSerializationOptions);
             
             /* Do up-conversion and extract wreckage */
             MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetCache());
-            Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathElement.getOwnerDocument(), upConvertingPostProcessor.getUpconversionParameterMap());
-            mathElement = (Element) upConvertedMathDocument.getDocumentElement().getFirstChild();
-            parallelMathML = serializeElement(mathElement, sourceSerializationOptions);
-            pMathMLUpConverted = serializeDocument(isolateFirstSemanticsBranch(mathElement), sourceSerializationOptions);
-            Document cMathMLDocument = isolateAnnotationXML(mathElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
+            Document upConvertedMathDocument = upConverter.upConvertSnuggleTeXMathML(mathMLElement.getOwnerDocument(), upConvertingPostProcessor.getUpconversionOptions());
+            
+            mathMLElement = extractMathMLElement(upConvertedMathDocument.getDocumentElement().getChildNodes(), false);
+            parallelMathML = serializeElement(mathMLElement, sourceSerializationOptions);
+            
+            pMathMLUpConverted = serializeDocument(isolateFirstSemanticsBranch(mathMLElement), sourceSerializationOptions);
+            Document cMathMLDocument = isolateAnnotationXML(mathMLElement, MathMLUpConverter.CONTENT_MATHML_ANNOTATION_NAME);
             cMathML = cMathMLDocument!=null ? serializeDocument(cMathMLDocument, sourceSerializationOptions) : null;
-            maximaInput = extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
-        }
-        else {
-            /* This could have been caused by input like 'x \] hello \[ x', which would end
-             * up escaping out of Math mode for a while, causing 3 Nodes to be generated in
-             * this case.
-             */
-            badInput = true;
+            maximaInput = extractAnnotationString(mathMLElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         }
         
         /* Only log failures, as this would normally be caused by bad documentation but could
@@ -154,38 +159,23 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
             }
         }
         
-        /* Decide what type of page to output based on UserAgent, following
-         * same logic as MathInputDemoServlet
-         */
-        WebPageType webPageType= chooseBestWebPageType(request);
-        boolean mathMLCapable = webPageType!=null;
-        if (webPageType==null) {
-            webPageType = WebPageType.PROCESSED_HTML;
-        }
-        
         /* We'll cheat slightly and bootstrap off the SnuggleTeX web page generation process,
          * even though most of the interesting page content is going to be fed in as stylesheet
          * parameters.
          * 
-         * (The actual content passed to the XSLT here will be the final MathML Document that
-         * we produced manually above, though this will actually be recreated using the standard
-         * SnuggleTeX process.)
-         * 
-         * (NOTE: Actually, we're going to throw away most of the resulting web page completely
-         * but following this process makes sure everything is the same as the page it's going
-         * to be embedded into, which is probably a good thing here.)
+         * These fragments are always going to generate plain old XHTML, so we'll use the
+         * PROCESSED_HTML output for this.
          */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
-        options.setDOMPostProcessors(upConvertingPostProcessor);
-        options.setMathVariantMapping(true);
-        options.setAddingMathSourceAnnotations(true);
-        options.setIndenting(true);
-        options.setIncludingStyleElement(false);
+        WebPageOutputOptions webOptions = WebPageOutputOptionsTemplates.createWebPageOptions(WebPageType.PROCESSED_HTML);
+        webOptions.setDoctypePublic(W3CConstants.XHTML_10_STRICT_PUBLIC_IDENTIFIER);
+        webOptions.setDoctypeSystem(W3CConstants.XHTML_10_STRICT_SYSTEM_IDENTIFIER);
+        webOptions.setMathVariantMapping(true);
+        webOptions.setAddingMathSourceAnnotations(true);
+        webOptions.setIndenting(true);
+        webOptions.setIncludingStyleElement(false);
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
-        viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         viewStylesheet.setParameter("is-bad-input", Boolean.valueOf(badInput));
         viewStylesheet.setParameter("parsing-errors", parsingErrors);
@@ -194,11 +184,11 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpConverted);
         viewStylesheet.setParameter("cmathml", cMathML);
         viewStylesheet.setParameter("maxima-input", maximaInput);
-        options.setStylesheets(viewStylesheet);
+        webOptions.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(options, response, response.getOutputStream());
+            session.writeWebPage(webOptions, response, response.getOutputStream());
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);

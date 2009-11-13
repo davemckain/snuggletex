@@ -5,13 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
@@ -77,39 +75,14 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
         SnuggleInput input = new SnuggleInput(inputLaTeX, "Form Input");
         session.parseInput(input);
         
-        /* Decide what type of page to output based on UserAgent */
-        WebPageType webPageType= chooseBestWebPageType(request);
-        boolean mathMLCapable = webPageType!=null;
-        
-        /* If UserAgent can't handle MathML then we'll use HTML output and get the XSLT
-         * to replace the MathML with a reference to an image rendition of it.
-         */
-        if (webPageType==null) {
-            webPageType = WebPageType.PROCESSED_HTML;
-        }
-        
-        /* Set up web output options */
-        WebPageOutputOptions options = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
-        options.setMathVariantMapping(true);
-        options.setAddingMathSourceAnnotations(true);
-        options.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        options.setIndenting(true);
-        options.setIncludingStyleElement(false);
-        
-        /* If browser can't handle MathML, we'll add post-processors to down-convert
-         * simple expressions to XHTML + CSS and replace the remaining MathML islands
-         * with dynamically generated images.
-         */
-        if (webPageType==WebPageType.PROCESSED_HTML) {
-            options.setDOMPostProcessors(
-                    new DownConvertingPostProcessor(),
-                    new MathMLToImageLinkPostProcessor(request.getContextPath())
-            );
-        }
+        /* Pick appropriate web page output based on UseAgent */
+        WebPageOutputOptions webOutputOptions = chooseBestBaseWebPageOutputOptions(request);
+        webOutputOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
+        boolean mathMLCapable = webOutputOptions.getWebPageType()!=WebPageType.MATHPLAYER_HTML;
         
         /* Log things nicely if input was specified by user */
         if (rawInputLaTeX!=null) {
-            String xmlString = session.buildXMLString(options);
+            String xmlString = session.buildXMLString();
             List<InputError> errors = session.getErrors();
             if (errors.isEmpty()) {
                 logger.info("Input:  {}", inputLaTeX);
@@ -130,11 +103,11 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
         viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
-        options.setStylesheets(viewStylesheet);
+        webOutputOptions.setStylesheets(viewStylesheet);
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(options, response, response.getOutputStream());
+            session.writeWebPage(webOutputOptions, response, response.getOutputStream());
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);

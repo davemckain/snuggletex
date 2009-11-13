@@ -15,7 +15,7 @@
 var popup = null;
 
 $(document).ready(function() {
-    /* Set up dialog box */
+    /* Initialise dialog box showing example material */
     popup = $("#popup");
     popup.dialog({
       autoOpen: false,
@@ -23,7 +23,7 @@ $(document).ready(function() {
       width: 600,
       height: 400
     });
-    /* Attach handlers to dialog popups links */
+    /* Attach handlers to dialog popups links for example links */
     $(".dialog").bind("click", function(event) {
         var latexInput = this.getAttribute('title');
         popup.load(this.href + " .exampleResult", null, function() {

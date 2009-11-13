@@ -5,9 +5,17 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
+import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
+
+import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
 import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
+import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
+import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
+import uk.ac.ed.ph.snuggletex.upconversion.UpConversionUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
 import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
@@ -21,6 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Trivial base class for servlets in the demo webapp
@@ -103,14 +115,15 @@ abstract class BaseServlet extends HttpServlet {
 
     /**
      * Convenience method which picks the most appropriate MathML-based {@link WebPageType}
-     * for the current UserAgent, returning null if the UserAgent does not appear to support
-     * MathML.
+     * for the current UserAgent, returning {@link WebPageType#PROCESSED_HTML}
+     * if the UserAgent does not appear to support MathML as this is the only sensible
+     * option in that case.
      * 
      * @param request
      */
     protected WebPageType chooseBestWebPageType(final HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
-        WebPageType result = null;
+        WebPageType result = WebPageType.PROCESSED_HTML;
         if (userAgent!=null) {
             if (userAgent.contains("MathPlayer ")) {
                 result  = WebPageType.MATHPLAYER_HTML;
@@ -118,6 +131,46 @@ abstract class BaseServlet extends HttpServlet {
             else if (userAgent.contains("Gecko/")) {
                 result  = WebPageType.MOZILLA;
             }
+        }
+        return result;
+    }
+    
+    /**
+     * Convenience method to choose the most appropriate base {@link WebPageOutputOptions}
+     * for the current UserAgent, using {@link #chooseBestWebPageType(HttpServletRequest)}
+     * to determine the underlying {@link WebPageType}.
+     * 
+     * @param request
+     */
+    protected WebPageOutputOptions chooseBestBaseWebPageOutputOptions(final HttpServletRequest request) {
+        /* Set common options */
+        WebPageType webPageType = chooseBestWebPageType(request);
+        WebPageOutputOptions result = WebPageOutputOptionsTemplates.createWebPageOptions(webPageType);
+        result.setMathVariantMapping(true);
+        result.setAddingMathSourceAnnotations(true);
+        result.setIndenting(true);
+        result.setIncludingStyleElement(false);
+
+        /* Then additional suitable options */
+        if (webPageType==WebPageType.PROCESSED_HTML) {
+            result.setDoctypePublic(W3CConstants.XHTML_10_STRICT_PUBLIC_IDENTIFIER);
+            result.setDoctypeSystem(W3CConstants.XHTML_10_STRICT_SYSTEM_IDENTIFIER);
+            
+            /* If browser can't handle MathML, we'll add post-processors to down-convert
+             * simple expressions to XHTML + CSS and replace the remaining MathML islands
+             * with dynamically generated images. */
+            result.setDOMPostProcessors(
+                    new DownConvertingPostProcessor(),
+                    new MathMLToImageLinkPostProcessor(request.getContextPath())
+            );
+        }
+        else if (webPageType==WebPageType.MATHPLAYER_HTML) {
+            result.setDoctypePublic(W3CConstants.XHTML_10_STRICT_PUBLIC_IDENTIFIER);
+            result.setDoctypeSystem(W3CConstants.XHTML_10_STRICT_SYSTEM_IDENTIFIER);
+        }
+        else {
+            result.setDoctypePublic(W3CConstants.XHTML_11_MATHML_20_PUBLIC_IDENTIFIER);
+            result.setDoctypeSystem(W3CConstants.XHTML_11_MATHML_20_SYSTEM_IDENTIFIER);
         }
         return result;
     }
@@ -130,5 +183,42 @@ abstract class BaseServlet extends HttpServlet {
     protected boolean isInternetExplorer(final HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         return userAgent!=null && userAgent.contains("MSIE");
+    }
+
+    /**
+     * Untangles the given {@link NodeList} to find an expected single MathML element,
+     * and possibly some whitespace and possibly any number of <c:upconversion-options/>
+     * elements.
+     */
+    protected Element extractMathMLElement(final NodeList resultNodeList, final boolean allowUpConversionOptionsElements) {
+        /* Make sure there is exactly one MathML element, and any number of upconversion options
+         * specifiers.
+         */
+        Element result = null;
+        for (int i=0, size=resultNodeList.getLength(); i<size; i++) {
+            Node node = resultNodeList.item(i);
+            if (isMathMLElement(node)) {
+                if (result!=null) {
+                    return null;
+                }
+                result = (Element) node;
+            }
+            else if (node.getNodeType()==Node.TEXT_NODE && node.getNodeValue().trim().length()==0) {
+                /* Ignore whitespace */
+                continue;
+            }
+            else if (allowUpConversionOptionsElements
+                    && node.getNodeType()==Node.ELEMENT_NODE
+                    && SnuggleConstants.SNUGGLETEX_NAMESPACE.equals(node.getNamespaceURI())
+                    && UpConversionUtilities.UPCONVERSION_OPTIONS_XML_LOCAL_NAME.equals(node.getLocalName())) {
+                /* Allow <s:upconversion-options/> */
+                continue;
+            }
+            else {
+                /* Anything else is an not allowed */
+                return null;
+            }
+        }
+        return result;
     }
 }
