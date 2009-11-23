@@ -444,6 +444,18 @@ f[n](x)
 \assumeSymbol{f_{n_k}}{function} $f_{n_k}(x)$
 f[n[k]](x)
 ====
+\assumeSymbol{f}{function} $f^{-1}$
+inverse[f]
+====
+\assumeSymbol{f}{function} $f^{-1}(x)$
+inverse[f](x)
+====
+\assumeSymbol{f}{function} $f^2(x)$
+f(x)^2
+====
+\assumeSymbol{f}{function} $f^2$
+lambda([x], f(x)^2)
+====
 \assumeSymbol{i}{imaginaryNumber} $i$
 %i
 ====

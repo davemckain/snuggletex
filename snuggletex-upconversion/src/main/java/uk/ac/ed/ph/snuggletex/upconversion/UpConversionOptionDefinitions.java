@@ -34,6 +34,7 @@ public final class UpConversionOptionDefinitions {
     
     public static final String MAXIMA_OPERATOR_FUNCTION_NAME = "maximaOperatorFunction";
     public static final String MAXIMA_UNITS_FUNCTION_NAME = "maximaUnitsFunction";
+    public static final String MAXIMA_INVERSE_FUNCTION_NAME = "maximaInverseFunction";
     
     public static final Set<String> SYMBOL_ASSUMPTION_TYPES = makeHashSet(new String[] {
             "function",
@@ -73,6 +74,7 @@ public final class UpConversionOptionDefinitions {
             EMPTY_FENCE_HANDLING, BRACKET_HANDLING_VALUES, "list",
             
             /* Maxima output control */
+            MAXIMA_INVERSE_FUNCTION_NAME, null, "inverse",
             MAXIMA_OPERATOR_FUNCTION_NAME, null, "operator",
             MAXIMA_UNITS_FUNCTION_NAME, null, "units",
     });
