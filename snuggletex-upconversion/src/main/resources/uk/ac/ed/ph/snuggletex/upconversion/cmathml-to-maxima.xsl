@@ -491,6 +491,92 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:text>)</xsl:text>
   </xsl:template>
 
+  <!--
+  Inverse of custom function application.
+
+  <apply>
+    <apply>
+      <inverse/>
+      <ci type="function">f</ci>
+    </apply>
+    <ci>x</ci>
+  </apply>
+  -->
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::inverse] and *[2][self::ci and @type='function']]]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
+    <xsl:variable name="function" as="element(ci)" select="*[1]/*[2]"/>
+    <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
+    <xsl:value-of select="s:get-upconversion-option($upconversion-options, 'maximaInverseFunction')"/>
+    <xsl:text>[</xsl:text>
+    <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
+    <xsl:text>](</xsl:text>
+    <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+    <xsl:text>)</xsl:text>
+  </xsl:template>
+
+  <!--
+  Power of custom function application.
+
+  <apply>
+    <apply>
+      <power/>
+      <ci type="function">f</ci>
+      <cn>5</cn>
+    </apply>
+    <ci>x</ci>
+  </apply>
+  -->
+  <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::power] and *[2][self::ci and @type='function']]]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:variable name="function" as="element(ci)" select="*[1]/*[2]"/>
+    <xsl:variable name="power" as="element()" select="*[1]/*[3]"/>
+    <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
+    <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
+    <xsl:text>(</xsl:text>
+    <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+    <xsl:text>)^</xsl:text>
+    <xsl:copy-of select="local:to-maxima($power)"/>
+  </xsl:template>
+
+  <!--
+  Unapplied Inverse of custom function
+
+  <apply>
+    <inverse/>
+    <ci type="function">f</ci>
+  </apply>
+  -->
+  <xsl:template match="apply[count(*)=2 and *[1][self::inverse] and *[2][self::ci and @type='function']]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
+    <xsl:variable name="function" as="element(ci)" select="*[2]"/>
+    <xsl:value-of select="s:get-upconversion-option($upconversion-options, 'maximaInverseFunction')"/>
+    <xsl:text>[</xsl:text>
+    <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
+    <xsl:text>]</xsl:text>
+  </xsl:template>
+
+  <!--
+  Unapplied Power of custom function
+
+  <apply>
+    <power/>
+    <ci type="function">f</ci>
+    <cn>5</cn>
+  </apply>
+
+  NOTE: The end result here isn't very good as the best we can do is construct an anonymous function but
+  we don't know its arity.
+  -->
+  <xsl:template match="apply[count(*)=3 and *[1][self::power] and *[2][self::ci and @type='function']]" mode="cmathml-to-maxima" as="node()+" priority="5">
+    <xsl:variable name="function" as="element(ci)" select="*[2]"/>
+    <xsl:variable name="power" as="element()" select="*[3]"/>
+    <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
+    <xsl:text>lambda([x], </xsl:text>
+    <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
+    <xsl:text>(x)^</xsl:text>
+    <xsl:copy-of select="local:to-maxima($power)"/>
+    <xsl:text>)</xsl:text>
+  </xsl:template>
+
   <!-- ************************************************************ -->
 
   <!-- Maxima doesn't actually support intervals! -->

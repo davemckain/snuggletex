@@ -400,6 +400,13 @@ x\,y\,z
   <ci>x</ci>
 </apply>
 ====
+## We don't allow things like this, though.
+\sin^n x
+!UCFFN2
+====
+\log_10^n x
+!UCFFN2
+====
 ## Natural log
 \ln x
 <apply>
@@ -1066,6 +1073,44 @@ f(x)
 ====
 \assumeSymbol{f}{function} $f(x)$
 <apply><ci type="function">f</ci><ci>x</ci></apply>
+====
+\assumeSymbol{f}{function} $f^{-1}$
+<apply>
+  <inverse/>
+  <ci type="function">f</ci>
+</apply>
+====
+\assumeSymbol{f}{function} $f^{2}$
+<apply>
+  <power/>
+  <ci type="function">f</ci>
+  <cn>2</cn>
+</apply>
+====
+\assumeSymbol{f}{function} $f^{-1}(x)$
+<apply>
+  <apply>
+    <inverse/>
+    <ci type="function">f</ci>
+  </apply>
+  <ci>x</ci>
+</apply>
+====
+\assumeSymbol{f}{function} $f^{2}(x)$
+<apply>
+  <apply>
+    <power/>
+    <ci type="function">f</ci>
+    <cn>2</cn>
+  </apply>
+  <ci>x</ci>
+</apply>
+====
+\assumeSymbol{f}{function} $f^n(x)$
+!UCFFN2
+====
+\assumeSymbol{f}{function} $f^f$
+!UCFFN2
 ====
 \assumeSymbol{f_n}{function} $f_n$
 <ci type="function"><msub><mi>f</mi><mi>n</mi></msub></ci>

@@ -35,6 +35,11 @@ All Rights Reserved
   <xsl:template name="s:pmathml-to-cmathml" as="element()*">
     <xsl:param name="elements" as="element()*"/>
     <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
+    <!--
+    <xsl:message>
+      INPUT IS <xsl:copy-of select="$elements"/>
+    </xsl:message>
+    -->
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="$elements"/>
       <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
@@ -201,10 +206,10 @@ All Rights Reserved
     <xsl:param name="element" as="element()"/>
     <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:sequence select="boolean($element[s:is-assumed-function(., $upconversion-options)
-        or (s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $upconversion-options))])"/>
+      or (s:is-power(.) and s:is-assumed-function(s:get-power-base(.), $upconversion-options))])"/>
   </xsl:function>
 
-  <xsl:function name="local:is-legal-function-construct" as="xs:boolean">
+  <xsl:function name="local:is-function-construct" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:sequence select="local:is-supported-function($element)
@@ -219,8 +224,8 @@ All Rights Reserved
 
   <!-- Application of groups by the precedence order built by pmathml-enhancer.xsl -->
   <xsl:template name="local:process-group" as="element()*">
-    <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
+    <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <xsl:when test="$elements[self::mspace]">
         <!-- Strip off <mspace/> and reapply this template to whatever is left -->
@@ -257,8 +262,8 @@ All Rights Reserved
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[1][local:is-legal-function-construct(., $upconversion-options)]">
-        <!-- Supported function (not necessarily applied) -->
+      <xsl:when test="$elements[1][local:is-function-construct(., $upconversion-options)]">
+        <!-- Legal function construct (not necessarily applied) -->
         <xsl:call-template name="local:handle-legal-function-group">
           <xsl:with-param name="elements" select="$elements"/>
           <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
@@ -685,7 +690,7 @@ All Rights Reserved
                   </xsl:call-template>
                 </xsl:variable>
                 <xsl:variable name="output-form" as="element()+" select="$function-output/local:cmathml/*"/>
-                <xsl:variable name="function" as="element(local:function)" select="$function-output/local:function"/>
+                <xsl:variable name="function" as="element(local:function)?" select="$function-output/local:function"/>
                 <!-- Work out operands -->
                 <!-- If 'n' operands, then make sure function is actually nary -->
                 <xsl:choose>
@@ -751,39 +756,50 @@ All Rights Reserved
   <xsl:template name="local:map-supported-function" as="element(local:function-mapping)">
     <xsl:param name="operator-element" as="element()" required="yes"/>
     <xsl:choose>
-      <xsl:when test="$operator-element[self::msup and *[1][self::mi] and *[2][self::mn and .='-1']]">
-        <!-- It looks like an inverse function. Make sure we know about it -->
-        <xsl:variable name="function" select="local:get-supported-function($operator-element/*[1])" as="element(local:function)"/>
-        <local:function-mapping>
-          <local:cmathml>
-            <xsl:choose>
-              <xsl:when test="$function/@inverse-output">
-                <xsl:element name="{$function/@inverse-output}"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <!-- Fail: Function cannot be inverted -->
-                <xsl:copy-of select="s:make-error('UCFFN1', $operator-element, ($function))"/>
-              </xsl:otherwise>
-            </xsl:choose>
-          </local:cmathml>
-          <xsl:copy-of select="$function"/>
-        </local:function-mapping>
-      </xsl:when>
-      <xsl:when test="$operator-element[self::msup
-          and *[1][self::mi]
-          and *[2][self::mn and number(.) &gt;= 1]]">
-        <!-- This looks like sin^2, which we will interpret as such -->
-        <xsl:variable name="function" select="local:get-supported-function($operator-element/*[1])" as="element(local:function)"/>
-        <local:function-mapping>
-          <local:cmathml>
-            <apply>
-              <power/>
-              <xsl:element name="{$function/@output}"/>
-              <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
-            </apply>
-          </local:cmathml>
-          <xsl:copy-of select="$function"/>
-        </local:function-mapping>
+      <xsl:when test="$operator-element[self::msup and *[1][self::mi]]">
+        <xsl:variable name="function" select="$operator-element/*[1]" as="element(mi)"/>
+        <xsl:variable name="superscript" select="$operator-element/*[2]" as="element()"/>
+        <xsl:variable name="function" select="local:get-supported-function($function)" as="element(local:function)"/>
+        <xsl:choose>
+          <xsl:when test="$superscript[self::mn and .='-1']">
+            <!-- It looks like an inverse function. Make sure we know about it -->
+            <local:function-mapping>
+              <local:cmathml>
+                <xsl:choose>
+                  <xsl:when test="$function/@inverse-output">
+                    <xsl:element name="{$function/@inverse-output}"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <!-- Fail: Function cannot be inverted -->
+                    <xsl:copy-of select="s:make-error('UCFFN1', $operator-element, ($function))"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </local:cmathml>
+              <xsl:copy-of select="$function"/>
+            </local:function-mapping>
+          </xsl:when>
+          <xsl:when test="$superscript[self::mn and number(.) &gt;= 1]">
+            <!-- This looks like sin^2, which we will interpret as such -->
+            <local:function-mapping>
+              <local:cmathml>
+                <apply>
+                  <power/>
+                  <xsl:element name="{$function/@output}"/>
+                  <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
+                </apply>
+              </local:cmathml>
+              <xsl:copy-of select="$function"/>
+            </local:function-mapping>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Fail: unsupported superscript -->
+            <local:function-mapping>
+              <local:cmathml>
+                <xsl:copy-of select="s:make-error('UCFFN2', $operator-element, ($superscript, $function))"/>
+              </local:cmathml>
+            </local:function-mapping>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:when test="$operator-element[self::msub
           and *[1][self::mi and .='log']
@@ -801,24 +817,36 @@ All Rights Reserved
       </xsl:when>
       <xsl:when test="$operator-element[self::msubsup
           and *[1][self::mi and .='log']
-          and *[2][self::mi or self::mn]
-          and *[3][self::mn and number(.) &gt;=1]]">
+          and *[2][self::mi or self::mn]]">
         <!-- Log to a different base with a power -->
-        <local:function-mapping>
-          <local:cmathml>
-            <apply>
-              <power/>
-              <apply>
-                <log/>
-                <logbase>
-                  <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
-                </logbase>
-              </apply>
-              <xsl:apply-templates select="$operator-element/*[3]" mode="pmathml-to-cmathml"/>
-            </apply>
-          </local:cmathml>
-          <xsl:copy-of select="$local:supported-functions[.[@input='log']]"/>
-        </local:function-mapping>
+        <xsl:variable name="superscript" select="$operator-element/*[3]" as="element()"/>
+        <xsl:choose>
+          <xsl:when test="$superscript[self::mn and number(.) &gt;= 1]">
+            <local:function-mapping>
+              <local:cmathml>
+                <apply>
+                  <power/>
+                  <apply>
+                    <log/>
+                    <logbase>
+                      <xsl:apply-templates select="$operator-element/*[2]" mode="pmathml-to-cmathml"/>
+                    </logbase>
+                  </apply>
+                  <xsl:apply-templates select="$operator-element/*[3]" mode="pmathml-to-cmathml"/>
+                </apply>
+              </local:cmathml>
+              <xsl:copy-of select="$local:supported-functions[.[@input='log']]"/>
+            </local:function-mapping>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Fail: unsupported superscript -->
+            <local:function-mapping>
+              <local:cmathml>
+                <xsl:copy-of select="s:make-error('UCFFN2', $operator-element, ($superscript, 'log'))"/>
+              </local:cmathml>
+            </local:function-mapping>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:when test="$operator-element[self::mi]">
         <!-- Unapplied case: create Content MathML element with same name as content of <mi/> element -->
@@ -832,8 +860,7 @@ All Rights Reserved
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">
-          Unknown supported function <xsl:copy-of select="$operator-element"/>.
-          This logic branch should not have been reached!
+          Unexpected logic branch
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
@@ -842,24 +869,34 @@ All Rights Reserved
   <xsl:template name="local:map-assumed-function-construct" as="element()">
     <xsl:param name="construct" as="element()" required="yes"/>
     <xsl:choose>
-      <xsl:when test="$construct[s:is-power(.) and s:get-power-exponent(.)[self::mn and .='-1']]">
-        <!-- Inverse function -->
-        <apply>
-          <inverse/>
-          <xsl:call-template name="local:create-cmathml-function">
-            <xsl:with-param name="element" select="s:get-power-base($construct)"/>
-          </xsl:call-template>
-        </apply>
-      </xsl:when>
-      <xsl:when test="$construct[s:is-power(.) and s:get-power-exponent(.)[self::mn and number(.) &gt;= 1]]">
-        <!-- Function to a power -->
-        <apply>
-          <power/>
-          <xsl:call-template name="local:create-cmathml-function">
-            <xsl:with-param name="element" select="s:get-power-base($construct)"/>
-          </xsl:call-template>
-          <xsl:apply-templates select="s:get-power-exponent($construct)" mode="pmathml-to-cmathml"/>
-        </apply>
+      <xsl:when test="s:is-power($construct)">
+        <xsl:variable name="base" select="s:get-power-base($construct)" as="element()"/>
+        <xsl:variable name="exponent" select="s:get-power-exponent($construct)" as="element()"/>
+        <xsl:choose>
+          <xsl:when test="$exponent[self::mn and .='-1']">
+            <!-- Inverse function -->
+            <apply>
+              <inverse/>
+              <xsl:call-template name="local:create-cmathml-function">
+                <xsl:with-param name="element" select="$base"/>
+              </xsl:call-template>
+            </apply>
+          </xsl:when>
+          <xsl:when test="$exponent[self::mn and number(.) &gt;= 1]">
+            <!-- Function to a power -->
+            <apply>
+              <power/>
+              <xsl:call-template name="local:create-cmathml-function">
+                <xsl:with-param name="element" select="$base"/>
+              </xsl:call-template>
+              <xsl:apply-templates select="s:get-power-exponent($construct)" mode="pmathml-to-cmathml"/>
+            </apply>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Error: bad exponent -->
+            <xsl:copy-of select="s:make-error('UCFFN2', $construct, ($exponent, $base))"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <!-- Function -->

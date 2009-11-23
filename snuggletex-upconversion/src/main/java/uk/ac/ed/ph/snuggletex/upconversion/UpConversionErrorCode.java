@@ -35,6 +35,7 @@ public enum UpConversionErrorCode implements ErrorCode {
     UCFOP5(),
     UCFFN0(),
     UCFFN1(),
+    UCFFN2(),
     UCFFX0(),
     UCFFX1(),
     UCFFX2(),

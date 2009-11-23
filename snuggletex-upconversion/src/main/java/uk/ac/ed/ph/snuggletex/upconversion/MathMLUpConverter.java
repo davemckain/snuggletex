@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex.upconversion;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.SaxonTransformerFactoryChooser;
@@ -20,6 +21,7 @@ import java.io.StringReader;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -149,8 +151,11 @@ public class MathMLUpConverter {
             /* Do the transform */
             upconverter.transform(new DOMSource(document), new DOMResult(resultDocument));
         }
+        catch (TransformerConfigurationException e) {
+            throw new SnuggleRuntimeException("Could not instantiate Transformer from Templates", e);
+        }
         catch (TransformerException e) {
-            throw new SnuggleRuntimeException("Up-conversion failed", e);
+            throw new SnuggleLogicException("Up-conversion XSLT transform failed", e);
         }
         return resultDocument;
     }
@@ -169,8 +174,11 @@ public class MathMLUpConverter {
             Templates fixerStylesheet = stylesheetManager.getStylesheet(ASCIIMATH_FIXER_XSL_LOCATION, true);
             fixerStylesheet.newTransformer().transform(new DOMSource(asciiMathMLDocument), new DOMResult(fixedDocument));
         }
+        catch (TransformerConfigurationException e) {
+            throw new SnuggleRuntimeException("Could not instantiate Transformer from Templates", e);
+        }
         catch (TransformerException e) {
-            throw new SnuggleRuntimeException("ASCIIMathML fixing step failed", e);
+            throw new SnuggleLogicException("ASCIIMathML fix-up XSLT transform failed", e);
         }
         /* Then do the normal SnuggleTeX up-conversion */
         return upConvertSnuggleTeXMathML(fixedDocument, upConversionOptions);

@@ -105,7 +105,7 @@ public class MathUpConversionToMaximaTests extends AbstractGoodTest {
         }
         catch (Throwable e) {
             log.severe("Input was: " + inputLaTeX);
-            log.severe("Resulting MathML was " + MathMLUtilities.serializeElement(mathmlElement));
+            log.severe("Resulting MathML was " + (mathmlElement!=null ? MathMLUtilities.serializeElement(mathmlElement) : null));
             log.severe("Resulting Maxima annotation was: " + maximaAnnotation);
             log.severe("Resulting Error codes were:      " + errorCodes);
             log.severe("Expected result would have been: " + expectedMaxima);
