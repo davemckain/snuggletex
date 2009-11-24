@@ -15,7 +15,6 @@ import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionErrorCode;
 
-import java.util.Arrays;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -42,7 +41,7 @@ public final class UpConversionPackageDefinitions {
         upConversionPackage = new SnugglePackage("UpConversion");
         
         /* Set up error messages for this package */
-        upConversionPackage.getErrorCodes().addAll(Arrays.asList(UpConversionErrorCode.values()));
+        upConversionPackage.addErrorCodes(UpConversionErrorCode.values());
         try {
             upConversionPackage.setErrorMessageBundle(ResourceBundle.getBundle(ERROR_MESSAGES_PROPERTIES_BASENAME));
         }

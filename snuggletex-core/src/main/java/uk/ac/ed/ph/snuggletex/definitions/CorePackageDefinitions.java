@@ -73,7 +73,6 @@ import uk.ac.ed.ph.snuggletex.semantics.TabularInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
-import java.util.Arrays;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -144,7 +143,7 @@ public final class CorePackageDefinitions {
         corePackage = new SnugglePackage(CORE_PACKAGE_NAME);
         
         /* Set up error messages for this package */
-        corePackage.getErrorCodes().addAll(Arrays.asList(CoreErrorCode.values()));
+        corePackage.addErrorCodes(CoreErrorCode.values());
         try {
             corePackage.setErrorMessageBundle(ResourceBundle.getBundle(CORE_ERROR_MESSAGES_PROPERTIES_BASENAME));
         }

@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.CombinerTargetMatcher;
 import uk.ac.ed.ph.snuggletex.definitions.CommandType;
+import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
@@ -21,16 +22,25 @@ import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
- * Encapsulates a collection of {@link BuiltinCommand}s and {@link BuiltinEnvironment}s,
- * with convenience methods for creating commands and environments of various types.
+ * A {@link SnugglePackage} defines a collection of {@link BuiltinCommand}s, {@link BuiltinEnvironment}s,
+ * and {@link ErrorCode}s/{@link ErrorGroup}s that can be registered with a {@link SnuggleEngine}
+ * to add in extra functionality.
+ * <p>
+ * The core SnuggleTeX distribution comes with what is essentially a built-in package defined
+ * in {@link CorePackageDefinitions} which provides its core functionality.
+ * <p>
+ * <strong>Note:</strong> This replaces "DefinitionMap" from SnuggleTeX 1.0/1.1, which had fewer
+ * features.
  * 
  * @see BuiltinCommand
  * @see BuiltinEnvironment
@@ -53,8 +63,9 @@ public final class SnugglePackage {
     
     /** Map of built-in environments, keyed on name */
     private final Map<String, BuiltinEnvironment> builtinEnvironmentMap;
-    
-    private final List<ErrorCode> errorCodes;
+
+    /** {@link List} of all {@link ErrorGroup}s defined by this package */
+    private final LinkedHashMap<ErrorGroup, List<ErrorCode>> errorGroupMap;
     
     /** {@link ResourceBundle} providing details for formatting {@link ErrorCode}s */
     private ResourceBundle errorMessageBundle;
@@ -64,15 +75,19 @@ public final class SnugglePackage {
         this.name = name;
         this.builtinCommandMap = new HashMap<String, BuiltinCommand>();
         this.builtinEnvironmentMap = new HashMap<String, BuiltinEnvironment>();
-        this.errorCodes = new ArrayList<ErrorCode>();
+        this.errorGroupMap = new LinkedHashMap<ErrorGroup, List<ErrorCode>>();
     }
     
     public String getName() {
         return name;
     }
     
-    public List<ErrorCode> getErrorCodes() {
-        return errorCodes;
+    public Collection<ErrorGroup> getErrorGroups() {
+        return errorGroupMap.keySet();
+    }
+    
+    public Collection<ErrorCode> getErrorCodes(ErrorGroup errorGroup) {
+        return errorGroupMap.get(errorGroup);
     }
 
     public ResourceBundle getErrorMessageBundle() {
@@ -149,7 +164,6 @@ public final class SnugglePackage {
                 handler, context, null));
     }
 
-    /** Convenience methods for creating simple MATH-only commands. */
     public BuiltinCommand addSimpleMathCommand(final String name, final MathInterpretation... interpretations) {
         return addSimpleMathCommand(name, interpretations, interpretableSimpleMathBuilder);
     }
@@ -167,7 +181,6 @@ public final class SnugglePackage {
                 Globals.MATH_MODE_ONLY, null, makeInterpretationMap(interpretations),
                 handler, null, null));
     }
-
     
     public BuiltinCommand addCombinerCommand(final String name, final EnumSet<LaTeXMode> allowedModes,
             final CombinerTargetMatcher combinerTargetMatcher,
@@ -178,7 +191,6 @@ public final class SnugglePackage {
                 context, combinerTargetMatcher));
     }
     
-
     public BuiltinCommand addComplexCommand(final String name, final boolean allowOptionalArgument,
             final int arguments, final EnumSet<LaTeXMode> allowedModes,
             final LaTeXMode[] argumentModes,
@@ -227,14 +239,14 @@ public final class SnugglePackage {
                 context, null));
     }
     
-    private BuiltinCommand addCommand(final BuiltinCommand command) {
+    public BuiltinCommand addCommand(final BuiltinCommand command) {
         if (isInputableTeXName(command.getTeXName())) {
             builtinCommandMap.put(command.getTeXName(), command);
         }
         return command;
     }
     
-
+    //-------------------------------------------------------
     
     public BuiltinEnvironment addEnvironment(final String name, final EnumSet<LaTeXMode> allowedModes,
             final LaTeXMode contentMode, final Interpretation interpretation,
@@ -251,10 +263,30 @@ public final class SnugglePackage {
                 allowedModes, contentMode, makeInterpretationMap(interpretation), handler, context));
     }
     
-    private BuiltinEnvironment addEnvironment(final BuiltinEnvironment environment) {
+    public BuiltinEnvironment addEnvironment(final BuiltinEnvironment environment) {
         if (isInputableTeXName(environment.getTeXName())) {
             builtinEnvironmentMap.put(environment.getTeXName(), environment);
         }
         return environment;
+    }
+    
+    //-------------------------------------------------------
+    
+    public void addErrorCode(ErrorCode errorCode) {
+        ConstraintUtilities.ensureNotNull(errorCode, "errorCode");
+        ErrorGroup errorGroup = errorCode.getErrorGroup();
+        ConstraintUtilities.ensureNotNull(errorGroup, "errorCode.errorGroup");
+        List<ErrorCode> errorCodesForGroup = errorGroupMap.get(errorGroup);
+        if (errorCodesForGroup==null) {
+            errorCodesForGroup = new ArrayList<ErrorCode>();
+            errorGroupMap.put(errorGroup, errorCodesForGroup);
+        }
+        errorCodesForGroup.add(errorCode);
+    }
+    
+    public void addErrorCodes(ErrorCode... errorCodes) {
+        for (ErrorCode errorCode : errorCodes) {
+            addErrorCode(errorCode);
+        }
     }
 }
