@@ -67,6 +67,10 @@ All Rights Reserved
       <node id="upconversionFailures" href="/documentation/upconversion-failures.html" name="Up-Conversion Failure Handling"/>
       <!-- Also need to document ASCIIMathML -->
     </node>
+    <node id="migrating" href="/documentation/migrating-from-older-versions.html" name="Migrating from older versions">
+      <node id="migration110to120" href="/documentation/migration-110-to-120.html" name="SnuggleTeX 1.1.0 to 1.2.0 migration guide"/>
+      <node id="migration10xto110" href="/documentation/migration-10x-to-110.html" name="SnuggleTeX 1.0.x to 1.1.0 migration guide"/>
+    </node>
     <node id="projects" href="maven://apidocs/index.html" name="API Documentation"/>
     <node id="crossref" href="maven://xref/index.html" name="Source Code Cross-Reference"/>
   </section>
