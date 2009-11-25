@@ -1,11 +1,11 @@
 \pageId{inputs}
 
 A \verb|SnuggleInput| Object acts as a placeholder for a source of LaTeX
-input. There are a number of different constructors that let you pull in LaTeX
-from other types of I/O Objects, currently \verb|String|, \verb|File|,
+input. This has a number of different constructors that let you pull in LaTeX
+Strings from various types of Java I/O Objects --- currently \verb|String|, \verb|File|,
 \verb|InputStream| and \verb|Reader|.
 
-\textbf{NOTE:} SnuggleTeX behaves like traditional LaTeX in that it expects all input
+\textbf{NOTE:} SnuggleTeX behaves like ``traditional'' LaTeX in that it expects all input
 characters to live in the ASCII subset of Unicode.  Characters outside this
 range will be replaced with (useless) alternatives and reported as a
 \href[\verb|TTEG02|]{error-codes.html#TTEG02} error.

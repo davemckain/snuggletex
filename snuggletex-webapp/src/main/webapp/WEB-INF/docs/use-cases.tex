@@ -12,8 +12,8 @@ should consider:
   \href[Aardvark Content Management System]{http://www.ph.ed.ac.uk/elearning/projects/aardvark/}
   in order to facilitate the conversion of fragments of LaTeX written by
   academics into XML tree branches. Another example of this type of use
-  might be a kind of LaTeX-based Wiki, where SnuggleTeX could be used at
-  some point in the LaTeX to XHTML conversion pipeline.
+  might be a kind of LaTeX-based Wiki, where SnuggleTeX could be plugged in and
+  used at some point in the LaTeX to XHTML conversion pipeline.
 
 \item
   SnuggleTeX is 100\% Java with minimal (usually no) dependencies on
@@ -29,27 +29,28 @@ should consider:
 
 \item
   SnuggleTeX was \emph{not} intended to be a standalone tool that you
-  could throw complete LaTeX documents at and have them converted to web
+  could throw complete LaTeX documents at and have them converted into web
   pages. Other tools do this type of thing very well, such as
   \href[TeX4ht]{http://www.cse.ohio-state.edu/~gurari/TeX4ht/}.
 
 \item
   SnuggleTeX supports a pragmatic subset of LaTeX but does not include anything
   that is particularly paper- or page-specific. It also currently doesn't
-  do cross-referencing or numbering. Other tools might therefore be a
-  better fit for these types of requirements.
+  do cross-referencing or numbering as it could be argued that this is better
+  done at a higher level. Other tools might therefore be a better fit for these
+  types of requirements.
 
 \item
   SnuggleTeX's parser pretends that TeX never happened and may behave slightly
-  differently to what experienced LaTeX users might expect. Novice LaTeX users
-  will not notice any difference and might actually find the error
-  messages provided here more useful.
+  differently to what experienced LaTeX users might expect. Alternatively,
+  novice LaTeX users will not notice any difference and might actually find the
+  error messages provided here more helpful!
 
 \item
   SnuggleTeX's web page outputs are highly configurable and make it relatively
   easy to create MathML-enabled pages that will work across a range of
-  browser platforms. Hooks are available to customise the web page outputs;
-  these require a knowledge of XSLT.
+  browser platforms. Hooks are available to customise the web page outputs to
+  more exacting requirements; these require a knowledge of XSLT.
 
 \item
   The new (and slightly experimental) features introduced in SnuggleTeX 1.1.0
@@ -57,5 +58,10 @@ should consider:
   \href[JISC MathAssess Project]{http://mathassess.ecs.soton.ac.uk/}
   in order to ``understand'' responses made by students to test questions. These
   might be useful for related projects.
+
+\item
+  A quick summary on the types of problem that SnuggleTeX (and related
+  packages) attempt to address can be found in some
+  \href[slides on conversion of Mathematical Content]{http://physics-elearning.blogspot.com/2009/10/some-slides-on-conversion-of.html}.
 
 \end{itemize}

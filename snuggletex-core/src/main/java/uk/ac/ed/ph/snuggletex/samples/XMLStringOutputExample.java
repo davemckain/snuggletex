@@ -5,18 +5,17 @@
  */
 package uk.ac.ed.ph.snuggletex.samples;
 
-import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
+import uk.ac.ed.ph.snuggletex.SerializationOptions.SerializationMethod;
 
 import java.io.IOException;
 
 /**
- * Example demonstrating a minimal example use of SnuggleTeX.
- * <p>
- * This simply converts a fixed input String of LaTeX to XML. 
- * (In this case, the result is a fragment of MathML.)
+ * This example generalises {@link MinimalExample} to create a slightly
+ * more interesting output.
  *
  * @author  David McKain
  * @version $Revision$
@@ -28,21 +27,24 @@ public final class XMLStringOutputExample {
         SnuggleEngine engine = new SnuggleEngine();
         SnuggleSession session = engine.createSession();
         
-        /* Parse some very basic Math Mode input */
-        SnuggleInput input = new SnuggleInput("$$\\alpha \\cap \\beta$$");
+        /* Parse some LaTeX input */
+        SnuggleInput input = new SnuggleInput("\\section*{The quadratic formula}"
+                + "$$ \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a} $$");
         session.parseInput(input);
         
+        /* Specify how we want the resulting XML */
         XMLStringOutputOptions options = new XMLStringOutputOptions();
+        options.setSerializationMethod(SerializationMethod.XHTML);
+        options.setIndenting(true);
         options.setEncoding("UTF-8");
+        options.setAddingMathSourceAnnotations(true);
         if (engine.getStylesheetManager().supportsXSLT20()) {
-            /* User has an XSLT 2.0 processor, so let's output named entities for readability */
+            /* Caller has an XSLT 2.0 processor, so let's output named entities for readability */
             options.setUsingNamedEntities(true);
         }
         
         /* Convert the results to an XML String, which in this case will
          * be a single MathML <math>...</math> element. */
-        String xmlString = session.buildXMLString(options);
-        System.out.println("Input " + input.getString()
-                + " was converted to:\n" + xmlString);
+        System.out.println(session.buildXMLString(options));
     }
 }

@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex.webapp;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
@@ -58,9 +59,12 @@ public final class RedirectionFilter implements Filter {
         /* See if within-context URL matches one of our patterns. If so, redirect */
         String requestUrl = WebUtilities.getWithinContextRequestUrl(httpRequest);
         for (Entry<Pattern, String> mapEntry : redirectionMap.entrySet()) {
-            if (mapEntry.getKey().matcher(requestUrl).matches()) {
+            Pattern matchPattern = mapEntry.getKey();
+            String replacement = mapEntry.getValue();
+            Matcher matcher = matchPattern.matcher(requestUrl);
+            if (matcher.matches()) {
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
-                httpResponse.sendRedirect(httpRequest.getContextPath() + mapEntry.getValue());
+                httpResponse.sendRedirect(httpRequest.getContextPath() + matcher.replaceFirst(replacement));
                 return;
             }
         }

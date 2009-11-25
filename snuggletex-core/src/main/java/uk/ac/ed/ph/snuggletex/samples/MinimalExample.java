@@ -16,6 +16,9 @@ import java.io.IOException;
  * <p>
  * This simply converts a fixed input String of LaTeX to XML. 
  * (In this case, the result is a fragment of MathML.)
+ * 
+ * @see XMLStringOutputExample
+ * @see WebPageExample
  *
  * @author  David McKain
  * @version $Revision$
@@ -28,7 +31,7 @@ public final class MinimalExample {
         SnuggleSession session = engine.createSession();
         
         /* Parse some very basic Math Mode input */
-        SnuggleInput input = new SnuggleInput("$$1+2=3$$");
+        SnuggleInput input = new SnuggleInput("$$ x+2=3 $$");
         session.parseInput(input);
         
         /* Convert the results to an XML String, which in this case will

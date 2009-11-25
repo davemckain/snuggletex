@@ -6,12 +6,14 @@ There are three classes of Errors that can be encountered when using SnuggleTeX:
 
 \item \textbf{Input LaTeX Errors}: Any errors detected in the input LaTeX can
   be detected and recorded in a number of ways, as described below. You will
-  want to act on these errors, usually by passing back to whoever supplies
-  the input LaTeX to help them fix their input.
+  want to act on these errors, usually by passing back to whomever supplied
+  the input LaTeX to help them correct their input.
 
 \item \textbf{Runtime Errors}: Any problems detected due to a mis-configuration
-  or mis-deployment (e.g. if SnuggleTeX can't locate an extension Class or can't
-  find one of its XSLT stylesheets or properties files) fall into this category.
+  or mis-deployment fall into this category.
+  (E.g. if SnuggleTeX can't locate an extension Class, can't
+  find one of its XSLT stylesheets or properties files or you attempt to use a
+  feature requiring an XSLT 2.0 processor when one is not available.)
   They are raised as (unchecked) \verb|SnuggleRuntimeException|s. Your application
   normally won't want (or indeed be able) to deal with these --- they normally
   indicate you need to fix your ClassPath or something similar.

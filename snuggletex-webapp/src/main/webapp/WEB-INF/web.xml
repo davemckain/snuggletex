@@ -41,7 +41,13 @@ All Rights Reserved
       the context path -->
       <param-name>redirections</param-name>
       <param-value>
-        ^/bob /UpConversionDemo
+        /documentation/overview(\..+) /documentation/overview-and-features$1
+        /documentation/(requirements\..+) /documentation/software-$1
+        /documentation/latex-samples(\..+) /documentation/web-output-samples$1
+        /documentation/getting-started(\..+) /documentation/getting-snuggletex$1
+        /documentation/first-example(\..+) /documentation/minimal-example$1
+        /documentation/(dom-output\..+) /documentation/xml-or-$1
+        /documentation/(commands\..+) /documentation/defining-$1
       </param-value>
     </init-param>
   </filter>

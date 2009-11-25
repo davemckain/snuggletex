@@ -21,6 +21,9 @@ import java.io.IOException;
  * Example demonstrating using SnuggleTeX to create a web page,
  * outputting the resulting XHTML to the console. (This is obviously
  * not very useful!)
+ * 
+ * @see MinimalExample
+ * @see XMLStringOutputExample
  *
  * @author  David McKain
  * @version $Revision$

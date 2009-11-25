@@ -1,9 +1,8 @@
 \pageId{firstExample}
 
 Look at the \href[\verb|MinimalExample.java|]{maven://xref/uk/ac/ed/ph/snuggletex/samples/MinimalExample.html}.
-(The source for this is available in the ``full'' binary distribution if you want to
+(The source for this is available in the \href[full SnuggleTeX distribution]{docs://download} if you want to
 compile this yourself.)
-file in the full binary distribution.
 This demonstrates a very simple example of calling up SnuggleTeX:
 
 \begin{verbatim}
@@ -12,7 +11,7 @@ SnuggleEngine engine = new SnuggleEngine();
 SnuggleSession session = engine.createSession();
 
 /* Parse some very basic Math Mode input */
-SnuggleInput input = new SnuggleInput("$$1+2=3$$");
+SnuggleInput input = new SnuggleInput("$$ x+2=3 $$");
 session.parseInput(input);
 
 /* Convert the results to an XML String, which in this case will
@@ -22,7 +21,7 @@ System.out.println("Input " + input.getString()
         + " was converted to:\n" + xmlString);
 \end{verbatim}
 
-This block of code converts the LaTeX String \verb|$$1+2=3$$| to a simple XML
+This block of code converts the LaTeX input \verb|$$ x+2=3 $$| to a simple XML
 String fragment, which is printed to the standard output.
 For this particular input, the resulting XML fragment consists of a single MathML
 \verb|math| element.
@@ -35,13 +34,17 @@ You can run this on the command line with:
 of course need to provide a path if it is not. You should also substitute
 \verb|n.n.n| for the actual version number attached to your SnuggleTeX JAR.)
 
-Once run, you should get an output like:
+When run, you should get an output like:
 
 \begin{verbatim}
-Input $$1+2=3$$ was converted to:
+Input $$ x+2=3 $$ was converted to:
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-  <mn>1</mn><mo>+</mo><mn>2</mn><mo>=</mo><mn>3</mn></math>
+<mi>x</mi><mo>+</mo><mn>2</mn><mo>=</mo><mn>3</mn></math>
 \end{verbatim}
+
+(The newline before the \verb|<tt>| in the sample output above has been added to prevent
+the text being too wide. You should find that your XML is output as a single line if you
+run the example yourself. If you don't like this, you can ask SnuggleTeX to indent the output\ldots)
 
 The XML fragment output in the above example is great for showing off the outputs
 from SnuggleTeX but is not usually much use if you want to do anything else with it.

@@ -139,6 +139,10 @@ tt, code {
   color: #333366;
 }
 
+.tabular td {
+  font-size: smaller;
+}
+
 .warning {
   background-color: #f2d7da;
   border: 2px solid red;
@@ -155,6 +159,15 @@ pre.verbatim, .note, .result {
   border: 1px solid #333366;
   -moz-border-radius: 1em;
   -webkit-border-radius: 1em;
+}
+
+/* (Override for things inside tables) */
+.tabular pre.verbatim {
+  background: none;
+  padding: 0;
+  color: black;
+  border: none;
+  font-weight: bold;
 }
 
 .inputBox {

@@ -18,7 +18,7 @@ All Rights Reserved
 -->
 <navigation xmlns="http://www.ph.ed.ac.uk/snuggletex">
   <section name="About SnuggleTeX">
-    <node id="overview" href="/documentation/overview.html" name="Overview &amp; Features"/>
+    <node id="overview" href="/documentation/overview-and-features.html" name="Overview &amp; Features"/>
     <node id="usecases" href="/documentation/use-cases.html" name="Why Use SnuggleTeX?"/>
     <node id="license" href="/documentation/license.html" name="License"/>
     <node id="releasenotes" href="/documentation/release-notes.html" name="Release Notes"/>
@@ -28,15 +28,19 @@ All Rights Reserved
     <node id="fullLaTeXInputDemo" href="/FullLaTeXInputDemo" name="Full LaTeX Input Demo"/>
     <node id="upConversionDemo" href="/UpConversionDemo" name="MathML Semantic Enrichment Demo"/>
     <node id="asciiMathMLUpConversionDemo" href="/ASCIIMathMLUpConversionDemo" name="ASCIIMathML Enrichment Demo"/>
-    <node id="samples" href="/documentation/latex-samples.html" name="Web Output Samples"/>
+    <node id="samples" href="/documentation/web-output-samples.html" name="Web Output Samples"/>
   </section>
   <section name="User Guide">
-    <node id="requirements" href="/documentation/requirements.html" name="Software Requirements"/>
-    <node id="gettingstarted" href="/documentation/getting-started.html" name="Getting Started"/>
-    <node id="firstExample" href="/documentation/first-example.html" name="First Example"/>
+    <node id="download" href="/documentation/getting-snuggletex.html" name="Getting SnuggleTeX"/>
+    <node id="requirements" href="/documentation/software-requirements.html" name="Software Requirements"/>
+    <node id="classpath" href="/documentation/your-classpath.html" name="Setting up Your ClassPath"/>
+    <node id="examples" href="/documentation/examples.html" name="Examples">
+      <node id="firstExample" href="/documentation/minimal-example.html" name="Minimal Example"/>
+      <node id="xmlStringOutputExample" href="/documentation/xml-string-output-example.html" name="XML String Output Example"/>
+    </node>
     <node id="basicUsage" href="/documentation/basic-usage.html" name="Basic Usage"/>
     <node id="inputs" href="/documentation/inputs.html" name="Parsing LaTeX Inputs"/>
-    <node id="domOutput" href="/documentation/dom-output.html" name="Creating XML/DOM Outputs"/>
+    <node id="domOutput" href="/documentation/xml-or-dom-output.html" name="Creating XML String or DOM Outputs"/>
     <node id="webOutput" href="/documentation/web-output.html" name="Creating Web Pages">
       <node id="webPageTypes" href="/documentation/web-page-types.html" name="XHTML+MathML Web Page Types"/>
       <node id="browserRequirements" href="/documentation/browser-requirements.html" name="MathML Browser Requirements"/>
@@ -50,7 +54,7 @@ All Rights Reserved
       <node id="textMode" href="/documentation/text-mode.html" name="Basic Text Mode Commands"/>
       <node id="mathMode" href="/documentation/math-mode.html" name="Basic Math Mode Commands"/>
       <node id="verbatimMode" href="/documentation/verbatim-mode.html" name="Verbatim Mode"/>
-      <node id="commands" href="/documentation/commands.html" name="Defining Commands &amp; Environments"/>
+      <node id="commands" href="/documentation/defining-commands.html" name="Defining Commands &amp; Environments"/>
       <node id="xhtmlCommands" href="/documentation/xhtml-commands.html" name="XHTML-related Commands"/>
       <node id="xmlCommands" href="/documentation/xml-commands.html" name="XML-related Commands"/>
     </node>

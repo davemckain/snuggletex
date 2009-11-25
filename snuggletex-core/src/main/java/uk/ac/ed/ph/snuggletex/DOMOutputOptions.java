@@ -189,7 +189,6 @@ public class DOMOutputOptions implements Cloneable {
         this.xhtmlPrefix = DEFAULT_XHTML_PREFIX;
         this.mathMLPrefix = DEFAULT_MATHML_PREFIX;
         this.snuggleXMLPrefix = DEFAULT_SNUGGLETEX_XML_PREFIX;
-
         this.mathVariantMapping = false;
         this.linkResolver = null;
     }
