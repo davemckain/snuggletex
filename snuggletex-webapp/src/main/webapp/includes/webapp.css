@@ -139,10 +139,6 @@ tt, code {
   color: #333366;
 }
 
-.tabular td {
-  font-size: smaller;
-}
-
 .warning {
   background-color: #f2d7da;
   border: 2px solid red;
