@@ -150,11 +150,15 @@ All Rights Reserved
   <!-- Builds navigation item in panel -->
   <xsl:template match="s:node" mode="make-navigation">
     <li>
-      <a href="{s:fix-href(@href)}">
+      <xsl:variable name="href" select="s:fix-href(@href)" as="xs:string"/>
+      <a href="{$href}">
         <xsl:if test="@id=$pageId">
           <xsl:attribute name="class">selected</xsl:attribute>
         </xsl:if>
         <xsl:value-of select="@name"/>
+        <xsl:if test="not(starts-with($href,'/'))">
+          <span class="extlink">&#xa0;</span>
+        </xsl:if>
       </a>
       <xsl:if test="descendant-or-self::s:node[@id=$pageId] and exists(s:node)">
         <!-- Current page is deeper, so show it as well -->
@@ -179,9 +183,13 @@ All Rights Reserved
 
   <!-- Do vaguely exciting things to hyperlinks -->
   <xsl:template match="a[@href]">
-    <a href="{s:fix-href(@href)}">
+    <xsl:variable name="href" select="s:fix-href(@href)" as="xs:string"/>
+    <a href="{$href}">
       <xsl:copy-of select="@*[not(local-name()='href')]"/>
       <xsl:apply-templates/>
+      <xsl:if test="not(starts-with($href,'/'))">
+        <span class="extlink">&#xa0;</span>
+      </xsl:if>
     </a>
   </xsl:template>
 

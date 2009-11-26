@@ -131,6 +131,11 @@
 }
 
 /************************************************************/
+span.extlink {
+  padding-right: 12px;
+  margin-left: 2px;
+  background: url(extlink.png) no-repeat center left;
+}
 
 tt, code {
   font-family: Monospace;
