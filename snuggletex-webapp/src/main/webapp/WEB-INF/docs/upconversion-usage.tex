@@ -6,14 +6,14 @@
 
 \item
   In order to use the up-conversion features, you will have to download the
-  full distribution of SnuggleTeX.
+  \href[full distribution of SnuggleTeX]{docs://download}.
 
 \item
-  You need to have \verb|snuggletex-core.jar| and
-  \verb|snuggletex-upconversion.jar| in your ClassPath, as well as
+  You must have \verb|snuggletex-core.jar| and
+  \verb|snuggletex-upconversion.jar| in your runtime ClassPath, as well as
   \verb|saxon9.jar| and \verb|saxon9-dom.jar|. (The JARs in the distributon
   ZIP file contain version numbers in their names; it should be obvious what
-  we mean here.)
+  we mean here!)
 
 \end{itemize}
 
@@ -23,15 +23,23 @@ Have a look at the source code for
 \href[\verb|BasicUpConversionExample.java|]{maven://xref/uk/ac/ed/ph/snuggletex/upconversion/samples/BasicUpConversionExample.html}
 to see how to invoke the up-conversion process.
 
-The key here is to attach an \verb|UpConvertingPostProcessor| into the
-SnuggleTeX DOM-building process using the \verb|addDOMPostProcessor()| method
-of your \verb|DOMOutputOptions| or \verb|WebOutputOptions|
-Object.
+The key to invoking the up-conversion process is by attaching an
+\verb|UpConvertingPostProcessor| into the SnuggleTeX DOM-building process using
+the \verb|addDOMPostProcessor()| method of your \verb|DOMOutputOptions|,
+\verb|XMLStringOutputOptions|.
 
-You can configure how the up-conversion process works by passing some
-\verb|UpConversionParameters| to your \verb|UpConvertingPostProcesor|.
+Additionally, if you want to use any of the special LaTeX up-conversion
+commands added in SnuggleTeX 1.2.0, such as \verb|\assumeSymbol|
+and \verb|\setUpConversionOption|, then you must also register the
+appropriate \verb|SnugglePackage| with your \verb|SnuggleEngine| as
+follows:
 
-\subsection*{Extracting Results}
+\begin{verbatim}
+SnuggleEngine engine = new SnuggleEngine();
+engine.addPackage(UpConversionPackageDefinitions.getPackage());
+\end{verbatim}
+
+\subsection*{Extracting Information from Resulting MathML}
 
 The up-conversion process {\it replaces} each raw MathML \verb|<math/>| element
 with an annotated element housing all of the resulting output forms together. In

@@ -66,7 +66,8 @@ public final class UpConversionDemoServlet extends BaseServlet {
         + "\\assumeSymbol{g}{function}\n"
         + "\\assumeSymbol{i}{imaginaryNumber}\n"
         + "\\assumeSymbol{\\pi}{constantPi}\n"
-        + "\\assumeSymbol{\\gamma}{eulerGamma}";
+        + "\\assumeSymbol{\\gamma}{eulerGamma}\n"
+        + "\\setUpConversionOption{addOptionsAnnotation}{true}";
     
     /** Location of XSLT controlling page layout */
     private static final String DISPLAY_XSLT_LOCATION = "classpath:/upconversion-demo.xsl";

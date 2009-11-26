@@ -61,6 +61,16 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
     /** Location of XSLT controlling page layout */
     private static final String DISPLAY_XSLT_LOCATION = "classpath:/upconversion-example-fragment.xsl";
     
+    /** Default assumptions to use here */
+    private static final String DEFAULT_UPCONVERSION_OPTIONS =
+        "\\assumeSymbol{e}{exponentialNumber}\n"
+        + "\\assumeSymbol{f}{function}\n"
+        + "\\assumeSymbol{f_n}{function}\n"
+        + "\\assumeSymbol{g}{function}\n"
+        + "\\assumeSymbol{i}{imaginaryNumber}\n"
+        + "\\assumeSymbol{\\pi}{constantPi}\n"
+        + "\\assumeSymbol{\\gamma}{eulerGamma}";
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -81,7 +91,15 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         SnuggleEngine engine = createSnuggleEngine();
         engine.addPackage(UpConversionPackageDefinitions.getPackage());
         SnuggleSession session = engine.createSession();
-        session.parseInput(new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Query Input"));
+        if (inputLaTeX.endsWith("$") || inputLaTeX.endsWith("\\]") || inputLaTeX.endsWith("\\)")) {
+            /* Author has explicitly ended Math mode, so is probably doing some custom assumptions */
+            session.parseInput(new SnuggleInput(inputLaTeX, "Query Input"));
+        }
+        else {
+            /* Parse whole thing in Math mode using default assumptions */
+            session.parseInput(new SnuggleInput(DEFAULT_UPCONVERSION_OPTIONS, "Default Assumptions Input"));
+            session.parseInput(new SnuggleInput("\\[ " + inputLaTeX + " \\]", "Query Input"));
+        }
         
         /* Create raw DOM, without any up-conversion for the time being. I've done this
          * so that we can show how much the PMathML hopefully improves after up-conversion!

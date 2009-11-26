@@ -8,21 +8,7 @@ then processing that. In many ways, this part of the process is relatively
 simple since most of the semantic structure has already been inferred (though
 might not necessarily make any sense).
 
-\subsection*{Configurable Assumptions}
-
-SnuggleTeX currently gives you rather limited control over how certain
-constructs should be handled. These options include:
-
-\begin{itemize}
-\item whether \verb|e| should be treated as the exponential number or not.
-\item whether \verb|i| should be treated as the imaginary number.
-\item whether \verb|\pi| should be treated as the number $3.141592\ldots$.
-\item whether \verb|( ... )| should be assumed to delimit a vector or not.
-\item whether \verb|[ ... ]| should be assumed to delimit a list or not.
-\item whether \verb|\{ ... \}| should be assumed to delimit a set or not.
-\end{itemize}
-
-We hope to improve these features for SnuggleTeX 1.2.
+The following tables demonstrate the types of inputs that we support.
 
 \subsection*{Supported Operators}
 
@@ -94,7 +80,7 @@ LaTeX operator & Content MathML element & Live Example \\
   Relation operators will be paired up earlier in the up-conversion
   process. Where there are two or more relations together, each pairing
   becomes an operand of an enclosing logical \verb|and| when
-  converting to Content MathML. So a LaTeX input like \verb|1<x \leq 2| will
+  converting to Content MathML. So a LaTeX input like \verb|1<x\leq 2| will
   result in the same output as \verb|(1<x) \land (x \leq 2)|.
 
 \item
@@ -103,7 +89,7 @@ LaTeX operator & Content MathML element & Live Example \\
   the \verb|<eq/>| operator.
 \end{itemize}
 
-\subsection*{Supported Functions}
+\subsection*{Supported Pre-defined Functions}
 
 \begin{tabular}{|c|c|c|c|c|}
 \hline
@@ -142,7 +128,6 @@ LaTeX function & Arity & Invertible & Content MathML element & Live Example \\
 \verb|\min| & n-ary & No & \verb|<min/>| & \ue{\verb|\min A|} \\
 \verb|\Re| & n-ary & No & \verb|<real/>| & \ue{\verb|\Re z|} \\
 \verb|\Im| & n-ary & No & \verb|<imaginary/>| & \ue{\verb|\Im(1+3i)|} \\
-$\ldots$ & & & \\
 \hline
 \end{tabular}
 
@@ -150,10 +135,10 @@ $\ldots$ & & & \\
 
 \begin{itemize}
 \item
-  For all functions, constructs like \verb|\cos^n x| is
-  interpreted as ``cosine $x$ raised to the power of $n$''
-  where $n$ is either an identifier or a number greater than
-  or equal to $1$.
+  For all functions, constructs like \verb|\cos^3 x| is
+  interpreted as ``cosine $x$ raised to the power of $3$''.
+  This behaviour is used for any power that is a
+  number greater than or equal to $1$.
 
   \ue{\verb|\cos^2x+\sin^2x = 1|}
 
@@ -174,7 +159,7 @@ $\ldots$ & & & \\
   \ue{\verb|\log_{10}100 = 2|}
 \end{itemize}
 
-\subsection*{Supported Symbols}
+\subsection*{Supported Fixed Symbols}
 
 \begin{tabular}{|c|c|c|}
 \hline
@@ -185,15 +170,91 @@ LaTeX symbol & Content MathML interpretation & Live Example \\
 \hline
 \end{tabular}
 
+\subsection*{Configurable Symbols}
+
+Some input symbols are not given pre-defined meanings and instead may
+be configured, either via the custom \verb|\assumeSymbol| macro provided
+as part of the \verb|snuggletex-upconversion| module, or via the Java API.
+
+The following table shows examples of what is available:
+
+\begin{tabular}{|c|c|c|}
+\hline
+LaTeX input & Content MathML interpretation & Live Example \\
+\hline
+\verb|\assumeSymbol{e}{exponentialNumber} $e$| & \verb|<exponentiale/>| & \ue{\verb|e|} \\
+\verb|\assumeSymbol{e}{exponentialNumber} $e^x$| & Application of \verb|<exp/>| function & \ue{\verb|e|} \\
+\verb|\assumeSymbol{i}{imaginaryNumber} $i$| & \verb|<imaginaryi/>| & \ue{\verb|i|} \\
+\verb|\assumeSymbol{\pi}{constantPi} $\pi$| & \verb|<pi/>| & \ue{\verb|\pi|} \\
+\verb|\assumeSymbol{\gamma}{eulerGamma} $\gamma$| & \verb|<eulergamma/>| & \ue{\verb|\gamma|} \\
+\verb|\assumeSymbol{f}{function} $f(x)$| & Application of a function called \verb|f|, rather than a product & \ue{\verb|f(x)+a(x)|} \\
+\hline
+\end{tabular}
+
+\subsubsection*{Notes}
+
+\begin{itemize}
+  \item
+    The first argument of \verb|\assumeSymbol| is parsed in Math mode and may be an
+    identifier, number of arbitrarily subscripted expression made out of identifiers and numbers.
+    You will get a \verb|UAESY1| error if you try to use something too complicated here.
+
+    \ue{\verb|\assumeSymbol{f_{n_k}}{function} $f_{n_k}(x)$|}
+
+  \item
+    Inverses and powers of assumed functions can be entered in a similar way to
+    pre-defined functions:
+
+    \ue{\verb|\assumeSymbol{f}{function} $f^{-1}(x)$|}
+    \ue{\verb|\assumeSymbol{a}{function} $a^{2}(x)$|}
+
+  \item
+    This functionality was added in SnuggleTex 1.2.0.
+
+\end{itemize}
+
+\subsection*{Interpretation of Brackets}
+
+SnuggleTeX inteprets brackets of various types according to the following
+default rules:
+
+\begin{tabular}{|c|c|c|}
+\hline
+LaTeX input & Default Content MathML intepretation & Live Example \\
+\hline
+\verb|(x)| & Round brackets treated as grouping only & \ue{\verb|(x)|} \\
+\verb|(x,y)| & Round fence treated as \verb|<vector/>| & \ue{\verb|(x,y)|} \\
+\verb|[x,y]| & Square fence treated as \verb|<list/>| & \ue{\verb|[x,y]|} \\
+\verb|\{x,y\}| & Curly fence treated as \verb|<set/>| & \ue{\verb|\{x,y\}|} \\
+\hline
+\end{tabular}
+
+From SnuggleTeX 1.2.0 onwards, this behaviour can be changed using the
+\verb|\setUpConversionOption| command.  Here are some examples:
+
+\begin{tabular}{|c|c|}
+\hline
+Live Example & Notes \\
+\hline
+\ue{\verb|\setUpConversionOption{roundBracketHandling}{list} $(x)$|} & Creates a list \\
+\ue{\verb|\setUpConversionOption{roundFenceHandling}{set} $(1,2)$|} & Creates a set \\
+\ue{\verb|\setUpConversionOption{squareFenceHandling}{vector} $[x]$|} & Creates a vector \\
+\ue{\verb|\setUpConversionOption{curlyFenceHandling}{error} $[x]$|} & Treated as an error \\
+\ue{\verb|\setUpConversionOption{squareFenceHandling}{grouping} $a[x]$|} & Treated as a grouping only \\
+\hline
+\end{tabular}
+
 \subsection*{Other Supported Constructs}
 
 \begin{itemize}
 
 \item
   Powers are supported in the expected way. The special case of \verb|e^x|
-  is normally treated as \verb|\exp x|. This can be disabled if desired.
+  is normally treated as \verb|\exp x| if the symbol \verb|e| is assumed to be 
+  the exponential number.
 
-  \ue{\verb|e^{ab} = e^ae^b|}
+  \ue{\verb|\assumeSymbol{e}{exponentialNumber} $e^{ab} = e^ae^b$|}
+  \ue{\verb|\assumeSymbol{\alpha}{exponentialNumber} $\alpha^{x}$|}
 
 \item
   Square and $n$th roots are supported using the familiar LaTeX
@@ -216,5 +277,3 @@ LaTeX symbol & Content MathML interpretation & Live Example \\
   \ue{\verb|5\units{kg}|}
 
 \end{itemize}
-
-

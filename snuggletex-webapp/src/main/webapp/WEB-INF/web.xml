@@ -48,6 +48,9 @@ All Rights Reserved
         /documentation/first-example(\..+) /documentation/minimal-example$1
         /documentation/(dom-output\..+) /documentation/xml-or-$1
         /documentation/(commands\..+) /documentation/defining-$1
+        (/documentation/semantic-)upconversion(\..+) $1enrichment$2
+        /documentation/(content-mathml\..+) /documentation/generating-$1
+        /documentation/(maxima-input\..+) /documentation/generating-$1
       </param-value>
     </init-param>
   </filter>
