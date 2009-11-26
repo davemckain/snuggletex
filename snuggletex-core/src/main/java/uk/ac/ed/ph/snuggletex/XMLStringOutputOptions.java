@@ -1,4 +1,4 @@
-/* $Id: WebPageOutputOptions.java 400 2009-06-14 21:26:31Z davemckain $
+/* $Id$
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -20,7 +20,7 @@ import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
  * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision: 400 $
+ * @version $Revision$
  */
 public class XMLStringOutputOptions extends DOMOutputOptions implements SerializationOptions {
     

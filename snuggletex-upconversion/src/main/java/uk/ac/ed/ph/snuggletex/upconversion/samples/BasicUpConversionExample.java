@@ -30,7 +30,7 @@ import java.io.IOException;
  * @since 1.1.0
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public final class BasicUpConversionExample {
     

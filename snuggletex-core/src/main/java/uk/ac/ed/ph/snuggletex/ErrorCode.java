@@ -19,7 +19,7 @@ import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
  * @see SnugglePackage
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public interface ErrorCode {
     

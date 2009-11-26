@@ -1,4 +1,4 @@
-/* $Id: XMLUtilities.java 276 2009-03-15 22:09:30Z davemckain $
+/* $Id$
  *
  * Copyright (c) 2003 - 2009 University of Edinburgh.
  * All Rights Reserved

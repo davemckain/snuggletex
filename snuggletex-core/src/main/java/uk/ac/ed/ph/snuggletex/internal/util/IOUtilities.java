@@ -1,4 +1,4 @@
-/* $Id: IOUtilities.java 302 2009-05-11 13:46:21Z davemckain $
+/* $Id$
  *
  * Copyright (c) 2009 University of Edinburgh.
  * All Rights Reserved
@@ -23,7 +23,7 @@ import java.nio.channels.FileChannel;
  * (This is a cut-down version of the Class of the same name in <tt>ph-commons-util</tt>.)
  * 
  * @author  David McKain
- * @version $Revision: 302 $
+ * @version $Revision$
  */
 public final class IOUtilities {
     

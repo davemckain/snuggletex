@@ -1,4 +1,4 @@
-/* $Id: SimpleErrorTests.java 302 2009-05-11 13:46:21Z davemckain $
+/* $Id$
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -19,7 +19,7 @@ import org.junit.runners.Parameterized.Parameters;
  * specified list of errors. See the input file for examples.
  *
  * @author  David McKain
- * @version $Revision: 302 $
+ * @version $Revision$
  */
 @RunWith(Parameterized.class)
 public class SimpleErrorTests extends AbstractErrorTest {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-$Id: format-output.xsl 395 2009-06-12 16:56:04Z davemckain $
+$Id$
 
 Very trivial base stylesheet for the various types of pages/fragments
 generated within the SnuggleTeX webapp.

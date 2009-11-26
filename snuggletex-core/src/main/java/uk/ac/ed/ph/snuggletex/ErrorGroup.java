@@ -20,7 +20,7 @@ import uk.ac.ed.ph.snuggletex.definitions.CoreErrorGroup;
  * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public interface ErrorGroup {
     

@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
  * be generalised and moved out of the demo webapp.
  *
  * @author  David McKain
- * @version $Revision: 3 $
+ * @version $Revision$
  */
 public final class MathMLToImageLinkPostProcessor extends MathMLPostProcessor {
     

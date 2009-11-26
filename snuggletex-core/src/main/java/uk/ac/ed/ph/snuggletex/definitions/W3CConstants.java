@@ -1,4 +1,4 @@
-/* $Id: W3CConstants.java 663 2009-07-18 12:30:29Z dmckain $
+/* $Id$
  *
  * Copyright (c) 2003 - 2009 University of Edinburgh.
  * All Rights Reserved
@@ -18,7 +18,7 @@ import javax.xml.XMLConstants;
  * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision: 663 $
+ * @version $Revision$
  */
 public interface W3CConstants {
     

@@ -1,4 +1,4 @@
-/* $Id: GlobalBuiltins.java 457 2009-07-17 16:56:57Z davemckain $
+/* $Id$
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
  * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision: 457 $
+ * @version $Revision$
  */
 public final class UpConversionPackageDefinitions {
     

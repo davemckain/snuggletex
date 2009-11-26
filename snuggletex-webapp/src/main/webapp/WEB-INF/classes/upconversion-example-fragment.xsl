@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-$Id: upconversion-demo.xsl 371 2009-05-25 21:11:40Z davemckain $
+$Id$
 
 Formats the mini pages containing up-conversion example results.
 (These are normally loaded using AJAX with most of the content thrown away,

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-$Id: asciimathml-upconversion-demo.xsl 370 2009-05-25 16:32:05Z davemckain $
+$Id$
 
 Some handy utility templates used by the various demos.
 

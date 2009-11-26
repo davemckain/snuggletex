@@ -1,4 +1,4 @@
-/* $Id: AbstractGoodXMLTest.java 302 2009-05-11 13:46:21Z davemckain $
+/* $Id$
  *
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
@@ -34,7 +34,7 @@ import org.xml.sax.XMLReader;
  * against the specified output.
  * 
  * @author  David McKain
- * @version $Revision: 302 $
+ * @version $Revision$
  */
 public abstract class AbstractGoodXMLTest extends AbstractGoodTest {
     
