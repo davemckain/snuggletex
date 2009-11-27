@@ -37,6 +37,7 @@ All Rights Reserved
     <node id="examples" href="/documentation/examples.html" name="Examples">
       <node id="firstExample" href="/documentation/minimal-example.html" name="Minimal Example"/>
       <node id="xmlStringOutputExample" href="/documentation/xml-string-output-example.html" name="XML String Output Example"/>
+      <node id="webPageExample" href="/documentation/web-page-example.html" name="Web Page Example"/>
     </node>
     <node id="basicUsage" href="/documentation/basic-usage.html" name="Basic Usage"/>
     <node id="inputs" href="/documentation/inputs.html" name="Parsing LaTeX Inputs"/>

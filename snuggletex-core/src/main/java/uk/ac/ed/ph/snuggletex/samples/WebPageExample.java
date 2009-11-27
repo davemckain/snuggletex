@@ -11,16 +11,12 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
-import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
  * Example demonstrating using SnuggleTeX to create a web page,
- * outputting the resulting XHTML to the console. (This is obviously
- * not very useful!)
+ * outputting the resulting XHTML to the console.
  * 
  * @see MinimalExample
  * @see XMLStringOutputExample
@@ -36,7 +32,7 @@ public final class WebPageExample {
         SnuggleSession session = engine.createSession();
         
         /* Parse some very basic Math Mode input */
-        SnuggleInput input = new SnuggleInput("$$1+2=3$$");
+        SnuggleInput input = new SnuggleInput("$$ e^{i\\pi} = -1 $$");
         session.parseInput(input);
         
         /* Create "options" Object to SnuggleTeX what kind of web page we want. We're going
@@ -48,21 +44,10 @@ public final class WebPageExample {
         options.setAddingTitleHeading(true);
         options.setIndenting(true);
         options.setAddingMathSourceAnnotations(true);
-        options.setIncludingStyleElement(false);    
+        options.setIncludingStyleElement(false);
         
-        /* Now we ask SnuggleTeX to generate the resulting web page. By default, it outputs to
-         * an OutputStream using the UTF-8 encoding, so we'll capture this in a byte array and
-         * then read that as a String. (This might seem convoluted, but remember that you'll
-         * generally want to write out your web page as bytes to store/send. Printing it out
-         * as a String is rather odd when you think about it!) 
-         */
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        session.writeWebPage(options, outputStream);
-        String webPageAsString = IOUtilities.readUnicodeStream(new ByteArrayInputStream(outputStream.toByteArray()));
-        
-        /* Phew! Now dump it to the console */
-        System.out.println("Input " + input.getString()
-                + " generated page:\n"
-                +  webPageAsString);
+        /* Now ask SnuggleTeX to write the resulting output to the console.
+         * (You would normally send the output somewhere more interesting, though!) */
+        session.writeWebPage(options, System.out);
     }
 }
