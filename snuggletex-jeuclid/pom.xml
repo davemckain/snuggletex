@@ -15,7 +15,7 @@ All Rights Reserved
   <parent>
     <groupId>uk.ac.ed.ph.snuggletex</groupId>
     <artifactId>snuggletex</artifactId>
-    <version>1.2.0-beta1</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <dependencies>
     <dependency>
