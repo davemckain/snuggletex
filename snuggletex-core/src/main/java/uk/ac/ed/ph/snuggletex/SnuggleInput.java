@@ -99,41 +99,80 @@ public final class SnuggleInput {
         this.identifier = identifier;
     }
     
+    /** 
+     * Returns the "type" of input, represented by an instance of the {@link InputType} enumeration.
+     */
     public InputType getType() {
         return type;
     }
     
     
+    /** 
+     * Returns the "identifier" for this input. This is used when formulating error messages.
+     * You can use as you require - e.g. as a kind of System ID, URL or File name.
+     */
     public String getIdentifier() {
         return identifier;
     }
     
+    /** 
+     * Sets the "identifier" for this input. This is used when formulating error messages.
+     * You can use as you require - e.g. as a kind of System ID, URL or File name.
+     * 
+     * @param identifier new identifier, which may be null.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
     
     
+    /**
+     * Returns an (optional) URI for this input. If provided, this can be used to help resolve links
+     * to other {@link SnuggleInput}s.
+     */
     public URI getURI() {
         return uri;
     }
     
+    /**
+     * Sets a URI for this input. If provided, this can be used to help resolve links
+     * to other {@link SnuggleInput}s.
+     * 
+     * @param uri URI for this input, which may be null.
+     */
     public void setURI(URI uri) {
         this.uri = uri;
     }
 
 
+    /**
+     * Returns the String that provided this input if type is {@link InputType#STRING}, null
+     * otherwise.
+     */
     public String getString() {
         return string;
     }
     
+    /**
+     * Returns the {@link File} that provided this input if type is {@link InputType#FILE}, null
+     * otherwise.
+     */
     public File getFile() {
         return file;
     }
     
+    /**
+     * Returns the {@link InputStream} that provided this input if type is {@link InputType#INPUT_STREAM}, null
+     * otherwise.
+     */
     public InputStream getInputStream() {
         return inputStream;
     }
     
+    /**
+     * Returns the {@link Reader} that provided this input if type is {@link InputType#READER}, null
+     * otherwise.
+     */
     public Reader getReader() {
         return reader;
     }

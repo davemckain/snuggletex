@@ -225,96 +225,295 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
     }
     
     
+    /**
+     * Returns the desired "type" of web page to be constructed.
+     * <p>
+     * The default is {@link WebPageType#MOZILLA}
+     */
     public WebPageType getWebPageType() {
         return webPageType;
     }
     
+    /**
+     * Sets the desired "type" of web page to be constructed.
+     * 
+     * @param webPageType desired type, which must not be null
+     */
     public void setWebPageType(WebPageType webPageType) {
         ConstraintUtilities.ensureNotNull(webPageType, "webPageType");
         this.webPageType = webPageType;
     }
     
     
+    /** 
+     * Returns the MIME type for the resulting page.
+     * <p>
+     * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_CONTENT_TYPE}.
+     */
     public String getContentType() {
         return contentType;
     }
     
+    /** 
+     * Sets the MIME type for the resulting page.
+     * 
+     * @param contentType desired contentType, which must not be null.
+     */
     public void setContentType(String contentType) {
         ConstraintUtilities.ensureNotNull(contentType, "contentType");
         this.contentType = contentType;
     }
 
 
+    /**
+     * Returns the language of the resulting page, null if not set.
+     * <p>
+     * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_LANG}.
+     */
     public String getLang() {
         return lang;
     }
     
+    /**
+     * Sets the language of the resulting page.
+     * 
+     * @param lang desired language, which may be null.
+     */
     public void setLang(String lang) {
         this.lang = lang;
     }
 
-
+    
+    /**
+     * Returns the title for the resulting page, null if not set.
+     * <p>
+     * Default is null.
+     * <p>
+     * This is used to generate a <tt>title</tt> and possible a <tt>h1</tt>
+     * header if {@link #isAddingTitleHeading()} returns true.
+     */
     public String getTitle() {
         return title;
     }
     
+    /**
+     * Sets the title for the resulting page.
+     * <p>
+     * This is used to generate a <tt>title</tt> and possible a <tt>h1</tt>
+     * header if {@link #isAddingTitleHeading()} returns true.
+     * 
+     * @param title title for the required page, which may be null to indicate
+     *   that no title should be included. 
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
     
+    /**
+     * Returns whether page title should be inserted at the start of the web page
+     * body as an XHTML <tt>h1</tt> element.
+     * <p>
+     * Default is false.
+     * <p>
+     * This has no effect if {@link #getTitle()} returns null.
+     */
     public boolean isAddingTitleHeading() {
         return addingTitleHeading;
     }
     
+    /**
+     * Sets whether page title should be inserted at the start of the web page
+     * body as an XHTML <tt>h1</tt> element.
+     * <p>
+     * This has no effect if {@link #getTitle()} returns null.
+     * 
+     * @param addingTitleHeading true to add a title header if a title has been set, false otherwise.
+     */
     public void setAddingTitleHeading(boolean addingTitleHeading) {
         this.addingTitleHeading = addingTitleHeading;
     }
 
     
+    /**
+     * Returns whether to include SnuggleTeX-related CSS as a <tt>style</tt> element within the
+     * resulting page. If you choose not to do this, you probably want to put <tt>snuggletex.css</tt>
+     * somewhere accessible and pass its location in via {@link #setClientSideXSLTStylesheetURLs(String...)}.
+     * <p>
+     * Default is true, as that's the simplest way of getting up to speed quickly.
+     */
     public boolean isIncludingStyleElement() {
         return includingStyleElement;
     }
     
+    /**
+     * Sets whether to include SnuggleTeX-related CSS as a <tt>style</tt> element within the
+     * resulting page. If you choose not to do this, you probably want to put <tt>snuggletex.css</tt>
+     * somewhere accessible and pass its location in via {@link #setClientSideXSLTStylesheetURLs(String...)}.
+     * 
+     * @param includingStyleElement set to true to include a <tt>style</tt> element, false otherwise.
+     */
     public void setIncludingStyleElement(boolean includingStyleElement) {
         this.includingStyleElement = includingStyleElement;
     }
 
 
+    /** 
+     * Returns specified array of relative URLs specifying client-side CSS stylesheets to be
+     * referenced in the resulting page.
+     * <p>
+     * Default is null.
+     * <p>
+     * The URLs are used as-is; the caller should have ensured they make sense in advance!
+     * <p>
+     * The caller can use this to specify the location of <tt>snuggletex.css</tt>, as well
+     * as any other required stylesheets.
+     */
     public String[] getCSSStylesheetURLs() {
         return cssStylesheetURLs;
     }
     
+    /** 
+     * Specifies an array of relative URLs specifying client-side CSS stylesheets to be
+     * referenced in the resulting page.
+     * <p>
+     * The URLs are used as-is; the caller should have ensured they make sense in advance!
+     * <p>
+     * The caller can use this to specify the location of <tt>snuggletex.css</tt>, as well
+     * as any other required stylesheets.
+     * 
+     * @param cssStylesheetURLs array of CSS stylesheet URLs, which may be empty
+     */
     public void setCSSStylesheetURLs(String... cssStylesheetURLs) {
         this.cssStylesheetURLs = cssStylesheetURLs;
     }
     
+    /** 
+     * Appends to existing array of relative URLs specifying client-side CSS stylesheets to be
+     * referenced in the resulting page.
+     * <p>
+     * The URLs are used as-is; the caller should have ensured they make sense in advance!
+     * <p>
+     * The caller can use this to specify the location of <tt>snuggletex.css</tt>, as well
+     * as any other required stylesheets.
+     * 
+     * @param cssStylesheetURLs array of CSS stylesheet URLs to add, which may be empty
+     */
     public void addCSSStylesheetURLs(String... cssStylesheetURLs) {
         this.cssStylesheetURLs = concat(this.cssStylesheetURLs, cssStylesheetURLs, String.class);
     }
     
     
+    /** 
+     * Returns specified array of relative URLs specifying client-side XSLT stylesheets to be
+     * referenced in the resulting page.
+     * <p>
+     * Default is null
+     * <p>
+     * The URLs are used as-is; the caller should have ensured they make sense in advance!
+     * <p>
+     * This is ignored for {@link WebPageType#MATHPLAYER_HTML}. Also, if nothing is set
+     * here for a {@link WebPageType#CLIENT_SIDE_XSLT_STYLESHEET} then {@link WebPageType#MOZILLA}
+     * will be used as a template instead.
+     */
     public String[] getClientSideXSLTStylesheetURLs() {
         return clientSideXSLTStylesheetURLs;
     }
     
+    /** 
+     * Sets an array of relative URLs specifying client-side XSLT stylesheets to be
+     * referenced in the resulting page.
+     * <p>
+     * The URLs are used as-is; the caller should have ensured they make sense in advance!
+     * <p>
+     * This is ignored for {@link WebPageType#MATHPLAYER_HTML}. Also, if nothing is set
+     * here for a {@link WebPageType#CLIENT_SIDE_XSLT_STYLESHEET} then {@link WebPageType#MOZILLA}
+     * will be used as a template instead.
+     * 
+     * @param clientSideXSLTStylesheetURLs array of URLs to use, which may be empty.
+     */
     public void setClientSideXSLTStylesheetURLs(String... clientSideXSLTStylesheetURLs) {
         this.clientSideXSLTStylesheetURLs = clientSideXSLTStylesheetURLs;
     }
     
+    /** 
+     * Appends to existing array of relative URLs specifying client-side XSLT stylesheets to be
+     * referenced in the resulting page.
+     * <p>
+     * The URLs are used as-is; the caller should have ensured they make sense in advance!
+     * <p>
+     * This is ignored for {@link WebPageType#MATHPLAYER_HTML}. Also, if nothing is set
+     * here for a {@link WebPageType#CLIENT_SIDE_XSLT_STYLESHEET} then {@link WebPageType#MOZILLA}
+     * will be used as a template instead.
+     * 
+     * @param clientSideXSLTStylesheetURLs array of URLs to append, which may be empty.
+     */
     public void addClientSideXSLTStylesheetURLs(String... clientSideXSLTStylesheetURLs) {
         this.clientSideXSLTStylesheetURLs = concat(this.clientSideXSLTStylesheetURLs, clientSideXSLTStylesheetURLs, String.class);
     }
 
 
+    /**
+     * Returns an array of specified JAXP {@link Transformer}s representing XSLT stylesheet(s)
+     * that will be applied to the resulting web page once it has been built but
+     * before it is serialised. This can be useful if you want to add in headers
+     * and footers to the resulting XHTML web page.
+     * <p>
+     * Default is null.
+     * <p>
+     * Remember that the XHTML is all in its correct namespace so you will need
+     * to write your stylesheet appropriately. Ensure that any further XHTML you
+     * generate is also in the correct namespace; it will later be converted to
+     * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>NOTE:</strong> Source documents may contain Processing
+     * Instructions (e.g. to invoke MathPlayer) so these must be handled as
+     * appropriate.
+     */
     public Transformer[] getStylesheets() {
         return stylesheets;
     }
     
+    /**
+     * Sets an array of JAXP {@link Transformer}s representing XSLT stylesheet(s)
+     * that will be applied to the resulting web page once it has been built but
+     * before it is serialised. This can be useful if you want to add in headers
+     * and footers to the resulting XHTML web page.
+     * <p>
+     * Remember that the XHTML is all in its correct namespace so you will need
+     * to write your stylesheet appropriately. Ensure that any further XHTML you
+     * generate is also in the correct namespace; it will later be converted to
+     * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>NOTE:</strong> Source documents may contain Processing
+     * Instructions (e.g. to invoke MathPlayer) so these must be handled as
+     * appropriate.
+     * 
+     * @param stylesheets array of XSLT stylesheets to apply, which may be null. They
+     *   are applied in the order specified.
+     */
     public void setStylesheets(Transformer... stylesheets) {
         this.stylesheets = stylesheets;
     }
     
+    /**
+     * Appends to existing array of JAXP {@link Transformer}s representing XSLT stylesheet(s)
+     * that will be applied to the resulting web page once it has been built but
+     * before it is serialised. This can be useful if you want to add in headers
+     * and footers to the resulting XHTML web page.
+     * <p>
+     * Remember that the XHTML is all in its correct namespace so you will need
+     * to write your stylesheet appropriately. Ensure that any further XHTML you
+     * generate is also in the correct namespace; it will later be converted to
+     * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>NOTE:</strong> Source documents may contain Processing
+     * Instructions (e.g. to invoke MathPlayer) so these must be handled as
+     * appropriate.
+     * 
+     * @param stylesheets array of additional XSLT stylesheets to apply, which may be null. They
+     *   are applied in the order specified.
+     */
     public void addStylesheets(Transformer... stylesheets) {
         this.stylesheets = concat(this.stylesheets, stylesheets, Transformer.class);
     }

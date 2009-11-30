@@ -5,10 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.utilities;
 
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.SerializationOptions.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 
 import java.io.StringReader;
@@ -39,14 +40,26 @@ public final class StylesheetManager {
     private TransformerFactoryChooser transformerFactoryChooser;
     private StylesheetCache stylesheetCache;
     
+    /**
+     * Creates a new {@link StylesheetManager} using the {@link DefaultTransformerFactoryChooser} and
+     * no {@link StylesheetCache}.
+     */
     public StylesheetManager() {
         this(DefaultTransformerFactoryChooser.getInstance(), null);
     }
     
+    /**
+     * Creates a new {@link StylesheetManager} using the {@link DefaultTransformerFactoryChooser} and
+     * the given {@link StylesheetCache}.
+     */
     public StylesheetManager(StylesheetCache cache) {
         this(DefaultTransformerFactoryChooser.getInstance(), cache);
     }
     
+    /**
+     * Creates a new {@link StylesheetManager} using the given {@link TransformerFactoryChooser}
+     * and {@link StylesheetCache}.
+     */
     public StylesheetManager(TransformerFactoryChooser transformerFactoryChooser, StylesheetCache cache) {
         this.transformerFactoryChooser = transformerFactoryChooser;
         this.stylesheetCache = cache;
@@ -54,19 +67,37 @@ public final class StylesheetManager {
     
     //----------------------------------------------------------
     
+    /**
+     * Returns the current {@link TransformerFactoryChooser} for this {@link StylesheetManager}, which is
+     * used to initialise {@link TransformerFactory} instances. This is never null.
+     */
     public TransformerFactoryChooser getTransformerFactoryChooser() {
         return transformerFactoryChooser;
     }
 
+    /**
+     * Sets the {@link TransformerFactoryChooser} for this {@link StylesheetManager}, which is
+     * used to initialise {@link TransformerFactory} instances.
+     * 
+     * @param transformerFactoryChooser new {@link TransformerFactoryChooser}, which must not be null.
+     */
     public void setTransformerFactoryChooser(TransformerFactoryChooser transformerFactoryChooser) {
+        ConstraintUtilities.ensureNotNull(transformerFactoryChooser, "transformerFactoryChooser");
         this.transformerFactoryChooser = transformerFactoryChooser;
     }
 
     
+    /**
+     * Returns the current {@link StylesheetCache} for this manager, which may be null.
+     */
     public StylesheetCache getStylesheetCache() {
         return stylesheetCache;
     }
 
+    /**
+     * Sets the {@link StylesheetCache} for this manager, which may be null to indicate that
+     * no caching should take place.
+     */
     public void setStylesheetCache(StylesheetCache stylesheetCache) {
         this.stylesheetCache = stylesheetCache;
     }
@@ -104,6 +135,13 @@ public final class StylesheetManager {
         return transformerFactoryChooser.isXSLT20SupportAvailable();
     }
     
+    /**
+     * Checks that XSLT 2.0 is supported, by asking the underlying
+     * {@link TransformerFactoryChooser}. If XSLT 2.0 is not supported then
+     * a {@link SnuggleRuntimeException} is thrown.
+     * 
+     * @throws SnuggleRuntimeException is XSLT 2.0 is not supported.
+     */
     public void requireXSLT20(String requirement) {
         if (!supportsXSLT20()) {
             throw new SnuggleRuntimeException(requirement
@@ -176,16 +214,16 @@ public final class StylesheetManager {
     
     /**
      * Obtains a serializer stylesheet based on the stylesheet at the given URI, configured
-     * as per  the given {@link SerializationOptions}. (Some options may require XSLT 2.0 support.)
+     * as per  the given {@link SerializationSpecifier}. (Some options may require XSLT 2.0 support.)
      * 
      * @param serializerUri URI for the required serializing stylesheet, null for the default
      *   serializer.
-     * @param serializationOptions desired {@link SerializationOptions}, null for default options
+     * @param serializationOptions desired {@link SerializationSpecifier}, null for default options
      * 
      * @throws SnuggleRuntimeException if the serializer could not be created, or if an XSLT 2.0 processor
      *   was required but could not be obtained.
      */
-    public Transformer getSerializer(final String serializerUri, final SerializationOptions serializationOptions) {
+    public Transformer getSerializer(final String serializerUri, final SerializationSpecifier serializationOptions) {
         /* See if serializer needs any XSLT 2.0 features, failing if XSLT 2.0 is not available */
         if (serializationOptions!=null && !supportsXSLT20()) {
             if (serializationOptions.isUsingNamedEntities()) {

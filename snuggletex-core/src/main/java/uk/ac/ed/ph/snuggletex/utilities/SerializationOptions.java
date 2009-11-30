@@ -3,37 +3,40 @@
  * Copyright 2009 University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex;
+package uk.ac.ed.ph.snuggletex.utilities;
 
-import uk.ac.ed.ph.snuggletex.utilities.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationMethod;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerFactory;
 
 /**
- * Builds on {@link DOMOutputOptions} to add in options for configuring how to build an
- * serialized output consisting of an XML (or possibly HTML) String using the relevant methods
- * in {@link SnuggleSession}
- * (e.g. {@link SnuggleSession#buildXMLString(XMLStringOutputOptions)}).
- * 
- * @see DOMOutputOptions
- * @see WebPageOutputOptions
- * @see WebPageOutputOptionsTemplates
+ * Implementation of {@link SerializationSpecifier} that can be used for some of the utility
+ * methods in {@link MathMLUtilities}.
  * 
  * @since 1.2.0
  *
  * @author  David McKain
  * @version $Revision$
  */
-public class XMLStringOutputOptions extends DOMOutputOptions implements SerializationSpecifier {
-    
-    private final SerializationOptions serializationOptions;
-    
-    public XMLStringOutputOptions() {
-        super();
-        this.serializationOptions = new SerializationOptions();
-    }
+public final class SerializationOptions implements SerializationSpecifier, Cloneable {
 
+    private SerializationMethod serializationMethod;
+    private String encoding;
+    private boolean indenting;
+    private boolean includingXMLDeclaration;
+    private boolean usingNamedEntities;
+    private String doctypePublic;
+    private String doctypeSystem;
+    
+    public SerializationOptions() {
+        this.serializationMethod = SerializationMethod.XML;
+        this.encoding = DEFAULT_ENCODING;
+    }
     
     /**
      * Gets the {@link SerializationMethod} to use when generating the final output.
@@ -45,7 +48,7 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * an XSLT 2.0 processor; otherwise it reverts to {@link SerializationMethod#XML}
      */
     public SerializationMethod getSerializationMethod() {
-        return serializationOptions.getSerializationMethod();
+        return serializationMethod;
     }
 
     /**
@@ -58,18 +61,20 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * @param serializationMethod {@link SerializationMethod} to use, which must not be null.
      */
     public void setSerializationMethod(SerializationMethod serializationMethod) {
-        serializationOptions.setSerializationMethod(serializationMethod);
+        ConstraintUtilities.ensureNotNull(serializationMethod, "serializationMethod");
+        this.serializationMethod = serializationMethod;
     }
-
+    
+    
     /** 
      * Gets the encoding for the resulting serialized XML.
      * <p>
      * Default is {@link SerializationSpecifier#DEFAULT_ENCODING}.
      */
     public String getEncoding() {
-        return serializationOptions.getEncoding();
+        return encoding;
     }
-
+    
     /** 
      * Sets the encoding for the resulting serialized XML.
      * <p>
@@ -79,10 +84,11 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      *   {@link TransformerFactory} that will end up doing the serialization.
      */
     public void setEncoding(String encoding) {
-        serializationOptions.setEncoding(encoding);
+        ConstraintUtilities.ensureNotNull(encoding, "encoding");
+        this.encoding = encoding;
     }
-
     
+
     /**
      * Returns whether the resulting XML will be indented or not.
      * (This depends on how clever the underlying XSLT engine will be!)
@@ -90,9 +96,9 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * Default is false.
      */
     public boolean isIndenting() {
-        return serializationOptions.isIndenting();
+        return indenting;
     }
-
+    
     /**
      * Sets whether the resulting XML will be indented or not.
      * (This depends on how clever the underlying XSLT engine will be!)
@@ -100,28 +106,28 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * @param indenting true to indent, false otherwise.
      */
     public void setIndenting(boolean indenting) {
-        serializationOptions.setIndenting(indenting);
+        this.indenting = indenting;
     }
-
+    
     
     /**
      * Gets whether to include an XML declaration on the resulting output.
      * Default is false.
      */
     public boolean isIncludingXMLDeclaration() {
-        return serializationOptions.isIncludingXMLDeclaration();
+        return includingXMLDeclaration;
     }
-
+    
     /**
      * Sets whether to include an XML declaration on the resulting output.
      * 
      * @param includingXMLDeclaration true to include an XML declaration, false otherwise.
      */
     public void setIncludingXMLDeclaration(boolean includingXMLDeclaration) {
-        serializationOptions.setIncludingXMLDeclaration(includingXMLDeclaration);
+        this.includingXMLDeclaration = includingXMLDeclaration;
     }
 
-    
+
     /**
      * Returns whether to use named entities for certain MathML symbols rather than
      * numeric character references.
@@ -129,7 +135,7 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * Default is false.
      */
     public boolean isUsingNamedEntities() {
-        return serializationOptions.isUsingNamedEntities();
+        return usingNamedEntities;
     }
 
     /**
@@ -146,7 +152,7 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      *   numeric character references.
      */
     public void setUsingNamedEntities(boolean usingNamedEntities) {
-        serializationOptions.setUsingNamedEntities(usingNamedEntities);
+        this.usingNamedEntities = usingNamedEntities;
     }
 
 
@@ -157,8 +163,9 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * Default is null
      */
     public String getDoctypePublic() {
-        return serializationOptions.getDoctypePublic();
+        return doctypePublic;
     }
+
 
     /**
      * Sets the public identifier to use in the resulting DOCTYPE declaration,
@@ -167,10 +174,10 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * @param doctypePublic public identifier to use, null for no identifier.
      */
     public void setDoctypePublic(String doctypePublic) {
-        serializationOptions.setDoctypePublic(doctypePublic);
+        this.doctypePublic = doctypePublic;
     }
 
-    
+
     /**
      * Gets the system identifier to use in the resulting DOCTYPE declaration,
      * as described in {@link OutputKeys#DOCTYPE_SYSTEM}.
@@ -178,7 +185,7 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * Default is null
      */
     public String getDoctypeSystem() {
-        return serializationOptions.getDoctypeSystem();
+        return doctypeSystem;
     }
 
     /**
@@ -188,6 +195,22 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
      * @param doctypeSystem system identifier to use, null for no identifier.
      */
     public void setDoctypeSystem(String doctypeSystem) {
-        serializationOptions.setDoctypeSystem(doctypeSystem);
+        this.doctypeSystem = doctypeSystem;
+    }
+    
+    
+    @Override
+    public String toString() {
+        return ObjectUtilities.beanToString(this);
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        }
+        catch (CloneNotSupportedException e) {
+            throw new SnuggleLogicException(e);
+        }
     }
 }

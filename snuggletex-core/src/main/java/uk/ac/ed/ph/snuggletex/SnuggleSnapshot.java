@@ -56,7 +56,7 @@ public final class SnuggleSnapshot {
     }
 
     /**
-     * Creates a new (and open) {@link SnuggleSession} with exactly the same state as the
+     * Creates a new {@link SnuggleSession} with exactly the same state as the
      * {@link SnuggleSession} that created this {@link SnuggleSnapshot}.
      */
     public SnuggleSession createSession() {

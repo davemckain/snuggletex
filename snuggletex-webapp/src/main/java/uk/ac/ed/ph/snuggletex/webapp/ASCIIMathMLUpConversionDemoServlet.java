@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.webapp;
 
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -69,7 +69,7 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         
         /* Do up-conversion and extract wreckage */
         MathMLUpConverter upConverter = new MathMLUpConverter(getStylesheetManager());
-        SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
+        SerializationSpecifier sourceSerializationOptions = createMathMLSourceSerializationOptions();
         Document upConvertedMathDocument = upConverter.upConvertASCIIMathML(asciiMathOutput, null);
         Element mathElement = upConvertedMathDocument.getDocumentElement(); /* NB: Document is <math/> here */
         String parallelMathML = MathMLUtilities.serializeElement(mathElement, sourceSerializationOptions);

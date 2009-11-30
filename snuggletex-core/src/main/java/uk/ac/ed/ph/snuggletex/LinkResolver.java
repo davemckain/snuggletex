@@ -27,6 +27,7 @@ public interface LinkResolver {
      * 
      * @param href raw href as specified by client, which will be been checked to be a valid URI.
      * @param inputURI URI for the {@link SnuggleInput} containing the link, which may be null.
+     * 
      * @return replacement href
      */
     URI mapLink(URI href, URI inputURI);

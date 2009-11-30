@@ -13,6 +13,9 @@ import java.util.Arrays;
 /**
  * Encapsulates an error in the LaTeX input, providing information about what the error is and
  * where it occurred.
+ * <p>
+ * See the {@link MessageFormatter} for methods formatting instances of this class in various
+ * ways.
  * 
  * @author  David McKain
  * @version $Revision$
@@ -39,14 +42,24 @@ public final class InputError {
         this.arguments = arguments;
     }
     
+    /**
+     * Returns the {@link ErrorCode} for this error.
+     */
     public ErrorCode getErrorCode() {
         return errorCode;
     }
-    
+
+    /**
+     * Returns the {@link FrozenSlice} indicating where the error occurred in the original
+     * {@link SnuggleInput}.
+     */
     public FrozenSlice getSlice() {
         return slice;
     }
 
+    /**
+     * Returns any additional arguments providing information about the error.
+     */
     public Object[] getArguments() {
         return arguments;
     }

@@ -49,6 +49,6 @@ public final class SnuggleUtilities {
      * @return SnuggleTeX encoding, or null if not present.
      */
     public static String extractSnuggleTeXAnnotation(Element mathmlElement) {
-        return MathMLUtilities.extractAnnotationString(mathmlElement, SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+        return MathMLUtilities.extractAnnotationString(mathmlElement, SnuggleConstants.SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING);
     }
 }

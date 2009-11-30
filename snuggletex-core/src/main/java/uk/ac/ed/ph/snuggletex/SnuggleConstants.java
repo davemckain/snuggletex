@@ -18,7 +18,13 @@ public interface SnuggleConstants {
     
     /** 
      * Value of the "encoding" attribute added to MathML element annotation elements, used
-     * when requested.
+     * when {@link DOMOutputOptions#isAddingMathSourceAnnotations()} returns true.
      */
-    public static final String SNUGGLETEX_MATHML_ANNOTATION_ENCODING = "SnuggleTeX";
+    public static final String SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING = "SnuggleTeX";
+    
+    /**
+     * @deprecated Please use {@link #SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING} from now on.
+     */
+    @Deprecated
+    public static final String SNUGGLETEX_MATHML_ANNOTATION_ENCODING = SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING;
 }

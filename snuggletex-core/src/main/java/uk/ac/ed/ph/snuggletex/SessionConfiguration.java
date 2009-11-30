@@ -21,11 +21,22 @@ public final class SessionConfiguration implements Cloneable {
         this.failingFast = false;
     }
     
-
+    /**
+     * Returns whether or not the {@link SnuggleSession} will fail immediately on error, or
+     * keep going.
+     * 
+     * @return true to fail immediately, false to keep going
+     */
     public boolean isFailingFast() {
         return failingFast;
     }
     
+    /**
+     * Sets whether or not the {@link SnuggleSession} will fail immediately on error, or
+     * keep going.
+     * 
+     * @param failingFast true to fail immediately, false to keep going
+     */
     public void setFailingFast(boolean failingFast) {
         this.failingFast = failingFast;
     }

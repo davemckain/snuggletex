@@ -13,7 +13,7 @@ import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.serializeElement;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.InputError;
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -127,7 +127,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         String maximaInput = null;
         List<Element> parsingErrors = null;
         UpConvertingPostProcessor upConvertingPostProcessor = new UpConvertingPostProcessor();
-        SerializationOptions sourceSerializationOptions = createMathMLSourceSerializationOptions();
+        SerializationSpecifier sourceSerializationOptions = createMathMLSourceSerializationOptions();
         boolean badInput = false;
         
         /* Check for any errors and that the shape of the result is as expected */

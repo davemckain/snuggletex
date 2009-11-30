@@ -37,29 +37,38 @@ public final class UnwrappedParallelMathMLDOM {
         this.xmlAnnotations = new HashMap<String, NodeList>();
     }
     
+    /** Returns the containing <math/> element */
     public Element getMathElement() {
         return mathElement;
     }
     
+    /** Sets the containing <math/> element */
     public void setMathElement(Element mathElement) {
         this.mathElement = mathElement;
     }
 
-
+    /** Returns the first branch of the top <semantics/> element. */
     public Element getFirstBranch() {
         return firstBranch;
     }
     
+    /** Sets the first branch of the top <semantics/> element. */
     public void setFirstBranch(Element firstBranch) {
         this.firstBranch = firstBranch;
     }
 
-    
+    /**
+     * Returns a {@link Map} of <annotation/> elements, keyed on the "encoding" attribute with
+     * the text content as values.
+     */
     public Map<String, String> getTextAnnotations() {
         return textAnnotations;
     }
 
-    
+    /**
+     * Returns a {@link Map} of <annotation-xml/> elements, keyed on the "encoding" attribute with
+     * the {@link NodeList} content as values.
+     */
     public Map<String, NodeList> getXmlAnnotations() {
         return xmlAnnotations;
     }

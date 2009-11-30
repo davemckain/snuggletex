@@ -5,11 +5,11 @@
  */
 package uk.ac.ed.ph.snuggletex.samples;
 
+import uk.ac.ed.ph.snuggletex.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.XMLStringOutputOptions;
-import uk.ac.ed.ph.snuggletex.SerializationOptions.SerializationMethod;
 
 import java.io.IOException;
 

@@ -9,7 +9,7 @@ import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.LR;
 import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.MATH;
 import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
@@ -69,7 +69,7 @@ public final class Globals {
     public static final String GENERAL_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/general-messages";
     public static final String CSS_PROPERTIES_NAME = "uk/ac/ed/ph/snuggletex/css.properties";
     
-    /** Specifies the ClassPath location of the Stylesheet used by {@link XMLUtilities#serializeNodeChildren(uk.ac.ed.ph.snuggletex.utilities.StylesheetManager, org.w3c.dom.Node, SerializationOptions)} */
+    /** Specifies the ClassPath location of the Stylesheet used by {@link XMLUtilities#serializeNodeChildren(uk.ac.ed.ph.snuggletex.utilities.StylesheetManager, org.w3c.dom.Node, SerializationSpecifier)} */
     public static final String EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/extract-child-nodes.xsl";
     
     /** Specifies the location of the XSLT that converts MathML symbol characters to named entities */

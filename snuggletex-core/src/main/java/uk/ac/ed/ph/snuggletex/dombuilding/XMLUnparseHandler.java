@@ -5,14 +5,14 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
-import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
+import uk.ac.ed.ph.snuggletex.utilities.SerializationOptions;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -47,7 +47,7 @@ public final class XMLUnparseHandler implements EnvironmentHandler, CommandHandl
         
         /* Serialize child content to text and replace all children with this text inside
          * an appropriate container  */
-        SerializationOptions options = new StandaloneSerializationOptions();
+        SerializationSpecifier options = new SerializationOptions();
         options.setIndenting(isBlock);
         options.setEncoding("UTF-8");
         String parentContentUnparsed = XMLUtilities.serializeNodeChildren(builder.getSessionContext().getStylesheetManager(),

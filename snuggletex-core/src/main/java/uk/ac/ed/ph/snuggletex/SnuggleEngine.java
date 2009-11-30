@@ -33,7 +33,9 @@ import java.util.List;
  *     documents and produce a DOM.
  *   </li>
  *   <li>
- *     Once configured, an instance of this Class can be shared by multiple Threads.
+ *     Once configured, an instance of this Class can be shared by multiple Threads
+ *     provided the only methods called are all forms of {@link #createSession()}
+ *     and any "get" methods.
  *   </li>
  *   <li>
  *     Don't let the usual connotations associated with the name of this Class worry you that
@@ -104,58 +106,15 @@ public final class SnuggleEngine {
      */
     public SnuggleEngine(StylesheetManager stylesheetManager) {
         this.packages = new ArrayList<SnugglePackage>();
-        this.defaultSessionConfiguration = null; /* (Lazy init) */
-        this.defaultDOMOutputOptions = null; /* (Lazy init) */
-        this.defaultXMLStringOutputOptions = null; /* (Lazy init) */
+        this.defaultSessionConfiguration = new SessionConfiguration();
+        this.defaultDOMOutputOptions = new DOMOutputOptions();
+        this.defaultXMLStringOutputOptions = new XMLStringOutputOptions();
         
         /* Create manager for XSLT stlyesheets using the given cache */
         this.stylesheetManager = stylesheetManager;
         
         /* Add in core package */
         packages.add(CorePackageDefinitions.getPackage());
-    }
-    
-    //-------------------------------------------------
-    
-    public void addPackage(SnugglePackage snugglePackage) {
-        packages.add(snugglePackage);
-    }
-    
-    //-------------------------------------------------
-    
-    public SnuggleSession createSession() {
-        return createSession(getDefaultSessionConfiguration());
-    }
-    
-    public SnuggleSession createSession(SessionConfiguration configuration) {
-        ConstraintUtilities.ensureNotNull(configuration, "configuration");
-        return new SnuggleSession(this, configuration);
-    }
-
-    //-------------------------------------------------
-    
-    public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
-        ConstraintUtilities.ensureNotNull(texName, "texName");
-        BuiltinCommand result = null;
-        for (SnugglePackage map : packages) {
-            result = map.getBuiltinCommandByTeXName(texName);
-            if (result!=null) {
-                break;
-            }
-        }
-        return result;
-    }
-    
-    public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
-        ConstraintUtilities.ensureNotNull(texName, "texName");
-        BuiltinEnvironment result = null;
-        for (SnugglePackage map : packages) {
-            result = map.getBuiltinEnvironmentByTeXName(texName);
-            if (result!=null) {
-                break;
-            }
-        }
-        return result;
     }
     
     //-------------------------------------------------
@@ -170,43 +129,135 @@ public final class SnuggleEngine {
     }
     
     //-------------------------------------------------
-
-    public SessionConfiguration getDefaultSessionConfiguration() {
-        if (defaultSessionConfiguration==null) {
-            defaultSessionConfiguration = new SessionConfiguration();
+    
+    /**
+     * Registers the given {@link SnugglePackage} with this {@link SnuggleEngine}.
+     * All commands, environments and error codes defined by the {@link SnugglePackage} will
+     * then become available for use.
+     */
+    public void addPackage(SnugglePackage snugglePackage) {
+        ConstraintUtilities.ensureNotNull(snugglePackage, "snugglePackage");
+        packages.add(snugglePackage);
+    }
+    
+    //-------------------------------------------------
+    
+    /**
+     * Creates a new {@link SnuggleSession} using the default {@link SessionConfiguration}
+     * if se
+     */
+    public SnuggleSession createSession() {
+        SessionConfiguration sessionConfiguration = defaultSessionConfiguration;
+        if (sessionConfiguration!=null) {
+            sessionConfiguration = new SessionConfiguration();
         }
+        return createSession(sessionConfiguration);
+    }
+    
+    /**
+     * Creates a new {@link SnuggleSession} using the given {@link SessionConfiguration}
+     * 
+     * @param sessionConfiguration {@link SessionConfiguration} to use, which must not be null.
+     */
+    public SnuggleSession createSession(SessionConfiguration sessionConfiguration) {
+        ConstraintUtilities.ensureNotNull(sessionConfiguration, "sessionConfiguration");
+        return new SnuggleSession(this, sessionConfiguration);
+    }
+
+    //-------------------------------------------------
+    
+    /**
+     * Returns the {@link BuiltinCommand} corresponding to LaTeX command called
+     * <tt>\texName</tt>, or null if this command is not defined.
+     */
+    public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
+        ConstraintUtilities.ensureNotNull(texName, "texName");
+        BuiltinCommand result = null;
+        for (SnugglePackage map : packages) {
+            result = map.getBuiltinCommandByTeXName(texName);
+            if (result!=null) {
+                break;
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Returns the {@link BuiltinEnvironment} corresponding to LaTeX environment
+     * called <tt>texName</tt>, or null if this environment is not defined.
+     */
+    public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
+        ConstraintUtilities.ensureNotNull(texName, "texName");
+        BuiltinEnvironment result = null;
+        for (SnugglePackage map : packages) {
+            result = map.getBuiltinEnvironmentByTeXName(texName);
+            if (result!=null) {
+                break;
+            }
+        }
+        return result;
+    }
+    
+    //-------------------------------------------------
+
+    /**
+     * Gets the selected default {@link SessionConfiguration} for this {@link SnuggleEngine},
+     * which will not be null.
+     */
+    public SessionConfiguration getDefaultSessionConfiguration() {
         return defaultSessionConfiguration;
     }
     
+    /**
+     * Sets the default {@link SessionConfiguration} for this {@link SnuggleEngine}.
+     * This will be used when creating a new {@link SnuggleSession} via
+     * {@link #createSession()}.
+     * 
+     * @param defaultSessionConfiguration new default {@link SessionConfiguration}, which
+     *   must not be null.
+     */
     public void setDefaultSessionConfiguration(SessionConfiguration defaultSessionConfiguration) {
         ConstraintUtilities.ensureNotNull(defaultSessionConfiguration, "defaultSessionConfiguration");
         this.defaultSessionConfiguration = defaultSessionConfiguration;
     }
     
     
+    /**
+     * Gets the default {@link DOMOutputOptions} for this {@link SnuggleEngine}, which will not
+     * be null.
+     */
     public DOMOutputOptions getDefaultDOMOutputOptions() {
-        if (defaultDOMOutputOptions==null) {
-            defaultDOMOutputOptions = new DOMOutputOptions();
-        }
         return defaultDOMOutputOptions;
     }
 
-    
+    /**
+     * Sets the default {@link DOMOutputOptions} for this {@link SnuggleEngine}. These
+     * will be used when calling {@link SnuggleSession#buildDOMSubtree()}.
+     * 
+     * @param defaultDOMOutputOptions new {@link DOMOutputOptions}, which must not be null.
+     */
     public void setDefaultDOMOutputOptions(DOMOutputOptions defaultDOMOutputOptions) {
         ConstraintUtilities.ensureNotNull(defaultDOMOutputOptions, "defaultDOMOutputOptions");
         this.defaultDOMOutputOptions = defaultDOMOutputOptions;
     }
 
     
+    /**
+     * Gets the default {@link XMLStringOutputOptions} for this {@link SnuggleEngine}, which
+     * will not be null.
+     */
     public XMLStringOutputOptions getDefaultXMLStringOutputOptions() {
-        if (defaultXMLStringOutputOptions==null) {
-            defaultXMLStringOutputOptions = new XMLStringOutputOptions();
-        }
         return defaultXMLStringOutputOptions;
     }
 
+    /**
+     * Sets the default {@link XMLStringOutputOptions} for this {@link SnuggleEngine}.
+     * These will be used when calling {@link SnuggleSession#buildXMLString()}.
+     * 
+     * @param defaultXMLOutputOptions new {@link XMLStringOutputOptions}, which must not be null.
+     */
     public void setDefaultXMLStringOutputOptions(XMLStringOutputOptions defaultXMLOutputOptions) {
-        ConstraintUtilities.ensureNotNull(defaultXMLOutputOptions, "defaultXMLStringOutputOptions");
+        ConstraintUtilities.ensureNotNull(defaultXMLOutputOptions, "defaultXMLOutputOptions");
         this.defaultXMLStringOutputOptions = defaultXMLOutputOptions;
     }
 

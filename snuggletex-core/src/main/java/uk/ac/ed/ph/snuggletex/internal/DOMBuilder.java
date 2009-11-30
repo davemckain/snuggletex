@@ -790,7 +790,7 @@ public final class DOMBuilder {
             if (options.isAddingMathSourceAnnotations()) {
                 Element sourceAnnotation = appendMathMLTextElement(semantics, "annotation",
                         token.getSlice().extract().toString(), true);
-                sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+                sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING);
             }
         }
         else {

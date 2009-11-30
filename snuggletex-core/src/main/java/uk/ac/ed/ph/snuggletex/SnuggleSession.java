@@ -20,7 +20,7 @@ import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
-import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
+import uk.ac.ed.ph.snuggletex.utilities.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
 import java.io.IOException;
@@ -162,13 +162,16 @@ public final class SnuggleSession implements SessionContext {
      * Parses the data contained within the given {@link SnuggleInput}, and performs fixing
      * on the resulting tokens.
      * 
+     * @param snuggleInput input to parse, which must not be null
+     * 
      * @return true if parsing finished, false if it was terminated by an error in the
      *   input LaTeX and if the session was configured to fail on the first error.
      */
-    public boolean parseInput(SnuggleInput input) throws IOException {
+    public boolean parseInput(SnuggleInput snuggleInput) throws IOException {
+        ConstraintUtilities.ensureNotNull(snuggleInput, "snuggleInput");
         /* Perform tokenisation, then fix up and store the results */
         try {
-            SnuggleInputReader reader = new SnuggleInputReader(this, input);
+            SnuggleInputReader reader = new SnuggleInputReader(this, snuggleInput);
             ArgumentContainerToken result = tokeniser.tokenise(reader);
             tokenFixer.fixTokenTree(result);
             parsedTokens.addAll(result.getContents());
@@ -180,12 +183,8 @@ public final class SnuggleSession implements SessionContext {
     }
     
     /**
-     * Creates a {@link SnuggleSnapshot} Object holding the current state of this session that can be later
-     * used to recreate a session having exactly the same state.
-     * <p>
-     * This may only be called whilst the session is open.
-     * 
-     * @throws IllegalStateException if the session has been closed.
+     * Creates a {@link SnuggleSnapshot} Object holding the current state of this session that can
+     * be later used to recreate a session having exactly the same state.
      */
     public SnuggleSnapshot createSnapshot() {
         return new SnuggleSnapshot(engine,
@@ -254,13 +253,17 @@ public final class SnuggleSession implements SessionContext {
      * These Nodes will belong to a "fake root" element in the
      * {@link SnuggleConstants#SNUGGLETEX_NAMESPACE} namespace called "root".
      * <p>
-     * The given {@link DOMOutputOptions} Object is used to configure the process.
+     * The given {@link DOMOutputOptions} Object is used to configure the process, which must
+     * not be null.
+     * 
+     * @param options {@link DOMOutputOptions} to use, which must not be null
      * 
      * @return resulting {@link NodeList} if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error. 
      */
     public NodeList buildDOMSubtree(final DOMOutputOptions options) {
+        ConstraintUtilities.ensureNotNull(options, "DOMOutputOptions");
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element temporaryRoot = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root");
         document.appendChild(temporaryRoot);
@@ -277,7 +280,7 @@ public final class SnuggleSession implements SessionContext {
      * <p>
      * The default {@link XMLStringOutputOptions} specified in the {@link SnuggleEngine} will be
      * used.
-     *
+     * 
      * @return resulting XML if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error.  
@@ -291,11 +294,14 @@ public final class SnuggleSession implements SessionContext {
      * <p>
      * The given {@link XMLStringOutputOptions} Object is used to configure the process.
      * 
+     * @param options {@link XMLStringOutputOptions} to use, which must not be null.
+     * 
      * @return resulting XML if the process completed successfully, null if the process was
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error. 
      */
     public String buildXMLString(final XMLStringOutputOptions options) {
+        ConstraintUtilities.ensureNotNull(options, "XMLStringOutputOptions");
         DocumentBuilder documentBuilder = XMLUtilities.createNSAwareDocumentBuilder();
         Document document = documentBuilder.newDocument();
         Element temporaryRoot = document.createElement("root");
@@ -366,7 +372,7 @@ public final class SnuggleSession implements SessionContext {
         if (!buildDOMSubtree(temporaryRoot, options)) {
             return null;
         }
-        SerializationOptions serializationOptions = new StandaloneSerializationOptions();
+        SerializationSpecifier serializationOptions = new SerializationOptions();
         serializationOptions.setEncoding(XMLStringOutputOptions.DEFAULT_ENCODING);
         serializationOptions.setIndenting(indent);
         return XMLUtilities.serializeNodeChildren(getStylesheetManager(), temporaryRoot, serializationOptions);
@@ -464,22 +470,41 @@ public final class SnuggleSession implements SessionContext {
     //---------------------------------------------
     // Business helpers
     
+    /**
+     * Delegates to {@link SnuggleEngine#getBuiltinCommandByTeXName(String)}
+     * 
+     * @see SnuggleEngine#getBuiltinCommandByTeXName(String)
+     */
     public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
         return engine.getBuiltinCommandByTeXName(texName);
     }
     
+    /**
+     * Delegates to {@link SnuggleEngine#getBuiltinEnvironmentByTeXName(String)}
+     * 
+     * @see SnuggleEngine#getBuiltinEnvironmentByTeXName(String)
+     */
     public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
         return engine.getBuiltinEnvironmentByTeXName(texName);
     }
     
+    /**
+     * Gets the {@link Map} of all user-defined commands created in this session.
+     */
     public Map<String, UserDefinedCommand> getUserCommandMap() {
         return userCommandMap;
     }
     
+    /**
+     * Gets the {@link Map} of all user-defined environments created in this session.
+     */
     public Map<String, UserDefinedEnvironment> getUserEnvironmentMap() {
         return userEnvironmentMap;
     }
     
+    /**
+     * Gets the {@link StylesheetManager} being used by the underlying {@link SnuggleEngine}
+     */
     public StylesheetManager getStylesheetManager() {
         return engine.getStylesheetManager();
     }
@@ -489,13 +514,15 @@ public final class SnuggleSession implements SessionContext {
      * the current {@link SessionConfiguration} deems that we should
      * fail on the first error.
      * 
-     * @param error
-     * @throws SnuggleParseException 
+     * @param inputError {@link InputError} to register, which must not be null.
+     * 
+     * @throws SnuggleParseException if this session is configured to fail fast 
      */
-    public void registerError(InputError error) throws SnuggleParseException {
-        errors.add(error);
+    public void registerError(InputError inputError) throws SnuggleParseException {
+        ConstraintUtilities.ensureNotNull(inputError, "InputError");
+        errors.add(inputError);
         if (configuration.isFailingFast()) {
-            throw new SnuggleParseException(error);
+            throw new SnuggleParseException(inputError);
         }
     }
 }

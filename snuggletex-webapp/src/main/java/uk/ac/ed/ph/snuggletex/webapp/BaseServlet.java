@@ -8,7 +8,7 @@ package uk.ac.ed.ph.snuggletex.webapp;
 import static uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities.isMathMLElement;
 
 import uk.ac.ed.ph.snuggletex.DownConvertingPostProcessor;
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
@@ -17,7 +17,7 @@ import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.ClassPathURIResolver;
-import uk.ac.ed.ph.snuggletex.utilities.StandaloneSerializationOptions;
+import uk.ac.ed.ph.snuggletex.utilities.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetCache;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
@@ -106,8 +106,8 @@ abstract class BaseServlet extends HttpServlet {
         return result;
     }
     
-    protected SerializationOptions createMathMLSourceSerializationOptions() {
-        SerializationOptions result = new StandaloneSerializationOptions();
+    protected SerializationSpecifier createMathMLSourceSerializationOptions() {
+        SerializationSpecifier result = new SerializationOptions();
         result.setIndenting(true);
         result.setUsingNamedEntities(true);
         return result;

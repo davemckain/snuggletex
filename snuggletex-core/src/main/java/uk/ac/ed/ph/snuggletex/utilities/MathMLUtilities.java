@@ -7,7 +7,7 @@ package uk.ac.ed.ph.snuggletex.utilities;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -35,11 +35,6 @@ public final class MathMLUtilities {
     
     /**
      * Convenience method that parses a MathML document specified as a UTF-8-encoded String.
-     * 
-     * @return DOM Document
-     * @param mathmlDocument
-     * @throws IOException
-     * @throws SAXException
      */
     public static Document parseMathMLDocumentString(final String mathmlDocument)
             throws IOException, SAXException {
@@ -64,7 +59,7 @@ public final class MathMLUtilities {
     
     /**
      * Convenience method that serializes the given DOM Document as a String, using the
-     * specified {@link SerializationOptions}, creating any XSLT stylesheet required for
+     * specified {@link SerializationSpecifier}, creating any XSLT stylesheet required for
      * serialization on an ad hoc basis.
      *
      * @param document DOM document to serialize, must not be null
@@ -73,14 +68,14 @@ public final class MathMLUtilities {
      * @since 1.2.0
      */
     public static String serializeDocument(final Document document,
-            final SerializationOptions serializationOptions) {
+            final SerializationSpecifier serializationOptions) {
         ConstraintUtilities.ensureNotNull(document, "document");
         return serializeNode(document, serializationOptions);
     }
     
     /**
      * Convenience method that serializes the given DOM Document as a String, using the
-     * specified {@link SerializationOptions} and given {@link StylesheetManager} to manage
+     * specified {@link SerializationSpecifier} and given {@link StylesheetManager} to manage
      * any XSLT stylesheets required to serialize properly.
      *
      * @param document DOM document to serialize, must not be null
@@ -88,7 +83,7 @@ public final class MathMLUtilities {
      * 
      * @since 1.2.0
      */
-    public static String serializeDocument(final Document document, final SerializationOptions serializationOptions,
+    public static String serializeDocument(final Document document, final SerializationSpecifier serializationOptions,
             StylesheetManager stylesheetManager) {
         ConstraintUtilities.ensureNotNull(stylesheetManager, "stylesheetManager");
         ConstraintUtilities.ensureNotNull(document, "document");
@@ -126,7 +121,7 @@ public final class MathMLUtilities {
      * Convenience method that serializes the given DOM Document as a String (encoded in UTF-8).
      * 
      * @deprecated Use one of the alternative methods, including
-     *  {@link #serializeDocument(Document, SerializationOptions)} for ultimate control.
+     *  {@link #serializeDocument(Document, SerializationSpecifier)} for ultimate control.
      *
      * @param document DOM element to serialize
      * @param indent whether to indent the results or not
@@ -144,7 +139,7 @@ public final class MathMLUtilities {
      * specified encoding.
      * 
      * @deprecated Use one of the alternative methods, including
-     *  {@link #serializeDocument(Document, SerializationOptions)} for ultimate control.
+     *  {@link #serializeDocument(Document, SerializationSpecifier)} for ultimate control.
      *
      * @param document DOM element to serialize
      * @param encoding desired encoding, null is interpreted as UTF-8.
@@ -173,31 +168,31 @@ public final class MathMLUtilities {
     
     /**
      * Convenience method that serializes the given DOM Element as a String, using the given
-     * {@link SerializationOptions}, creating any XSLT stylesheet required for
+     * {@link SerializationSpecifier}, creating any XSLT stylesheet required for
      * serialization on an ad hoc basis.
      *
      * @param element DOM element to serialize, must not be null.
-     * @param serializationOptions {@link SerializationOptions}, may be null.
+     * @param serializationOptions {@link SerializationSpecifier}, may be null.
      * 
      * @since 1.2.0
      */
-    public static String serializeElement(final Element element,  final SerializationOptions serializationOptions) {
+    public static String serializeElement(final Element element,  final SerializationSpecifier serializationOptions) {
         ConstraintUtilities.ensureNotNull(element, "element");
         return serializeNode(element, serializationOptions);
     }
     
     /**
      * Convenience method that serializes the given DOM Element as a String, using the given
-     * {@link SerializationOptions} and given {@link StylesheetManager} to manage
+     * {@link SerializationSpecifier} and given {@link StylesheetManager} to manage
      * any XSLT stylesheets required to serialize properly.
      * 
      * @param element DOM element to serialize, must not be null.
-     * @param serializationOptions {@link SerializationOptions}, may be null.
+     * @param serializationOptions {@link SerializationSpecifier}, may be null.
      * @param stylesheetManager {@link StylesheetManager}, must not be null
      * 
      * @since 1.2.0
      */
-    public static String serializeElement(final Element element, final SerializationOptions serializationOptions,
+    public static String serializeElement(final Element element, final SerializationSpecifier serializationOptions,
             StylesheetManager stylesheetManager) {
         ConstraintUtilities.ensureNotNull(element, "element");
         ConstraintUtilities.ensureNotNull(stylesheetManager, "stylesheetManager");
@@ -233,7 +228,7 @@ public final class MathMLUtilities {
      * Convenience method that serializes the given DOM Element as a String (encoded in UTF-8).
      * 
      * @deprecated Use one of the alternative methods, including
-     *  {@link #serializeElement(Element, SerializationOptions)} for ultimate control.
+     *  {@link #serializeElement(Element, SerializationSpecifier)} for ultimate control.
      *
      * @param element DOM element to serialize
      * @param indent whether to indent the results or not
@@ -251,15 +246,15 @@ public final class MathMLUtilities {
      * the given parameters.
      * 
      * @deprecated Use one of the alternative methods, including
-     *  {@link #serializeElement(Element, SerializationOptions)} for ultimate control.
+     *  {@link #serializeElement(Element, SerializationSpecifier)} for ultimate control.
      *
      * @param element DOM element to serialize
      * @param encoding desired encoding, null is interpreted as UTF-8.
      * @param indent whether to indent the results or not
      * @param omitXMLDeclaration whether to omit the XML declaration or not.
      * 
-     * @deprecated Use {@link #serializeElement(Element, SerializationOptions)} or
-     * {@link #serializeElement(Element, SerializationOptions, StylesheetManager)}
+     * @deprecated Use {@link #serializeElement(Element, SerializationSpecifier)} or
+     * {@link #serializeElement(Element, SerializationSpecifier, StylesheetManager)}
      */
     @Deprecated
     public static String serializeElement(final Element element, final String encoding,
@@ -285,13 +280,13 @@ public final class MathMLUtilities {
         return serializeNode(element, encoding, indent, true);
     }
     
-    private static String serializeNode(final Node node, final SerializationOptions serializationOptions) {
+    private static String serializeNode(final Node node, final SerializationSpecifier serializationOptions) {
         return XMLUtilities.serializeNode(node, serializationOptions);
     }
     
     private static String serializeNode(final Node node, final String encoding,
             final boolean indent, final boolean omitXMLDeclaration) {
-        SerializationOptions serializationOptions = new StandaloneSerializationOptions();
+        SerializationSpecifier serializationOptions = new SerializationOptions();
         serializationOptions.setEncoding(encoding!=null ? encoding : "UTF-8");
         serializationOptions.setIndenting(indent);
         serializationOptions.setIncludingXMLDeclaration(!omitXMLDeclaration);
@@ -299,7 +294,7 @@ public final class MathMLUtilities {
     }
     
     private static String serializeNode(StylesheetManager stylesheetManager, final Node node,
-            final SerializationOptions serializationOptions) {
+            final SerializationSpecifier serializationOptions) {
         return XMLUtilities.serializeNode(stylesheetManager, node, serializationOptions);
     }
     

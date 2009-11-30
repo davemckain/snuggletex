@@ -5,7 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
 
-import uk.ac.ed.ph.snuggletex.SerializationOptions;
+import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
@@ -177,7 +177,7 @@ public final class XMLUtilities {
      * @param node DOM Node to serialize.
      * @param serializationOptions XML serialization options
      */
-    public static String serializeNode(final Node node, final SerializationOptions serializationOptions) {
+    public static String serializeNode(final Node node, final SerializationSpecifier serializationOptions) {
         return serializeNode(new StylesheetManager(), node, serializationOptions);
     }
     
@@ -195,7 +195,7 @@ public final class XMLUtilities {
      * @param serializationOptions XML serialization options
      */
     public static String serializeNode(StylesheetManager stylesheetManager, final Node node,
-            final SerializationOptions serializationOptions) {
+            final SerializationSpecifier serializationOptions) {
         StringWriter resultWriter = new StringWriter();
         
         /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
@@ -221,7 +221,7 @@ public final class XMLUtilities {
      * @param serializationOptions XML serialization options
      */
     public static String serializeNodeChildren(StylesheetManager stylesheetManager, final Node node,
-            final SerializationOptions serializationOptions) {
+            final SerializationSpecifier serializationOptions) {
         StringWriter resultWriter = new StringWriter();
         
         /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus

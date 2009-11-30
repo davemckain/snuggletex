@@ -41,7 +41,7 @@ public final class MathMLToImageLinkPostProcessor extends MathMLPostProcessor {
     protected void handleMathMLIsland(Element inputMathIsland, Document outputDocument,
             Node outputParentNode, int mathmlCounter) {
         /* Extract SnuggleTeX annotation */
-        String snuggleInput = MathMLUtilities.extractAnnotationString(inputMathIsland, SnuggleConstants.SNUGGLETEX_MATHML_ANNOTATION_ENCODING);
+        String snuggleInput = MathMLUtilities.extractAnnotationString(inputMathIsland, SnuggleConstants.SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING);
         if (snuggleInput==null) {
             throw new SnuggleRuntimeException("Expected to find SnuggleTeX annotation inside MathML - fix this process!");
         }

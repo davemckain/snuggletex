@@ -78,30 +78,58 @@ public final class SnugglePackage {
         this.errorGroupMap = new LinkedHashMap<ErrorGroup, List<ErrorCode>>();
     }
     
+    /**
+     * Returns the name for this package.
+     */
     public String getName() {
         return name;
     }
-    
+
+    /**
+     * Returns all of the {@link ErrorGroup}s declared for this package. The resulting {@link Collection}
+     * should not be modified.
+     */
     public Collection<ErrorGroup> getErrorGroups() {
         return errorGroupMap.keySet();
     }
     
+    /**
+     * Returns the {@link ErrorCode}s corresponding to the given {@link ErrorGroup}.
+     * The resulting {@link Collection} should not be modified.
+     * 
+     */
     public Collection<ErrorCode> getErrorCodes(ErrorGroup errorGroup) {
         return errorGroupMap.get(errorGroup);
     }
 
+    
+    /**
+     * Returns the {@link ResourceBundle} used to format error messages.
+     */
     public ResourceBundle getErrorMessageBundle() {
         return errorMessageBundle;
     }
 
+    /**
+     * Sets the {@link ResourceBundle} used to format error messages.
+     */
     public void setErrorMessageBundle(ResourceBundle errorMessageBundle) {
         this.errorMessageBundle = errorMessageBundle;
     }
 
+    
+    /**
+     * Returns the {@link BuiltinCommand} corresponding to LaTeX command called
+     * <tt>\texName</tt> defined by this package, or null if this command is not defined.
+     */
     public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
         return builtinCommandMap.get(texName);
     }
     
+    /**
+     * Returns the {@link BuiltinEnvironment} corresponding to LaTeX environment
+     * called <tt>texName</tt> defined by this package, or null if this environment is not defined.
+     */
     public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
         return builtinEnvironmentMap.get(texName);
     }
@@ -117,26 +145,6 @@ public final class SnugglePackage {
      */
     public static boolean isInputableTeXName(final String texName) {
         return texName!=null && !(texName.charAt(0)=='<' && texName.length()>3 && texName.endsWith(">"));
-    }
-    
-    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation interpretation) {
-        if (interpretation==null) {
-            return null;
-        }
-        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
-        result.put(interpretation.getType(), interpretation);
-        return result;
-    }
-    
-    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation... interpretations) {
-        if (interpretations.length==0) {
-            return null;
-        }
-        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
-        for (Interpretation interpretation : interpretations) {
-            result.put(interpretation.getType(), interpretation);
-        }
-        return result;
     }
     
     //-------------------------------------------------------
@@ -268,6 +276,28 @@ public final class SnugglePackage {
             builtinEnvironmentMap.put(environment.getTeXName(), environment);
         }
         return environment;
+    }
+    
+    //-------------------------------------------------------
+    
+    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation interpretation) {
+        if (interpretation==null) {
+            return null;
+        }
+        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
+        result.put(interpretation.getType(), interpretation);
+        return result;
+    }
+    
+    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation... interpretations) {
+        if (interpretations.length==0) {
+            return null;
+        }
+        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
+        for (Interpretation interpretation : interpretations) {
+            result.put(interpretation.getType(), interpretation);
+        }
+        return result;
     }
     
     //-------------------------------------------------------
