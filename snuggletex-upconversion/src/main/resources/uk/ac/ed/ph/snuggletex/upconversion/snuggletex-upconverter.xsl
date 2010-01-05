@@ -8,7 +8,7 @@ supporting various types of MathML results.
 
 This may be applied to an entire XHTML + MathML document.
 
-Copyright (c) 2009 The University of Edinburgh
+Copyright (c) 2010 The University of Edinburgh
 All Rights Reserved
 
 -->

@@ -4,7 +4,7 @@ $Id$
 
 This module contains templates for managing up-conversion options.
 
-Copyright (c) 2009 The University of Edinburgh
+Copyright (c) 2010 The University of Edinburgh
 All Rights Reserved
 
 -->

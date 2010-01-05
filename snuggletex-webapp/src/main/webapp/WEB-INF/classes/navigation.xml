@@ -12,7 +12,7 @@ and the navigation menu.
 Relative links are fixed up so they are relative to the supplied
 context-path.
 
-Copyright (c) 2009 University of Edinburgh.
+Copyright (c) 2010 The University of Edinburgh.
 All Rights Reserved
 
 -->

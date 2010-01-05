@@ -1,6 +1,6 @@
-/* $Id: MathOperatorInterpretation.java 435 2009-07-02 10:29:17Z davemckain $
+/* $Id$
  *
- * Copyright 2009 University of Edinburgh.
+ * Copyright (c) 2010 The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.semantics;
@@ -15,7 +15,7 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
  * @see MathNegatableInterpretation
  * 
  * @author  David McKain
- * @version $Revision: 435 $
+ * @version $Revision$
  */
 public final class MathOperatorInterpretation implements MathInterpretation {
     

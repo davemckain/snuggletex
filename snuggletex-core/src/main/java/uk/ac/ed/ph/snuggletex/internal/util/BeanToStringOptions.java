@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2003 - 2008 University of Edinburgh.
+ * Copyright (c) 2010 The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
