@@ -54,7 +54,7 @@ public final class MathMLDownConverter {
     }
     
     /**
-     * Creates a new {@link MathMLDownConverter} which will inline CSS properties if and as specified by
+     * Creates a new {@link MathMLDownConverter} which will inline CSS properties if specified by
      * the given {@link DOMOutputOptions}.
      * 
      * @param stylesheetManager

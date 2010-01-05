@@ -22,6 +22,10 @@ import net.sourceforge.jeuclid.context.Parameter;
  */
 public abstract class SimpleMathMLImageSavingCallback implements MathMLImageSavingCallback {
     
+    public static String DEFAULT_FONT_SIZE = "16.0";
+    public static String DEFAULT_CONTENT_TYPE = "image/png";
+    public static boolean DEFAULT_ANTI_ALIASING = true;
+    
     private String fontSize;
     private boolean antiAliasing;
     private String imageContentType;
@@ -30,9 +34,9 @@ public abstract class SimpleMathMLImageSavingCallback implements MathMLImageSavi
     
     public SimpleMathMLImageSavingCallback() {
         this.layoutContext = new LayoutContextImpl(LayoutContextImpl.getDefaultLayoutContext());
-        setFontSize("16.0");
-        setAntiAliasing(true);
-        setImageContentType("image/png");
+        setFontSize(DEFAULT_FONT_SIZE);
+        setImageContentType(DEFAULT_CONTENT_TYPE);
+        setAntiAliasing(DEFAULT_ANTI_ALIASING);
     }
     
     public String getFontSize() {
@@ -73,12 +77,22 @@ public abstract class SimpleMathMLImageSavingCallback implements MathMLImageSavi
         return layoutContext;
     }
     
+    //----------------------------------------------------
+    
+    /** @see MathMLImageSavingCallback#getImageOutputFile(int) */
     public abstract File getImageOutputFile(int mathmlCounter);
     
+    /** @see MathMLImageSavingCallback#getImageOutputStream(int) */
     public abstract OutputStream getImageOutputStream(int mathmlCounter);
     
+    /** @see MathMLImageSavingCallback#getImageURL(int) */
     public abstract String getImageURL(int mathmlCounter);
-    
+
+    /**
+     * (A "do nothing" implementation for convenience.)
+     * 
+     * @see MathMLImageSavingCallback#imageSavingSucceeded(Object, int, String)
+     */
     public void imageSavingSucceeded(Object imageFileOrOutputStream, int mathmlCounter,
             String contentType) {
         /* (Do nothing by default) */

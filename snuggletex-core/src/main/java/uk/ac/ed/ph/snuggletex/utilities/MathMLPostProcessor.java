@@ -15,7 +15,7 @@ import org.w3c.dom.Node;
 
 /**
  * Convenient base for {@link DOMPostProcessor}s that might want to do interesting
- * things to MathML islands.
+ * things to MathML islands, leaving everything else unchanged.
  *
  * @author  David McKain
  * @version $Revision$
@@ -25,14 +25,29 @@ public abstract class MathMLPostProcessor implements DOMPostProcessor {
     public final Document postProcessDOM(Document workDocument, final DOMOutputOptions options,
             StylesheetManager stylesheetManager) {
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
-        new NodeVisitor(workDocument, resultDocument).run();
+        new DocumentWalker(workDocument, resultDocument).run();
         return resultDocument;
     }
     
+    /**
+     * This method is called for each MathML <tt>math</tt> element discovered, in document order.
+     * 
+     * @param inputMathIsland MathML <tt>math</tt> element discovered
+     * @param outputDocument resulting {@link Document} being built up
+     * @param outputParentNode parent {@link Node} in the resulting {@link Document} that would
+     *   own this MathML element if left unchanged.
+     * @param mathmlCounter counter for this MathML element, starting at 0 for the first
+     *   element in document order, 1 for the second, etc.
+     */
     protected abstract void handleMathMLIsland(final Element inputMathIsland,
             Document outputDocument, Node outputParentNode, int mathmlCounter);
     
-    private class NodeVisitor {
+    /**
+     * This inner class traverses a {@link Document} in document order, calling back on the
+     * {@link MathMLPostProcessor#handleMathMLIsland(Element, Document, Node, int)} for
+     * each MathML <tt>math</tt> element discovered.
+     */
+    private class DocumentWalker {
         
         private int mathmlCounter;
         private final Document inputDocument;
@@ -40,7 +55,7 @@ public abstract class MathMLPostProcessor implements DOMPostProcessor {
         private Node inputNode;
         private Node outputParentNode;
         
-        public NodeVisitor(final Document inputDocument, final Document outputDocument) {
+        public DocumentWalker(final Document inputDocument, final Document outputDocument) {
             this.inputDocument = inputDocument;
             this.outputDocument = outputDocument;
         }
