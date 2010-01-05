@@ -5,7 +5,7 @@ $Id$
 
 Some handy utility templates used by the various demos.
 
-Copyright (c) 2010 The University of Edinburgh.
+Copyright (c) 2010, The University of Edinburgh.
 All Rights Reserved
 
 -->

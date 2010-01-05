@@ -10,7 +10,7 @@ few other things).
 Some semantic inference is also performed basic on common conventions,
 which can be turned off if required.
 
-Copyright (c) 2010 The University of Edinburgh
+Copyright (c) 2010, The University of Edinburgh
 All Rights Reserved
 
 -->
