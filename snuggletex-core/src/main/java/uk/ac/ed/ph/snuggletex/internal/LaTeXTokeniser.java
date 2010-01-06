@@ -1011,13 +1011,18 @@ public final class LaTeXTokeniser {
                 new StringTerminator(Character.toString((char) delimitChar)), LaTeXMode.VERBATIM);
         List<FlowToken> contentTokens = contentState.tokens;
         SimpleToken verbatimContentToken = null;
+        boolean endDelimiterNotFound = false;
         for (FlowToken resultToken : contentTokens) {
             if (resultToken.getType()==TokenType.VERBATIM_MODE_TEXT && verbatimContentToken==null) {
                 /* Got content */
                 verbatimContentToken = (SimpleToken) resultToken;
             }
             else if (resultToken.getType()==TokenType.ERROR) {
-                if (((ErrorToken) resultToken).getError().getErrorCode()!=CoreErrorCode.TTEG00) {
+                /* Only error we expect is if delimiter is not found */
+                if (((ErrorToken) resultToken).getError().getErrorCode()==CoreErrorCode.TTEG00) {
+                    endDelimiterNotFound = true;
+                }
+                else {
                     throw new SnuggleLogicException("Unexpected error when parsing \\verb content: " + resultToken);
                 }
             }
@@ -1037,7 +1042,8 @@ public final class LaTeXTokeniser {
         int newlineIndex = workingDocument.indexOf(contentSlice.startIndex, '\n');
         if (newlineIndex!=-1 && newlineIndex<contentSlice.endIndex) {
             /* Error: Line ended before end of \\verb content */
-            return createError(CoreErrorCode.TTEV01, startTokenIndex, contentSlice.endIndex+1);
+            return createError(CoreErrorCode.TTEV01, startTokenIndex,
+                    contentSlice.endIndex + (endDelimiterNotFound ? 0 : 1));
         }
         
         /* That's it! */
