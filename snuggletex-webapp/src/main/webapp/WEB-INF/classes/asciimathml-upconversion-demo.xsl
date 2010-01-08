@@ -94,8 +94,8 @@ All Rights Reserved
         </div>
         <!-- Wire up the form to the preview box -->
         <script type="text/javascript">
-          $(document).ready(function() {
-            setupASCIIMathMLInput('asciiMathInput', 'asciiMathML', 'preview');
+          jQuery(document).ready(function() {
+            setupASCIIMathMLInput('asciiMathInput', 'preview', 'asciiMathML');
           });
         </script>
 

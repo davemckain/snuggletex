@@ -60,7 +60,7 @@ All Rights Reserved
         LaTeX Math Mode Input:
         <input id="input" name="input" type="text" value="{$latex-input}"/>
         <input type="submit" value="Go!" />
-        <input id="showOptions" onclick="$('#options').show();$('#showOptions').attr('disabled', true)" type="button" value="Show Options" />
+        <input id="showOptions" onclick="jQuery('#options').show(); jQuery('#showOptions').attr('disabled', true)" type="button" value="Show Options" />
         <input type="button" value="Clear" onclick="document.getElementById('input').value=''" />
       </div>
       <div id="options" style="display:none">

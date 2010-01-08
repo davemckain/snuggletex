@@ -44,9 +44,8 @@ All Rights Reserved
         <script type="text/javascript" src="{$context-path}/includes/jquery-ui-1.7.2.custom.js"></script>
         <script type="text/javascript" src="{$context-path}/includes/webapp.js"></script>
         <script type="text/javascript">
-          $(document).ready(function() {
-              $(".exampleResult").tabs({
-              });
+          jQuery(document).ready(function() {
+              jQuery(".exampleResult").tabs();
           });
         </script>
       </head>

@@ -1,12 +1,18 @@
 /*
- * Provides basic code for managing ASCIIMathML input widgets
+ * Provides basic code for managing ASCIIMathML input widgets.
+ * Feel free to use or build on this as necessary.
  *
- * IMPORTANT NOTE:
+ * NOTE:
  *
- * This code uses jQuery. If you want to use this code with another
- * library that defines a $(...) function - e.g. prototype - then
- * you will need to look into jQuery.noConflict() and make sure
- * you load JS in the correct order.
+ * This code uses the lovely jQuery library, but avoids using the
+ * $(...) function just in case your code also uses some other library
+ * like prototype that defines its own $(...) function.
+ * (In this case, you will still want to read:
+ *
+ * http://docs.jquery.com/Using_jQuery_with_Other_Libraries
+ *
+ * to make sure you do whatver is necessary to make sure that both
+ * libraries co-exist correctly.)
  *
  * Requirements:
  *
@@ -23,13 +29,25 @@
 
 /************************************************************/
 
-/* Reset the default (blue) MathML colour chosen by ASCIIMathML */
+/* (Reset the default (blue) MathML colour chosen by ASCIIMathML) */
 var mathcolor = "";
+
+/**
+ * Simple hash that will keep track of the current value of each
+ * ASCIIMathML input box, keyed on its ID. This is used by
+ * updatePreviewIfChanged() to determine whether the MathML preview
+ * should be updated or not.
+ */
+var inputTextByIdMap = {};
 
 /**
  * Hacked version of AMdisplay() from ASCIIMathMLeditor.js that allows
  * us to specify which element to display the resulting MathML
  * in and where the raw input is going to come from.
+ *
+ * @param {String} mathModeInput ASCIIMathML input string
+ * @param {String} previewElementId ID of the XHTML element that will contain the
+ *   resulting MathML preview, replacing any existing child Nodes.
  */
 function updatePreview(mathModeInput, previewElementId) {
     /* Escape use of backquote symbol to prevent exiting math mode */
@@ -46,19 +64,20 @@ function updatePreview(mathModeInput, previewElementId) {
         outnode.removeChild(outnode.firstChild);
     }
     outnode.appendChild(document.createComment(input + "``"));
-    LMprocessNode(outnode, true);
     AMprocessNode(outnode, true);
 }
 
-/* Simple hash that will keep track of the current value of each
- * ASCIIMathML input box, keyed on its ID. This is used by
- * updatePreviewIfChanged() to determine whether the MathML preview
- * should be updated or not.
+/**
+ * Checks the content of the <input/> element having the given inputBoxId,
+ * and calls {@link #updatePreview} if its contents have changed since the
+ * last call to this.
+ *
+ * @param {String} inputBoxId ID of the ASCIIMath entry <input/> element
+ * @param {String} previewElementId ID of the XHTML element that will contain the
+ *   resulting MathML preview, replacing any existing child Nodes.
  */
-var inputTextByIdMap = {};
-
 function updatePreviewIfChanged(inputBoxId, previewElementId) {
-    var inputSelector = $("#" + inputBoxId);
+    var inputSelector = jQuery("#" + inputBoxId);
     var newValue = inputSelector.get(0).value;
     var oldValue = inputTextByIdMap[inputBoxId];
     if (oldValue==null || newValue!=oldValue) {
@@ -67,6 +86,16 @@ function updatePreviewIfChanged(inputBoxId, previewElementId) {
     inputTextByIdMap[inputBoxId] = newValue;
 }
 
+/**
+ * Extracts the MathML contained within the ASCIIMath preview element
+ * having the given ID, storing the results in the given hidden form
+ * element.
+ *
+ * @param {String} previewElementId ID of the XHTML parent element
+ *   containing the MathML to be extracted.
+ * @param {String} formElementId ID of the <input/> element to store
+ *   the resulting serialized MathML.
+ */
 function extractMathML(previewElementId, formElementId) {
     var previewElement = document.getElementById(previewElementId);
     var mathNode = previewElement.getElementsByTagName("math")[0];
@@ -76,13 +105,24 @@ function extractMathML(previewElementId, formElementId) {
     hiddenFormElement.value = cleanedMathML;
 }
 
-function setupASCIIMathMLInput(inputBoxId, mathmlFieldId, previewElementId) {
+/**
+ * Sets up an ASCIIMathML input using the elements provided, binding
+ * the appropriate event handlers to make everything work correctly.
+ *
+ * @param {String} inputBoxId ID of the ASCIIMath entry <input/> element
+ * @param {String} previewElementId ID of the XHTML element that will be
+ *   used to hold the resulting MathML preview. Note that all of its child
+ *   Nodes will be removed.
+ * @param {String} mathmlResultElementId ID of the hidden <input/> field that will
+ *   hold the resulting MathML on submission.
+ */
+function setupASCIIMathMLInput(inputBoxId, previewElementId, mathmlResultElementId) {
     /* Set up submit handler for the form */
-    $("#" + inputBoxId).closest("form").bind("submit", function(evt) {
-        extractMathML(previewElementId, mathmlFieldId);
+    jQuery("#" + inputBoxId).closest("form").bind("submit", function(evt) {
+        extractMathML(previewElementId, mathmlResultElementId);
         return true;
     });
-    var inputSelector = $("#" + inputBoxId);
+    var inputSelector = jQuery("#" + inputBoxId);
     var initialInput = inputSelector.get(0).value;
 
     /* Set up initial preview */

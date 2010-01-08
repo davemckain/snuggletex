@@ -14,9 +14,9 @@
 
 var popup = null;
 
-$(document).ready(function() {
+jQuery(document).ready(function() {
     /* Initialise dialog box showing example material */
-    popup = $("#popup");
+    popup = jQuery("#popup");
     popup.dialog({
       autoOpen: false,
       title: 'Example',
@@ -24,10 +24,10 @@ $(document).ready(function() {
       height: 400
     });
     /* Attach handlers to dialog popups links for example links */
-    $(".dialog").bind("click", function(event) {
+    jQuery(".dialog").bind("click", function(event) {
         var latexInput = this.getAttribute('title');
         popup.load(this.href + " .exampleResult", null, function() {
-            $(".exampleResult").tabs();
+            jQuery(".exampleResult").tabs();
             popup.dialog('option', 'title', 'Example: ' + latexInput);
             popup.dialog('open');
         });
