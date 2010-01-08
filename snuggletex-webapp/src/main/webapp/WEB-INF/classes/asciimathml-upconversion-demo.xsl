@@ -39,7 +39,7 @@ All Rights Reserved
   <xsl:template match="head" mode="extra-head">
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathML.js"></script>
     <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLeditor.js"></script>
-    <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLcustomisations.js"></script>
+    <script type="text/javascript" src="{$context-path}/includes/ASCIIMathMLwidget.js"></script>
   </xsl:template>
 
   <xsl:template match="body" mode="make-content">
@@ -94,9 +94,7 @@ All Rights Reserved
         </div>
         <!-- Wire up the form to the preview box -->
         <script type="text/javascript">
-          jQuery(document).ready(function() {
-            setupASCIIMathMLInput('asciiMathInput', 'preview', 'asciiMathML');
-          });
+          registerASCIIMathMLInputWidget('asciiMathInput', 'preview', 'asciiMathML');
         </script>
 
         <xsl:if test="not($is-new-form)">

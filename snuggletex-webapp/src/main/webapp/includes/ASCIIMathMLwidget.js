@@ -1,6 +1,9 @@
 /*
- * Provides basic code for managing ASCIIMathML input widgets.
- * Feel free to use or build on this as necessary.
+ * This provides some basic code for managing the ASCIIMathML input widget
+ * used in the ASCIIMathML input demo in SnuggleTeX.
+ *
+ * The general ideas may be useful in other scenarios, so feel free to use
+ * and/or build on this as is necessary.
  *
  * NOTE:
  *
@@ -20,6 +23,7 @@
  * ASCIIMathMLeditor.js
  * jquery.js
  *
+ * Author: David McKain
  *
  * $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
  *
@@ -116,7 +120,7 @@ function extractMathML(previewElementId, formElementId) {
  * @param {String} mathmlResultElementId ID of the hidden <input/> field that will
  *   hold the resulting MathML on submission.
  */
-function setupASCIIMathMLInput(inputBoxId, previewElementId, mathmlResultElementId) {
+function setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultElementId) {
     /* Set up submit handler for the form */
     jQuery("#" + inputBoxId).closest("form").bind("submit", function(evt) {
         extractMathML(previewElementId, mathmlResultElementId);
@@ -136,4 +140,21 @@ function setupASCIIMathMLInput(inputBoxId, previewElementId, mathmlResultElement
     /* TODO: Do we want to set up a timer as well? If so, we probably want
      * one to be global to a page, rather than each interaction.
      */
+}
+
+/**
+ * Registers a new ASCIIMathML input widget. This calls {@link #setupASCIIMathMLInputWidget}
+ * once the document has finished loading to bind everything together correctly.
+ *
+ * @param {String} inputBoxId ID of the ASCIIMath entry <input/> element
+ * @param {String} previewElementId ID of the XHTML element that will be
+ *   used to hold the resulting MathML preview. Note that all of its child
+ *   Nodes will be removed.
+ * @param {String} mathmlResultElementId ID of the hidden <input/> field that will
+ *   hold the resulting MathML on submission.
+ */
+function registerASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultElementId) {
+    jQuery(document).ready(function() {
+        setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultElementId);
+    });
 }
