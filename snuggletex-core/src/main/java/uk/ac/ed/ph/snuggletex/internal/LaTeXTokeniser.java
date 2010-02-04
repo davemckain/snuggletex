@@ -1677,7 +1677,10 @@ public final class LaTeXTokeniser {
         
         /* Read in arguments, the same way that we do with commands. */
         BuiltinCommandArgumentSearchResult argumentSearchResult = new BuiltinCommandArgumentSearchResult();
-        errorToken = advanceOverBuiltinCommandOrEnvironmentArguments(environment, argumentSearchResult);
+        ErrorToken argumentErrorToken = advanceOverBuiltinCommandOrEnvironmentArguments(environment, argumentSearchResult);
+        if (argumentErrorToken!=null && errorToken==null) {
+            errorToken = argumentErrorToken;
+        }
         
         /* Work out what mode we're going to parse the content in */
         LaTeXMode contentMode = environment.getContentMode();

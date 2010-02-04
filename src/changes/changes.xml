@@ -18,7 +18,13 @@ All Rights Reserved
     <author email="david.mckain&#xa0;[at]&#xa0;ed.ac.uk">David McKain</author>
   </properties>
   <body>
-    <release version="1.2.0-beta2" date="TBA" description="Version 1.2.0-beta2 (SVN revision ???)">
+    <release version="1.2.0" date="TBA" description="Version 1.2.0 (SVN revision ???)">
+      <action dev="davemckain" type="fix" date="2010-02-04">
+        Error Tokens recorded due to using environments in an incorrect mode were
+        being lost, even though the errors themselves were being recorded correctly.
+        This is now fixed.
+        <fixes issue="2945869"/>
+      </action>
       <action dev="davemckain" type="update" date="2010-01-08">
         Tidied up the ASCIIMathML input demo a bit so that the JavaScript helper code can be
         more easily reused by people. (Also cut down ASCIIMathML.js to remove the optional
