@@ -12,7 +12,7 @@ package uk.ac.ed.ph.snuggletex;
  * processor. If not supported, you will get XML output.
  * 
  * @author  David McKain
- * @version $Revision: 516 $
+ * @version $Revision$
  */
 public enum SerializationMethod {
     

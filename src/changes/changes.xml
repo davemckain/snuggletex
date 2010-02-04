@@ -18,7 +18,7 @@ All Rights Reserved
     <author email="david.mckain&#xa0;[at]&#xa0;ed.ac.uk">David McKain</author>
   </properties>
   <body>
-    <release version="1.2.0" date="2010-02-04" description="Version 1.2.0 (SVN revision 532)">
+    <release version="1.2.0" date="2010-02-04" description="Version 1.2.0 (SVN revision 533)">
       <action dev="davemckain" type="fix" date="2010-02-04">
         Error Tokens recorded due to using environments in an incorrect mode were
         being lost, even though the errors themselves were being recorded correctly.
