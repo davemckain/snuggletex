@@ -64,11 +64,17 @@ public final class StyleInterpretationHandler implements CommandHandler, Environ
              * Note: Even though there is no \mathsc{...}, we can legally end up here if doing
              * something like \mbox{\sc ....} so we'll ignore unsupported stylings, rather than
              * failing.
+             * 
+             * Regression Note: If the content is truly empty, we'll generate an empty <mrow/>
+             * instead of an empty <mstyle/>
              */
             String mathVariant = interpretation.getTargetMathMLMathVariantName();
-            if (mathVariant!=null) {
+            if (mathVariant!=null && !contentContainerToken.getContents().isEmpty()) {
                 result = builder.appendMathMLElement(parentElement, "mstyle");
                 result.setAttribute("mathvariant", mathVariant);
+            }
+            else {
+                result = builder.appendMathMLElement(parentElement, "mrow");
             }
         }
         else {

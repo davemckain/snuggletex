@@ -452,14 +452,23 @@ public final class DOMBuilder {
         if (isBuildingMathMLIsland()) {
             /* Need to wrap in an <mtext>...</mtext>.
              * Note that leading and trailing whitespace is ignored in <mtext/> elements so, if
-             * whitespace is asked for, it must be added via a <mspace/>
+             * whitespace is asked for, it must be added via a <mspace/>. Also need to handle
+             * the case of whitespace only.
              */
-            if (Character.isWhitespace(resultString.charAt(0))) {
+            String trimmed = resultString.trim();
+            if (trimmed.isEmpty()) {
+                /* Whitespace only, which gets normalised to a single space */
                 appendMathMLSpace(parentElement, "1ex");
             }
-            appendMathMLTextElement(parentElement, "mtext", resultString, true);
-            if (Character.isWhitespace(resultString.charAt(resultString.length()-1))) {
-               appendMathMLSpace(parentElement, "1ex");
+            else {
+                /* Contains a non-whitespace character somewhere */
+                if (Character.isWhitespace(resultString.charAt(0))) {
+                    appendMathMLSpace(parentElement, "1ex");
+                }
+                appendMathMLTextElement(parentElement, "mtext", trimmed, false);
+                if (Character.isWhitespace(resultString.charAt(resultString.length()-1))) {
+                   appendMathMLSpace(parentElement, "1ex");
+                }
             }
         }
         else {

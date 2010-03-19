@@ -534,3 +534,10 @@ A
 \verb|%|
 <tt class="verb">%</tt>
 ====
+## Regression: handling of whitespace in mboxes was incomplete through to 1.2.0
+\mbox{ }
+<span class="mbox"> </span>
+====
+\mbox{ A }
+<span class="mbox"> A </span>
+====

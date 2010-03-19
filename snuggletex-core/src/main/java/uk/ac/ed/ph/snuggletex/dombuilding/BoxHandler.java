@@ -39,7 +39,7 @@ public final class BoxHandler implements CommandHandler {
             containerElement = builder.appendXHTMLElement(parentElement, "span");
             builder.applyCSSStyle(containerElement, xhtmlClassName);
         }
-        builder.handleTokens(containerElement, token.getArguments()[0], true);
+        builder.handleTokens(containerElement, token.getArguments()[0], false);
     }
 
 }

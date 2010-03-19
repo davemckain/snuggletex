@@ -366,6 +366,35 @@ a\not \in A
 \mbox{A}
 <mrow><mtext>A</mtext></mrow>
 ====
+\mbox{A }
+<mrow><mtext>A</mtext><mspace width="1ex"/></mrow>
+====
+\mbox{ A}
+<mrow><mspace width="1ex"/><mtext>A</mtext></mrow>
+====
+\mbox{ A }
+<mrow><mspace width="1ex"/><mtext>A</mtext><mspace width="1ex"/></mrow>
+====
+\mbox{  A B     }
+<mrow><mspace width="1ex"/><mtext>A B</mtext><mspace width="1ex"/></mrow>
+====
+## Regression: handling of whitespace only content was broken until 1.2.0.
+\mbox{ }
+<mrow><mspace width="1ex"/></mrow>
+====
+\mbox{  }
+<mrow><mspace width="1ex"/></mrow>
+====
+\textrm{A }
+<mstyle mathvariant="normal"><mtext>A</mtext><mspace width="1ex"/></mstyle>
+====
+\textrm{ }
+<mstyle mathvariant="normal"><mspace width="1ex"/></mstyle>
+====
+## Regression: empty \textrm generated empty <mstyle/> until 1.2.0. Now replaced with empty <mrow/>
+\textrm{}
+<mrow/>
+====
 \mbox{\mbox{A}}
 <mrow><mrow><mtext>A</mtext></mrow></mrow>
 ====
@@ -613,7 +642,7 @@ v_{\mbox{\rm av}}
 ====
 ## Regression: can't do small-caps in Math mode so we just ignore this
 \mbox{\sc Hello}
-<mrow><mtext>Hello</mtext></mrow>
+<mrow><mrow><mtext>Hello</mtext></mrow></mrow>
 ====
 ## We now support applying sub/super-scripts without an LHS, to be consistent with LaTeX
 ^2
@@ -659,6 +688,9 @@ _2^3
 ====
 \mathcal{a+b}
 <mi mathvariant="script">a</mi><mo>+</mo><mi mathvariant="script">b</mi>
+====
+\mathcal{F F}
+<mi mathvariant="script">&#x2131;</mi><mi mathvariant="script">&#x2131;</mi>
 ====
 ## \ensuremath does nothing when we're already in Math mode
 \ensuremath{a+\ensuremath{b}}
