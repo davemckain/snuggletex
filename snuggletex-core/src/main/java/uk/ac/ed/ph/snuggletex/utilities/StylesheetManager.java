@@ -115,10 +115,10 @@ public final class StylesheetManager {
         /* Choose appropriate TransformerFactory implementation */
         TransformerFactory transformerFactory;
         if (requireXSLT20) {
-            transformerFactory = transformerFactoryChooser.getSuitableXSLT10TransformerFactory();
+            transformerFactory = transformerFactoryChooser.getSuitableXSLT20TransformerFactory();
         }
         else {
-            transformerFactory = transformerFactoryChooser.getSuitableXSLT20TransformerFactory();
+            transformerFactory = transformerFactoryChooser.getSuitableXSLT10TransformerFactory();
         }
         
         /* Configure URIResolver */
