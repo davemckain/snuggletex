@@ -785,13 +785,14 @@ public final class DOMBuilder {
             
             /* Descend into Math content */
             mathContentBuilderCallback.buildMathElementContent(semantics, mathContentToken, true);
+            
+            /* Construct annotation, normalising line endings */
+            String annotationContent = token.getSlice().extract().toString()
+                .replace("\n\r", "\n")
+                .replace('\r', '\n');
 
-            /* Maybe create source annotation */
-            if (options.isAddingMathSourceAnnotations()) {
-                Element sourceAnnotation = appendMathMLTextElement(semantics, "annotation",
-                        token.getSlice().extract().toString(), true);
-                sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING);
-            }
+            Element sourceAnnotation = appendMathMLTextElement(semantics, "annotation", annotationContent, true);
+            sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING);
         }
         else {
             mathContentBuilderCallback.buildMathElementContent(math, mathContentToken, false);
