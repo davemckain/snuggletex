@@ -456,7 +456,7 @@ public final class DOMBuilder {
              * the case of whitespace only.
              */
             String trimmed = resultString.trim();
-            if (trimmed.isEmpty()) {
+            if (trimmed.length()==0) {
                 /* Whitespace only, which gets normalised to a single space */
                 appendMathMLSpace(parentElement, "1ex");
             }
