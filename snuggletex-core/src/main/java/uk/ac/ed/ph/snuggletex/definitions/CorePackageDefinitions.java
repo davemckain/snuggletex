@@ -255,18 +255,18 @@ public final class CorePackageDefinitions {
          * as a single argument.
          * 
          * As of 1.0.0-beta4, we now support using these macros in MATH mode. We force the arguments
-         * into PARAGRAPH mode here so that the resulting content will end up inside <mtext/>
+         * into LR mode here so that the resulting content will end up inside <mtext/>
          * element(s) wrapped inside a <mstyle/> setting the appropriate style.
          */
         StyleInterpretationHandler styleInterpretationNodeBuilder = new StyleInterpretationHandler(); /* (Stateless so can share) */
-        corePackage.addComplexCommandOneArg("textrm", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textsf", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textit", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.IT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textsl", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SL, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textsc", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.SC, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textbf", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.BF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("texttt", false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.TT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("emph",   false, ALL_MODES, PARAGRAPH, StyleDeclarationInterpretation.EM, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textrm", false, ALL_MODES, LR, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textsf", false, ALL_MODES, LR, StyleDeclarationInterpretation.SF, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textit", false, ALL_MODES, LR, StyleDeclarationInterpretation.IT, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textsl", false, ALL_MODES, LR, StyleDeclarationInterpretation.SL, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textsc", false, ALL_MODES, LR, StyleDeclarationInterpretation.SC, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textbf", false, ALL_MODES, LR, StyleDeclarationInterpretation.BF, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("texttt", false, ALL_MODES, LR, StyleDeclarationInterpretation.TT, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("emph",   false, ALL_MODES, LR, StyleDeclarationInterpretation.EM, styleInterpretationNodeBuilder, ALLOW_INLINE);
         
         /* Text size control macros. As above, these are converted to environments of the same name
          * during token fixing, which are easier to deal with.
