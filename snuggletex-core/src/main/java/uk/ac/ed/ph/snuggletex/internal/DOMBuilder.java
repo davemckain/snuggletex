@@ -791,9 +791,18 @@ public final class DOMBuilder {
              * build by the callback, which must be a single element in this case.
              */
             Element semantics = appendMathMLElement(math, "semantics");
+            Element container;
+            if (options.isApplyingFirefox3SemanticsWorkaround() && isDisplayMath) {
+                /* Work around Firefox 3 bug ignoring display="block" inside semantics by wrapping in an additional <mstyle/> */
+                container = appendMathMLElement(semantics, "mstyle");
+                container.setAttribute("displaystyle", "true");
+            }
+            else {
+                container = semantics;
+            }
             
             /* Descend into Math content */
-            mathContentBuilderCallback.buildMathElementContent(semantics, mathContentToken, true);
+            mathContentBuilderCallback.buildMathElementContent(container, mathContentToken, true);
             
             /* Construct annotation */
             String annotationContent = token.getSlice().extract().toString();
