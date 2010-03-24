@@ -20,11 +20,11 @@ All Rights Reserved
     <module>snuggletex-upconversion</module>
   </modules>
   <properties>
-    <junit.version>4.7</junit.version>
+    <junit.version>4.8.1</junit.version>
     <easymock.version>2.5.2</easymock.version>
     <jeuclid.version>3.1.8</jeuclid.version>
     <saxon9.version>9.1.0.8</saxon9.version>
-    <slf4j.version>1.5.10</slf4j.version>
+    <slf4j.version>1.5.11</slf4j.version>
     <log4j.version>1.2.14</log4j.version><!-- (1.2.15 has some annoying deps) -->
     <maven.site.url>http://snuggletex.sourceforge.net/maven/</maven.site.url>
   </properties>
@@ -40,32 +40,6 @@ All Rights Reserved
       </releases>
     </repository>
   </repositories>
-  <dependencies>
-    <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon9</artifactId>
-      <version>${saxon9.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon9-dom</artifactId>
-      <version>${saxon9.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>${easymock.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <name>SnuggleTeX</name>
   <url>http://snuggletex.sourceforge.net</url>
   <description>
