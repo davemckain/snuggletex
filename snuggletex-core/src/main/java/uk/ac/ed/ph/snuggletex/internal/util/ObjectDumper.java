@@ -122,16 +122,16 @@ public final class ObjectDumper {
             if (object instanceof Object[]) {
                 appendArray((Object[]) object, dumpMode, depth);
             }
-            else if (object instanceof List) {
+            else if (object instanceof List<?>) {
                 appendList((List<?>) object, dumpMode, depth);
             }
-            else if (object instanceof Set) {
+            else if (object instanceof Set<?>) {
                 appendSet((Set<?>) object, dumpMode, depth);
             }
-            else if (object instanceof Map) {
+            else if (object instanceof Map<?,?>) {
                 appendMap((Map<?,?>) object, dumpMode, depth);
             }
-            else if (object instanceof Collection) {
+            else if (object instanceof Collection<?>) {
                 appendCollection((Collection<?>) object, dumpMode, depth);
             }
             else {
