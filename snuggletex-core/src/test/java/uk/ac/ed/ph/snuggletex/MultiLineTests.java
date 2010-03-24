@@ -36,7 +36,9 @@ public class MultiLineTests extends AbstractGoodXMLTest {
     public MultiLineTests(final String inputLaTeX, final String expectedXML) {
         super(inputLaTeX,
                 "<body xmlns='" + W3CConstants.XHTML_NAMESPACE + "'>"
-                + expectedXML.replaceAll("(?m)^\\s+", "").replaceAll("(?m)\\s+$", "").replace("\n", "")
+                + expectedXML.replaceAll("(?m)^ +", "").replaceAll("(?m) +$", "")
+                    .replace("\n", "")
+                    .replace("%n", "\n")
                 + "</body>"
         );
     }

@@ -56,7 +56,6 @@ public final class FrozenSlice {
     
     // ----------------------------------------------
 
-    
     public CharSequence extract() {
         return document.extract(startIndex, endIndex);
     }
@@ -94,7 +93,7 @@ public final class FrozenSlice {
                 .append(",")
                 .append(endIndex)
                 .append("), value='")
-                .append(extract().toString().replace("\n", "%n")) /* (Hmmm... crap way of representing a newline!) */
+                .append(extract().toString().replace("\n", "%n").replace("\r", "%r")) /* (Hmmm... crap way of representing newline/CR!) */
                 .append("')");
             stringRepresentation = builder.toString();
         }

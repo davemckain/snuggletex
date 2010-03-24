@@ -381,9 +381,6 @@ public final class DOMBuilder {
         for (int i=0, length=rawText.length(); i<length; i++) {
             c = rawText.charAt(i);
             switch (c) {
-                case '\r':
-                    break;
-                    
                 case '~':
                     resultBuilder.append('\u00a0');
                     break;
@@ -501,10 +498,13 @@ public final class DOMBuilder {
 
     //-------------------------------------------
     // Helpers
+    
+    private final String lineSeparator = System.getProperty("line.separator");
 
 
     public Node appendTextNode(Element parentElement, String content, boolean trim) {
         String toAppend = trim ? content.trim() : content;
+        toAppend = toAppend.replace(lineSeparator, "\n"); /* (Normalise line endings) */
         
         /* We'll coalesce adjacent text Nodes */
         Node lastChild = parentElement.getLastChild();
@@ -795,11 +795,8 @@ public final class DOMBuilder {
             /* Descend into Math content */
             mathContentBuilderCallback.buildMathElementContent(semantics, mathContentToken, true);
             
-            /* Construct annotation, normalising line endings */
-            String annotationContent = token.getSlice().extract().toString()
-                .replace("\n\r", "\n")
-                .replace('\r', '\n');
-
+            /* Construct annotation */
+            String annotationContent = token.getSlice().extract().toString();
             Element sourceAnnotation = appendMathMLTextElement(semantics, "annotation", annotationContent, true);
             sourceAnnotation.setAttribute("encoding", SnuggleConstants.SNUGGLETEX_MATHML_SOURCE_ANNOTATION_ENCODING);
         }
