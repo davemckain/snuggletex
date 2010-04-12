@@ -506,7 +506,7 @@ public final class CorePackageDefinitions {
         corePackage.addSimpleMathCommand("asymp", new MathOperatorInterpretation(MathMLSymbol.ASYMP));
         corePackage.addSimpleMathCommand("approx", new MathOperatorInterpretation(MathMLSymbol.APPROX), new MathNegatableInterpretation(MathMLSymbol.NOT_APPROX));
         corePackage.addSimpleMathCommand("cong", new MathOperatorInterpretation(MathMLSymbol.CONG), new MathNegatableInterpretation(MathMLSymbol.NOT_CONG));
-        corePackage.addSimpleMathCommand("neq", new MathOperatorInterpretation(MathMLSymbol.NOT_IN));
+        corePackage.addSimpleMathCommand("neq", new MathOperatorInterpretation(MathMLSymbol.NOT_EQUALS));
         corePackage.addSimpleMathCommand("doteq", new MathOperatorInterpretation(MathMLSymbol.DOTEQ));
         corePackage.addSimpleMathCommand("notin", new MathOperatorInterpretation(MathMLSymbol.NOT_IN));
         corePackage.addSimpleMathCommand("models", new MathOperatorInterpretation(MathMLSymbol.MODELS));
