@@ -96,7 +96,6 @@ public final class StyleInterpretationHandler implements CommandHandler, Environ
                 if (interpretation.getTargetInlineCSSClassName()!=null) {
                     builder.applyCSSStyle(result, interpretation.getTargetInlineCSSClassName());
                 }
-
             }
         }
         /* Descend as normal */

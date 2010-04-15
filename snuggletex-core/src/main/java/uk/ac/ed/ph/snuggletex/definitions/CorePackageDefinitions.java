@@ -30,6 +30,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.GetVarHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.HSpaceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.HrefHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.InsertUnicodeHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.LineBreakHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ListEnvironmentHandler;
@@ -634,7 +635,7 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommandSameArgMode("tilde", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.TILDE, '~', "mover"), null);
         corePackage.addComplexCommandSameArgMode("widehat", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.CIRCUMFLEX, '\u0302', "mover"), null);
         corePackage.addComplexCommandSameArgMode("widetilde", false, 1, MATH_MODE_ONLY, new AccentHandler(AccentMaps.TILDE, '\u02dc', "mover"), null);
-        corePackage.addComplexCommandSameArgMode("overline", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u00af', "mover"), null);
+        corePackage.addComplexCommandSameArgMode("overline", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u00af', "mover"), null); /* (NB: U+AF gives better visual result than U+305) */
         corePackage.addComplexCommandSameArgMode("overbrace", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\ufe37', "mover"), null);
         corePackage.addComplexCommandSameArgMode("underbrace", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\ufe38', "munder"), null);
         corePackage.addComplexCommandSameArgMode("overrightarrow", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u20d7', "mover"), null);
@@ -674,6 +675,7 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommandOneArg("xmlId", false, ALL_MODES, VERBATIM, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
         corePackage.addComplexCommandOneArg("xmlId*", false, ALL_MODES, LR, new XMLNameOrIdHandler(XMLNameOrIdHandler.ID), IGNORE);
         corePackage.addComplexCommandSameArgMode("xmlUnparse", false, 1, TEXT_MODE_ONLY, new XMLUnparseHandler(), ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("ux", false, ALL_MODES, LR, new InsertUnicodeHandler(), IGNORE);
         
         /* Special commands for managing simple "variables" */
         corePackage.addComplexCommandSameArgMode("getvar", true, 1, ALL_MODES, new GetVarHandler(), IGNORE);

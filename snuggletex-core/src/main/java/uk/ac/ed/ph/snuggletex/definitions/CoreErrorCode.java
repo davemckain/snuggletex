@@ -97,6 +97,8 @@ public enum CoreErrorCode implements ErrorCode {
     TDEX03(CoreErrorGroup.TDE),
     TDEX04(CoreErrorGroup.TDE),
     TDEX05(CoreErrorGroup.TDE),
+    TDEXU0(CoreErrorGroup.TDE),
+    TDEXU1(CoreErrorGroup.TDE),
     TDEM00(CoreErrorGroup.TDE),
     TDEM01(CoreErrorGroup.TDE),
     TDEMA0(CoreErrorGroup.TDE),

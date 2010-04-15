@@ -1,0 +1,44 @@
+/* $Id$
+ *
+ * Copyright (c) 2010, The University of Edinburgh.
+ * All Rights Reserved
+ */
+package uk.ac.ed.ph.snuggletex.dombuilding;
+
+import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
+import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
+import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
+import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
+
+import org.w3c.dom.Element;
+
+/**
+ * Handles the non-standard <tt>\\ux</tt> command to insert a Unicode character into the output.
+ *
+ * @author  David McKain
+ * @version $Revision$
+ */
+public final class InsertUnicodeHandler implements CommandHandler {
+    
+    public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
+            throws SnuggleParseException {
+        ArgumentContainerToken nameArgument = token.getArguments()[0];
+        String hexCode = nameArgument.getSlice().extract().toString().trim();
+        
+        try {
+            int codePoint = Integer.parseInt(hexCode, 16);
+            if (codePoint >= Character.MIN_VALUE && codePoint <= Character.MAX_VALUE) {
+                builder.appendTextNode(parentElement, String.valueOf((char) codePoint), true);
+            }
+            else {
+                /* Error: Unicode code point is out of the supported range */
+                builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDEXU1, hexCode);
+            }
+        }
+        catch (NumberFormatException e) {
+            /* Error: Unicode code point was expected to be hexadecimal */
+            builder.appendOrThrowError(parentElement, token, CoreErrorCode.TDEXU0, hexCode);
+        }
+    }
+}

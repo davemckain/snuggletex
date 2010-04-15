@@ -211,6 +211,12 @@ TDEX04
 \anchor{id}\anchor{id}
 TDEX05
 ====
+\ux{G}
+TDEXU0
+====
+\ux{FFFFFF}
+TDEXU1
+====
 \item A
 TDEL00
 ====
