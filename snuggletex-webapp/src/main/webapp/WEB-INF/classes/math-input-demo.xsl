@@ -83,13 +83,11 @@ All Rights Reserved
       </xsl:when>
       <xsl:otherwise>
         <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+        <div class="result">
+          <xsl:copy-of select="node()"/>
+        </div>
       </xsl:otherwise>
     </xsl:choose>
-
-    <h3>Legacy Output (MathML converted to XHTML+CSS or a PNG image)</h3>
-    <div class="result">
-      <xsl:copy-of select="node()"/>
-    </div>
 
     <h3>Resulting MathML Source</h3>
     <pre class="result">
