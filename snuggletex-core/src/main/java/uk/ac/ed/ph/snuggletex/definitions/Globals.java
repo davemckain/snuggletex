@@ -126,7 +126,7 @@ public final class Globals {
        ']', new MathOperatorInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET), new MathBracketInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET, BracketType.CLOSER, true),
        '<', new MathOperatorInterpretation(MathMLSymbol.LESS_THAN), new MathNegatableInterpretation(MathMLSymbol.NOT_LESS_THAN), new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
        '>', new MathOperatorInterpretation(MathMLSymbol.GREATER_THAN), new MathNegatableInterpretation(MathMLSymbol.NOT_GREATER_THAN), new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
-       '|', new MathOperatorInterpretation(MathMLSymbol.DIVIDES), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
+       '|', new MathOperatorInterpretation(MathMLSymbol.DIVIDES), new MathNegatableInterpretation(MathMLSymbol.NOT_MID), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
     };
     
     private static final Map<Character, EnumMap<InterpretationType, Interpretation>> mathCharacterMap;

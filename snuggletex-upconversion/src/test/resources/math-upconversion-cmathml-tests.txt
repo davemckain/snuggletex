@@ -875,11 +875,31 @@ a\not\in A
   <ci>A</ci>
 </apply>
 ====
+|
+<factorof/>
+====
+# CMathML doesn't have a "not factor of" operator so we need to synthesise one
+\not|
+<apply>
+  <not/>
+  <factorof/>
+</apply>
+====
 a|b
 <apply>
   <factorof/>
   <ci>a</ci>
   <ci>b</ci>
+</apply>
+====
+a\not|b
+<apply>
+  <not/>
+  <apply>
+    <factorof/>
+    <ci>a</ci>
+    <ci>b</ci>
+  </apply>
 </apply>
 ====
 a|bc

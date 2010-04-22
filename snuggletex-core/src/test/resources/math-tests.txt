@@ -326,6 +326,12 @@ a\not \in A
 |x|
 <mo>|</mo><mi>x</mi><mo>|</mo>
 ====
+a|b
+<mi>a</mi><mo>|</mo><mi>b</mi>
+====
+a\not|b
+<mi>a</mi><mo>&#x2224;</mo><mi>b</mi>
+====
 \left| x \right|
 <mfenced open='|' close='|'>
   <mi>x</mi>
