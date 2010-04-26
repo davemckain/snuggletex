@@ -132,6 +132,8 @@ All Rights Reserved
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <!-- (Need a fairly recent version to fix bug with repeated artifacts in the ZIP) -->
+        <version>2.2-beta-5</version>
         <configuration>
           <descriptors>
             <descriptor>src/assemble/basic.xml</descriptor>

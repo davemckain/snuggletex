@@ -1,7 +1,8 @@
 <!--
 
 Assembly descriptor for the basic SnuggleTeX bundle
-containing just the core SnuggleTeX JAR.
+containing just the core SnuggleTeX JAR, and a few
+other minor bits and pieces.
 
 $Id$
 
@@ -25,6 +26,7 @@ All Rights Reserved
         <includeDependencies>false</includeDependencies>
         <unpack>false</unpack>
       </binaries>
+      <!-- (We need the generated snuggletex.css) -->
       <sources>
         <includeModuleDirectory>false</includeModuleDirectory>
         <fileSets>
@@ -39,14 +41,13 @@ All Rights Reserved
       </sources>
     </moduleSet>
   </moduleSets>
-  <files>
-    <file>
-      <source>LICENSE.txt</source>
-      <outputDirectory>/</outputDirectory>
-    </file>
-    <file>
-      <source>README.txt</source>
-      <outputDirectory>/</outputDirectory>
-    </file>
-  </files>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <includes>
+        <include>LICENSE.txt</include>
+        <include>README.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </assembly>
