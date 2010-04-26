@@ -15,6 +15,11 @@ import org.w3c.dom.Element;
 
 /**
  * Handles the non-standard <tt>\\ux</tt> command to insert a Unicode character into the output.
+ * <p>
+ * NOTE: This currently doesn't generate nice MathML. Might be sensible to merge this with
+ * proposed mechanism for entering Unicode characters.
+ * 
+ * @since 1.2.2
  *
  * @author  David McKain
  * @version $Revision$
