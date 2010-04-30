@@ -48,7 +48,7 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
-        generatePage(request, response, true, null, null, null, null, null, null, null);
+        generatePage(request, response, true, null, null, null, null, null, null);
     }
     
     /** Handles the posted raw input & PMathML extracted from ASCIIMathML. */
@@ -79,17 +79,17 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         String maximaInput = MathMLUtilities.extractAnnotationString(mathElement, MathMLUpConverter.MAXIMA_ANNOTATION_NAME);
         
         logger.info("ASCIIMathML Input: {}", asciiMathInput);
-        logger.info("ASCIIMathML Output: {}", asciiMathOutput);
-        logger.info("Final MathML: {}", parallelMathML);
+        logger.info("Raw ASCIIMathML Output: {}", asciiMathOutput);
+        logger.info("Final parallel MathML: {}", parallelMathML);
         
-        generatePage(request, response, false, asciiMathInput, asciiMathOutput,
-                mathElement, parallelMathML, pMathMLUpConverted, cMathML, maximaInput);
+        generatePage(request, response, false, asciiMathInput, mathElement,
+                parallelMathML, pMathMLUpConverted, cMathML, maximaInput);
     }
     
     private void generatePage(HttpServletRequest request, HttpServletResponse response,
-            boolean isNewForm, String asciiMathInput, String asciiMathOutput,
-            Element parallelMathMLElement, String parallelMathML,
-            String pMathMLUpConverted, String cMathML, String maximaInput)
+            boolean isNewForm, String asciiMathInput, Element parallelMathMLElement,
+            String parallelMathML, String pMathMLUpConverted,
+            String cMathML, String maximaInput)
             throws IOException, ServletException {
         /* Generate final page using the same process as other demos, which is a bit
          * cheaty here but saves rewriting code. In this case, we'll pass an empty
@@ -110,7 +110,6 @@ public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
         viewStylesheet.setParameter("is-new-form", Boolean.valueOf(isNewForm));
         if (!isNewForm) {
             viewStylesheet.setParameter("ascii-math-input", asciiMathInput);
-            viewStylesheet.setParameter("ascii-math-output", asciiMathOutput);
             viewStylesheet.setParameter("parallel-mathml-element", parallelMathMLElement);
             viewStylesheet.setParameter("parallel-mathml", parallelMathML);
             viewStylesheet.setParameter("pmathml-upconverted", pMathMLUpConverted);

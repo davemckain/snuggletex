@@ -1,7 +1,10 @@
-/* SnuggleTeX Notice: This is the standard ASCIIMathML.js file with
+/* NOTE: This is the standard ASCIIMathML.js file with
  * the LaTeXMathML.js and ASCIIsvg.js removed, along with the
  * calculator and "translate on load" stuff the follows it in the
  * original source file.
+ *
+ * It also has some of the symbols commented out, namely those
+ * which make f and g be functions.
  */
 
 /************************************************************/
@@ -280,8 +283,8 @@ var AMsymbols = [
 {input:"QQ",  tag:"mo", output:"\u211A", tex:null, ttype:CONST},
 {input:"RR",  tag:"mo", output:"\u211D", tex:null, ttype:CONST},
 {input:"ZZ",  tag:"mo", output:"\u2124", tex:null, ttype:CONST},
-{input:"f",   tag:"mi", output:"f",      tex:null, ttype:UNARY, func:true},
-{input:"g",   tag:"mi", output:"g",      tex:null, ttype:UNARY, func:true},
+//{input:"f",   tag:"mi", output:"f",      tex:null, ttype:UNARY, func:true},
+//{input:"g",   tag:"mi", output:"g",      tex:null, ttype:UNARY, func:true},
 
 //standard functions
 {input:"lim",  tag:"mo", output:"lim", tex:null, ttype:UNDEROVER},

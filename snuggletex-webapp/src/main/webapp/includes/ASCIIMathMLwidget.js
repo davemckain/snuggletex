@@ -20,7 +20,6 @@
  * Requirements:
  *
  * ASCIIMathML.js
- * ASCIIMathMLeditor.js
  * jquery.js
  *
  * Author: David McKain
@@ -33,8 +32,9 @@
 
 /************************************************************/
 
-/* (Reset the default (blue) MathML colour chosen by ASCIIMathML) */
+/* (Reset certain defaults chosen by ASCIIMathML) */
 var mathcolor = "";
+var mathfontfamily = "";
 
 /**
  * Simple hash that will keep track of the current value of each
@@ -53,11 +53,12 @@ var inputTextByIdMap = {};
  * @param {String} previewElementId ID of the XHTML element that will contain the
  *   resulting MathML preview, replacing any existing child Nodes.
  */
-function updatePreview(mathModeInput, previewElementId) {
+function updatePreview(mathModeInput, previewElementId, previewSourceId) {
     /* Escape use of backquote symbol to prevent exiting math mode */
     mathModeInput = mathModeInput.replace(/`/, "\\`");
     var input = "` " + mathModeInput + " `";
-    /* Do ASCIIMathML processing (essentially the same as AMdisplay() from here on) */
+
+    /* Do ASCIIMathML processing. (This is based on AMdisplay() from ASCIIMathMLeditor.js) */
     var outnode = document.getElementById(previewElementId);
     var newnode = AMcreateElementXHTML("div");
     newnode.setAttribute("id", previewElementId);
@@ -69,6 +70,12 @@ function updatePreview(mathModeInput, previewElementId) {
     }
     outnode.appendChild(document.createComment(input + "``"));
     AMprocessNode(outnode, true);
+
+    /* Now maybe update preview source box */
+    if (previewSourceId!=null) {
+        var source = extractMathML(previewElementId);
+        jQuery("#" + previewSourceId).text(source);
+    }
 }
 
 /**
@@ -80,33 +87,74 @@ function updatePreview(mathModeInput, previewElementId) {
  * @param {String} previewElementId ID of the XHTML element that will contain the
  *   resulting MathML preview, replacing any existing child Nodes.
  */
-function updatePreviewIfChanged(inputBoxId, previewElementId) {
+function updatePreviewIfChanged(inputBoxId, previewElementId, previewSourceId) {
     var inputSelector = jQuery("#" + inputBoxId);
     var newValue = inputSelector.get(0).value;
     var oldValue = inputTextByIdMap[inputBoxId];
     if (oldValue==null || newValue!=oldValue) {
-        updatePreview(newValue, previewElementId);
+        updatePreview(newValue, previewElementId, previewSourceId);
     }
     inputTextByIdMap[inputBoxId] = newValue;
 }
 
 /**
- * Extracts the MathML contained within the ASCIIMath preview element
- * having the given ID, storing the results in the given hidden form
- * element.
+ * Extracts the source MathML contained within the ASCIIMath preview element
+ * having the given ID
  *
  * @param {String} previewElementId ID of the XHTML parent element
  *   containing the MathML to be extracted.
- * @param {String} formElementId ID of the <input/> element to store
- *   the resulting serialized MathML.
  */
-function extractMathML(previewElementId, formElementId) {
+function extractMathML(previewElementId) {
     var previewElement = document.getElementById(previewElementId);
     var mathNode = previewElement.getElementsByTagName("math")[0];
-    var cleanedMathML = AMnode2string(mathNode, "");
+    return AMnode2string(mathNode, "").substring(1); // (First char is newline)
+}
 
-    var hiddenFormElement = document.getElementById(formElementId);
-    hiddenFormElement.value = cleanedMathML;
+/* Fixed up version of the function of the same name in ASCIIMathMLeditor.js,
+ * with the following changes:
+ *
+ * * Used '\n' for line breaks
+ * * Attribute values are escape correctly
+ */
+function AMnode2string(inNode, indent) {
+    var i, str = "";
+    if (inNode.nodeType == 1) {
+        var name = inNode.nodeName.toLowerCase(); // (IE fix)
+        str = "\n" + indent + "<" + name;
+        for (i=0; i < inNode.attributes.length; i++) {
+            var attrValue = inNode.attributes[i].nodeValue;
+            if (attrValue!="italic" &&
+                    attrValue!="" &&  //stop junk attributes
+                    attrValue!="inherit" && // (mostly IE)
+                    attrValue!=undefined) {
+                str += " " + inNode.attributes[i].nodeName
+                    + "=\"" + AMescapeValue(inNode.attributes[i].nodeValue) + "\"";
+            }
+        }
+        if (name == "math") str += " xmlns=\"http://www.w3.org/1998/Math/MathML\"";
+        str += ">";
+        for(i=0; i<inNode.childNodes.length; i++) {
+            str += AMnode2string(inNode.childNodes[i], indent+"  ");
+        }
+        if (name != "mo" && name != "mi" && name != "mn") str += "\n"+indent;
+        str += "</" + name + ">";
+    }
+    else if (inNode.nodeType == 3) {
+        str += AMescapeValue(inNode.nodeValue);
+    }
+    return str;
+}
+
+function AMescapeValue(value) {
+    var str = "";
+    for (i=0; i<value.length; i++) {
+        if (value.charCodeAt(i)<32 || value.charCodeAt(i)>126) str += "&#"+value.charCodeAt(i)+";";
+        else if (value.charAt(i)=="<") str += "&lt;";
+        else if (value.charAt(i)==">") str += "&gt;";
+        else if (value.charAt(i)=="&") str += "&amp;";
+        else str += value.charAt(i);
+    }
+    return str;
 }
 
 /**
@@ -117,24 +165,29 @@ function extractMathML(previewElementId, formElementId) {
  * @param {String} previewElementId ID of the XHTML element that will be
  *   used to hold the resulting MathML preview. Note that all of its child
  *   Nodes will be removed.
- * @param {String} mathmlResultElementId ID of the hidden <input/> field that will
+ * @param {String} mathmlResultControlId ID of the hidden <input/> field that will
  *   hold the resulting MathML on submission.
+ * @param {String} previewSourceId optional ID of the XHTML element that will show
+ *   the generated MathML source as it is built. This may be null to suppress this
+ *   behaviour.
  */
-function setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultElementId) {
+function setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultControlId, previewSourceId) {
     /* Set up submit handler for the form */
     jQuery("#" + inputBoxId).closest("form").bind("submit", function(evt) {
-        extractMathML(previewElementId, mathmlResultElementId);
+        var mathmlResultControl = document.getElementById(mathmlResultControlId);
+        var mathml = extractMathML(previewElementId, mathmlResultControlId);
+        mathmlResultControl.value = mathml;
         return true;
     });
     var inputSelector = jQuery("#" + inputBoxId);
     var initialInput = inputSelector.get(0).value;
 
     /* Set up initial preview */
-    updatePreview(initialInput, previewElementId, true);
+    updatePreview(initialInput, previewElementId, previewSourceId);
 
     /* Set up handler to update preview when required */
-    inputSelector.bind("change keyup keydown", function(evt) {
-        updatePreviewIfChanged(inputBoxId, previewElementId);
+    inputSelector.bind("change keyup keydown", function() {
+        updatePreviewIfChanged(inputBoxId, previewElementId, previewSourceId);
     });
 
     /* TODO: Do we want to set up a timer as well? If so, we probably want
@@ -150,11 +203,14 @@ function setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultE
  * @param {String} previewElementId ID of the XHTML element that will be
  *   used to hold the resulting MathML preview. Note that all of its child
  *   Nodes will be removed.
- * @param {String} mathmlResultElementId ID of the hidden <input/> field that will
+ * @param {String} mathmlResultControlId ID of the hidden <input/> field that will
  *   hold the resulting MathML on submission.
+ * @param {String} previewSourceId optional ID of the XHTML element that will show
+ *   the generated MathML source as it is built. This may be null to suppress this
+ *   behaviour.
  */
-function registerASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultElementId) {
+function registerASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultControlId, previewSourceId) {
     jQuery(document).ready(function() {
-        setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultElementId);
+        setupASCIIMathMLInputWidget(inputBoxId, previewElementId, mathmlResultControlId, previewSourceId);
     });
 }

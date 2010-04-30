@@ -19,6 +19,11 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.2.2" date="TBA" description="Version 1.2.2 (SVN revision ???)">
+      <action dev="davemckain" type="update" date="2010-04-30">
+        Updated the ASCIIMathML input and up-conversion demo to use the final version
+        of all of the code from MathAssessEngine. Also added in a real-time preview
+        of the resulting source MathML, and fixed a couple of minor bugs.
+      </action>
       <action dev="davemckain" type="update" date="2010-04-26">
         Improved structure of full ZIP bundle
       </action>
