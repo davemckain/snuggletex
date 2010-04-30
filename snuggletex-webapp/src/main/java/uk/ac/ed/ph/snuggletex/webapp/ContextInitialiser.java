@@ -27,7 +27,6 @@ public final class ContextInitialiser implements ServletContextListener {
     
     private static final Logger logger = LoggerFactory.getLogger(ContextInitialiser.class);
     
-    public static final String CACHE_XSLT_PROPERTY_NAME = "caching.xslt";
     public static final String SNUGGLETEX_VERSION_PROPERTY_NAME = "snuggletex.version";
     public static final String MAVEN_SITE_URL_PROPERTY_NAME = "maven.site.url";
     
