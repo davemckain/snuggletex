@@ -160,6 +160,11 @@ public class MathMLUpConverter {
         return resultDocument;
     }
     
+    /**
+     * DEVELOPER NOTE: I have included the default value for this parameter within the XSLT as well
+     * so that people can reuse it easier in a standalone fashion. Make sure you update the XSLT
+     * if any of the defaults change here.
+     */
     private Element createUpConversionOptionsElement(final UpConversionOptions upConversionOptions) {
         Document document = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         Element root = (Element) document.appendChild(document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "root"));
