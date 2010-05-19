@@ -51,6 +51,9 @@ public final class StylesheetManager {
     /**
      * Creates a new {@link StylesheetManager} using the {@link DefaultTransformerFactoryChooser} and
      * the given {@link StylesheetCache}.
+     * 
+     * @param cache {@link StylesheetCache} to use, which may be null if you don't want to do any
+     * caching.
      */
     public StylesheetManager(StylesheetCache cache) {
         this(DefaultTransformerFactoryChooser.getInstance(), cache);
@@ -59,8 +62,12 @@ public final class StylesheetManager {
     /**
      * Creates a new {@link StylesheetManager} using the given {@link TransformerFactoryChooser}
      * and {@link StylesheetCache}.
+     * 
+     * @param transformerFactoryChooser {@link TransformerFactoryChooser} to use, which must not
+     * be null.
      */
     public StylesheetManager(TransformerFactoryChooser transformerFactoryChooser, StylesheetCache cache) {
+        ConstraintUtilities.ensureNotNull(transformerFactoryChooser, "transformerFactoryChooser");
         this.transformerFactoryChooser = transformerFactoryChooser;
         this.stylesheetCache = cache;
     }
