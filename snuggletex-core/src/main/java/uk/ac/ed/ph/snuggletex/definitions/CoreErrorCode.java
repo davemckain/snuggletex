@@ -73,11 +73,15 @@ public enum CoreErrorCode implements ErrorCode {
     TTEUC7(CoreErrorGroup.TTE),
     TTEUC8(CoreErrorGroup.TTE),
     TTEUC9(CoreErrorGroup.TTE),
+    TTEUCA(CoreErrorGroup.TTE),
+    TTEUCB(CoreErrorGroup.TTE),
     TTEUE0(CoreErrorGroup.TTE),
     TTEUE1(CoreErrorGroup.TTE),
     TTEUE2(CoreErrorGroup.TTE),
     TTEUE3(CoreErrorGroup.TTE),
     TTEUE4(CoreErrorGroup.TTE),
+    TTEUE5(CoreErrorGroup.TTE),
+    TTEUE6(CoreErrorGroup.TTE),
     
     /* Fixing errors */
     TFEG00(CoreErrorGroup.TFE),

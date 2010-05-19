@@ -19,6 +19,7 @@ import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
+import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommandOrEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
@@ -386,15 +387,15 @@ public final class LaTeXTokeniser {
 //        /* Uncomment these lines when debugging the tokeniser. This is often
 //         * sufficient to work out what is going wrong... honest!
 //         */
-//        System.out.println("rNT: position=" + position
-//                + ", length=" + workingDocument.length()
-//                + ", tokMode=" + currentModeState.tokenisationMode
-//                + ", latexMode=" + currentModeState.latexMode
-//                + ", terminator=" + currentModeState.terminator
-//                + ", modeStackSize=" + modeStack.size()
-//                + ", envsOpen=" + openEnvironmentStack
-//                + ", errorCount=" + sessionContext.getErrors().size()
-//                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
+        System.out.println("rNT: position=" + position
+                + ", length=" + workingDocument.length()
+                + ", tokMode=" + currentModeState.tokenisationMode
+                + ", latexMode=" + currentModeState.latexMode
+                + ", terminator=" + currentModeState.terminator
+                + ", modeStackSize=" + modeStack.size()
+                + ", envsOpen=" + openEnvironmentStack
+                + ", errorCount=" + sessionContext.getErrors().size()
+                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
         
         /* In MATH Mode, we skip over any leading whitespace and comments; in TEXT modes we skip
          * over any comments */
@@ -1207,7 +1208,7 @@ public final class LaTeXTokeniser {
          * 
          * We preserve trailing whitespace after these types of commands.
          */
-        BuiltinCommandArgumentSearchResult argumentSearchResult = new BuiltinCommandArgumentSearchResult();
+        BuiltinCommandOrEnvironmentArgumentSearchResult argumentSearchResult = new BuiltinCommandOrEnvironmentArgumentSearchResult();
         ErrorToken errorToken = advanceOverBuiltinCommandOrEnvironmentArguments(command, argumentSearchResult);
         if (errorToken!=null) {
             return errorToken;
@@ -1224,9 +1225,9 @@ public final class LaTeXTokeniser {
      * Trivial "struct" Object to hold the results of searching for command and/or environment
      * arguments.
      * 
-     * @see LaTeXTokeniser#advanceOverBuiltinCommandOrEnvironmentArguments(CommandOrEnvironment, BuiltinCommandArgumentSearchResult)
+     * @see LaTeXTokeniser#advanceOverBuiltinCommandOrEnvironmentArguments(CommandOrEnvironment, BuiltinCommandOrEnvironmentArgumentSearchResult)
      */
-    static class BuiltinCommandArgumentSearchResult {
+    static class BuiltinCommandOrEnvironmentArgumentSearchResult {
         
         /** Tokenised version of optional argument, null if not supported or not requested. */
         public ArgumentContainerToken optionalArgument;
@@ -1254,7 +1255,7 @@ public final class LaTeXTokeniser {
      * @throws SnuggleParseException
      */
     private ErrorToken advanceOverBuiltinCommandOrEnvironmentArguments(final CommandOrEnvironment commandOrEnvironment,
-            final BuiltinCommandArgumentSearchResult result) throws SnuggleParseException {
+            final BuiltinCommandOrEnvironmentArgumentSearchResult result) throws SnuggleParseException {
         /* First of all see if we're expecting arguments and bail if not */
         if (commandOrEnvironment.getArgumentCount()==0 && !commandOrEnvironment.isAllowingOptionalArgument()) {
             result.optionalArgument = null;
@@ -1382,7 +1383,7 @@ public final class LaTeXTokeniser {
          * We also KEEP the final trailing whitespace after the last part of the
          * command so that when it is substituted, there is whitespace left for further parsing.
          */
-        UserDefinedCommandArgumentSearchResult argumentSearchResult = new UserDefinedCommandArgumentSearchResult();
+        UserDefinedCommandOrEnvironmentArgumentSearchResult argumentSearchResult = new UserDefinedCommandOrEnvironmentArgumentSearchResult();
         ErrorToken errorToken = advanceOverUserDefinedCommandOrEnvironmentArguments(command, argumentSearchResult);
         if (errorToken!=null) {
             return errorToken;
@@ -1393,23 +1394,8 @@ public final class LaTeXTokeniser {
          * enough of the rest of the existing document to ensure tokens are correctly balanced
          * or finished, and the resulting token becomes the final result. Phew!
          */
-        String replacement = command.getDefinitionSlice().extract().toString();
+        String replacement = substituteArguments(command.getDefinitionSlice(), command, argumentSearchResult);
         
-        /* Now make substitutions using the usual convention that #n indicates the 'n'th
-         * argument, where the optional argument is assumed to be first (if present) followed
-         * by other args.
-         */
-        int argumentNumber = 1;
-        if (command.isAllowingOptionalArgument()) {
-            replacement = replacement.replace("#1",
-                    argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : command.getOptionalArgument());
-            argumentNumber++;
-        }
-        for (int i=0; i<argumentSearchResult.requiredArguments.length; i++) {
-            replacement = replacement.replace("#" + (argumentNumber++),
-                    argumentSearchResult.requiredArguments[i]);
-        }
-
         /* Now we rewind to the start of the command and replace it with our substitution, and
          * then continue parsing as normal.
          */
@@ -1419,11 +1405,62 @@ public final class LaTeXTokeniser {
     }
     
     /**
+     * This helper substitutes the arguments provided for a user-defined command/environment
+     * into the content of the given {@link FrozenSlice}, handling correctly escaped arguments
+     * such as <tt>\#1</tt>.
+     * <p>
+     * As with built-in commands, the arguments are substituted into occurrences of #n, which
+     * denotes the n'th argument (with the optional argument counting first, if applicable).
+     */
+    private String substituteArguments(final FrozenSlice slice, final UserDefinedCommandOrEnvironment commandOrEnvironment,
+            final UserDefinedCommandOrEnvironmentArgumentSearchResult argumentSearchResult) {
+        boolean inEscape = false; /* Whether we are in the middle of a character escape */
+        boolean inArgument = false; /* Whether we are inside an argument */
+        int index, argumentIndex;
+        char c;
+        StringBuilder substitutionBuilder = new StringBuilder();
+        for (index=slice.startIndex; index<slice.endIndex; index++) {
+            c = (char) workingDocument.charAt(index);
+            if (!inEscape && c=='\\') {
+                inEscape = true;
+                substitutionBuilder.append(c);
+            }
+            else if (inEscape) {
+                inEscape = false;
+                substitutionBuilder.append(c);
+            }
+            else if (c=='#') {
+                inArgument = true; /* (Will get actual argument on next iteration) */
+            }
+            else if (inArgument) {
+                /* NB: The argument will already have been checked for sanity */
+                inArgument = false;
+                argumentIndex = c-'0';
+                if (commandOrEnvironment.isAllowingOptionalArgument()) {
+                    argumentIndex--;
+                }
+                if (argumentIndex>0) {
+                    /* Required argument */
+                    substitutionBuilder.append(argumentSearchResult.requiredArguments[argumentIndex-1]);
+                }
+                else {
+                    /* Optional argument */
+                    substitutionBuilder.append(argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : commandOrEnvironment.getOptionalArgument());
+                }
+            }
+            else {
+                substitutionBuilder.append(c);
+            }
+        }
+        return substitutionBuilder.toString();
+    }
+    
+    /**
      * Trivial "struct" Object to hold the results of searching for user-defined
      * command and/or environment arguments, which are initially treated as unparsed
      * but balanced {@link WorkingDocument}s.
      */
-    static class UserDefinedCommandArgumentSearchResult {
+    static class UserDefinedCommandOrEnvironmentArgumentSearchResult {
         
         /** Optional argument, null if not provided or not supported. */
         public CharSequence optionalArgument;
@@ -1450,7 +1487,7 @@ public final class LaTeXTokeniser {
      * @throws SnuggleParseException
      */
     private ErrorToken advanceOverUserDefinedCommandOrEnvironmentArguments(final CommandOrEnvironment commandOrEnvironment,
-            UserDefinedCommandArgumentSearchResult result) throws SnuggleParseException {
+            UserDefinedCommandOrEnvironmentArgumentSearchResult result) throws SnuggleParseException {
         /* First of all see if we're expecting arguments and bail if not */
         if (commandOrEnvironment.getArgumentCount()==0 && !commandOrEnvironment.isAllowingOptionalArgument()) {
             result.optionalArgument = null;
@@ -1537,7 +1574,7 @@ public final class LaTeXTokeniser {
     /**
      * Handles <tt>\\begin...</tt>
      * <p>
-     * PRE-CONDITION: position will point to the character immediately after <tt>\\begin</tt>.
+     * POST-CONDITION: position will point to the character immediately after <tt>\\begin</tt>.
      */
     private FlowToken finishBeginEnvironment() throws SnuggleParseException {
         /* Read {envName} */
@@ -1654,7 +1691,6 @@ public final class LaTeXTokeniser {
      * PRE-CONDITION: position will point to the character immediately after <tt>\\begin{envName}</tt>.
      * 
      * @param environment environment being read in
-     * @throws SnuggleParseException
      */
     private FlowToken finishBeginBuiltinEnvironment(final BuiltinEnvironment environment) throws SnuggleParseException {
         /* Record that this environment has opened */
@@ -1676,7 +1712,7 @@ public final class LaTeXTokeniser {
         }
         
         /* Read in arguments, the same way that we do with commands. */
-        BuiltinCommandArgumentSearchResult argumentSearchResult = new BuiltinCommandArgumentSearchResult();
+        BuiltinCommandOrEnvironmentArgumentSearchResult argumentSearchResult = new BuiltinCommandOrEnvironmentArgumentSearchResult();
         ErrorToken argumentErrorToken = advanceOverBuiltinCommandOrEnvironmentArguments(environment, argumentSearchResult);
         if (argumentErrorToken!=null && errorToken==null) {
             errorToken = argumentErrorToken;
@@ -1757,7 +1793,7 @@ public final class LaTeXTokeniser {
      */
     private FlowToken finishBeginUserDefinedEnvironment(final UserDefinedEnvironment environment) throws SnuggleParseException {
         /* Read in arguments in unparsed form. */
-        UserDefinedCommandArgumentSearchResult argumentSearchResult = new UserDefinedCommandArgumentSearchResult();
+        UserDefinedCommandOrEnvironmentArgumentSearchResult argumentSearchResult = new UserDefinedCommandOrEnvironmentArgumentSearchResult();
         ErrorToken errorToken = advanceOverUserDefinedCommandOrEnvironmentArguments(environment, argumentSearchResult);
         if (errorToken!=null) {
             return errorToken;
@@ -1776,17 +1812,7 @@ public final class LaTeXTokeniser {
         
         /* Now, as per LaTeX 2e, we make substitutions in the *begin* definition. */
         FrozenSlice beginSlice = environment.getBeginDefinitionSlice();
-        String resolvedBegin = beginSlice.extract().toString();
-        int argumentNumber = 1;
-        if (environment.isAllowingOptionalArgument()) {
-              resolvedBegin = resolvedBegin.replace("#1",
-                      argumentSearchResult.optionalArgument!=null ? argumentSearchResult.optionalArgument : environment.getOptionalArgument());
-              argumentNumber++;
-        }
-        for (int i=0; i<argumentSearchResult.requiredArguments.length; i++) {
-              resolvedBegin = resolvedBegin.replace("#" + (argumentNumber++),
-                      argumentSearchResult.requiredArguments[i]);
-        }
+        String resolvedBegin = substituteArguments(beginSlice, environment, argumentSearchResult);
         
         /* We add an extra command after the replacement to do housekeeping once the environment
          * has finished opening up.
@@ -1927,8 +1953,14 @@ public final class LaTeXTokeniser {
         position = endCurlyIndex + 1;
         skipOverCommentsAndWhitespace();
         
-        /* Now create the new command */
+        /* Extract command definition and make sure parameter references are sane */
         FrozenSlice definitionSlice = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
+        error = checkDefinitionArguments(definitionSlice, commandName, argumentDefinitionResult, CoreErrorCode.TTEUCB);
+        if (error!=null) {
+            return error;
+        }
+        
+        /* Now create the new command */
         UserDefinedCommand userCommand = new UserDefinedCommand(commandName,
                 argumentDefinitionResult.optionalArgument,
                 argumentDefinitionResult.requiredArgumentCount,
@@ -1953,7 +1985,7 @@ public final class LaTeXTokeniser {
         return new CommandToken(workingDocument.freezeSlice(startTokenIndex, position),
                 currentModeState.latexMode, definitionCommand);
     }
-    
+
     /**
      * Finishes reading the definition of a user-defined environment specified using
      * <tt>\\newenvironment</tt> or similar.
@@ -2007,6 +2039,15 @@ public final class LaTeXTokeniser {
             /* Record slice */
             definitionSlices[i] = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
         }
+ 
+        /* Check parameters in definitions */
+        error = checkDefinitionArguments(definitionSlices[0], environmentName, argumentDefinitionResult, CoreErrorCode.TTEUE5);
+        if (error==null) {
+            error = checkDefinitionArguments(definitionSlices[1], environmentName, null, CoreErrorCode.TTEUE6);
+        }
+        if (error!=null) {
+            return error;
+        }
         
         /* Now create new environment */
         UserDefinedEnvironment userEnvironment = new UserDefinedEnvironment(environmentName,
@@ -2036,14 +2077,59 @@ public final class LaTeXTokeniser {
     }
     
     /**
+     * This helper checks the definition of a user-defined command or environment to make sure
+     * that any argument references are in line with what is defined.
+     */
+    private ErrorToken checkDefinitionArguments(final FrozenSlice definitionSlice,
+            final String commandOrEnvironmentName, final ArgumentDefinitionResult argumentDefinitionResult,
+            final ErrorCode errorCode)
+            throws SnuggleParseException {
+        int argumentCount = argumentDefinitionResult!=null ? argumentDefinitionResult.requiredArgumentCount + (argumentDefinitionResult.optionalArgument!=null ? 1 : 0) : 0;
+        boolean inEscape = false; /* Whether we are in the middle of a character escape */
+        boolean inArgument = false; /* Whether we are inside an argument */
+        int index;
+        int c;
+        for (index=definitionSlice.startIndex; index<definitionSlice.endIndex; index++) {
+            c = workingDocument.charAt(index);
+            if (!inEscape && c=='\\') {
+                inEscape = true;
+            }
+            else if (inEscape) {
+                inEscape = false;
+            }
+            else if (c=='#') {
+                inArgument = true; /* (Will get actual argument on next iteration) */
+            }
+            else if (inArgument) {
+                if (argumentCount==0 || !(c>='1' && c<='0' + argumentCount)) {
+                    /* Error: Illegal argument */
+                    return createError(errorCode, index-1, index,
+                            commandOrEnvironmentName,
+                            Character.valueOf((char) c), Integer.valueOf(argumentCount));
+                }
+                inArgument = false;
+            }
+        }
+        if (inArgument) {
+            /* Error: # at end of command. For simplicity, we'll handle the same way as above */
+            return createError(errorCode, index-1, index,
+                    commandOrEnvironmentName,
+                    null, Integer.valueOf(argumentCount));
+        }
+        return null;
+    }
+    
+    /**
      * Trivial result Object for {@link LaTeXTokeniser#advanceOverUserDefinedCommandOrEnvironmentArgumentDefinition(String, ArgumentDefinitionResult)}
      */
     static final class ArgumentDefinitionResult {
+        
         /** Optional argument, null if not supported */
         public String optionalArgument;
         
         /** Number of required arguments */
         public int requiredArgumentCount;
+        
     }
     
     /**
@@ -2067,7 +2153,7 @@ public final class LaTeXTokeniser {
         skipOverCommentsAndWhitespace();
         
         /* Next we read in the number of arguments, specified as [<1-9>],
-         * then whether there are optional arguments (specified as a further [<anything>])
+         * then whether the first argument is optional (specified as a further [<anything>])
          * 
          * Also note that the number of arguments includes whether there is an optional argument!
          * 
@@ -2075,8 +2161,8 @@ public final class LaTeXTokeniser {
          * 
          * Examples:
          * 
-         * [2] -> no optional argument, 2 mandatory arguments
-         * [2][opt] -> 1 optional argument, 2-1=1 mandatory argument
+         * [2] -> no optional argument, 2 required arguments
+         * [2][opt] -> 1 optional argument, 2-1=1 required argument
          */
         int requiredArgumentCount = 0;
         String optionalArgument = null;
@@ -2171,6 +2257,7 @@ public final class LaTeXTokeniser {
         }
         return -1;
     }
+
     
     /**
      * Returns the index of the next balanced '}', or -1 if no balance was found.

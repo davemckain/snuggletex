@@ -544,3 +544,10 @@ A
 \mbox{ A }
 <span class="mbox"> A </span>
 ====
+## Regression: handling of \# in user-defined command/env substitutions did not work correctly through to 1.2.1
+\newcommand{\bob}[1]{Hello\#1\#2}\bob{unused}
+Hello#1#2
+====
+\newenvironment{bob}[2]{Start#1\#2}{End}\begin{bob}{X}{Y}Hello\end{bob}
+StartX#2HelloEnd
+====

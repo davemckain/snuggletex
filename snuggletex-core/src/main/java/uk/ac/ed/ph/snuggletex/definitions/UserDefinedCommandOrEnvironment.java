@@ -13,7 +13,7 @@ package uk.ac.ed.ph.snuggletex.definitions;
  * @author  David McKain
  * @version $Revision$
  */
-abstract class UserDefinedCommandOrEnvironment implements CommandOrEnvironment {
+public abstract class UserDefinedCommandOrEnvironment implements CommandOrEnvironment {
  
     protected final String texName;
     

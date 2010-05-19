@@ -141,6 +141,25 @@ TTEUC8
 \newcommand{\test}[Square bracket not closed
 TTEUC9
 ====
+### Recursive command
+#\newcommand{\test}{\test} \test
+#TTEUCA
+#====
+### Recursive command 2
+#\newcommand{\test}{Head \test} \test
+#TTEUCA
+#====
+### Recursive command 3
+#\newcommand{\bob}{\susan} \newcommand{\susan}{\bob} \bob
+#TTEUCA
+#====
+## Regression: check of out-of-range parameter numbers was too lazy through to 1.2.1
+\newcommand{\bob}[1]{Hello #2}\bob{x}
+TTEUCB,TTEC00
+====
+\newcommand{\bob}{Hello #}\bob
+TTEUCB,TTEC00
+====
 \newenvironment
 TTEUE0
 ====
@@ -159,6 +178,14 @@ TTEUE3
 ## Recursive environment - eek! This is noticed lazily.
 \newenvironment{x}{\begin{x}}{}\begin{x}\end{x}
 TTEUE4
+====
+## Regression similar to TTEUCB
+\newenvironment{x}[1]{#2}{}\begin{x}\end{x}
+TTEUE5,TTEE02,TTEE05
+====
+## Regression: partner of TTEUE5
+\newenvironment{x}{}{#1}\begin{x}\end{x}
+TTEUE6,TTEE02,TTEE05
 ====
 \begin{itemize}Hello\end{itemize}
 TFEL00
