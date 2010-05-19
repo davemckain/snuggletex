@@ -387,15 +387,15 @@ public final class LaTeXTokeniser {
 //        /* Uncomment these lines when debugging the tokeniser. This is often
 //         * sufficient to work out what is going wrong... honest!
 //         */
-        System.out.println("rNT: position=" + position
-                + ", length=" + workingDocument.length()
-                + ", tokMode=" + currentModeState.tokenisationMode
-                + ", latexMode=" + currentModeState.latexMode
-                + ", terminator=" + currentModeState.terminator
-                + ", modeStackSize=" + modeStack.size()
-                + ", envsOpen=" + openEnvironmentStack
-                + ", errorCount=" + sessionContext.getErrors().size()
-                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
+//        System.out.println("rNT: position=" + position
+//                + ", length=" + workingDocument.length()
+//                + ", tokMode=" + currentModeState.tokenisationMode
+//                + ", latexMode=" + currentModeState.latexMode
+//                + ", terminator=" + currentModeState.terminator
+//                + ", modeStackSize=" + modeStack.size()
+//                + ", envsOpen=" + openEnvironmentStack
+//                + ", errorCount=" + sessionContext.getErrors().size()
+//                + ", remainder='" + workingDocument.extract(position, Math.min(position+20, workingDocument.length())) + "'");
         
         /* In MATH Mode, we skip over any leading whitespace and comments; in TEXT modes we skip
          * over any comments */

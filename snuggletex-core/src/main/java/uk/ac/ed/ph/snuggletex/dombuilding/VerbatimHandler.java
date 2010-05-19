@@ -6,8 +6,12 @@
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
+import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
+import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
+import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.tokens.TokenType;
 
 import org.w3c.dom.Element;
 
@@ -27,7 +31,8 @@ public final class VerbatimHandler implements CommandHandler, EnvironmentHandler
     }
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token) {
-        String verbContent = token.getArguments()[0].getSlice().extract().toString();
+        ArgumentContainerToken argumentToken = token.getArguments()[0];
+        String verbContent = argumentToken.getSlice().extract().toString();
         if (starred) {
             verbContent = verbContent.replace(' ', '\u2423'); /* Convert spaces to open boxes */
         }
@@ -37,6 +42,7 @@ public final class VerbatimHandler implements CommandHandler, EnvironmentHandler
         Element verbatimElement = builder.appendXHTMLElement(parentElement, "tt");
         verbatimElement.setAttribute("class", "verb");
         builder.appendTextNode(verbatimElement, verbContent, false);
+        appendEmbeddedErrors(builder, parentElement, argumentToken);
     }
     
     public void handleEnvironment(DOMBuilder builder, Element parentElement, EnvironmentToken token) {
@@ -44,5 +50,15 @@ public final class VerbatimHandler implements CommandHandler, EnvironmentHandler
         Element verbatimElement = builder.appendXHTMLElement(parentElement, "pre");
         verbatimElement.setAttribute("class", "verbatim");
         builder.appendTextNode(verbatimElement, verbatimContent, false);
+        appendEmbeddedErrors(builder, parentElement, token.getContent());
+    }
+    
+    private void appendEmbeddedErrors(DOMBuilder builder, Element parentElement, ArgumentContainerToken content) {
+        /* Extract any errors within the argument token */
+        for (FlowToken flowToken : content.getContents()) {
+            if (flowToken.getType()==TokenType.ERROR) {
+                builder.appendErrorElement(parentElement, (ErrorToken) flowToken);
+            }
+        }
     }
 }
