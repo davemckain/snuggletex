@@ -157,7 +157,7 @@ public final class SnuggleSession implements SessionContext {
     
     //---------------------------------------------
     // Public "business" methods
-    
+
     /**
      * Parses the data contained within the given {@link SnuggleInput}, and performs fixing
      * on the resulting tokens.
@@ -193,6 +193,17 @@ public final class SnuggleSession implements SessionContext {
                 new HashMap<String, UserDefinedCommand>(userCommandMap),
                 new HashMap<String, UserDefinedEnvironment>(userEnvironmentMap),
                 new ArrayList<FlowToken>(parsedTokens));
+    }
+    
+    /**
+     * Resets this {@link SnuggleSession} back to an initial blank state
+     */
+    public void reset() {
+        errors.clear();
+        userCommandMap.clear();
+        userEnvironmentMap.clear();
+        parsedTokens.clear();
+        tokeniser.reset();
     }
     
     //---------------------------------------------
