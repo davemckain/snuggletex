@@ -279,8 +279,9 @@ public final class LaTeXTokeniser {
         this.openEnvironmentStack = new ArrayListStack<String>();
     }
     
-    /** Resets the parsing state of this tokeniser */
-    private void reset() {
+    /**  Resets the parsing state of this tokeniser. */
+    public void reset() {
+        workingDocument = null;
         position = 0;
         startTokenIndex = -1;
         modeStack.clear();
@@ -294,22 +295,30 @@ public final class LaTeXTokeniser {
      */
     public ArgumentContainerToken tokenise(final SnuggleInputReader reader)
             throws SnuggleParseException, IOException {
-        /* Create WorkingDocument */
+        /* Reset state (should already be clean) */
+        reset();
+        
+        /* Create WorkingDocument for this input */
         this.workingDocument = reader.createWorkingDocument();
         
-        /* Reset state and parse document in "top level" mode */
-        reset();
-        ModeState topLevelResult = tokeniseInNewState(TokenisationMode.TOP_LEVEL, null, LaTeXMode.PARAGRAPH);
-        
-        /* Check that all environments have been closed, recording a client error for each that is not */
-        while (!openEnvironmentStack.isEmpty()) {
-            topLevelResult.tokens.add(createError(CoreErrorCode.TTEE04, position, position,
-                    openEnvironmentStack.pop()));
-        }
+        /* Parse document in "top level" mode */
+        try {
+            ModeState topLevelResult = tokeniseInNewState(TokenisationMode.TOP_LEVEL, null, LaTeXMode.PARAGRAPH);
+            
+            /* Check that all environments have been closed, recording a client error for each that is not */
+            while (!openEnvironmentStack.isEmpty()) {
+                topLevelResult.tokens.add(createError(CoreErrorCode.TTEE04, position, position,
+                        openEnvironmentStack.pop()));
+            }
 
-        /* That's it! Simply return the tokens that have been accrued */
-        return new ArgumentContainerToken(workingDocument.freezeSlice(0, workingDocument.length()),
-                LaTeXMode.PARAGRAPH, topLevelResult.tokens);
+            /* That's it! Simply reset state and return the tokens that have been accrued */
+            return new ArgumentContainerToken(workingDocument.freezeSlice(0, workingDocument.length()),
+                    LaTeXMode.PARAGRAPH, topLevelResult.tokens);
+        }
+        finally {
+            /* Tidy up state for next run */
+            reset();
+        }
     }
     
     /**
@@ -1419,8 +1428,9 @@ public final class LaTeXTokeniser {
         int index, argumentIndex;
         char c;
         StringBuilder substitutionBuilder = new StringBuilder();
+        WorkingDocument sliceDocument = slice.getDocument();
         for (index=slice.startIndex; index<slice.endIndex; index++) {
-            c = (char) workingDocument.charAt(index);
+            c = (char) sliceDocument.charAt(index);
             if (!inEscape && c=='\\') {
                 inEscape = true;
                 substitutionBuilder.append(c);
@@ -2078,8 +2088,9 @@ public final class LaTeXTokeniser {
         boolean inArgument = false; /* Whether we are inside an argument */
         int index;
         int c;
+        WorkingDocument sliceDocument = definitionSlice.getDocument();
         for (index=definitionSlice.startIndex; index<definitionSlice.endIndex; index++) {
-            c = workingDocument.charAt(index);
+            c = sliceDocument.charAt(index);
             if (!inEscape && c=='\\') {
                 inEscape = true;
             }
