@@ -77,7 +77,9 @@ public final class LaTeXTokeniser {
     
     /** 
      * Name of internal command that gets temporarily appended after the begin clauses of a
-     * user-defined environment has been substituted in order to perform house-keeping duties.
+     * user-defined environment has been substituted in order to make sure the
+     * {@link #openEnvironmentStack} is kept in the correct order.
+     * <p>
      * No trace of this command will exist once tokenisation has finished.
      * <p>
      * I've chosen a non-ASCII name for this command so as to make it impossible to be used in
@@ -92,8 +94,6 @@ public final class LaTeXTokeniser {
      */
     private final SessionContext sessionContext;
     
-    private final int substitutionLimit = 20;
-
     //-----------------------------------------
     // Tokenisation state
     
@@ -124,12 +124,6 @@ public final class LaTeXTokeniser {
     
     /** Stack of open environments */
     private final ArrayListStack<String> openEnvironmentStack;
-    
-    /** 
-     * Keeps track of which user-defined environments are currently in the process of opening.
-     * We do this to prevent recursive environments from exhausting the stack.
-     */
-    private final Set<String> userEnvironmentsOpeningSet;
     
     /**
      * Represents the "terminator" characters that signify the end of a parsing mode. I have
@@ -283,7 +277,6 @@ public final class LaTeXTokeniser {
         this.sessionContext = sessionContext;
         this.modeStack = new ArrayListStack<ModeState>();
         this.openEnvironmentStack = new ArrayListStack<String>();
-        this.userEnvironmentsOpeningSet = new HashSet<String>();
     }
     
     /** Resets the parsing state of this tokeniser */
@@ -293,7 +286,6 @@ public final class LaTeXTokeniser {
         modeStack.clear();
         currentModeState = null;
         openEnvironmentStack.clear();
-        userEnvironmentsOpeningSet.clear();
     }
     
     /**
@@ -469,10 +461,11 @@ public final class LaTeXTokeniser {
      */
     private ErrorToken makeSubstitutionAndRewind(final int startIndex, final int endIndex,
             final CharSequence replacement) throws SnuggleParseException {
-        if (workingDocument.getSubstitutionDepth(startIndex) >= substitutionLimit) {
+        int expansionLimit = sessionContext.getConfiguration().getExpansionLimit();
+        if (expansionLimit>0 && workingDocument.getSubstitutionDepth(startIndex) >= expansionLimit) {
             /* Fail: Substitution limit exceeded (avoids infinite recursion) */
             return createError(CoreErrorCode.TTEU00, startIndex, endIndex,
-                    Integer.valueOf(substitutionLimit));
+                    Integer.valueOf(expansionLimit));
         }
         workingDocument.substitute(startIndex, endIndex, replacement);
         position = startIndex;
@@ -1806,17 +1799,6 @@ public final class LaTeXTokeniser {
             return errorToken;
         }
         
-//        /* Check that this environment is not already in the process of opening */
-        String environmentName = environment.getTeXName();
-//        if (userEnvironmentsOpeningSet.contains(environmentName)) {
-//            /* Error: detected recursion */
-//            return createError(CoreErrorCode.TTEUE4, startTokenIndex, position,
-//                    environment.getTeXName());
-//        }
-        
-        /* Record that this environment is opening. We'll remove this once it has safely finished */
-        userEnvironmentsOpeningSet.add(environmentName);
-        
         /* Now, as per LaTeX 2e, we make substitutions in the *begin* definition. */
         FrozenSlice beginSlice = environment.getBeginDefinitionSlice();
         String resolvedBegin = substituteArguments(beginSlice, environment, argumentSearchResult);
@@ -1825,7 +1807,7 @@ public final class LaTeXTokeniser {
          * has finished opening up.
          */
         resolvedBegin += "\\" + UDE_POST_BEGIN + "{" + environment.getTeXName() + "}";
-
+      
         /* Substitute our \begin{...} clause with the replacement */
         int endBeginIndex = position;
         errorToken = makeSubstitutionAndRewind(startTokenIndex, endBeginIndex, resolvedBegin);
@@ -1873,10 +1855,7 @@ public final class LaTeXTokeniser {
             throw new SnuggleLogicException("Environment is not user-defined");
         }
         
-        /* Remove this from the list of things that are opening */
-        userEnvironmentsOpeningSet.remove(environmentName);
-        
-        /* Now we can register this environment as begin open */
+        /* Now we can register this environment as being open */
         openEnvironmentStack.push(environmentName);
         
         /* Next, we obliterate this temporary token from the input and re-parse */
