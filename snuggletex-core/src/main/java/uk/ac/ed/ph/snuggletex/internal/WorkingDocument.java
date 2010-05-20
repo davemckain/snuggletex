@@ -261,6 +261,17 @@ public final class WorkingDocument {
         return result;
     }
     
+    public int getSubstitutionDepth(final int index) {
+        IndexResolution resolvedIndex = resolveIndex(index, false);
+        int depth = 0;
+        CharacterSource source = resolvedIndex.slice.resolvedComponent;
+        while (source.substitutedSource!=null) {
+            depth++;
+            source = source.substitutedSource;
+        }
+        return depth;
+    }
+    
     public int charAt(final int index) {
         if (index>=0 && index<length) {
             return buffer.charAt(index);
@@ -438,14 +449,21 @@ public final class WorkingDocument {
          * i.e. after offset = before offset + before index in comp + endIndex - currentIndex;
          */
         IndexResolution endResolution = resolveIndex(endIndex, true);
-        Slice endSlice = endResolution.slice;
-        if (endIndex < endSlice.endIndex) {
-            int bitAfterSize = endSlice.endIndex - endIndex;
-            int resultOffset = endSlice.componentIndexOffset + endIndex - currentIndex;
-            Slice bitAfter = new Slice(currentIndex, currentIndex + bitAfterSize,
-                    endSlice.resolvedComponent, resultOffset);
-            newScoreBoard.add(bitAfter);
-            currentIndex += bitAfterSize;
+        int afterEndIndex;
+        if (endResolution!=null) { /* (Will be null if endIndex==0, i.e. insertion at start) */
+            afterEndIndex = endResolution.scoreboardIndex + 1;
+            Slice endSlice = endResolution.slice;
+            if (endIndex < endSlice.endIndex) {
+                int bitAfterSize = endSlice.endIndex - endIndex;
+                int resultOffset = endSlice.componentIndexOffset + endIndex - currentIndex;
+                Slice bitAfter = new Slice(currentIndex, currentIndex + bitAfterSize,
+                        endSlice.resolvedComponent, resultOffset);
+                newScoreBoard.add(bitAfter);
+                currentIndex += bitAfterSize;
+            }
+        }
+        else {
+            afterEndIndex = 0;
         }
         
         /* Finally, we include shifted versions of all slices that followed the end index in the
@@ -458,7 +476,7 @@ public final class WorkingDocument {
          * i.e. after offset = before offset + before startIndex - after startIndex
          */
         Slice trailingSlice, shiftedTrailingSlice;
-        for (int i=endResolution.scoreboardIndex+1, size=scoreBoard.size(); i<size; i++) {
+        for (int i=afterEndIndex, size=scoreBoard.size(); i<size; i++) {
             trailingSlice = scoreBoard.get(i);
             int afterSliceLength = trailingSlice.endIndex - trailingSlice.startIndex;
             int shiftedOffset = trailingSlice.componentIndexOffset + trailingSlice.startIndex - currentIndex;
@@ -503,6 +521,24 @@ public final class WorkingDocument {
             System.out.println(mapping);
         }
     }
+    
+//    /* (This main() method is sometimes useful to uncomment if debugging this class) */
+//    public static void main(String[] args) throws IOException, SnuggleParseException {
+//        SnuggleEngine snuggleEngine = new SnuggleEngine();
+//        SnuggleSession snuggleSession = snuggleEngine.createSession();
+//        SnuggleInput snuggleInput = new SnuggleInput("Hello There");
+//        
+//        WorkingDocument wd = new SnuggleInputReader(snuggleSession, snuggleInput).createWorkingDocument();
+//        wd.substitute(0, 0, "InsertionAtStart ");
+//        wd.substitute(0, 0, "NEW");
+//        
+//        System.out.println(wd.extract());
+//        wd.dumpScoreboard();
+//        
+//        System.out.println(wd.getSubstitutionDepth(0));
+//        System.out.println(wd.getSubstitutionDepth(3));
+//        System.out.println(wd.getSubstitutionDepth(20));
+//    }
 }
 
 

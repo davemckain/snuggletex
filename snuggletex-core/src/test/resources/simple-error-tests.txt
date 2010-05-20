@@ -38,7 +38,7 @@ $x$$
 TTEM01
 ====
 \[ x \)
-TTEG03,TTEG00,TTEM02
+TTEG03...
 ====
 ^
 TTEM03
@@ -141,24 +141,28 @@ TTEUC8
 \newcommand{\test}[Square bracket not closed
 TTEUC9
 ====
-### Recursive command
-#\newcommand{\test}{\test} \test
-#TTEUCA
-#====
-### Recursive command 2
-#\newcommand{\test}{Head \test} \test
-#TTEUCA
-#====
-### Recursive command 3
-#\newcommand{\bob}{\susan} \newcommand{\susan}{\bob} \bob
-#TTEUCA
-#====
+## Recursive command
+\newcommand{\test}{\test} \test
+TTEU00
+====
+## Recursive command 2
+\newcommand{\test}{Head \test} \test
+TTEU00
+====
+## Recursive command 3
+\newcommand{\bob}{\susan} \newcommand{\susan}{\bob} \bob
+TTEU00
+====
+## Recursive environment
+\newenvironment{x}{\begin{x}}{}\begin{x}\end{x}
+TTEU00...
+====
 ## Regression: check of out-of-range parameter numbers was too lazy through to 1.2.1
 \newcommand{\bob}[1]{Hello #2}\bob{x}
-TTEUCB,TTEC00
+TTEUCA,TTEC00
 ====
 \newcommand{\bob}{Hello #}\bob
-TTEUCB,TTEC00
+TTEUCA,TTEC00
 ====
 \newenvironment
 TTEUE0
@@ -175,17 +179,13 @@ TTEUE2
 \newenvironment{itemize}{Start}{End}
 TTEUE3
 ====
-## Recursive environment - eek! This is noticed lazily.
-\newenvironment{x}{\begin{x}}{}\begin{x}\end{x}
-TTEUE4
-====
-## Regression similar to TTEUCB
+## Regression similar to TTEUCA
 \newenvironment{x}[1]{#2}{}\begin{x}\end{x}
-TTEUE5,TTEE02,TTEE05
+TTEUE5...
 ====
 ## Regression: partner of TTEUE5
 \newenvironment{x}{}{#1}\begin{x}\end{x}
-TTEUE6,TTEE02,TTEE05
+TTEUE6...
 ====
 \begin{itemize}Hello\end{itemize}
 TFEL00
@@ -341,7 +341,7 @@ TTEUC8
 TTEUE0
 ====
 \( x \]
-TTEG03,TTEG00,TTEM02
+TTEG03...
 ====
 $#$
 TTEG04
@@ -352,9 +352,9 @@ TTEM03
 ====
 ## Regression: This was causing an NPE
 ${\mathrm}{x}$
-TTEC02,TTEM04,TTEG00
+TTEC02...
 ====
 ## This one behaves differently from LaTeX, which continues with no error and skips the '$' characters
 \( $$ \)
-TTEM04,TTEM04
+TTEM04...
 ====

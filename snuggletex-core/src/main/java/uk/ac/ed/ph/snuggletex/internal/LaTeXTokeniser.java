@@ -91,6 +91,8 @@ public final class LaTeXTokeniser {
      * Provides access to the current {@link SessionContext}.
      */
     private final SessionContext sessionContext;
+    
+    private final int substitutionLimit = 20;
 
     //-----------------------------------------
     // Tokenisation state
@@ -465,10 +467,16 @@ public final class LaTeXTokeniser {
      * The given {@link SourceContext} provides optional contextual information about where
      * the substitution came from, if required.
      */
-    private void makeSubstitutionAndRewind(final int startIndex, final int endIndex,
-            final CharSequence replacement) {
+    private ErrorToken makeSubstitutionAndRewind(final int startIndex, final int endIndex,
+            final CharSequence replacement) throws SnuggleParseException {
+        if (workingDocument.getSubstitutionDepth(startIndex) >= substitutionLimit) {
+            /* Fail: Substitution limit exceeded (avoids infinite recursion) */
+            return createError(CoreErrorCode.TTEU00, startIndex, endIndex,
+                    Integer.valueOf(substitutionLimit));
+        }
         workingDocument.substitute(startIndex, endIndex, replacement);
         position = startIndex;
+        return null;
     }
     
     /**
@@ -1399,8 +1407,8 @@ public final class LaTeXTokeniser {
          * then continue parsing as normal.
          */
         int afterCommandIndex = position;
-        makeSubstitutionAndRewind(startTokenIndex, afterCommandIndex, replacement);
-        return readNextToken();
+        errorToken = makeSubstitutionAndRewind(startTokenIndex, afterCommandIndex, replacement);
+        return errorToken==null ? readNextToken() : errorToken;
     }
     
     /**
@@ -1798,13 +1806,13 @@ public final class LaTeXTokeniser {
             return errorToken;
         }
         
-        /* Check that this environment is not already in the process of opening */
+//        /* Check that this environment is not already in the process of opening */
         String environmentName = environment.getTeXName();
-        if (userEnvironmentsOpeningSet.contains(environmentName)) {
-            /* Error: detected recursion */
-            return createError(CoreErrorCode.TTEUE4, startTokenIndex, position,
-                    environment.getTeXName());
-        }
+//        if (userEnvironmentsOpeningSet.contains(environmentName)) {
+//            /* Error: detected recursion */
+//            return createError(CoreErrorCode.TTEUE4, startTokenIndex, position,
+//                    environment.getTeXName());
+//        }
         
         /* Record that this environment is opening. We'll remove this once it has safely finished */
         userEnvironmentsOpeningSet.add(environmentName);
@@ -1820,7 +1828,10 @@ public final class LaTeXTokeniser {
 
         /* Substitute our \begin{...} clause with the replacement */
         int endBeginIndex = position;
-        makeSubstitutionAndRewind(startTokenIndex, endBeginIndex, resolvedBegin);
+        errorToken = makeSubstitutionAndRewind(startTokenIndex, endBeginIndex, resolvedBegin);
+        if (errorToken!=null) {
+            return errorToken;
+        }
         
         /* Then just return the next token */
         return readNextToken();
@@ -1836,9 +1847,9 @@ public final class LaTeXTokeniser {
             throws SnuggleParseException {
         /* Substitute the whole \end{...} clause with the definition */
         int endEndIndex = position;
-        makeSubstitutionAndRewind(startTokenIndex, endEndIndex,
+        ErrorToken errorToken = makeSubstitutionAndRewind(startTokenIndex, endEndIndex,
                 environment.getEndDefinitionSlice().extract());
-        return readNextToken();
+        return errorToken==null ? readNextToken() : errorToken;
     }
     
     /**
@@ -1869,8 +1880,8 @@ public final class LaTeXTokeniser {
         openEnvironmentStack.push(environmentName);
         
         /* Next, we obliterate this temporary token from the input and re-parse */
-        makeSubstitutionAndRewind(startTokenIndex, position, "");
-        return readNextToken();
+        ErrorToken errorToken = makeSubstitutionAndRewind(startTokenIndex, position, "");
+        return errorToken==null ? readNextToken() : errorToken;
     }
     
     //-----------------------------------------
@@ -1954,7 +1965,7 @@ public final class LaTeXTokeniser {
         
         /* Extract command definition and make sure parameter references are sane */
         FrozenSlice definitionSlice = workingDocument.freezeSlice(startCurlyIndex+1, endCurlyIndex);
-        error = checkDefinitionArguments(definitionSlice, commandName, argumentDefinitionResult, CoreErrorCode.TTEUCB);
+        error = checkDefinitionArguments(definitionSlice, commandName, argumentDefinitionResult, CoreErrorCode.TTEUCA);
         if (error!=null) {
             return error;
         }

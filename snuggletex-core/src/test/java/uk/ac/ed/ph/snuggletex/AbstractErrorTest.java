@@ -60,11 +60,21 @@ public abstract class AbstractErrorTest {
             actualErrorCodes[i] = errors.get(i).getErrorCode().getName();
         }
         
-        /* Work out which error codes we expected */
-        String[] expectedErrorCodes = expectedErrorCodeStrings.trim().split(",\\s*");
+        /* We allow a single wildcard (...) at the end of the expectedErrorCodeStrings to denote
+         * 'any other stuff afterwards'.
+         */
+        String expectedErrorCodeData = expectedErrorCodeStrings.trim();
+        boolean isWildcard = false;
+        if (expectedErrorCodeData.endsWith("...")) {
+            isWildcard = true;
+            expectedErrorCodeData = expectedErrorCodeData.substring(0, expectedErrorCodeData.length()-3);
+        }
+        String[] expectedErrorCodes = expectedErrorCodeData.split(",\\s*");
+        
+        /* FINISH ME OFF! */
         
         /* Now check things */
-        if (!Arrays.equals(expectedErrorCodes, actualErrorCodes)) {
+        if (!compare(expectedErrorCodes, actualErrorCodes, isWildcard)) {
             StringBuilder messageBuilder = new StringBuilder("Test failed!\nInput was: ").append(inputLaTeX)
                 .append("\nExpected error codes were: ").append(Arrays.toString(expectedErrorCodes))
                 .append("\nActual error codes were:   ").append(Arrays.toString(actualErrorCodes));
@@ -76,5 +86,21 @@ public abstract class AbstractErrorTest {
             logger.warning(messageBuilder.toString());
             Assert.fail("Failed on " + inputLaTeX);
         }
+    }
+    
+    private boolean compare(String[] expected, String[] actual, boolean expectedWildcard) {
+        if (!expectedWildcard) {
+            return Arrays.equals(expected, actual);
+        }
+        /* Wildcard case */
+        if (actual.length < expected.length) {
+            return false;
+        }
+        for (int i=0; i<expected.length; i++) {
+            if (!expected[i].equals(actual[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }
