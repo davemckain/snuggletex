@@ -19,6 +19,29 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.2.2" date="TBA" description="Version 1.2.2 (SVN revision ???)">
+      <action dev="davemckain" type="fix" date="2010-05-20">
+        Added an expansionLimit property to the SessionConfiguration class that specifies
+        how deep to go when expanding out user-defined commands and environments. This
+        provides simple protection against possible infinite recursion, which can arise
+        in a number of ways and is not easy to test for due to the highly dynamic nature
+        of LaTeX input. There is a new error code for this - TTEU00. This subsumes the
+        role of the previous TTEUE4 error code, which has been removed.
+        <fixes issue="2998211"/>
+      </action>
+      <action dev="davemckain" type="fix" date="2010-05-19">
+        Fixed minor bug that caused certain verbatim-related error messages not to be included
+        in the resulting DOM (when generated in this way).
+      </action>
+      <action dev="davemckain" type="fix" date="2010-05-19">
+        User-defined commands and environments now have their #n references checked to make sure
+        they're in the correct range. This makes detection of this issue happen at definition time,
+        rather than evaluation time. New error codes TTEUCA, TTEUE5 and TTEUE6 are used to flag
+        these issues.
+      </action>
+      <action dev="davemckain" type="fix" date="2010-05-19">
+        Tidied up code that substitutes arguments into user-defined commands/environments,
+        so that \#n is now correctly handled.
+      </action>
       <action dev="davemckain" type="update" date="2010-04-30">
         Updated the ASCIIMathML input and up-conversion demo to use the final version
         of all of the code from MathAssessEngine. Also added in a real-time preview
