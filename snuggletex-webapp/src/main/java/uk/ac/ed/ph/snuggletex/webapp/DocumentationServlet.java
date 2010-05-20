@@ -130,6 +130,7 @@ public final class DocumentationServlet extends BaseServlet {
         extensionToContentTypeMap.put("cxml", "application/xhtml+xml");
         extensionToContentTypeMap.put("htm", "text/html");
         extensionToContentTypeMap.put("html", "text/html");
+        extensionToContentTypeMap.put("tex", "application/x-latex");
         extensionToContentTypeMap.put("png", "image/png"); /* (Required for JEuclid MathML images) */
         
         /* Determines which extensions to use for standard web page outputs */
