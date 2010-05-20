@@ -14,6 +14,9 @@
 # For convenience, the characters '%n' in the LaTeX input will be treated as a newline,
 # thus allowing very basic multi-line inputs to be emulated.
 #
+# You can use '...' to denote 'any other stuff' at the end of your list of error codes,
+# which is useful in the cases where a certain type of error will trigger a few others.
+#
 ###################################################################
 ### Simple tests created to trigger each explicit error code
 {
