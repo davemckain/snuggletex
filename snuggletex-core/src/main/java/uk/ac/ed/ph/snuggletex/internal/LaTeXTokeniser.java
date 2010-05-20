@@ -220,9 +220,8 @@ public final class LaTeXTokeniser {
         TOP_LEVEL,
         BRACE,
         MATH,
-        COMMAND_ARGUMENT,
+        BUILTIN_COMMAND_ARGUMENT,
         BUILTIN_ENVIRONMENT_CONTENT,
-        USER_DEFINED_ENVIRONMENT_BEGIN,
         ;
     }
     
@@ -1008,7 +1007,7 @@ public final class LaTeXTokeniser {
          * a possible error token if the end delimiter was not found.
          */
         position++; /* Advance over delimiter */
-        ModeState contentState = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT,
+        ModeState contentState = tokeniseInNewState(TokenisationMode.BUILTIN_COMMAND_ARGUMENT,
                 new StringTerminator(Character.toString((char) delimitChar)), LaTeXMode.VERBATIM);
         List<FlowToken> contentTokens = contentState.tokens;
         SimpleToken verbatimContentToken = null;
@@ -1286,7 +1285,7 @@ public final class LaTeXTokeniser {
                 int startArgumentContentIndex = ++position; /* Skip over '[' */
                 
                 /* Go out and tokenise from this point onwards until the end of the ']' */
-                argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT,
+                argumentResult = tokeniseInNewState(TokenisationMode.BUILTIN_COMMAND_ARGUMENT,
                         new StringTerminator("]"), argumentMode);
                 int endArgumentContentIndex = (argumentResult.foundTerminator) ? position-1 : position;
                 optionalArgumentSlice = workingDocument.freezeSlice(startArgumentContentIndex, endArgumentContentIndex);
@@ -1328,7 +1327,7 @@ public final class LaTeXTokeniser {
                 int startArgumentContentIndex = ++position; /* Skip over '{' */
                 
                 /* Go out and tokenise from this point onwards until the end of the '}' */
-                argumentResult = tokeniseInNewState(TokenisationMode.COMMAND_ARGUMENT,
+                argumentResult = tokeniseInNewState(TokenisationMode.BUILTIN_COMMAND_ARGUMENT,
                         new StringTerminator("}"), argumentMode);
                 int endArgumentContentIndex = argumentResult.foundTerminator ? position-1 : position;
                 requiredArgumentSlices[i] = workingDocument.freezeSlice(startArgumentContentIndex, endArgumentContentIndex);
