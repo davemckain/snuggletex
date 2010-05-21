@@ -68,10 +68,18 @@ All Rights Reserved
           </arguments>
         </configuration>
       </plugin>
-      <!-- Build JAR containing test classes for use in other modules -->
+      <!-- Build JAR with main class + one with test classes for use in other modules -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>uk.ac.ed.ph.snuggletex.samples.CommandLineRunner</mainClass>
+              <packageName>uk.ac.ed.ph.snuggletex.samples</packageName>
+            </manifest>
+          </archive>
+        </configuration>
         <executions>
           <execution>
             <goals>
