@@ -19,7 +19,7 @@ page, which looks at these ideas from a slightly different perspective.)
 \item
   \subsubsection*{\anchor{MOZILLA}\verb|MOZILLA| (\href[Example]{math-mode.xhtml})}
   This generates an XHTML + MathML document suitable for
-  Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml.html|,
+  Mozilla-based browsers (e.g. Firefox). It is served as \verb|application/xhtml+html|,
   with no XML declaration and no DOCTYPE declaration. Do \emph{not} use this if you
   are targeting Internet Explorer as it will display your page as an XML tree.
 
@@ -29,7 +29,7 @@ page, which looks at these ideas from a slightly different perspective.)
   This generates an XHTML + MathML document that displays well on both
   Mozilla-based browsers and Internet Explorer 6 and above (providing that the
   MathPlayer plug-in has already been installed).  It is served as
-  \verb|application/xhtml.html|, has an XML declaration and a DOCTYPE
+  \verb|application/xhtml+html|, has an XML declaration and a DOCTYPE
   declaration.
   \begin{itemize}
     \item This will not display correctly on Internet Explorer if MathPlayer has not
@@ -67,7 +67,7 @@ page, which looks at these ideas from a slightly different perspective.)
   \subsubsection*{\anchor{xsl}\verb|CLIENT_SIDE_XSLT_STYLESHEET|}
 
   This generates a XHTML + MathML document,
-  served as \verb|application/xhtml.html| with no XML declaration and no DOCTYPE declaration.
+  served as \verb|application/xhtml+html| with no XML declaration and no DOCTYPE declaration.
   It is intended to be used with a client-side XSLT of your choice.
   (This is a more advanced option!)
 
@@ -78,8 +78,8 @@ page, which looks at these ideas from a slightly different perspective.)
   HTML document, served as \verb|text/html|.
   You will have to post-process the resulting DOM to produce something sensible here
   by registering a \verb|DOMPostProcessor| with your \verb|WebPageOutputOptions|.
-  This feels like a rather esoteric option, but is actually where the SnuggleTeX JEuclid
-  module hooks in when converting the results to legacy HTML + Images.
+  This may appear to be a rather esoteric option, but is actually what the SnuggleTeX JEuclid
+  module uses when converting the results to legacy HTML + Images.
 \end{itemize}
 
 
