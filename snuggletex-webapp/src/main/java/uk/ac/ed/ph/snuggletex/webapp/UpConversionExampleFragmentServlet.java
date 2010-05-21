@@ -30,6 +30,7 @@ import uk.ac.ed.ph.snuggletex.upconversion.internal.UpConversionPackageDefinitio
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,13 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
             return;
         }
         String inputLaTeX = rawInputLaTeX.replaceAll("\\s+", " ");
+        
+        /* I've noticed that some search engines appear to be double-encoding the query string,
+         * so I'll detect this now and decode if required.
+         */
+        if (inputLaTeX.contains("%")) {
+            inputLaTeX = URLDecoder.decode(inputLaTeX, "UTF-8");
+        }
         
         /* Parse the LaTeX */
         SnuggleEngine engine = createSnuggleEngine();
