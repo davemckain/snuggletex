@@ -143,7 +143,8 @@ public final class SerializationOptions implements SerializationSpecifier, Clone
      * numeric character references.
      * <p>
      * Note that this requires an XSLT 2.0-compliant engine (e.g. Saxon, which is in the
-     * "full" SnuggleTeX distribution.)
+     * "full" SnuggleTeX distribution). This option will be silently ignored if you are
+     * using an XSLT 1.0 engine, such as the one which typically comes bundled with your JDK.
      * <p>
      * (Also note that the resulting XML won't be parseable unless accompanied with a DTD
      * defining the MathML entities!)

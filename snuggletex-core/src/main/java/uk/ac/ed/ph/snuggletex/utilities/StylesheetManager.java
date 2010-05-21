@@ -141,23 +141,6 @@ public final class StylesheetManager {
         ensureChooserSpecified();
         return transformerFactoryChooser.isXSLT20SupportAvailable();
     }
-    
-    /**
-     * Checks that XSLT 2.0 is supported, by asking the underlying
-     * {@link TransformerFactoryChooser}. If XSLT 2.0 is not supported then
-     * a {@link SnuggleRuntimeException} is thrown.
-     * 
-     * @throws SnuggleRuntimeException is XSLT 2.0 is not supported.
-     */
-    public void requireXSLT20(String requirement) {
-        if (!supportsXSLT20()) {
-            throw new SnuggleRuntimeException(requirement
-                    + " requires an XSLT 2.0 processor. Your TransformerFactoryChooser "
-                    + transformerFactoryChooser
-                    + " could not provide such a processor. Please check that an XSLT 2.0 processor (e.g. Saxon) is available"
-                    + " and your TransformerFactoryChooser is configured to provide this");
-        }
-    }
 
     /**
      * Obtains the XSLT stylesheet at the given ClassPathURI, using the {@link StylesheetCache}
@@ -231,35 +214,33 @@ public final class StylesheetManager {
      *   was required but could not be obtained.
      */
     public Transformer getSerializer(final String serializerUri, final SerializationSpecifier serializationOptions) {
-        /* See if serializer needs any XSLT 2.0 features, failing if XSLT 2.0 is not available */
-        if (serializationOptions!=null && !supportsXSLT20()) {
-            if (serializationOptions.isUsingNamedEntities()) {
-                requireXSLT20("The SerializatonOptions.usingNamedEntities property");
-            }
-            if (serializationOptions.getSerializationMethod()==SerializationMethod.XHTML) {
-                requireXSLT20("SerializatonMethod.XHTML");
-            }
-        }
+        /* Create appropriate serializer */
         Transformer serializer;
+        boolean supportsXSLT20 = supportsXSLT20();
         try {
-            /* Now create appropriate serializer */
-            if (serializationOptions!=null && serializationOptions.isUsingNamedEntities() && serializerUri!=null) {
-                /* Need to create a special serializer which does character mapping as well */
-                serializer = cacheImporterStylesheet(true, serializerUri, Globals.MATHML_ENTITIES_MAP_XSL_RESOURCE_NAME)
-                    .newTransformer();
-            }
-            else if (serializationOptions!=null && serializationOptions.isUsingNamedEntities()) {
-                /* Use character mapping serializer */
-                serializer = getStylesheet(Globals.SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME, true)
-                    .newTransformer();
-            }
-            else if (serializerUri!=null) {
-                /* Use default serializer */
-                serializer = getStylesheet(serializerUri)
-                    .newTransformer();
+            if (serializationOptions!=null && serializationOptions.isUsingNamedEntities() && supportsXSLT20) {
+                /* We will perform character mapping here (which requires XSLT 2.0) */
+                if (serializerUri!=null) {
+                    /* Mix character mapper in with given serializer */
+                    serializer = cacheImporterStylesheet(true, serializerUri, Globals.MATHML_ENTITIES_MAP_XSL_RESOURCE_NAME)
+                        .newTransformer();
+                }
+                else {
+                    /* Do character mapping serializer only */
+                    serializer = getStylesheet(Globals.SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME, true)
+                        .newTransformer();
+                }
             }
             else {
-                serializer = getTransformerFactory(false).newTransformer();
+                if (serializerUri!=null) {
+                    /* Use given serializer */
+                    serializer = getStylesheet(serializerUri)
+                        .newTransformer();
+                }
+                else {
+                    /* Use default serializer */
+                    serializer = getTransformerFactory(false).newTransformer();
+                }
             }
         }
         catch (TransformerConfigurationException e) {
@@ -267,7 +248,14 @@ public final class StylesheetManager {
         }
         /* Now configure it as per options */
         if (serializationOptions!=null) {
-            serializer.setOutputProperty(OutputKeys.METHOD, serializationOptions.getSerializationMethod().getName());
+            SerializationMethod serializationMethod = serializationOptions.getSerializationMethod();
+            if (serializationMethod==SerializationMethod.XHTML && !supportsXSLT20) {
+                /* Really want XHTML serialization, but we don't have an XSLT 2.0 processor
+                 * so downgrading to XML.
+                 */
+                serializationMethod = SerializationMethod.XML;
+            }
+            serializer.setOutputProperty(OutputKeys.METHOD, serializationMethod.getName());
             serializer.setOutputProperty(OutputKeys.INDENT, StringUtilities.toYesNo(serializationOptions.isIndenting()));
             serializer.setOutputProperty(OutputKeys.ENCODING, serializationOptions.getEncoding());
             serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, StringUtilities.toYesNo(!serializationOptions.isIncludingXMLDeclaration()));
