@@ -11,6 +11,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleSession.EndOutputAction;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -105,7 +106,7 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(webOutputOptions, response, response.getOutputStream());
+            session.writeWebPage(webOutputOptions, response, response.getOutputStream(), EndOutputAction.FLUSH);
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);

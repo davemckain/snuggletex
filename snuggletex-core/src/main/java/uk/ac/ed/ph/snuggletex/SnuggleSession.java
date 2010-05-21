@@ -72,6 +72,24 @@ import org.w3c.dom.NodeList;
  */
 public final class SnuggleSession implements SessionContext {
     
+    /**
+     * Trivial enumeration which specifies the possible actions to perform once we
+     * finish writing with the various {@link SnuggleSession#writeWebPage(WebPageOutputOptions, OutputStream)}
+     * methods.
+     * 
+     * @since 1.2.2
+     */
+    public static enum EndOutputAction {
+        /** Closes the {@link OutputStream} after writing */
+        CLOSE,
+        
+        /** Flushes the {@link OutputStream} after writing */
+        FLUSH,
+        
+        /** Does nothing after writing */
+        DO_NOTHING
+    };
+    
     /** Engine that created this Session */
     private final SnuggleEngine engine;
 
@@ -419,7 +437,7 @@ public final class SnuggleSession implements SessionContext {
     
     /**
      * Builds a complete web page based on the currently parsed tokens, sending the results
-     * to the given {@link OutputStream}.
+     * to the given {@link OutputStream}, which is closed afterwards.
      * <p>
      * The provided {@link WebPageOutputOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
@@ -429,12 +447,31 @@ public final class SnuggleSession implements SessionContext {
      */
     public boolean writeWebPage(final WebPageOutputOptions options, final OutputStream outputStream)
             throws IOException {
-        return writeWebPage(options, null, outputStream);
+        return writeWebPage(options, null, outputStream, EndOutputAction.CLOSE);
     }
     
     /**
      * Builds a complete web page based on the currently parsed tokens, sending the results
-     * to the given {@link OutputStream}.
+     * to the given {@link OutputStream} and performing the given {@link EndOutputAction} to
+     * it afterwards (i.e. close, flush or do nothing).
+     * <p>
+     * The provided {@link WebPageOutputOptions} Object is
+     * used to determine which type of web page to generate and how it should be configured.
+     * 
+     * @since 1.2.2
+     * 
+     * @return true if completed successfully, false if the process was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error. 
+     */
+    public boolean writeWebPage(final WebPageOutputOptions options, final OutputStream outputStream,
+            final EndOutputAction endOutputAction)
+            throws IOException {
+        return writeWebPage(options, null, outputStream, endOutputAction);
+    }
+    
+    /**
+     * Builds a complete web page based on the currently parsed tokens, sending the results
+     * to the given {@link OutputStream}, which is closed afterwards.
      * <p>
      * The provided {@link WebPageOutputOptions} Object is
      * used to determine which type of web page to generate and how it should be configured.
@@ -452,10 +489,38 @@ public final class SnuggleSession implements SessionContext {
      */
     public boolean writeWebPage(final WebPageOutputOptions options, final Object contentTypeSettable,
             final OutputStream outputStream) throws IOException {
+        return writeWebPage(options, contentTypeSettable, outputStream, EndOutputAction.CLOSE);
+    }
+    
+    /**
+     * Builds a complete web page based on the currently parsed tokens, sending the results
+     * to the given {@link OutputStream} and performing the given {@link EndOutputAction} to
+     * it afterwards (i.e. close, flush or do nothing).
+     * <p>
+     * The provided {@link WebPageOutputOptions} Object is
+     * used to determine which type of web page to generate and how it should be configured.
+     * <p>
+     * If the <tt>contentTypeSettable</tt> Object has a
+     * property called <tt>contentType</tt>, then it is set in advance to the appropriate HTTP
+     * <tt>Content-Type</tt> header for the resulting page before the web page data is written.
+     * 
+     * @since 1.2.2
+     * 
+     * @return true if completed successfully, false if the process was terminated by an error in the
+     *   input LaTeX and if the session was configured to fail on the first error. 
+     * 
+     * @throws IOException if an I/O problem arose whilst writing out the web page data.
+     * @throws SnuggleRuntimeException if calling <tt>setContentType()</tt> on the contentTypeSettable
+     *   Object failed, with the underlying Exception wrapped up.
+     */
+    public boolean writeWebPage(final WebPageOutputOptions options, final Object contentTypeSettable,
+            final OutputStream outputStream, final EndOutputAction endOutputAction)
+            throws IOException {
         ConstraintUtilities.ensureNotNull(options, "options");
         ConstraintUtilities.ensureNotNull(outputStream, "outputStream");
+        ConstraintUtilities.ensureNotNull(endOutputAction, "endOutputAction");
         try {
-            new WebPageBuilder(this, options).writeWebPage(parsedTokens, contentTypeSettable, outputStream);
+            new WebPageBuilder(this, options).writeWebPage(parsedTokens, contentTypeSettable, outputStream, endOutputAction);
             return true;
         }
         catch (SnuggleParseException e) {

@@ -8,6 +8,7 @@ package uk.ac.ed.ph.snuggletex.internal;
 import uk.ac.ed.ph.snuggletex.SerializationMethod;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleSession.EndOutputAction;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
@@ -221,6 +222,8 @@ public final class WebPageBuilder {
      *   property set if provided. (This is generally useful as a proxy for the <tt>HttpResponse</tt>
      *   Object in the servlet API, which I want to avoid a compile-time dependency on.)
      * @param outputStream Stream to send the resulting page to, which will be closed afterwards.
+     * @param endOutputOptions specifies what to do with the outputStream once we've finished writing
+     *   to it.
      * 
      * @throws SnuggleParseException
      * @throws IOException
@@ -228,7 +231,8 @@ public final class WebPageBuilder {
      *   Object failed, with the underlying Exception wrapped up.
      */
     public final void writeWebPage(final List<FlowToken> fixedTokens, Object contentTypeSettable,
-            final OutputStream outputStream) throws SnuggleParseException, IOException {
+            final OutputStream outputStream, final EndOutputAction endOutputOptions)
+            throws SnuggleParseException, IOException {
         /* Set content type, if requested */
         if (contentTypeSettable!=null) {
             setWebPageContentType(contentTypeSettable);
@@ -246,7 +250,15 @@ public final class WebPageBuilder {
             throw new SnuggleRuntimeException("Could not serialize web page", e);
         }
         finally {
-            outputStream.close();
+            if (endOutputOptions==EndOutputAction.CLOSE) {
+                outputStream.close();
+            }
+            else if (endOutputOptions==EndOutputAction.FLUSH) {
+                outputStream.flush();
+            }
+            else {
+                /* (Do nothing!) */
+            }
         }
     }
     

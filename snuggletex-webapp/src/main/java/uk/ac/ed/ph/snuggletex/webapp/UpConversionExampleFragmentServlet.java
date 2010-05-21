@@ -20,6 +20,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.SnuggleSession.EndOutputAction;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
@@ -206,7 +207,7 @@ public final class UpConversionExampleFragmentServlet extends BaseServlet {
         
         /* Generate and serve the resulting web page */
         try {
-            session.writeWebPage(webOptions, response, response.getOutputStream());
+            session.writeWebPage(webOptions, response, response.getOutputStream(), EndOutputAction.FLUSH);
         }
         catch (Exception e) {
             throw new ServletException("Unexpected Exception", e);
