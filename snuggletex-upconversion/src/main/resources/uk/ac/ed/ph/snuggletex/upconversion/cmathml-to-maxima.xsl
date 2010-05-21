@@ -164,14 +164,18 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   <xsl:function name="local:to-maxima" as="node()*">
     <xsl:param name="element" as="element()"/>
-    <xsl:apply-templates select="$element" mode="cmathml-to-maxima"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
+    <xsl:apply-templates select="$element" mode="cmathml-to-maxima">
+      <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
+    </xsl:apply-templates>
   </xsl:function>
 
   <xsl:function name="local:to-maxima-map" as="node()*">
     <xsl:param name="elements" as="element()*"/>
     <xsl:param name="joiner" as="xs:string"/>
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:for-each select="$elements">
-      <xsl:copy-of select="local:to-maxima(.)"/>
+      <xsl:copy-of select="local:to-maxima(., $upconversion-options)"/>
       <xsl:if test="position() != last()">
         <xsl:value-of select="$joiner"/>
       </xsl:if>
@@ -276,6 +280,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
   -->
   <xsl:template match="apply[count(*)&gt;1 and local:is-operator(*[1]) and not(local:is-operator(*[2]))]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="operator" as="element()" select="local:get-operator(*[1])"/>
     <xsl:variable name="operands" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
@@ -286,20 +291,20 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <!-- Prefix operator, e.g. '-' in unary context -->
             <xsl:text>(</xsl:text>
             <xsl:value-of select="$operator/@maxima-unary-prefix-operator"/>
-            <xsl:copy-of select="local:to-maxima($operands[1])"/>
+            <xsl:copy-of select="local:to-maxima($operands[1], $upconversion-options)"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-unary-function">
             <!-- Function operator e.g. not() -->
             <xsl:value-of select="$operator/@maxima-unary-function"/>
             <xsl:text>(</xsl:text>
-            <xsl:copy-of select="local:to-maxima($operands[1])"/>
+            <xsl:copy-of select="local:to-maxima($operands[1], $upconversion-options)"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-unary-postfix-operator">
             <!-- Postfix operator -->
             <xsl:text>(</xsl:text>
-            <xsl:copy-of select="local:to-maxima($operands[1])"/>
+            <xsl:copy-of select="local:to-maxima($operands[1], $upconversion-options)"/>
             <xsl:value-of select="$operator/@maxima-unary-postfix-operator"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
@@ -314,7 +319,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
           <xsl:when test="$operator/@maxima-nary-infix-operator">
             <!-- Operator like '+' -->
             <xsl:text>(</xsl:text>
-            <xsl:copy-of select="local:to-maxima-map($operands, $operator/@maxima-nary-infix-operator)"/>
+            <xsl:copy-of select="local:to-maxima-map($operands, $operator/@maxima-nary-infix-operator, $upconversion-options)"/>
             <xsl:text>)</xsl:text>
           </xsl:when>
           <xsl:when test="$operator/@maxima-nary-function">
@@ -322,7 +327,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
             <xsl:value-of select="$operator/@maxima-nary-function"/>
             <xsl:text>(</xsl:text>
             <xsl:for-each select="$operands">
-              <xsl:copy-of select="local:to-maxima(.)"/>
+              <xsl:copy-of select="local:to-maxima(., $upconversion-options)"/>
               <xsl:if test="position()!=last()">
                 <xsl:text>, </xsl:text>
               </xsl:if>
@@ -352,9 +357,10 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   -->
   <xsl:template match="apply[*[1][self::root] and not(degree) and count(*)=2]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="operand" as="element()" select="*[2]"/>
     <xsl:text>sqrt(</xsl:text>
-    <xsl:copy-of select="local:to-maxima($operand)"/>
+    <xsl:copy-of select="local:to-maxima($operand, $upconversion-options)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
@@ -372,11 +378,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
   -->
   <xsl:template match="apply[*[1][self::root] and degree and count(*)=3]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="operand" as="element()" select="*[3]"/>
     <xsl:text>((</xsl:text>
-    <xsl:copy-of select="local:to-maxima($operand)"/>
+    <xsl:copy-of select="local:to-maxima($operand, $upconversion-options)"/>
     <xsl:text>)^(1/</xsl:text>
-    <xsl:copy-of select="local:to-maxima(degree/*)"/>
+    <xsl:copy-of select="local:to-maxima(degree/*, $upconversion-options)"/>
     <xsl:text>))</xsl:text>
   </xsl:template>
 
@@ -403,6 +410,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
 
   -->
   <xsl:template match="apply[count(*) &gt;= 2 and *[1][local:is-supported-function(.)]]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="function" as="element()" select="local:get-supported-function(*[1])"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:choose>
@@ -413,7 +421,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
       <xsl:otherwise>
         <xsl:value-of select="$function/@maxima-function"/>
         <xsl:text>(</xsl:text>
-        <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+        <xsl:copy-of select="local:to-maxima-map($arguments, ', ', $upconversion-options)"/>
         <xsl:text>)</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
@@ -449,6 +457,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
   -->
   <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::power] and local:is-supported-function(*[2]) and *[3][self::cn]]]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="function" as="element()" select="local:get-supported-function(*[1]/*[2])"/>
     <xsl:variable name="power" as="element()" select="*[1]/*[3]"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
@@ -460,9 +469,9 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
       <xsl:otherwise>
         <xsl:value-of select="$function/@maxima-function"/>
         <xsl:text>(</xsl:text>
-        <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+        <xsl:copy-of select="local:to-maxima-map($arguments, ', ', $upconversion-options)"/>
         <xsl:text>)^</xsl:text>
-        <xsl:copy-of select="local:to-maxima($power)"/>
+        <xsl:copy-of select="local:to-maxima($power, $upconversion-options)"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -483,11 +492,12 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
   -->
   <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::ci and @type='function']]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="function" as="element(ci)" select="*[1]"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
     <xsl:text>(</xsl:text>
-    <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map($arguments, ', ', $upconversion-options)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
@@ -510,7 +520,7 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
     <xsl:text>[</xsl:text>
     <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
     <xsl:text>](</xsl:text>
-    <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map($arguments, ', ', $upconversion-options)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
@@ -527,14 +537,15 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </apply>
   -->
   <xsl:template match="apply[count(*) &gt;= 2 and *[1][self::apply and *[1][self::power] and *[2][self::ci and @type='function']]]" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="function" as="element(ci)" select="*[1]/*[2]"/>
     <xsl:variable name="power" as="element()" select="*[1]/*[3]"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
     <xsl:text>(</xsl:text>
-    <xsl:copy-of select="local:to-maxima-map($arguments, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map($arguments, ', ', $upconversion-options)"/>
     <xsl:text>)^</xsl:text>
-    <xsl:copy-of select="local:to-maxima($power)"/>
+    <xsl:copy-of select="local:to-maxima($power, $upconversion-options)"/>
   </xsl:template>
 
   <!--
@@ -567,13 +578,14 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   we don't know its arity.
   -->
   <xsl:template match="apply[count(*)=3 and *[1][self::power] and *[2][self::ci and @type='function']]" mode="cmathml-to-maxima" as="node()+" priority="5">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:variable name="function" as="element(ci)" select="*[2]"/>
     <xsl:variable name="power" as="element()" select="*[3]"/>
     <xsl:variable name="arguments" as="element()+" select="*[position()!=1]"/>
     <xsl:text>lambda([x], </xsl:text>
     <xsl:apply-templates select="$function" mode="cmathml-to-maxima"/>
     <xsl:text>(x)^</xsl:text>
-    <xsl:copy-of select="local:to-maxima($power)"/>
+    <xsl:copy-of select="local:to-maxima($power, $upconversion-options)"/>
     <xsl:text>)</xsl:text>
   </xsl:template>
 
@@ -585,14 +597,16 @@ TODO: Handle the lack of support for log to base 10 (or indeed other bases)
   </xsl:template>
 
   <xsl:template match="set" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:text>{</xsl:text>
-    <xsl:copy-of select="local:to-maxima-map(*, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map(*, ', ', $upconversion-options)"/>
     <xsl:text>}</xsl:text>
   </xsl:template>
 
   <xsl:template match="list|vector" mode="cmathml-to-maxima" as="node()+">
+    <xsl:param name="upconversion-options" as="element(s:upconversion-options)" tunnel="yes"/>
     <xsl:text>[</xsl:text>
-    <xsl:copy-of select="local:to-maxima-map(*, ', ')"/>
+    <xsl:copy-of select="local:to-maxima-map(*, ', ', $upconversion-options)"/>
     <xsl:text>]</xsl:text>
   </xsl:template>
 

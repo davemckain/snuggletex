@@ -279,6 +279,10 @@ a \not= b \not= c
 \units{kg}
 units("kg")
 ====
+## Regression: This was broken up to SnuggleTeX 1.2.1
+2\units{kg}
+2 * units("kg")
+====
 #####################################
 ## Infix as Prefix
 1++x
