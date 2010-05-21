@@ -11,7 +11,6 @@ import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
-import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
@@ -78,8 +77,7 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
         /* Pick appropriate web page output based on UseAgent */
         WebPageOutputOptions webOutputOptions = chooseBestBaseWebPageOutputOptions(request);
         webOutputOptions.setErrorOutputOptions(ErrorOutputOptions.XHTML);
-        boolean mathMLCapable = webOutputOptions.getWebPageType()!=WebPageType.MATHPLAYER_HTML;
-        
+
         /* Log things nicely if input was specified by user */
         if (rawInputLaTeX!=null) {
             String xmlString = session.buildXMLString();
@@ -100,7 +98,7 @@ public final class FullLaTeXInputDemoServlet extends BaseServlet {
         
         /* Create XSLT to generate the resulting page */
         Transformer viewStylesheet = getStylesheet(request, DISPLAY_XSLT_LOCATION);
-        viewStylesheet.setParameter("is-mathml-capable", Boolean.valueOf(mathMLCapable));
+        viewStylesheet.setParameter("is-mathml-capable", isMathMLCapable(request));
         viewStylesheet.setParameter("is-internet-explorer", isInternetExplorer(request));
         viewStylesheet.setParameter("latex-input", inputLaTeX);
         webOutputOptions.setStylesheets(viewStylesheet);

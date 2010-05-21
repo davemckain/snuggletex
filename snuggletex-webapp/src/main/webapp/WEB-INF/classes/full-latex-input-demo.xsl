@@ -46,18 +46,22 @@ All Rights Reserved
       more useful in this case.)
     </p>
     <form method="post" class="input" action="{$context-path}/FullLaTeXInputDemo">
-      <div class="inputBox">
-        <textarea id="inputBox" name="input" style="width:100%" rows="20">
-          <xsl:value-of select="$latex-input"/>
-        </textarea>
-        <input type="submit" value="Go!" />
-        <input type="button" value="Clear Form" onclick="document.getElementById('inputBox').value=''" />
-      </div>
+      <fieldset><!-- NB: This additional fieldset container - as well as the div - fixes the 'width:100%' bug for textareas in IE -->
+        <div class="inputBox">
+          <textarea id="inputBox" name="input" rows="20" cols="120">
+            <xsl:value-of select="$latex-input"/>
+          </textarea>
+          <input type="submit" value="Go!" />
+          <input type="button" value="Clear Form" onclick="document.getElementById('inputBox').value=''" />
+        </div>
+      </fieldset>
     </form>
 
     <!-- Output -->
     <h3>Output </h3>
-    <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+    <xsl:if test="not($is-mathml-capable)">
+      <xsl:call-template name="maybe-make-mathml-legacy-output-warning"/>
+    </xsl:if>
     <div class="result">
       <xsl:copy-of select="node()"/>
     </div>

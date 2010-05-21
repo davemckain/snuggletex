@@ -29,7 +29,7 @@ All Rights Reserved
       <div class="warning">
         <p>
           Your browser does not support MathML so we have converted any MathML in this
-          page to either XHTML + CSS or images.
+          page to either XHTML + CSS or images, depending on how complex the MathML is.
         </p>
         <p>
           (Note: this statement will not necessarily be true if you are viewing

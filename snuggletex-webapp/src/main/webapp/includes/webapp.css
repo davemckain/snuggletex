@@ -158,6 +158,7 @@ pre.verbatim, .note, .result {
   padding: 1em;
   color: #333366;
   border: 1px solid #333366;
+  overflow: auto;
   -moz-border-radius: 1em;
   -webkit-border-radius: 1em;
 }
@@ -169,6 +170,14 @@ pre.verbatim, .note, .result {
   color: black;
   border: none;
   font-weight: bold;
+}
+
+fieldset {
+  border: none;
+}
+
+textarea {
+  width: 100%;
 }
 
 .inputBox {
@@ -287,5 +296,6 @@ a.upconversionExample {
 }
 
 #maincontent li {
+  margin-top: 1em;
   margin-bottom: 1em;
 }
