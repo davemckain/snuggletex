@@ -35,7 +35,7 @@ public interface W3CConstants {
     String XHTML_10_STRICT_SYSTEM_IDENTIFIER = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd";
 
     String XHTML_11_MATHML_20_PUBLIC_IDENTIFIER = "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN";
-    String XHTML_11_MATHML_20_SYSTEM_IDENTIFIER = "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd";
+    String XHTML_11_MATHML_20_SYSTEM_IDENTIFIER = "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd";
     
     //--------------------------------------------------
     // Namespaces
