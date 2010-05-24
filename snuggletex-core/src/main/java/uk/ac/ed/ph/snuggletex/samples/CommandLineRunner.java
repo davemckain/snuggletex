@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FIXME: Document this type!
+ * Trivial command line interface for running SnuggleTeX on a number of inputs files (or STDIN),
+ * supporting most of the XML- and web-based output options.
  * 
  * @since 1.2.2
  *
@@ -36,42 +37,43 @@ public class CommandLineRunner {
     private final String[] args;
     private final List<String> inputFiles;
     private WebPageOutputOptions snuggleOptions;
-    private boolean doingWeb;
+    private boolean requestedWebOutput;
     
     public CommandLineRunner(String[] args) {
         this.args = args;
         this.inputFiles = new ArrayList<String>();
         this.snuggleOptions = null;
-        this.doingWeb = false;
+        this.requestedWebOutput = false;
     }
     
     public void execute() {
         /* Show usage if nothing was provided on command line */
         if (args.length==0) {
-            usage();
+            showHelp();
             return;
         }
+        
         /* Parse arguments, show usage and exit if anything was invalid */
         try {
             if (!parseCommandLineArguments()) {
-                usage();
+                showUsage();
                 return;
             }
         }
         catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
-            usage();
+            showHelp();
             return;
         }
         
         /* Make sure we have at least one input file */
         if (inputFiles.isEmpty()) {
             System.err.println("No input files specified");
-            usage();
+            showHelp();
             return;
         }
         
-        /* Can now do actual SnuggleTeX work */
+        /* Now do actual SnuggleTeX work */
         SnuggleEngine engine = new SnuggleEngine();
         SnuggleSession session = engine.createSession();
         try {
@@ -90,11 +92,16 @@ public class CommandLineRunner {
             }
             
             /* Build output */
-            if (doingWeb) {
+            if (requestedWebOutput) {
                 session.writeWebPage(snuggleOptions, System.out, EndOutputAction.FLUSH);
             }
             else {
                 System.out.println(session.buildXMLString(snuggleOptions));
+            }
+         
+            /* Add a final newline after non-indented output as the default serializer tends not to include one */
+            if (!snuggleOptions.isIndenting()) {
+                System.out.println();
             }
         }
         catch (IOException e) {
@@ -108,7 +115,11 @@ public class CommandLineRunner {
         }
     }
     
-    private void usage() {
+    private void showHelp() {
+        System.out.println("For help and usage, use the -? option");
+    }
+    
+    private void showUsage() {
         InputStream usageStream = getClass().getClassLoader().getResourceAsStream("uk/ac/ed/ph/snuggletex/command-line-usage.txt");
         try {
             IOUtilities.transfer(usageStream, System.out);
@@ -127,50 +138,56 @@ public class CommandLineRunner {
          * or generating a web page
          */
         WebPageType webPageType = null;
-        for (String arg : args) {
-            if (arg.startsWith("-web:")) {
-                String webPageTypeName = arg.substring("-web:".length());
+        String arg, nextArg;
+        for (int i=0; i<args.length; i++) {
+            arg = args[i];
+            nextArg = i<args.length-1 ? args[i+1] : null;
+            if ("-web".equals(arg)) {
+                String webPageTypeName = nextArg;
+                if (webPageTypeName==null) {
+                    throw new IllegalArgumentException("No value provided for -web option");
+                }
                 try {
                     webPageType = WebPageType.valueOf(webPageTypeName);
-                    doingWeb = true;
+                    requestedWebOutput = true;
                 }
                 catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("Unknown web page type " + webPageTypeName);
                 }
+                i++; /* Skip over argument value */
             }
         }
         /* Now create appropriate Snuggle Options object. We're be slightly cheaty here
          * and use a WebPageOutputOptions even if doing XML output, as the required class is
          * just a proper subclass of this. 
          */
-        snuggleOptions = doingWeb ? WebPageOutputOptionsTemplates.createWebPageOptions(webPageType) : new WebPageOutputOptions();
+        snuggleOptions = requestedWebOutput ? WebPageOutputOptionsTemplates.createWebPageOptions(webPageType) : new WebPageOutputOptions();
         
         /* Now do second sweep over the arguments to read in everything else */ 
-        for (String arg : args) {
-            if (arg.equals("-")) {
+        for (int i=0; i<args.length; i++) {
+            arg = args[i];
+            nextArg = i<args.length-1 ? args[i+1] : null;
+            if ("-".equals(arg)) {
                 /* Represents STDIN here */
                 inputFiles.add(arg);
             }
-            else if (arg.equals("-?") || arg.equals("-h") || arg.equals("-help")) {
+            else if ("-?".equals(arg) || "-h".equals(arg) || "-help".equals(arg)) {
                 /* Show usage and exit */
                 return false;
             }
-            else if (arg.startsWith("-web:")) {
+            else if ("-web".equals(arg)) {
                 /* Did this earlier */
+                i++; /* (Skip over value) */
                 continue;
             }
             else if (arg.startsWith("-")) {
-                /* It's an -option:value pair */
-                String[] nameAndValue = arg.substring(1).split(":", 2);
-                if (nameAndValue.length==1) {
-                    throw new IllegalArgumentException("Options must be specified in the form -name:value");
+                /* It's an '-option value' pair */
+                if (nextArg==null) {
+                    throw new IllegalArgumentException("No value provided for " + arg + " option");
                 }
-                String name = nameAndValue[0];
-                String value = nameAndValue[1];
-                if ("web".equals(name)) {
-                    /* FILL IN */
-                }
-                else if ("enc".equals(name)) {
+                String name = arg.substring(1);
+                String value = nextArg;
+                if ("enc".equals(name)) {
                     snuggleOptions.setEncoding(value);
                 }
                 else if ("indent".equals(name)) {
@@ -209,6 +226,7 @@ public class CommandLineRunner {
                 else {
                     throw new IllegalArgumentException("Unknown option " + arg);
                 }
+                i++; /* (Skip over value) */
             }
             else {
                 /* Must be an input file */
@@ -230,7 +248,7 @@ public class CommandLineRunner {
         }
     }
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new CommandLineRunner(args).execute();
     }
 }
