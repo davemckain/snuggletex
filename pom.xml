@@ -11,7 +11,7 @@ All Rights Reserved
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.ed.ph.snuggletex</groupId>
   <artifactId>snuggletex</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2.2</version>
   <packaging>pom</packaging>
   <modules>
     <module>snuggletex-core</module>
@@ -22,10 +22,10 @@ All Rights Reserved
   <properties>
     <junit.version>4.8.1</junit.version>
     <easymock.version>2.5.2</easymock.version>
-    <jeuclid.version>3.1.8</jeuclid.version>
+    <jeuclid.version>3.1.9</jeuclid.version>
     <saxon9.version>9.1.0.8</saxon9.version>
     <slf4j.version>1.5.11</slf4j.version>
-    <log4j.version>1.2.14</log4j.version><!-- (1.2-SNAPSHOT5 has some annoying deps) -->
+    <log4j.version>1.2.14</log4j.version><!-- (1.2.15 has some annoying deps) -->
     <maven.site.url>http://snuggletex.sourceforge.net/maven/</maven.site.url>
   </properties>
   <repositories>
