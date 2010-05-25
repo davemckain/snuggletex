@@ -212,13 +212,13 @@ public class DOMOutputOptions implements Cloneable {
      * Sets the current {@link ErrorOutputOptions}, specifying how (and whether) error details
      * should be embedded into the resulting XML.
      * 
-     * @param errorOptions new {@link ErrorOutputOptions}, which must not be null.
+     * @param errorOutputOptions new {@link ErrorOutputOptions}, which must not be null.
      */
-    public void setErrorOutputOptions(ErrorOutputOptions errorOptions) {
-        if (errorOptions==null) {
+    public void setErrorOutputOptions(ErrorOutputOptions errorOutputOptions) {
+        if (errorOutputOptions==null) {
             throw new IllegalArgumentException("ErrorOutputOptions must not be null");
         }
-        this.errorOutputOptions = errorOptions;
+        this.errorOutputOptions = errorOutputOptions;
     }
     
     

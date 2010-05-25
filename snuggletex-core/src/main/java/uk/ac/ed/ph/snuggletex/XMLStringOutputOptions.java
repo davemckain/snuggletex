@@ -102,6 +102,37 @@ public class XMLStringOutputOptions extends DOMOutputOptions implements Serializ
     public void setIndenting(boolean indenting) {
         serializationOptions.setIndenting(indenting);
     }
+    
+    
+    /**
+     * Returns the indentation level to use when {@link #isIndenting()} returns true.
+     * (This is currently only supported if your underlying XSLT process is either Saxon
+     * or Xalan. This will be the case by if you have chosen to either use Saxon or use
+     * the default processor that ships with your Java platform.)
+     * <p>
+     * This must be a non-negative integer.
+     * The default value is {@link SerializationSpecifier#DEFAULT_INDENT}.
+     * 
+     * @since 1.2.3
+     */
+    public int getIndent() {
+        return serializationOptions.getIndent();
+    }
+    
+    /**
+     * Sets the indentation level to use when {@link #isIndenting()} returns true.
+     * (This is currently only supported if your underlying XSLT process is either Saxon
+     * or Xalan. This will be the case by if you have chosen to either use Saxon or use
+     * the default processor that ships with your Java platform.)
+     * <p>
+     * This must be a non-negative integer.
+     * The default value is {@link SerializationSpecifier#DEFAULT_INDENT}.
+     * 
+     * @since 1.2.3
+     */
+    public void setIndent(int indent) {
+        serializationOptions.setIndent(indent);
+    }
 
     
     /**

@@ -32,6 +32,9 @@ public interface SerializationSpecifier {
     /** Default encoding to use */
     public static final String DEFAULT_ENCODING = "UTF-8";
     
+    /** Default indent to use when {@link #isIndenting()} returns true */
+    public static final int DEFAULT_INDENT = 2;
+    
     /**
      * Gets the {@link SerializationMethod} to use when generating the final output.
      * <p>
@@ -88,6 +91,30 @@ public interface SerializationSpecifier {
      * @param indenting true to indent, false otherwise.
      */
     void setIndenting(boolean indenting);
+    
+    /**
+     * Returns the indentation level to use when {@link #isIndenting()} returns true.
+     * (This is currently only supported if your underlying XSLT process is either Saxon
+     * or Xalan. This will be the case by if you have chosen to either use Saxon or use
+     * the default processor that ships with your Java platform.)
+     * <p>
+     * This must be a non-negative integer.
+     * 
+     * @since 1.2.3
+     */
+    int getIndent();
+    
+    /**
+     * Sets the indentation level to use when {@link #isIndenting()} returns true.
+     * (This is currently only supported if your underlying XSLT process is either Saxon
+     * or Xalan. This will be the case by if you have chosen to either use Saxon or use
+     * the default processor that ships with your Java platform.)
+     * <p>
+     * This must be a non-negative integer.
+     * 
+     * @since 1.2.3
+     */
+    void setIndent(int indent);
     
     
     /**

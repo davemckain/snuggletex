@@ -28,6 +28,7 @@ public final class SerializationOptions implements SerializationSpecifier, Clone
     private SerializationMethod serializationMethod;
     private String encoding;
     private boolean indenting;
+    private int indent;
     private boolean includingXMLDeclaration;
     private boolean usingNamedEntities;
     private String doctypePublic;
@@ -35,7 +36,8 @@ public final class SerializationOptions implements SerializationSpecifier, Clone
     
     public SerializationOptions() {
         this.serializationMethod = SerializationMethod.XML;
-        this.encoding = DEFAULT_ENCODING;
+        this.encoding = SerializationSpecifier.DEFAULT_ENCODING;
+        this.indent = SerializationSpecifier.DEFAULT_INDENT;
     }
     
     /**
@@ -107,6 +109,40 @@ public final class SerializationOptions implements SerializationSpecifier, Clone
      */
     public void setIndenting(boolean indenting) {
         this.indenting = indenting;
+    }
+    
+    
+    /**
+     * Returns the indentation level to use when {@link #isIndenting()} returns true.
+     * (This is currently only supported if your underlying XSLT process is either Saxon
+     * or Xalan. This will be the case by if you have chosen to either use Saxon or use
+     * the default processor that ships with your Java platform.)
+     * <p>
+     * This must be a non-negative integer.
+     * The default value is {@link SerializationSpecifier#DEFAULT_INDENT}.
+     * 
+     * @since 1.2.3
+     */
+    public int getIndent() {
+        return indent;
+    }
+    
+    /**
+     * Sets the indentation level to use when {@link #isIndenting()} returns true.
+     * (This is currently only supported if your underlying XSLT process is either Saxon
+     * or Xalan. This will be the case by if you have chosen to either use Saxon or use
+     * the default processor that ships with your Java platform.)
+     * <p>
+     * This must be a non-negative integer.
+     * The default value is {@link SerializationSpecifier#DEFAULT_INDENT}.
+     * 
+     * @since 1.2.3
+     */
+    public void setIndent(int indent) {
+        if (indent<0) {
+            throw new IllegalArgumentException("indent must be non-negative");
+        }
+        this.indent = indent;
     }
     
     
