@@ -13,6 +13,11 @@ command line options as required:
 -help
     Show usage and exit
 
+-quiet
+    Suppress the output of parsing errors (to STDERR). You can
+    still embed parsing errors into the output using the
+    -errors option.
+
 -web TYPE
     Generate a web page of given type, rather than plain XML
     output.
@@ -27,11 +32,54 @@ command line options as required:
     Note that some of these types will set sensible values
     for other options; you can override these if required.
 
+-errors OPTION
+    Specify how to embed parsing errors into the resulting XML.
+    Allowable options are:
+      NO_OUTPUT - don't embed error messages into the output.
+      XML_SHORT - include basic XML error elements
+      XML_FULL  - include full XML error elements
+      XHTML     - include XHTML-formatted error details.
+    By default, error messages are also sent to STDERR unless
+    using the -quiet option.
+
+-inclinecss [true|false|1|0|on|off]
+    If true, any required CSS is inlined in the resulting XHTML
+    elements via style attributes.
+    See also -css
+
+-xhtmlprefix PREFIX
+    Prefix to use for XHTML elements.
+    Empty string denotes no prefix.
+    Default is no prefix.
+
+-mathmlprefix PREFIX
+    Prefix to use for MathML elements.
+    Empty string denotes no prefix.
+    Default is no prefix.
+
+-snugglexmlprefix PREFIX
+    Prefix to use for any custom SnuggleTeX XML elements, such
+    as error message elements.
+    Empty string denotes no prefix.
+    Default is 's'.
+
+-annotatemathml [true|false|1|0|on|off]
+    Set to true to annotate MathML elements with the LaTeX input
+    source.
+
+-mathvariantmapping [true|false|1|0|on|off]
+    Set to true to perform automatic mapping of safe Unicode
+    characters when applying certain "stylings", as described
+    in DOMOutputOptions.setMathVariantMapping().
+
 -enc ENCODING
     Generate XML encoded using the given encoding
 
--indent [true|false|1|0|on|off]
-    Specify whether to indent the resulting XML or not
+-indent AMOUNT
+    Instructs the underlying XSLT processor to indent the generated
+    XML by the given amount, which must be a non-negative integer.
+    0 is interpreted as "no indent".
+    (This only works with Saxon and Xalan.)
 
 -xmldecl [true|false|1|0|on|off]
     Specify whether to include an XML declaration at the top
@@ -68,7 +116,8 @@ command line options as required:
 -style [true|false|1|0|on|off]
     Determines whether to embed CSS within a <style>..</style>
     section in XHTML output.
-    (Only used when generating web pages.)
+    (Only used when generating web pages. This is ignored if
+    -inlinecss is used.)
 
 -css URL
     Add the given URL as a CSS stylesheet link in the XHTML output

@@ -12,6 +12,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptionsTemplates;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleSession.EndOutputAction;
 import uk.ac.ed.ph.snuggletex.WebPageOutputOptions.WebPageType;
 import uk.ac.ed.ph.snuggletex.internal.util.IOUtilities;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,39 +40,41 @@ public class CommandLineRunner {
     private final List<String> inputFiles;
     private WebPageOutputOptions snuggleOptions;
     private boolean requestedWebOutput;
+    private boolean isQuiet;
     
     public CommandLineRunner(String[] args) {
         this.args = args;
         this.inputFiles = new ArrayList<String>();
         this.snuggleOptions = null;
         this.requestedWebOutput = false;
+        this.isQuiet = false;
     }
     
-    public void execute() {
+    public int execute() {
         /* Show usage if nothing was provided on command line */
         if (args.length==0) {
             showHelp();
-            return;
+            return 1;
         }
         
         /* Parse arguments, show usage and exit if anything was invalid */
         try {
             if (!parseCommandLineArguments()) {
                 showUsage();
-                return;
+                return 1;
             }
         }
         catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
             showHelp();
-            return;
+            return 1;
         }
         
         /* Make sure we have at least one input file */
         if (inputFiles.isEmpty()) {
             System.err.println("No input files specified");
             showHelp();
-            return;
+            return 1;
         }
         
         /* Now do actual SnuggleTeX work */
@@ -98,21 +102,19 @@ public class CommandLineRunner {
             else {
                 System.out.println(session.buildXMLString(snuggleOptions));
             }
-         
-            /* Add a final newline after non-indented output as the default serializer tends not to include one */
-            if (!snuggleOptions.isIndenting()) {
-                System.out.println();
-            }
+            System.out.println();
         }
         catch (IOException e) {
             System.err.println("Got IOException running SnuggleTeX: " + e.getMessage());
         }
 
-        
-        /* Show any errors the were generated */
-        for (InputError error : session.getErrors()) {
-            System.err.println(MessageFormatter.formatErrorAsString(error));
+        /* Maybe show any errors the were generated */
+        if (!isQuiet) {
+            for (InputError error : session.getErrors()) {
+                System.err.println(MessageFormatter.formatErrorAsString(error));
+            }
         }
+        return 0;
     }
     
     private void showHelp() {
@@ -152,7 +154,9 @@ public class CommandLineRunner {
                     requestedWebOutput = true;
                 }
                 catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Unknown web page type " + webPageTypeName);
+                    throw new IllegalArgumentException("Unknown web page type " + webPageTypeName
+                            + ". Legal values are"
+                            + Arrays.asList(WebPageType.values()));
                 }
                 i++; /* Skip over argument value */
             }
@@ -180,6 +184,10 @@ public class CommandLineRunner {
                 i++; /* (Skip over value) */
                 continue;
             }
+            else if ("-quiet".equals(arg)) {
+                /* Global option */
+                isQuiet = true;
+            }
             else if (arg.startsWith("-")) {
                 /* It's an '-option value' pair */
                 if (nextArg==null) {
@@ -187,14 +195,81 @@ public class CommandLineRunner {
                 }
                 String name = arg.substring(1);
                 String value = nextArg;
-                if ("enc".equals(name)) {
-                    snuggleOptions.setEncoding(value);
+                if ("indent".equals(name)) {
+                    int indentAmount = 0;
+                    boolean badIndent = false;
+                    try {
+                        indentAmount = Integer.parseInt(value);
+                        badIndent = indentAmount < 0;
+                    }
+                    catch (NumberFormatException e) {
+                        badIndent = true;
+                    }
+                    if (badIndent) {
+                        throw new IllegalArgumentException("Indent amount must be a non-negative integer");
+                    }
+                    if (indentAmount==0) {
+                        snuggleOptions.setIndenting(false);
+                    }
+                    else {
+                        snuggleOptions.setIndenting(true);
+                        snuggleOptions.setIndent(indentAmount);
+                    }
                 }
-                else if ("indent".equals(name)) {
-                    snuggleOptions.setIndenting(parseBoolean(name, value));
+                else if ("errors".equals(name)) {
+                    try {
+                        snuggleOptions.setErrorOutputOptions(ErrorOutputOptions.valueOf(value));
+                    }
+                    catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Unknown errors option " + value
+                                + ". Legal values are "
+                                + Arrays.asList(ErrorOutputOptions.values()));
+                    }
+                }
+                else if ("inlinecss".equals(name)) {
+                    snuggleOptions.setInliningCSS(parseBoolean(name, value));
+                }
+                else if ("xhtmlprefix".equals(name)) {
+                    if (value.length()>0) {
+                        snuggleOptions.setXHTMLPrefix(value);
+                        snuggleOptions.setPrefixingXHTML(true);
+                    }
+                    else {
+                        snuggleOptions.setPrefixingXHTML(false);
+                    }
+                }
+                else if ("mathmlprefix".equals(name)) {
+                    if (value.length()>0) {
+                        snuggleOptions.setMathMLPrefix(value);
+                        snuggleOptions.setPrefixingMathML(true);
+                    }
+                    else {
+                        snuggleOptions.setPrefixingMathML(false);
+                    }
+                }
+                else if ("snugglexmlprefix".equals(name)) {
+                    if (value.length()>0) {
+                        snuggleOptions.setSnuggleXMLPrefix(value);
+                        snuggleOptions.setPrefixingSnuggleXML(true);
+                    }
+                    else {
+                        snuggleOptions.setPrefixingSnuggleXML(false);
+                    }
+                }
+                else if ("annotatemathml".equals(name)) {
+                    snuggleOptions.setAddingMathSourceAnnotations(parseBoolean(name, value));
+                }
+                else if ("mathvariantmapping".equals(name)) {
+                    snuggleOptions.setMathVariantMapping(parseBoolean(name, value));
+                }
+                else if ("enc".equals(name)) {
+                    snuggleOptions.setEncoding(value);
                 }
                 else if ("xmldecl".equals(name)) {
                     snuggleOptions.setIncludingXMLDeclaration(parseBoolean(name, value));
+                }
+                else if ("entities".equals(name)) {
+                    snuggleOptions.setUsingNamedEntities(parseBoolean(name, value));
                 }
                 else if ("dtpublic".equals(name)) {
                     snuggleOptions.setDoctypePublic(value);
@@ -249,6 +324,6 @@ public class CommandLineRunner {
     }
     
     public static void main(String[] args) {
-        new CommandLineRunner(args).execute();
+        System.exit(new CommandLineRunner(args).execute());
     }
 }
