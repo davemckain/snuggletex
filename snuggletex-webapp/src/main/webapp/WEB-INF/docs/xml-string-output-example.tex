@@ -22,10 +22,7 @@ options.setSerializationMethod(SerializationMethod.XHTML);
 options.setIndenting(true);
 options.setEncoding("UTF-8");
 options.setAddingMathSourceAnnotations(true);
-if (engine.getStylesheetManager().supportsXSLT20()) {
-    /* Caller has an XSLT 2.0 processor, so let's output named entities for readability */
-    options.setUsingNamedEntities(true);
-}
+options.setUsingNamedEntities(true); /* (Only used if caller has an XSLT 2.0 processor) */
 
 /* Convert the results to an XML String, which in this case will
  * be a single MathML <math>...</math> element. */
@@ -43,48 +40,73 @@ You can run this on the command line with:
 of course need to provide a path if it is not. You should also substitute
 \verb|n.n.n| for the actual version number attached to your SnuggleTeX JAR.)
 
+Under the hood, this uses the default XSLT 1.0 processor that comes bundled
+with your Java install, which does not support all of the available SnuggleTeX
+output options. In particular, the \verb|SerializationMethod.XHTML| option
+set in the example code requires XSLT 2.0, so SnuggleTeX will actually give you a
+\verb|SerializationMethod.XML| output instead if you only have XSLT 1.0,
+which does not include some XHTML specific niceties.
+Also, the \verb|setUsingNamedEntities()| option also requires XSLT 2.0 and is silently
+ignored here.
+If having either of these features in your output is important, you can use the
+\href[full SnuggleTeX distribution]{docs://download}, which includes the Saxon XSLT 2.0
+processor, and run the example with:
+
+\begin{verbatim}java -classpath snuggletex-core-n.n.n.jar:saxon9-9.1.n.n.jar:saxon9-dom-9.1.n.n.jar \
+  uk.ac.ed.ph.snuggletex.samples.XMLStringOutputExample\end{verbatim}
+
+(I have used a \verb|\| character here to split the input into multiple lines for readability.
+Input this command as a single line if your shell or command prompt does not support this feature.)
+
+This adds the Saxon XSLT processor to the ClassPath, which is enough for SnuggleTeX to find it.
+
 When run, you should get an output like:
 
 \begin{verbatim}
 <h2 xmlns="http://www.w3.org/1999/xhtml">The quadratic formula</h2>
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-   <semantics>
-      <mfrac>
-         <mrow>
+  <semantics>
+    <mfrac>
+      <mrow>
+        <mo>-</mo>
+        <mi>b</mi>
+        <mo>&pm;</mo>
+        <msqrt>
+          <mrow>
+            <msup>
+              <mi>b</mi>
+              <mn>2</mn>
+            </msup>
             <mo>-</mo>
-            <mi>b</mi>
-            <mo>&pm;</mo>
-            <msqrt>
-               <mrow>
-                  <msup>
-                     <mi>b</mi>
-                     <mn>2</mn>
-                  </msup>
-                  <mo>-</mo>
-                  <mn>4</mn>
-                  <mi>a</mi>
-                  <mi>c</mi>
-               </mrow>
-            </msqrt>
-         </mrow>
-         <mrow>
-            <mn>2</mn>
+            <mn>4</mn>
             <mi>a</mi>
-         </mrow>
-      </mfrac>
-      <annotation encoding="SnuggleTeX">$$ \frac{-b \pm \sqrt{b^2-4ac}}{2a} $$</annotation>
-   </semantics>
+            <mi>c</mi>
+          </mrow>
+        </msqrt>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+        <mi>a</mi>
+      </mrow>
+    </mfrac>
+    <annotation encoding="SnuggleTeX">$$ \frac{-b \pm \sqrt{b^2-4ac}}{2a} $$</annotation>
+  </semantics>
 </math>
 \end{verbatim}
 
+(This is actually the output when using Saxon, as you will see from the \verb|&pm;| entity. If you
+had run using the default XSLT 1.0 processor, you would get an actual $\pm$ character in the output.)
+
 In this example, we have used an \verb|XMLStringOutputOptions| Object to control the type
-of output we obtain, asking for the resulting XML to be written out as XHTML, encoded
-in UTF-8 and indented. The \verb|setAddingMathSourceAnnotations(true)| causes SnuggleTeX
+of output we obtain, asking for the resulting XML to be written out using XHTML conventions
+(if possible), encoded in UTF-8 and indented by the default indentation amount of two spaces.
+The \verb|setAddingMathSourceAnnotations(true)| causes SnuggleTeX
 to add in a \verb|<annotation/>| element to each MathML generated showing the original
 LaTeX source for each bit of mathematics, which can sometimes be useful. Additionally,
 the \verb|setUsingNamedEntities(true)| causes SnuggleTeX to write out mathematical symbols
 as named XML entities rather than numerical character references. This is useful here as it
 makes the output more readable, but is not something you would want to want all of the time
 as it requies your XML to be accompanied by an appropriate DTD if you want it to be parseable.
-(Note also that this feature requires an XSLT 2.0 processor, such as Saxon, bundled with the
-full SnuggleTeX distribution.)
+(Note again that the XHTML output and named entities features require an XSLT
+2.0 processor, such as Saxon, bundled with the full SnuggleTeX distribution. They will be
+silently ignored otherwise.)

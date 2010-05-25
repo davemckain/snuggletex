@@ -38,10 +38,7 @@ public final class XMLStringOutputExample {
         options.setIndenting(true);
         options.setEncoding("UTF-8");
         options.setAddingMathSourceAnnotations(true);
-        if (engine.getStylesheetManager().supportsXSLT20()) {
-            /* Caller has an XSLT 2.0 processor, so let's output named entities for readability */
-            options.setUsingNamedEntities(true);
-        }
+        options.setUsingNamedEntities(true); /* (Only used if caller has an XSLT 2.0 processor) */
         
         /* Convert the results to an XML String, which in this case will
          * be a single MathML <math>...</math> element. */

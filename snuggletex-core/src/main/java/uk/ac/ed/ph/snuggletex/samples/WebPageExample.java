@@ -32,7 +32,7 @@ public final class WebPageExample {
         SnuggleSession session = engine.createSession();
         
         /* Parse some very basic Math Mode input */
-        SnuggleInput input = new SnuggleInput("$$ e^{i\\pi} = -1 $$");
+        SnuggleInput input = new SnuggleInput("$$ a^2 = b^2 + c^2 $$");
         session.parseInput(input);
         
         /* Create "options" Object to SnuggleTeX what kind of web page we want. We're going

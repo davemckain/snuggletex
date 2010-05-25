@@ -14,7 +14,7 @@ SnuggleEngine engine = new SnuggleEngine();
 SnuggleSession session = engine.createSession();
 
 /* Parse some very basic Math Mode input */
-SnuggleInput input = new SnuggleInput("$$ e^{i\\pi} = -1 $$");
+SnuggleInput input = new SnuggleInput("$$ a^2 = b^2 + c^2 $$");
 session.parseInput(input);
 \end{verbatim}
 
@@ -51,31 +51,35 @@ You can run this on the command line with:
 When run, you should get an output like:
 
 \begin{verbatim}
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-   <head>
-      <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type" />
-      <meta content="SnuggleTeX" name="Generator" />
-      <title>My Web Page</title>
-   </head>
-   <body>
-      <h1>My Web Page</h1>
-      <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-         <semantics>
-            <mrow>
-               <msup>
-                  <mi>e</mi>
-                  <mrow>
-                     <mi>i</mi>
-                     <mi>π</mi>
-                  </mrow>
-               </msup>
-               <mo>=</mo>
-               <mo>-</mo>
-               <mn>1</mn>
-            </mrow>
-            <annotation encoding="SnuggleTeX">$$ e^{i\pi} = -1 $$</annotation>
-         </semantics>
-      </math>
-   </body>
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="SnuggleTeX" name="Generator"/>
+    <title>My Web Page</title>
+  </head>
+  <body>
+    <h1>My Web Page</h1>
+    <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+      <semantics>
+        <mrow>
+          <msup>
+            <mi>a</mi>
+            <mn>2</mn>
+          </msup>
+          <mo>=</mo>
+          <msup>
+            <mi>b</mi>
+            <mn>2</mn>
+          </msup>
+          <mo>+</mo>
+          <msup>
+            <mi>c</mi>
+            <mn>2</mn>
+          </msup>
+        </mrow>
+        <annotation encoding="SnuggleTeX">$$ a^2 = b^2 + c^2 $$</annotation>
+      </semantics>
+    </math>
+  </body>
 </html>
 \end{verbatim}
