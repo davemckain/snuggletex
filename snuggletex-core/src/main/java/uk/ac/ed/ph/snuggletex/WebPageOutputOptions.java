@@ -340,6 +340,9 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * resulting page. If you choose not to do this, you probably want to put <tt>snuggletex.css</tt>
      * somewhere accessible and pass its location in via {@link #setClientSideXSLTStylesheetURLs(String...)}.
      * <p>
+     * As of SnuggleTeX 1.2.3, this option is ignored if {@link #isInliningCSS()} returns true as its
+     * effect is clearly redundant in this case.
+     * <p>
      * Default is true, as that's the simplest way of getting up to speed quickly.
      */
     public boolean isIncludingStyleElement() {
@@ -350,6 +353,9 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * Sets whether to include SnuggleTeX-related CSS as a <tt>style</tt> element within the
      * resulting page. If you choose not to do this, you probably want to put <tt>snuggletex.css</tt>
      * somewhere accessible and pass its location in via {@link #setClientSideXSLTStylesheetURLs(String...)}.
+     * <p>
+     * As of SnuggleTeX 1.2.3, this option is ignored if {@link #isInliningCSS()} returns true as its
+     * effect is clearly redundant in this case.
      * 
      * @param includingStyleElement set to true to include a <tt>style</tt> element, false otherwise.
      */

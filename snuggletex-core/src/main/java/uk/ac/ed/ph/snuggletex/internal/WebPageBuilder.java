@@ -66,10 +66,10 @@ public final class WebPageBuilder {
         }
         
         /* Create <body/> and maybe add title header */
-        Element body = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "body");
+        Element body = createXHTMLElement(document, "body");
         String title = options.getTitle();
         if (title!=null && options.isAddingTitleHeading()) {
-            Element titleHeader = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "h1");
+            Element titleHeader = createXHTMLElement(document, "h1");
             titleHeader.appendChild(document.createTextNode(title));
             body.appendChild(titleHeader);
         }
@@ -79,7 +79,7 @@ public final class WebPageBuilder {
         domBuildingController.buildDOMSubtree(body, fixedTokens);
         
         /* Build <head/> */
-        Element head = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "head");
+        Element head = createXHTMLElement(document, "head");
         
         /* Do template-y stuff */
         WebPageType pageType = options.getWebPageType();
@@ -89,7 +89,7 @@ public final class WebPageBuilder {
              * the <head/> element. Getting any of this in the wrong order will fail
              * to make MathPlayer work.
              */
-            Element object = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "object");
+            Element object = createXHTMLElement(document, "object");
             object.setAttribute("id", "MathPlayer");
             object.setAttribute("classid", "clsid:32F66A20-7614-11D4-BD11-00104BD3F987");
             head.appendChild(object);
@@ -103,20 +103,20 @@ public final class WebPageBuilder {
 
         /* Add content type <meta/> element. (The serializer might add another of these but let's
          * be safe as we don't know what's going to happen at this point.) */
-        Element meta = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "meta");
+        Element meta = createXHTMLElement(document, "meta");
         meta.setAttribute("http-equiv", "Content-Type");
         meta.setAttribute("content", computeMetaContentType());
         head.appendChild(meta);
         
         /* Add common relevant metadata */
-        meta = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "meta");
+        meta = createXHTMLElement(document, "meta");
         meta.setAttribute("name", "Generator");
         meta.setAttribute("content", "SnuggleTeX");
         head.appendChild(meta);
         
         /* Add <title/>, if specified */
         if (title!=null) {
-            Element titleElement = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "title");
+            Element titleElement = createXHTMLElement(document, "title");
             titleElement.appendChild(document.createTextNode(options.getTitle()));
             head.appendChild(titleElement);
         }
@@ -126,7 +126,7 @@ public final class WebPageBuilder {
         if (cssStylesheetURLs!=null) {
             Element link;
             for (String url : cssStylesheetURLs) {
-                link = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "link");
+                link = createXHTMLElement(document, "link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("href", url);
                 head.appendChild(link);
@@ -134,8 +134,8 @@ public final class WebPageBuilder {
         }
         
         /* Maybe add <style>...</style> section. */
-        if (options.isIncludingStyleElement()) {
-            Element style = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "style");
+        if (options.isIncludingStyleElement() && !options.isInliningCSS()) {
+            Element style = createXHTMLElement(document, "style");
             style.setAttribute("type", "text/css");
             Properties cssProperties = CSSUtilities.readInlineCSSProperties(options);
             style.appendChild(document.createTextNode(CSSUtilities.writeStylesheet(cssProperties)));
@@ -143,7 +143,7 @@ public final class WebPageBuilder {
         }
         
         /* Create finished document */
-        Element html = document.createElementNS(W3CConstants.XHTML_NAMESPACE, "html");
+        Element html = createXHTMLElement(document, "html");
         
         /* Add pref:renderer attribute if doing USS */
         if (pageType==WebPageType.UNIVERSAL_STYLESHEET) {
@@ -189,6 +189,21 @@ public final class WebPageBuilder {
             }
         }
         return document;
+    }
+    
+    /**
+     * Helper to create XHTML elements, setting the correct namespace prefix if required by the
+     * underlying{@link WebPageOutputOptions}.
+     */
+    private Element createXHTMLElement(Document document, String elementLocalName) {
+        String qName;
+        if (options.isPrefixingXHTML()) {
+            qName = options.getXHTMLPrefix() + ":" + elementLocalName;
+        }
+        else {
+            qName = elementLocalName;
+        }
+        return document.createElementNS(W3CConstants.XHTML_NAMESPACE, qName);
     }
     
     /**
