@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
@@ -40,6 +42,8 @@ public final class SnuggleInput {
     /** 
      * An "identifier" for this input. This is used when formulating error messages. Clients
      * can use as they require - e.g. as a kind of System ID, URL or File name.
+     * <p>
+     * This must not be null.
      */
     private String identifier;
     
@@ -91,6 +95,27 @@ public final class SnuggleInput {
     private SnuggleInput(final InputType type, final String string, final File file,
             final InputStream inputStream, final Reader reader,
             final String identifier) {
+        ConstraintUtilities.ensureNotNull(identifier, "identifier");
+        switch (type) {
+            case STRING:
+                ConstraintUtilities.ensureNotNull(string, "string");
+                break;
+                
+            case FILE:
+                ConstraintUtilities.ensureNotNull(file, "file");
+                break;
+                
+            case INPUT_STREAM:
+                ConstraintUtilities.ensureNotNull(inputStream, "inputStream");
+                break;
+                
+            case READER:
+                ConstraintUtilities.ensureNotNull(reader, "reader");
+                break;
+                
+            default:
+                throw new SnuggleLogicException("Unexpected switch case " + type);
+        }
         this.type = type;
         this.string = string;
         this.file = file;
