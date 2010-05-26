@@ -55,6 +55,7 @@ public final class MathInputToImageServlet extends BaseServlet {
         String inputLaTeX = request.getParameter("input");
         if (inputLaTeX==null || inputLaTeX.trim().length()==0) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Empty input");
+            return;
         }
         /* Parse the LaTeX */
         SnuggleEngine engine = createSnuggleEngine();
