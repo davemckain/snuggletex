@@ -16,17 +16,73 @@ All Rights Reserved
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:s="http://www.ph.ed.ac.uk/snuggletex"
-  xmlns:util="ext://uk.ac.ed.ph.snuggletex.upconversion.UpConversionUtilities"
   xmlns:m="http://www.w3.org/1998/Math/MathML"
+  xmlns:util="ext://uk.ac.ed.ph.snuggletex.upconversion.UpConversionUtilities"
   xmlns="http://www.w3.org/1998/Math/MathML"
   exclude-result-prefixes="xs s m util">
+
+  <!-- Java properties file containing up-conversion error message deails -->
+  <xsl:variable name="error-codes" as="xs:string"
+    select="unparsed-text('error-messages.properties')"
+    use-when="not(function-available('util:getErrorMessage'))"/>
+
+  <xsl:function name="s:get-error-message" as="xs:string" use-when="function-available('util:getErrorMessage')">
+    <xsl:param name="code" as="xs:string"/>
+    <xsl:param name="arguments" as="xs:string*"/>
+    <xsl:value-of select="util:getErrorMessage($code, $arguments)"/>
+  </xsl:function>
+
+  <!--
+  Pure Java fall-back version of UpConversionUtilities#getErrorMessage()
+  that formats an up-conversion error message by parsing the Java properties file directly.
+
+  This makes it easier for people to use these stylesheets without requiring the underlying
+  SnuggleTeX Java code. However, there is no support for internationalisation here.
+
+  NOTE: There is no support for escaped characters in the property values (i.e. message
+  text) as we don't currently need them. Add this if it's required later.
+  -->
+  <xsl:function name="s:get-error-message" as="xs:string" use-when="not(function-available('util:getErrorMessage'))">
+    <xsl:param name="code" as="xs:string"/>
+    <xsl:param name="arguments" as="xs:string*"/>
+    <!-- Find the appropriate error message -->
+    <xsl:variable name="message" as="xs:string?">
+      <xsl:analyze-string select="$error-codes" regex="^{$code}=(.+?)$" flags="m">
+        <xsl:matching-substring>
+          <xsl:sequence select="regex-group(1)"/>
+        </xsl:matching-substring>
+      </xsl:analyze-string>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="exists($message)">
+        <!-- Replace argument placeholders -->
+        <xsl:variable name="replaced" as="item()*">
+          <xsl:analyze-string select="$message" regex="\{{(\d+)\}}">
+            <xsl:matching-substring>
+              <xsl:variable name="argument-index" as="xs:integer" select="xs:integer(regex-group(1))"/>
+              <xsl:value-of select="$arguments[position()=$argument-index + 1]"/>
+            </xsl:matching-substring>
+            <xsl:non-matching-substring>
+              <xsl:value-of select="."/>
+            </xsl:non-matching-substring>
+          </xsl:analyze-string>
+        </xsl:variable>
+        <xsl:value-of select="string-join($replaced, '')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="yes">
+          Error code <xsl:value-of select="$error-codes"/> is not present in default messages file
+        </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 
   <!-- Creates an "up-conversion failure" element <s:fail/> with the given arguments -->
   <xsl:function name="s:make-error" as="element(s:fail)">
     <xsl:param name="code" as="xs:string"/>
     <xsl:param name="context" as="element()+"/>
     <xsl:param name="arguments" as="xs:string*"/>
-    <s:fail code="{$code}" message="{util:getErrorMessage($code, $arguments)}">
+    <s:fail code="{$code}" message="{s:get-error-message($code, $arguments)}">
       <xsl:for-each select="$arguments">
         <s:arg><xsl:value-of select="."/></s:arg>
       </xsl:for-each>
