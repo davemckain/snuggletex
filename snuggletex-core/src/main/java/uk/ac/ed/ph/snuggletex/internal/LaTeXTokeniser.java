@@ -87,7 +87,7 @@ public final class LaTeXTokeniser {
      * 
      * See {@link #handleUserDefinedEnvironmentControl()}
      */
-    private static final String UDE_POST_BEGIN = "\u00a3";
+    private static final String UDE_POST_BEGIN = "\u0000";
     
     /**
      * Provides access to the current {@link SessionContext}.
