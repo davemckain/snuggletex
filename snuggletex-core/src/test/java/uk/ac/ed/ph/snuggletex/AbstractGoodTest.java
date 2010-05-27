@@ -14,6 +14,8 @@ import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
@@ -72,13 +74,29 @@ public abstract class AbstractGoodTest {
         return new SnuggleEngine().createSession();
     }
     
+    public static String massageInputLaTeX(String inputLaTeX) {
+        /* Allow %n for newlines */
+        String result = inputLaTeX.replace("%n", "\n");
+        
+        /* Allow %unnnn for arbitrary Unicode characters */
+        Pattern unicodePattern = Pattern.compile("%u([0-9a-fA-f]{4})");
+        Matcher matcher = unicodePattern.matcher(result);
+        StringBuffer resultBuilder = new StringBuffer();
+        while (matcher.find()) {
+            String hex = matcher.group(1);
+            resultBuilder.append((char) Integer.parseInt(hex, 16));
+        }
+        matcher.appendTail(resultBuilder);
+        return resultBuilder.toString();
+    }
+    
     protected Document runSnuggleProcessSuccessfully() throws Throwable {
         /* We'll drive the process manually as that gives us richer information if something
          * goes wrong.
          */
         
         SnuggleSession session = createSnuggleSession();
-        SnuggleInputReader inputReader = new SnuggleInputReader(session, new SnuggleInput(inputLaTeX));
+        SnuggleInputReader inputReader = new SnuggleInputReader(session, new SnuggleInput(massageInputLaTeX(inputLaTeX)));
         
         /* Tokenise */
         LaTeXTokeniser tokeniser = new LaTeXTokeniser(session);

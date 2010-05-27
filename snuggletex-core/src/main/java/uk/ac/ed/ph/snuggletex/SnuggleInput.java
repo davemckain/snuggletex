@@ -26,10 +26,10 @@ public final class SnuggleInput {
         /** Input is read from a String */
         STRING,
         
-        /** Input is read from a File using the platform default encoding */
+        /** Input is read from a File using either a specified encoding or the platform default encoding */
         FILE,
         
-        /** Input is read from an {@link InputStream} using the platform default encoding */
+        /** Input is read from an {@link InputStream} using either a specified encoding or the platform default encoding */
         INPUT_STREAM,
         
         /** Input is read from a {@link Reader} */
@@ -53,6 +53,12 @@ public final class SnuggleInput {
      */
     private URI uri;
     
+    /**
+     * The encoding for this input, used for {@link InputType#FILE} and {@link InputType#INPUT_STREAM}.
+     * If null, we use the platform default encoding.
+     */
+    private String encoding;
+    
     private final String string;
     private final File file;
     private final InputStream inputStream;
@@ -65,7 +71,7 @@ public final class SnuggleInput {
     }
     
     public SnuggleInput(final String string, final String identifier) {
-        this(InputType.STRING, string, null, null, null, identifier);
+        this(InputType.STRING, string, null, null, null, identifier, null);
     }
     
     public SnuggleInput(final File file) {
@@ -73,7 +79,11 @@ public final class SnuggleInput {
     }
     
     public SnuggleInput(final File file, final String identifier) {
-        this(InputType.FILE, null, file, null, null, identifier);
+        this(InputType.FILE, null, file, null, null, identifier, null);
+    }
+    
+    public SnuggleInput(final File file, final String identifier, String encoding) {
+        this(InputType.FILE, null, file, null, null, identifier, encoding);
     }
     
     public SnuggleInput(final InputStream inputStream) {
@@ -81,7 +91,11 @@ public final class SnuggleInput {
     }
     
     public SnuggleInput(final InputStream inputStream, final String identifier) {
-        this(InputType.INPUT_STREAM, null, null, inputStream, null, identifier);
+        this(InputType.INPUT_STREAM, null, null, inputStream, null, identifier, null);
+    }
+    
+    public SnuggleInput(final InputStream inputStream, final String identifier, final String encoding) {
+        this(InputType.INPUT_STREAM, null, null, inputStream, null, identifier, encoding);
     }
     
     public SnuggleInput(final Reader reader) {
@@ -89,12 +103,12 @@ public final class SnuggleInput {
     }
     
     public SnuggleInput(final Reader reader, final String identifier) {
-        this(InputType.READER, null, null, null, reader, identifier);
+        this(InputType.READER, null, null, null, reader, identifier, null);
     }
     
     private SnuggleInput(final InputType type, final String string, final File file,
             final InputStream inputStream, final Reader reader,
-            final String identifier) {
+            final String identifier, final String encoding) {
         ConstraintUtilities.ensureNotNull(identifier, "identifier");
         switch (type) {
             case STRING:
@@ -122,6 +136,7 @@ public final class SnuggleInput {
         this.inputStream = inputStream;
         this.reader = reader;
         this.identifier = identifier;
+        this.encoding = encoding;
     }
     
     /** 
@@ -168,7 +183,15 @@ public final class SnuggleInput {
     public void setURI(URI uri) {
         this.uri = uri;
     }
-
+    
+    
+    public String getEncoding() {
+        return encoding;
+    }
+    
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     /**
      * Returns the String that provided this input if type is {@link InputType#STRING}, null

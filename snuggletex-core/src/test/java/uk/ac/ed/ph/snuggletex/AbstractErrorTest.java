@@ -40,13 +40,10 @@ public abstract class AbstractErrorTest {
     
     @Test
     public void runTest() throws Throwable {
-        /* Convert %n in input LaTeX to a newline (cheap hack for simple multi-line inputs!) */
-        String inputLaTeXLines = inputLaTeX.replace("%n", "\n");
-        
         /* Parse document and build XML */
         SnuggleSession session = createSnuggleSession();
         try {
-            session.parseInput(new SnuggleInput(inputLaTeXLines));
+            session.parseInput(new SnuggleInput(AbstractGoodTest.massageInputLaTeX(inputLaTeX)));
             session.buildXMLString();
         }
         catch (Exception e) {
@@ -70,8 +67,6 @@ public abstract class AbstractErrorTest {
             expectedErrorCodeData = expectedErrorCodeData.substring(0, expectedErrorCodeData.length()-3);
         }
         String[] expectedErrorCodes = expectedErrorCodeData.split(",\\s*");
-        
-        /* FINISH ME OFF! */
         
         /* Now check things */
         if (!compare(expectedErrorCodes, actualErrorCodes, isWildcard)) {

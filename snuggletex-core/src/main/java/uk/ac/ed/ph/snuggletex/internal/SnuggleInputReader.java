@@ -13,15 +13,17 @@ import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Helper class that does the job of taking a {@link SnuggleInput}, checking its contents for
- * ASCII characters, working out how to map absolute offsets into <tt>(line,column)</tt> pairs
- * and producing a {@link WorkingDocument} for later use.
+ * allowed Unicode characters, working out how to map absolute offsets into <tt>(line,column)</tt>
+ * pairs and producing a {@link WorkingDocument} for later use.
  * 
  * @author  David McKain
  * @version $Revision$
@@ -56,8 +58,8 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
         StringBuilder inputData = readInputData();
         this.inputLength = inputData.length();
         
-        /* Go through data, checking it is ASCII and calculating indices of newlines */
-        this.newlineIndices = calculateNewlineIndicesAndCheckASCII(inputData);
+        /* Go through data, calculating indices of newlines */
+        this.newlineIndices = calculateNewlineIndicesAndCheckCodePoints(inputData);
         
         /* Then create a WorkingDocument that can be passed to the LaTeX tokeniser for messing with */
         this.resultingDocument = new WorkingDocument(inputData, this);
@@ -86,12 +88,10 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
                 return new StringBuilder(input.getString());
 
             case FILE:
-                /* (Assumes platform default encoding) */
-                return readCharacterStream(new InputStreamReader(new FileInputStream(input.getFile())));
+                return readCharacterStream(createReader(new FileInputStream(input.getFile()), input.getEncoding()));
 
             case INPUT_STREAM:
-                /* (Assumes platform default encoding) */
-                return readCharacterStream(new InputStreamReader(input.getInputStream()));
+                return readCharacterStream(createReader(input.getInputStream(), input.getEncoding()));
 
             case READER:
                 return readCharacterStream(input.getReader());
@@ -99,6 +99,10 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
             default:
                 throw new SnuggleLogicException("Unexpected switch case: " + input.getType());
         }
+    }
+    
+    private Reader createReader(InputStream inputStream, String encoding) throws UnsupportedEncodingException {
+        return encoding!=null ? new InputStreamReader(inputStream, encoding) : new InputStreamReader(inputStream);
     }
     
     private StringBuilder readCharacterStream(Reader reader) throws IOException {
@@ -114,25 +118,62 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
         return result;
     }
 
-    private int[] calculateNewlineIndicesAndCheckASCII(StringBuilder inputData) throws SnuggleParseException {
+    private int[] calculateNewlineIndicesAndCheckCodePoints(StringBuilder inputData) throws SnuggleParseException {
         List<Integer> newlineIndicesBuilder = new ArrayList<Integer>();
         newlineIndicesBuilder.add(Integer.valueOf(-1));
-        int c;
-        for (int i=0, length=inputData.length(); i<length; i++) {
-            c = inputData.charAt(i);
-            if (c=='\n') {
+        char lastChar = 0;
+        char thisChar; /* (16 bit char only) */
+        int codePoint; /* (Full Unicode code point */
+        for (int i=0, length=inputData.length(); i<length; i++, lastChar=thisChar) {
+            thisChar = inputData.charAt(i);
+            if (thisChar=='\n') {
                 newlineIndicesBuilder.add(Integer.valueOf(i));
             }
-            if ((c<32 && !Character.isWhitespace(c) || c > 126)) {
-                InputError error = new InputError(CoreErrorCode.TTEG02, null,
-                        Character.toString((char) c),
-                        Integer.toHexString(c),
+            if (Character.isHighSurrogate(lastChar)) {
+                if (Character.isLowSurrogate(thisChar)) {
+                    codePoint = Character.toCodePoint(lastChar, thisChar);
+                }
+                else {
+                    /* Error: last was bad surrogate character */
+                    InputError error = new InputError(CoreErrorCode.TTEG05, null,
+                            Integer.toHexString(lastChar),
+                            Integer.valueOf(i-1));
+                    sessionContext.registerError(error);
+                    inputData.setCharAt(i-1, ' ');
+                    continue;
+                }
+            }
+            else if (Character.isLowSurrogate(thisChar)) {
+                /* Error: this is bad surrogate character */
+                InputError error = new InputError(CoreErrorCode.TTEG05, null,
+                        Integer.toHexString(thisChar),
                         Integer.valueOf(i));
                 sessionContext.registerError(error);
-                inputData.setCharAt(i, 'x');
+                inputData.setCharAt(i, ' ');
+                continue;
             }
-            
+            else {
+                codePoint = thisChar;
+            }
+            /* Check that we allow this codepoint */
+            if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
+                InputError error = new InputError(CoreErrorCode.TTEG02, null,
+                        Integer.toHexString(codePoint),
+                        Integer.valueOf(i));
+                sessionContext.registerError(error);
+                inputData.setCharAt(i, ' ');
+            }
         }
+        /* Make sure last character wasn't surrogate pair starter */
+        if (Character.isHighSurrogate(lastChar)) {
+            InputError error = new InputError(CoreErrorCode.TTEG05, null,
+                    Integer.toHexString(lastChar),
+                    Integer.valueOf(inputData.length()-1));
+            sessionContext.registerError(error);
+            inputData.setCharAt(inputData.length()-1, ' ');
+        }
+        
+        /* Finally store newline information */
         int[] calculatedNewlineIndices = new int[newlineIndicesBuilder.size()];
         for (int i = 0; i < calculatedNewlineIndices.length; i++) {
             calculatedNewlineIndices[i] = newlineIndicesBuilder.get(i);

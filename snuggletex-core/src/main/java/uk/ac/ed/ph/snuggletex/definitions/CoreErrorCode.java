@@ -44,6 +44,7 @@ public enum CoreErrorCode implements ErrorCode {
     TTEG02(CoreErrorGroup.TTE),
     TTEG03(CoreErrorGroup.TTE),
     TTEG04(CoreErrorGroup.TTE),
+    TTEG05(CoreErrorGroup.TTE),
     TTEM00(CoreErrorGroup.TTE),
     TTEM01(CoreErrorGroup.TTE),
     TTEM02(CoreErrorGroup.TTE),
