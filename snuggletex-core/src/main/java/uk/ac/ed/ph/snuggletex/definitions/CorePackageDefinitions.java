@@ -70,7 +70,6 @@ import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.TabularInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
@@ -686,23 +685,22 @@ public final class CorePackageDefinitions {
         ENV_MATH = corePackage.addEnvironment("math", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentHandler(), ALLOW_INLINE);
         ENV_DISPLAYMATH = corePackage.addEnvironment("displaymath", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentHandler(), ALLOW_INLINE);
         ENV_VERBATIM = corePackage.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimHandler(false), START_NEW_XHTML_BLOCK);
-        ENV_ITEMIZE = corePackage.addEnvironment("itemize", PARA_MODE_ONLY, null, null, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
-        ENV_ENUMERATE = corePackage.addEnvironment("enumerate", PARA_MODE_ONLY, null, null, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
+        ENV_ITEMIZE = corePackage.addEnvironment("itemize", PARA_MODE_ONLY, null, Interpretation.LIST, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
+        ENV_ENUMERATE = corePackage.addEnvironment("enumerate", PARA_MODE_ONLY, null, Interpretation.LIST, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
         
-        TabularInterpretation tabularInterpretation = new TabularInterpretation();
-        corePackage.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, tabularInterpretation, new TabularHandler(), START_NEW_XHTML_BLOCK);
-        corePackage.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, tabularInterpretation, new ArrayHandler(), null);
-        corePackage.addEnvironment("cases", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(2, MathMLSymbol.OPEN_CURLY_BRACKET, ""), null);
-        corePackage.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, tabularInterpretation, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
-        corePackage.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, tabularInterpretation, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, Interpretation.TABULAR, new TabularHandler(), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new ArrayHandler(), null);
+        corePackage.addEnvironment("cases", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(2, MathMLSymbol.OPEN_CURLY_BRACKET, ""), null);
+        corePackage.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, Interpretation.TABULAR, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, Interpretation.TABULAR, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
         
         /* AMS-LaTeX convenience environments */
-        corePackage.addEnvironment("matrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(), null);
-        corePackage.addEnvironment("pmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.OPEN_BRACKET, MathMLSymbol.CLOSE_BRACKET), null);
-        corePackage.addEnvironment("bmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.OPEN_SQUARE_BRACKET, MathMLSymbol.CLOSE_SQUARE_BRACKET), null);
-        corePackage.addEnvironment("Bmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.OPEN_CURLY_BRACKET, MathMLSymbol.CLOSE_CURLY_BRACKET), null);
-        corePackage.addEnvironment("vmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.VERT_BRACKET, MathMLSymbol.VERT_BRACKET), null);
-        corePackage.addEnvironment("Vmatrix", MATH_MODE_ONLY, MATH, tabularInterpretation, new MatrixHandler(MathMLSymbol.DOUBLE_VERT_BRACKET, MathMLSymbol.DOUBLE_VERT_BRACKET), null);
+        corePackage.addEnvironment("matrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(), null);
+        corePackage.addEnvironment("pmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.OPEN_BRACKET, MathMLSymbol.CLOSE_BRACKET), null);
+        corePackage.addEnvironment("bmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.OPEN_SQUARE_BRACKET, MathMLSymbol.CLOSE_SQUARE_BRACKET), null);
+        corePackage.addEnvironment("Bmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.OPEN_CURLY_BRACKET, MathMLSymbol.CLOSE_CURLY_BRACKET), null);
+        corePackage.addEnvironment("vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.VERT_BRACKET, MathMLSymbol.VERT_BRACKET), null);
+        corePackage.addEnvironment("Vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.DOUBLE_VERT_BRACKET, MathMLSymbol.DOUBLE_VERT_BRACKET), null);
         
         /* Simple text environments */
         corePackage.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);

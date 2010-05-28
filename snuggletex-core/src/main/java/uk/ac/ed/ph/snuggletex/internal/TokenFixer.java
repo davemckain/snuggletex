@@ -87,8 +87,7 @@ public final class TokenFixer {
             case VERBATIM_MODE_TEXT:
             case LR_MODE_NEW_PARAGRAPH:
             case MATH_NUMBER:
-            case SINGLE_CHARACTER_MATH_IDENTIFIER:
-            case SINGLE_CHARACTER_MATH_SPECIAL:
+            case MATH_SINGLE_CHARACTER:
             case ERROR:
             case TAB_CHARACTER:
                 /* Nothing to do here */
@@ -106,7 +105,7 @@ public final class TokenFixer {
     private void visitEnvironment(EnvironmentToken environmentToken) throws SnuggleParseException {
         /* We may do special handling for certain environments */
         BuiltinEnvironment environment = environmentToken.getEnvironment();
-        if (environment==CorePackageDefinitions.ENV_ITEMIZE || environment==CorePackageDefinitions.ENV_ENUMERATE) {
+        if (environment.hasInterpretation(InterpretationType.LIST)) {
             fixListEnvironmentContent(environmentToken);
         }
         else if (environment.hasInterpretation(InterpretationType.TABULAR)) {

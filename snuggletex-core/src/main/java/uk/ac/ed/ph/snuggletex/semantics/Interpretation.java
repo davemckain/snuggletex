@@ -31,4 +31,16 @@ public interface Interpretation {
     
     InterpretationType getType();
     
+    public static Interpretation TABULAR = new MarkerInterpretation(InterpretationType.TABULAR);
+    public static Interpretation LIST = new MarkerInterpretation(InterpretationType.LIST);
+    
+    static class MarkerInterpretation implements Interpretation {
+        private final InterpretationType type;
+        public MarkerInterpretation(final InterpretationType type) {
+            this.type = type;
+        }
+        public InterpretationType getType() {
+            return type;
+        }
+    }
 }
