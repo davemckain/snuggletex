@@ -5,6 +5,8 @@
  */
 package uk.ac.ed.ph.snuggletex;
 
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
+
 /**
  * Specifies options for how a {@link SnuggleSession} should parse and process
  * {@link SnuggleInput}s.
@@ -33,9 +35,15 @@ public final class SessionConfiguration implements Cloneable {
      */
     private int expansionLimit;
     
+    /**
+     * Matcher used to identify numbers in math mode input.
+     */
+    private NumberMatcher numberMatcher;
+    
     public SessionConfiguration() {
         this.failingFast = false;
         this.expansionLimit = DEFAULT_EXPANSION_LIMIT;
+        this.numberMatcher = null;
     }
     
     /**
@@ -90,6 +98,28 @@ public final class SessionConfiguration implements Cloneable {
     public void setExpansionLimit(int expansionLimit) {
         this.expansionLimit = expansionLimit;
     }
+    
+    
+    /**
+     * Gets the {@link NumberMatcher} used to identify numbers in Math mode input.
+     * Returns null if a default {@link SimpleNumberMatcher} is being used.
+     * 
+     * @since 1.3.0
+     */
+    public NumberMatcher getNumberMatcher() {
+        return numberMatcher;
+    }
+    
+    /**
+     * Sets the {@link NumberMatcher} used to identify numbers in Math mode input.
+     * <p>
+     * This may be null, which results in a default {@link SimpleNumberMatcher} being used.
+     * 
+     * @since 1.3.0
+     */
+    public void setNumberMatcher(NumberMatcher numberMatcher) {
+        this.numberMatcher = numberMatcher;
+    }
 
 
     @Override
@@ -100,5 +130,10 @@ public final class SessionConfiguration implements Cloneable {
         catch (CloneNotSupportedException e) {
             throw new SnuggleLogicException(e);
         }
+    }
+    
+    @Override
+    public String toString() {
+        return ObjectUtilities.beanToString(this);
     }
 }

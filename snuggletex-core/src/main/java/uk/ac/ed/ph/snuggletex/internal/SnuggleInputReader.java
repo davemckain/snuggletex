@@ -135,42 +135,29 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
                 }
                 else {
                     /* Error: last was bad surrogate character */
-                    InputError error = new InputError(CoreErrorCode.TTEG05, null,
-                            Integer.toHexString(lastChar),
-                            Integer.valueOf(i-1));
-                    sessionContext.registerError(error);
-                    inputData.setCharAt(i-1, ' ');
+                    recordSurrogateError(inputData, i-1, lastChar);
                     continue;
                 }
             }
             else if (Character.isLowSurrogate(thisChar)) {
                 /* Error: this is bad surrogate character */
-                InputError error = new InputError(CoreErrorCode.TTEG05, null,
-                        Integer.toHexString(thisChar),
-                        Integer.valueOf(i));
-                sessionContext.registerError(error);
-                inputData.setCharAt(i, ' ');
+                recordSurrogateError(inputData, i, thisChar);
                 continue;
             }
             else {
                 codePoint = thisChar;
             }
             /* Check that we allow this codepoint */
-            if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
-                InputError error = new InputError(CoreErrorCode.TTEG02, null,
+            if (Character.isISOControl(codePoint) && !(codePoint=='\r' || codePoint=='\n' || codePoint=='\t')) {
+                sessionContext.registerError(new InputError(CoreErrorCode.TTEG02, null,
                         Integer.toHexString(codePoint),
-                        Integer.valueOf(i));
-                sessionContext.registerError(error);
+                        Integer.valueOf(i)));
                 inputData.setCharAt(i, ' ');
             }
         }
         /* Make sure last character wasn't surrogate pair starter */
         if (Character.isHighSurrogate(lastChar)) {
-            InputError error = new InputError(CoreErrorCode.TTEG05, null,
-                    Integer.toHexString(lastChar),
-                    Integer.valueOf(inputData.length()-1));
-            sessionContext.registerError(error);
-            inputData.setCharAt(inputData.length()-1, ' ');
+            recordSurrogateError(inputData, inputData.length()-1, lastChar);
         }
         
         /* Finally store newline information */
@@ -179,5 +166,13 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
             calculatedNewlineIndices[i] = newlineIndicesBuilder.get(i);
         }
         return calculatedNewlineIndices;
+    }
+    
+    private void recordSurrogateError(StringBuilder inputData, int index, char codePoint)
+            throws SnuggleParseException {
+        sessionContext.registerError(new InputError(CoreErrorCode.TTEG05, null,
+                Integer.toHexString(codePoint),
+                Integer.valueOf(index)));
+        inputData.setCharAt(index, ' ');
     }
 }

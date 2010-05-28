@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.internal;
 
+import uk.ac.ed.ph.snuggletex.InputContext;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 
@@ -21,7 +22,7 @@ import java.util.List;
  * @author  David McKain
  * @version $Revision$
  */
-public final class WorkingDocument {
+public final class WorkingDocument implements InputContext {
     
     /**
      * Represents a block of text that has been imported into this document.

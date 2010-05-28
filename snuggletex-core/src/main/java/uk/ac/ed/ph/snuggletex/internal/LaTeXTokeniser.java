@@ -7,6 +7,8 @@ package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
+import uk.ac.ed.ph.snuggletex.NumberMatcher;
+import uk.ac.ed.ph.snuggletex.SimpleNumberMatcher;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
@@ -89,10 +91,11 @@ public final class LaTeXTokeniser {
      */
     private static final String UDE_POST_BEGIN = "\u0000";
     
-    /**
-     * Provides access to the current {@link SessionContext}.
-     */
+    /** Provides access to the current {@link SessionContext}. */
     private final SessionContext sessionContext;
+    
+    /** {@link NumberMatcher} being used */
+    private final NumberMatcher numberMatcher;
     
     //-----------------------------------------
     // Tokenisation state
@@ -277,6 +280,13 @@ public final class LaTeXTokeniser {
         this.sessionContext = sessionContext;
         this.modeStack = new ArrayListStack<ModeState>();
         this.openEnvironmentStack = new ArrayListStack<String>();
+
+        /* Use specified NumberMatcher, or default if nothing is specified */
+        NumberMatcher ourNumberMatcher = sessionContext.getConfiguration().getNumberMatcher();
+        if (ourNumberMatcher==null) {
+            ourNumberMatcher = new SimpleNumberMatcher();
+        }
+        this.numberMatcher = ourNumberMatcher;
     }
     
     /**  Resets the parsing state of this tokeniser. */
@@ -578,55 +588,13 @@ public final class LaTeXTokeniser {
      * @return SimpleToken representing the number, or null if input wasn't a number.
      */
     private SimpleToken tryReadMathNumber() {
-        /* See if we can reasonably parse a number, returning null if we couldn't
-         * or an appropriate token if we could.
-         * 
-         * TODO: Localisation! This is assuming the number is using '.' as decimal separator.
-         * How does LaTeX do this?
-         */
-        int index = position; /* Current number search index */
-        int c;
-        boolean foundDigitsBeforeDecimalPoint = false;
-        boolean foundDigitsAfterDecimalPoint  = false;
-        boolean foundDecimalPoint = false;
-        
-        /* Read zero or more digits */
-        while(true) {
-            c = workingDocument.charAt(index);
-            if (c>='0' && c<='9') {
-                foundDigitsBeforeDecimalPoint = true;
-                index++;
-            }
-            else {
-                break;
-            }
-        }
-        /* Maybe read decimal point */
-        if (workingDocument.charAt(index)=='.') {
-            /* Found leading decimal point, so only allow digits afterwards */
-            foundDecimalPoint = true;
-            index++;
-        }
-        /* Bail out if we didn't find a number before and didn't find a decimal point */
-        if (!foundDigitsBeforeDecimalPoint && !foundDecimalPoint) {
+        int endNumberIndex = numberMatcher.getNumberEnd(workingDocument, position);
+        if (endNumberIndex==-1) {
+            /* Not a number */
             return null;
         }
-        /* Read zero or more digits */
-        while(true) {
-            c = workingDocument.charAt(index);
-            if (c>='0' && c<='9') {
-                foundDigitsAfterDecimalPoint = true;
-                index++;
-            }
-            else {
-                break;
-            }
-        }
-        /* Make sure we read in some number! */
-        if (!foundDigitsBeforeDecimalPoint && !foundDigitsAfterDecimalPoint) {
-            return null;
-        }
-        FrozenSlice numberSlice = workingDocument.freezeSlice(position, index);
+        /* We did get a number */
+        FrozenSlice numberSlice = workingDocument.freezeSlice(position, endNumberIndex);
         return new SimpleToken(numberSlice, TokenType.MATH_NUMBER, LaTeXMode.MATH,
                 null,
                 new MathNumberInterpretation(numberSlice.extract()));
