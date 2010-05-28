@@ -105,6 +105,9 @@ public final class Globals {
      */
     public static final EnumSet<LaTeXMode> ALL_MODES = EnumSet.of(PARAGRAPH, MATH, LR);
     
+    //----------------------------------------------------------------------------
+    // FIXME: This stuff must move elsewhere and become more extensive and extensible
+    
     /** 
      * Literal Math characters, mapped to their resulting interpretation(s). This
      * has been flattened to make it easy to manage this code!
@@ -129,21 +132,21 @@ public final class Globals {
        '|', new MathOperatorInterpretation(MathMLSymbol.DIVIDES), new MathNegatableInterpretation(MathMLSymbol.NOT_MID), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
     };
     
-    private static final Map<Character, EnumMap<InterpretationType, Interpretation>> mathCharacterMap;
+    private static final Map<Integer, EnumMap<InterpretationType, Interpretation>> mathCharacterInterpretationMap;
     
     static {
         /* Initialises mathCharacterMap from the raw mathCharacterData */
-        mathCharacterMap = new HashMap<Character, EnumMap<InterpretationType, Interpretation>>();
+        mathCharacterInterpretationMap = new HashMap<Integer, EnumMap<InterpretationType, Interpretation>>();
         Object object;
-        Character currentCharacter = null;
+        Integer currentCodePoint = null;
         EnumMap<InterpretationType, Interpretation> currentMapBuilder = null;
         for (int i=0; i<mathCharacterData.length; i++) {
             object = mathCharacterData[i];
             if (object instanceof Character) {
-                if (currentCharacter!=null) {
-                    mathCharacterMap.put(currentCharacter, currentMapBuilder);
+                if (currentCodePoint!=null) {
+                    mathCharacterInterpretationMap.put(currentCodePoint, currentMapBuilder);
                 }
-                currentCharacter = (Character) object;
+                currentCodePoint = Integer.valueOf((Character) object);
                 currentMapBuilder = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
             }
             else if (object instanceof MathInterpretation) {
@@ -157,13 +160,13 @@ public final class Globals {
                 throw new SnuggleLogicException("Unexpected logic branch: got " + object);
             }
         }
-        if (currentCharacter!=null) {
-            mathCharacterMap.put(currentCharacter, currentMapBuilder);
+        if (currentCodePoint!=null) {
+            mathCharacterInterpretationMap.put(currentCodePoint, currentMapBuilder);
         }
     }
     
-    public static EnumMap<InterpretationType, Interpretation> getMathCharacterInterpretationMap(char c) {
-        return mathCharacterMap.get(Character.valueOf(c));
+    public static EnumMap<InterpretationType, Interpretation> getMathCharacterInterpretationMap(int codePoint) {
+        return mathCharacterInterpretationMap.get(Integer.valueOf(codePoint));
     }
 
 

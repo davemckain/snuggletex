@@ -560,25 +560,39 @@ public final class LaTeXTokeniser {
             return numberToken;
         }
         
-        /* If still here, then it wasn't a number. So we'll look again at the first non-whitespace
-         * character */
-        char c = (char) workingDocument.charAt(position);
-        FrozenSlice thisCharSlice = workingDocument.freezeSlice(position, position+1);
+        /* It wasn't a number, so we extract the next Unicode code point and work out what
+         * to do with it.
+         */
+        int codePoint;
+        int utf16Width;
+        char nextChar = (char) workingDocument.charAt(position);
+        if (Character.isHighSurrogate(nextChar)) {
+            /* (Don't need to check the next line as we've already verified before reading) */
+            codePoint = Character.toCodePoint(nextChar, (char) workingDocument.charAt(position+1));
+            utf16Width = 2;
+        }
+        else {
+            codePoint = nextChar;
+            utf16Width = 1;
+        }
         
-        /* Is this a special math character? */
-        EnumMap<InterpretationType, Interpretation> interpretationMap = Globals.getMathCharacterInterpretationMap(c);
+        FrozenSlice thisCharSlice = workingDocument.freezeSlice(position, position+utf16Width);
+        
+        /* Look up interpretations for this code point */
+        EnumMap<InterpretationType, Interpretation> interpretationMap = Globals.getMathCharacterInterpretationMap(codePoint);
         if (interpretationMap!=null) {
             return new SimpleToken(thisCharSlice,
-                    TokenType.SINGLE_CHARACTER_MATH_SPECIAL,
+                    TokenType.MATH_SINGLE_CHARACTER,
                     LaTeXMode.MATH,
                     null, interpretationMap);
         }
-        /* If still here, then we'll treat this as an identifier (e.g. 'x', 'y' etc.) */
+        
+        /* If no interpretations, we'll treat as a plain old identifier (e.g. 'x', 'y' etc.) */
         return new SimpleToken(thisCharSlice,
-                TokenType.SINGLE_CHARACTER_MATH_IDENTIFIER,
+                TokenType.MATH_SINGLE_CHARACTER,
                 LaTeXMode.MATH,
                 null,
-                new MathIdentifierInterpretation(String.valueOf(c)));
+                new MathIdentifierInterpretation(thisCharSlice.extract().toString()));
     }
     
     /**

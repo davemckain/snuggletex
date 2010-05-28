@@ -31,8 +31,7 @@ public enum TokenType {
     LR_MODE_NEW_PARAGRAPH, /* (This is substituted in during fixing - not entered directly) */
     VERBATIM_MODE_TEXT,
     MATH_NUMBER,
-    SINGLE_CHARACTER_MATH_IDENTIFIER,
-    SINGLE_CHARACTER_MATH_SPECIAL,
+    MATH_SINGLE_CHARACTER,
     
     ;
 

@@ -82,7 +82,7 @@ public final class AccentHandler implements CommandHandler {
         if (accentMap!=null && content.size()==1 && content.get(0).hasInterpretationType(InterpretationType.MATH_IDENTIFIER)) {
             /* Possible accent! Let's see if we the resulting Unicode is safe for most browsers. */
             MathIdentifierInterpretation mathIdentifier = (MathIdentifierInterpretation) content.get(0).getInterpretation(InterpretationType.MATH_IDENTIFIER);
-            String identifier = mathIdentifier.getName();
+            CharSequence identifier = mathIdentifier.getName();
             if (identifier.length()==1) {
                 mathAccent = accentMap.getAccentedMathChar(identifier.charAt(0));
             }

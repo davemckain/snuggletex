@@ -351,8 +351,7 @@ public final class DOMBuilder {
             /* Math tokens (it's assumed that these all have Interpretations attached) */
                 
             case MATH_NUMBER:
-            case SINGLE_CHARACTER_MATH_IDENTIFIER:
-            case SINGLE_CHARACTER_MATH_SPECIAL:
+            case MATH_SINGLE_CHARACTER:
                 /* First check we are in a suitable mode */
                 if (isBuildingMathMLIsland()) {
                     appendSimpleMathElement(parentElement, token);
