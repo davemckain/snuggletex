@@ -472,6 +472,10 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * generate is also in the correct namespace; it will later be converted to
      * no-namespace HTML if required by the serialisation process.
      * <p>
+     * <strong>WARNING:</strong> This feature is a convenience that doesn't fit well
+     * with the idea that these "options" Objects should be reusable and Thread-safe,
+     * which a {@link Transformer} is generally neither. Use this feature accordingly!
+     * <p>
      * <strong>NOTE:</strong> Source documents may contain Processing
      * Instructions (e.g. to invoke MathPlayer) so these must be handled as
      * appropriate.
@@ -490,6 +494,10 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * to write your stylesheet appropriately. Ensure that any further XHTML you
      * generate is also in the correct namespace; it will later be converted to
      * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>WARNING:</strong> This feature is a convenience that doesn't fit well
+     * with the idea that these "options" Objects should be reusable and Thread-safe,
+     * which a {@link Transformer} is generally neither. Use this feature accordingly!
      * <p>
      * <strong>NOTE:</strong> Source documents may contain Processing
      * Instructions (e.g. to invoke MathPlayer) so these must be handled as
@@ -512,6 +520,10 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * to write your stylesheet appropriately. Ensure that any further XHTML you
      * generate is also in the correct namespace; it will later be converted to
      * no-namespace HTML if required by the serialisation process.
+     * <p>
+     * <strong>WARNING:</strong> This feature is a convenience that doesn't fit well
+     * with the idea that these "options" Objects should be reusable and Thread-safe,
+     * which a {@link Transformer} is generally neither. Use this feature accordingly!
      * <p>
      * <strong>NOTE:</strong> Source documents may contain Processing
      * Instructions (e.g. to invoke MathPlayer) so these must be handled as
