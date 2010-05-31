@@ -92,6 +92,13 @@ public final class SnuggleSession implements SessionContext {
     
     /** Engine that created this Session */
     private final SnuggleEngine engine;
+    
+    /** 
+     * Copy of the List of all currently registered {@link SnugglePackage}s used by the
+     * underlying Engine. As this is read-only as far as the session is concerned, we don't have
+     * to worry about synchronizing.
+     */
+    private final SnugglePackage[] packages;
 
     /** {@link LaTeXTokeniser} used to parse inputs */
     private final LaTeXTokeniser tokeniser;
@@ -99,11 +106,17 @@ public final class SnuggleSession implements SessionContext {
     /** {@link TokenFixer} used to massage inputs after parsing */
     private final TokenFixer tokenFixer;
     
-    //-------------------------------------------------
-    // Stateful stuff
-    
     /** Configuration for this session */
     private final SessionConfiguration configuration;
+    
+    /** Default {@link DOMOutputOptions}, copied from the owning {@link SnuggleEngine} during creation */
+    private final DOMOutputOptions defaultDOMOutputOptions;
+    
+    /** Default {@link XMLStringOutputOptions}, copied from the owning {@link SnuggleEngine} during creation */
+    private final XMLStringOutputOptions defaultXMLStringOutputOptions;
+    
+    //-------------------------------------------------
+    // Stateful stuff
     
     /** Errors accumulated during this session */
     private final List<InputError> errors;
@@ -123,12 +136,19 @@ public final class SnuggleSession implements SessionContext {
      */
     SnuggleSession(final SnuggleEngine engine, final SessionConfiguration configuration) {
         this.engine = engine;
-        
+        this.packages = engine.getPackages().toArray(new SnugglePackage[engine.getPackages().size()]);
+
         /* We'll clone the supplied configuration, if supplied, so that
          * any run-time changes made to it do not affect the caller's version
          * of the configuration.
          */
-        this.configuration = configuration;
+        this.configuration = (SessionConfiguration) configuration.clone();
+        
+        /* Similarly with default output options, though we're not exposing these in the public API
+         * so they become effectively immutable here.
+         */
+        this.defaultDOMOutputOptions = (DOMOutputOptions) engine.getDefaultDOMOutputOptions().clone();
+        this.defaultXMLStringOutputOptions = (XMLStringOutputOptions) engine.getDefaultXMLStringOutputOptions().clone();
 
         /* Set up main worker Objects */
         this.tokeniser = new LaTeXTokeniser(this);
@@ -152,7 +172,10 @@ public final class SnuggleSession implements SessionContext {
         
         /* Copy stuff from the template */
         this.engine = snapshot.engine;
-        this.configuration = (SessionConfiguration) snapshot.configuration.clone();
+        this.packages = snapshot.packages;
+        this.configuration = snapshot.configuration;
+        this.defaultDOMOutputOptions = snapshot.defaultDOMOutputOptions;
+        this.defaultXMLStringOutputOptions = snapshot.defaultXMLStringOutputOptions;
         this.errors = new ArrayList<InputError>(snapshot.errors);
         this.userCommandMap = new HashMap<String, UserDefinedCommand>(snapshot.userCommandMap);
         this.userEnvironmentMap = new HashMap<String, UserDefinedEnvironment>(snapshot.userEnvironmentMap);
@@ -164,7 +187,7 @@ public final class SnuggleSession implements SessionContext {
     public SessionConfiguration getConfiguration() {
         return configuration;
     }
-
+    
     public List<InputError> getErrors() {
         return errors;
     }
@@ -205,8 +228,10 @@ public final class SnuggleSession implements SessionContext {
      * be later used to recreate a session having exactly the same state.
      */
     public SnuggleSnapshot createSnapshot() {
-        return new SnuggleSnapshot(engine,
+        return new SnuggleSnapshot(engine, packages,
                 (SessionConfiguration) configuration.clone(),
+                (DOMOutputOptions) defaultDOMOutputOptions.clone(), /* (No real need to clone as this is immutable here, but we'll do it for consistency) */
+                (XMLStringOutputOptions) defaultXMLStringOutputOptions.clone(), /* (Ditto) */
                 new ArrayList<InputError>(errors), 
                 new HashMap<String, UserDefinedCommand>(userCommandMap),
                 new HashMap<String, UserDefinedEnvironment>(userEnvironmentMap),
@@ -258,7 +283,7 @@ public final class SnuggleSession implements SessionContext {
      *   input LaTeX and if the session was configured to fail on the first error. 
      */
     public boolean buildDOMSubtree(final Element targetRoot) {
-        return buildDOMSubtree(targetRoot, engine.getDefaultDOMOutputOptions());
+        return buildDOMSubtree(targetRoot, defaultDOMOutputOptions);
     }
     
     /**
@@ -274,7 +299,7 @@ public final class SnuggleSession implements SessionContext {
      *   the first error. 
      */
     public NodeList buildDOMSubtree() {
-        return buildDOMSubtree(engine.getDefaultDOMOutputOptions());
+        return buildDOMSubtree(defaultDOMOutputOptions);
     }
     
     /**
@@ -315,7 +340,7 @@ public final class SnuggleSession implements SessionContext {
      *   the first error.  
      */
     public String buildXMLString() {
-        return buildXMLString(engine.getDefaultXMLStringOutputOptions());
+        return buildXMLString(defaultXMLStringOutputOptions);
     }
     
     /**
@@ -358,7 +383,7 @@ public final class SnuggleSession implements SessionContext {
      */
     @Deprecated
     public String buildXMLString(boolean indent) {
-        return buildXMLString(engine.getDefaultDOMOutputOptions(), indent);
+        return buildXMLString(defaultDOMOutputOptions, indent);
     }
     
     /**
@@ -546,22 +571,37 @@ public final class SnuggleSession implements SessionContext {
     //---------------------------------------------
     // Business helpers
     
+    
     /**
-     * Delegates to {@link SnuggleEngine#getBuiltinCommandByTeXName(String)}
-     * 
-     * @see SnuggleEngine#getBuiltinCommandByTeXName(String)
+     * Returns the {@link BuiltinCommand} corresponding to LaTeX command called
+     * <tt>\texName</tt>, or null if this command is not defined.
      */
     public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
-        return engine.getBuiltinCommandByTeXName(texName);
+        ConstraintUtilities.ensureNotNull(texName, "texName");
+        BuiltinCommand result = null;
+        for (SnugglePackage snugglePackage : packages) {
+            result = snugglePackage.getBuiltinCommandByTeXName(texName);
+            if (result!=null) {
+                break;
+            }
+        }
+        return result;
     }
     
     /**
-     * Delegates to {@link SnuggleEngine#getBuiltinEnvironmentByTeXName(String)}
-     * 
-     * @see SnuggleEngine#getBuiltinEnvironmentByTeXName(String)
+     * Returns the {@link BuiltinEnvironment} corresponding to LaTeX environment
+     * called <tt>texName</tt>, or null if this environment is not defined.
      */
     public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
-        return engine.getBuiltinEnvironmentByTeXName(texName);
+        ConstraintUtilities.ensureNotNull(texName, "texName");
+        BuiltinEnvironment result = null;
+        for (SnugglePackage snugglePackage : packages) {
+            result = snugglePackage.getBuiltinEnvironmentByTeXName(texName);
+            if (result!=null) {
+                break;
+            }
+        }
+        return result;
     }
     
     /**

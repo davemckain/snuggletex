@@ -16,6 +16,7 @@ import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 import uk.ac.ed.ph.snuggletex.utilities.TransformerFactoryChooser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,10 +33,14 @@ import java.util.List;
  *     Use {@link #createSession()} to create a "session" that will take one (or more) input
  *     documents and produce a DOM.
  *   </li>
+ *     Each {@link SnuggleSession} created will use a _copy_ of
+ *     the {@link SnugglePackage}s registered with the engine and _copies_ of
+ *     the current {@link #defaultSessionConfiguration}, {@link #defaultDOMOutputOptions},
+ *     and {@link #defaultXMLStringOutputOptions}. On the other hand, it will use the shared
+ *     {@link StylesheetManager} set for this engine.
+ *   </li>
  *   <li>
- *     Once configured, an instance of this Class can be shared by multiple Threads
- *     provided the only methods called are all forms of {@link #createSession()}
- *     and any "get" methods.
+ *     As of SnuggleTeX 1.3.0, an instance of this Class can be fully shared by multiple Threads.
  *   </li>
  *   <li>
  *     Don't let the usual connotations associated with the name of this Class worry you that
@@ -105,12 +110,12 @@ public final class SnuggleEngine {
      * the selection of XSLT implementations.
      */
     public SnuggleEngine(StylesheetManager stylesheetManager) {
-        this.packages = new ArrayList<SnugglePackage>();
+        this.packages = Collections.synchronizedList(new ArrayList<SnugglePackage>());
         this.defaultSessionConfiguration = new SessionConfiguration();
         this.defaultDOMOutputOptions = new DOMOutputOptions();
         this.defaultXMLStringOutputOptions = new XMLStringOutputOptions();
         
-        /* Create manager for XSLT stlyesheets using the given cache */
+        /* Create manager for XSLT stylesheets using the given cache */
         this.stylesheetManager = stylesheetManager;
         
         /* Add in core package */
@@ -131,6 +136,16 @@ public final class SnuggleEngine {
     //-------------------------------------------------
     
     /**
+     * Returns a synchronized {@link List} of all {@link SnugglePackage}s registered
+     * with this engine.
+     * 
+     * @since 1.3.0
+     */
+    public List<SnugglePackage> getPackages() {
+        return packages;
+    }
+    
+    /**
      * Registers the given {@link SnugglePackage} with this {@link SnuggleEngine}.
      * All commands, environments and error codes defined by the {@link SnugglePackage} will
      * then become available for use.
@@ -144,7 +159,7 @@ public final class SnuggleEngine {
     
     /**
      * Creates a new {@link SnuggleSession} using the default {@link SessionConfiguration}
-     * if se
+     * or a fresh {@link SessionConfiguration} if no default has been set.
      */
     public SnuggleSession createSession() {
         SessionConfiguration sessionConfiguration = defaultSessionConfiguration;
@@ -173,8 +188,8 @@ public final class SnuggleEngine {
     public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
         ConstraintUtilities.ensureNotNull(texName, "texName");
         BuiltinCommand result = null;
-        for (SnugglePackage map : packages) {
-            result = map.getBuiltinCommandByTeXName(texName);
+        for (SnugglePackage snugglePackage : packages) {
+            result = snugglePackage.getBuiltinCommandByTeXName(texName);
             if (result!=null) {
                 break;
             }
@@ -189,8 +204,8 @@ public final class SnuggleEngine {
     public BuiltinEnvironment getBuiltinEnvironmentByTeXName(String texName) {
         ConstraintUtilities.ensureNotNull(texName, "texName");
         BuiltinEnvironment result = null;
-        for (SnugglePackage map : packages) {
-            result = map.getBuiltinEnvironmentByTeXName(texName);
+        for (SnugglePackage snugglePackage : packages) {
+            result = snugglePackage.getBuiltinEnvironmentByTeXName(texName);
             if (result!=null) {
                 break;
             }

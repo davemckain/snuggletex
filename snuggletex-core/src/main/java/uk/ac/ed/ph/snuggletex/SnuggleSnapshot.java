@@ -29,10 +29,16 @@ public final class SnuggleSnapshot {
     
     final SnuggleEngine engine;
     
-    /** Configuration for this session */
+    final SnugglePackage[] packages;
+    
+    /** Configuration for the owning session */
     final SessionConfiguration configuration;
     
-    /** Errors accumulated during this session */
+    final DOMOutputOptions defaultDOMOutputOptions;
+    
+    final XMLStringOutputOptions defaultXMLStringOutputOptions;
+    
+    /** Errors accumulated during the owning session */
     final List<InputError> errors;
     
     /** Map of user-defined commands, keyed on name */
@@ -41,14 +47,21 @@ public final class SnuggleSnapshot {
     /** Map of user-defined environments, keyed on name */
     final Map<String, UserDefinedEnvironment> userEnvironmentMap;
     
+    /** Parsing state for the owning session */
     final List<FlowToken> parsedTokens;
     
-    SnuggleSnapshot(final SnuggleEngine engine, final SessionConfiguration configuration,
+    SnuggleSnapshot(final SnuggleEngine engine, final SnugglePackage[] packages,
+            final SessionConfiguration configuration,
+            final DOMOutputOptions defaultDOMOutputOptions,
+            final XMLStringOutputOptions defaultXMLStringOutputOptions,
             final List<InputError> errors, final Map<String, UserDefinedCommand> userCommandMap,
             final Map<String, UserDefinedEnvironment> userEnvironmentMap,
             final List<FlowToken> parsedTokens) {
         this.engine = engine;
+        this.packages = packages;
         this.configuration = configuration;
+        this.defaultDOMOutputOptions = defaultDOMOutputOptions;
+        this.defaultXMLStringOutputOptions = defaultXMLStringOutputOptions;
         this.errors = errors;
         this.userCommandMap = userCommandMap;
         this.userEnvironmentMap = userEnvironmentMap;

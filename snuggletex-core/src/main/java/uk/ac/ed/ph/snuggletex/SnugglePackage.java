@@ -23,13 +23,12 @@ import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A {@link SnugglePackage} defines a collection of {@link BuiltinCommand}s, {@link BuiltinEnvironment}s,
@@ -38,9 +37,16 @@ import java.util.ResourceBundle;
  * <p>
  * The core SnuggleTeX distribution comes with what is essentially a built-in package defined
  * in {@link CorePackageDefinitions} which provides its core functionality.
- * <p>
- * <strong>Note:</strong> This replaces "DefinitionMap" from SnuggleTeX 1.0/1.1, which had fewer
- * features.
+ * 
+ * <h2>Notes</h2>
+ * 
+ * <ul>
+ *   <li>
+ *     As of SnuggleTeX 1.3.0, an instance of this class may now be used by multiple threads.
+ *   <li>
+ *     This replaces "DefinitionMap" from SnuggleTeX 1.0/1.1, which had fewer features.
+ *   </li>
+ * </ul>
  * 
  * @see BuiltinCommand
  * @see BuiltinEnvironment
@@ -58,14 +64,17 @@ public final class SnugglePackage {
     /** Short name, used when formatting {@link ErrorCode}s */
     private final String name;
     
-    /** Map of built-in commands, keyed on name */
-    private final Map<String, BuiltinCommand> builtinCommandMap;
+    /** Thread-safe Map of built-in commands, keyed on name */
+    private final ConcurrentHashMap<String, BuiltinCommand> builtinCommandMap;
     
-    /** Map of built-in environments, keyed on name */
-    private final Map<String, BuiltinEnvironment> builtinEnvironmentMap;
+    /** Thread-safe Map of built-in environments, keyed on name */
+    private final ConcurrentHashMap<String, BuiltinEnvironment> builtinEnvironmentMap;
+    
+    /** Thread-safe List of all {@link ErrorGroup}s */
+    private final List<ErrorGroup> errorGroupList;
 
-    /** {@link List} of all {@link ErrorGroup}s defined by this package */
-    private final LinkedHashMap<ErrorGroup, List<ErrorCode>> errorGroupMap;
+    /** Thread-safe Map of all {@link ErrorGroup}s defined by this package */
+    private final ConcurrentHashMap<ErrorGroup, List<ErrorCode>> errorGroupMap;
     
     /** {@link ResourceBundle} providing details for formatting {@link ErrorCode}s */
     private ResourceBundle errorMessageBundle;
@@ -73,9 +82,10 @@ public final class SnugglePackage {
     public SnugglePackage(final String name) {
         ConstraintUtilities.ensureNotNull(name, "name");
         this.name = name;
-        this.builtinCommandMap = new HashMap<String, BuiltinCommand>();
-        this.builtinEnvironmentMap = new HashMap<String, BuiltinEnvironment>();
-        this.errorGroupMap = new LinkedHashMap<ErrorGroup, List<ErrorCode>>();
+        this.builtinCommandMap = new ConcurrentHashMap<String, BuiltinCommand>();
+        this.builtinEnvironmentMap = new ConcurrentHashMap<String, BuiltinEnvironment>();
+        this.errorGroupList = Collections.synchronizedList(new ArrayList<ErrorGroup>());
+        this.errorGroupMap = new ConcurrentHashMap<ErrorGroup, List<ErrorCode>>();
     }
     
     /**
@@ -86,17 +96,14 @@ public final class SnugglePackage {
     }
 
     /**
-     * Returns all of the {@link ErrorGroup}s declared for this package. The resulting {@link Collection}
-     * should not be modified.
+     * Returns all of the {@link ErrorGroup}s declared for this package.
      */
-    public Collection<ErrorGroup> getErrorGroups() {
-        return errorGroupMap.keySet();
+    public List<ErrorGroup> getErrorGroups() {
+        return errorGroupList;
     }
     
     /**
      * Returns the {@link ErrorCode}s corresponding to the given {@link ErrorGroup}.
-     * The resulting {@link Collection} should not be modified.
-     * 
      */
     public Collection<ErrorCode> getErrorCodes(ErrorGroup errorGroup) {
         return errorGroupMap.get(errorGroup);
@@ -308,7 +315,8 @@ public final class SnugglePackage {
         ConstraintUtilities.ensureNotNull(errorGroup, "errorCode.errorGroup");
         List<ErrorCode> errorCodesForGroup = errorGroupMap.get(errorGroup);
         if (errorCodesForGroup==null) {
-            errorCodesForGroup = new ArrayList<ErrorCode>();
+            errorCodesForGroup = Collections.synchronizedList(new ArrayList<ErrorCode>());
+            errorGroupList.add(errorGroup);
             errorGroupMap.put(errorGroup, errorCodesForGroup);
         }
         errorCodesForGroup.add(errorCode);
