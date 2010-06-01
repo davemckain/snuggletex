@@ -20,7 +20,6 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
-import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
@@ -76,9 +75,6 @@ import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -157,35 +153,22 @@ public final class CorePackageDefinitions {
             throw new SnuggleRuntimeException(e);
         }
         
-        /* =============================== MATH CHARACTERS ============================== */
+        /* ======================= MATH CHARACTERS & INPUT MACROS ============================== */
         
-        /* Read in main definitions for each defined (generally non-alpha) math character */
-        InputStream mathCharacterDefsStream = Globals.class.getClassLoader().getResourceAsStream(Globals.MATH_CHARACTER_DEFS_RESOURCE_NAME);
-        if (mathCharacterDefsStream==null) {
-            throw new SnuggleRuntimeException("Could not load resource " + Globals.MATH_CHARACTER_DEFS_RESOURCE_NAME);
-        }
-        try {
-            BufferedReader mathCharacterDefsReader = new BufferedReader(new InputStreamReader(mathCharacterDefsStream, "US-ASCII"));
-            String line;
-            while ((line = mathCharacterDefsReader.readLine())!=null) {
-                String[] fields = line.split(":"); /* codePoint:commandName:type */
-                int codePoint = Integer.parseInt(fields[0], 16);
-                MathCharacterType mathCharacterType = MathCharacterType.valueOf(fields[2]);
-                corePackage.addMathCharacter(codePoint, mathCharacterType);
-            }
-            mathCharacterDefsReader.close();
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Got Exception while reading and parsing Math character definitions", e);
-        }
+        /* Read in main definitions for each defined (generally non-alpha) math character.
+         * We read in the 'CORE' defs first so that they can override anything dodgy in
+         * the 'ALL' defs, which are auto-generated.
+         */
+        corePackage.loadMathCharacterDefinitions(Globals.ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME);
+        corePackage.loadMathCharacterDefinitions(Globals.CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME);
         
-        /* Some important chars aren't defined in the core defs for some reason */
-        corePackage.addMathCharacter('-', MathCharacterType.OP);
-        corePackage.addMathCharacter('*', MathCharacterType.OP);
-        
-        /* Also need to define '_' and '^', even though they'll disappear by the time DOM building starts */
-        corePackage.addMathCharacter('_', MathCharacterType.OP);
-        corePackage.addMathCharacter('^', MathCharacterType.OP);
+//        /* Some important chars aren't defined in the core defs for some reason */
+//        corePackage.addMathCharacter('-', MathCharacterType.OP);
+//        corePackage.addMathCharacter('*', MathCharacterType.OP);
+//        
+//        /* Also need to define '_' and '^', even though they'll disappear by the time DOM building starts */
+//        corePackage.addMathCharacter('_', MathCharacterType.OP);
+//        corePackage.addMathCharacter('^', MathCharacterType.OP);
 
         /* Additional interpretation data for polymorphic math characters */
         final Object[] mathCharacterAdditionalInterpretationData = new Object[] {
@@ -404,53 +387,6 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommandSameArgMode("mathbb", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.DOUBLE_STRUCK), null);
         corePackage.addComplexCommandSameArgMode("mathfrak", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.FRAKTUR), null);
         
-        /* Ellipses (Math-mode only) */
-        corePackage.addSimpleMathCommand("cdots", new MathIdentifierInterpretation(MathMLSymbol.CDOTS));
-        corePackage.addSimpleMathCommand("vdots", new MathIdentifierInterpretation(MathMLSymbol.VDOTS));
-        corePackage.addSimpleMathCommand("ddots", new MathIdentifierInterpretation(MathMLSymbol.DDOTS));
-        
-        /* Greek letters (need turned into Unicode characters) */
-        corePackage.addSimpleMathCommand("alpha", new MathIdentifierInterpretation(MathMLSymbol.ALPHA));
-        corePackage.addSimpleMathCommand("beta", new MathIdentifierInterpretation(MathMLSymbol.BETA));
-        corePackage.addSimpleMathCommand("gamma", new MathIdentifierInterpretation(MathMLSymbol.GAMMA));
-        corePackage.addSimpleMathCommand("delta", new MathIdentifierInterpretation(MathMLSymbol.DELTA));
-        corePackage.addSimpleMathCommand("epsilon", new MathIdentifierInterpretation(MathMLSymbol.EPSILON));
-        corePackage.addSimpleMathCommand("varepsilon", new MathIdentifierInterpretation(MathMLSymbol.VAREPSILON));
-        corePackage.addSimpleMathCommand("zeta", new MathIdentifierInterpretation(MathMLSymbol.ZETA));
-        corePackage.addSimpleMathCommand("eta", new MathIdentifierInterpretation(MathMLSymbol.ETA));
-        corePackage.addSimpleMathCommand("theta", new MathIdentifierInterpretation(MathMLSymbol.THETA));
-        corePackage.addSimpleMathCommand("vartheta", new MathIdentifierInterpretation(MathMLSymbol.VARTHETA));
-        corePackage.addSimpleMathCommand("iota", new MathIdentifierInterpretation(MathMLSymbol.IOTA));
-        corePackage.addSimpleMathCommand("kappa", new MathIdentifierInterpretation(MathMLSymbol.KAPPA));
-        corePackage.addSimpleMathCommand("lambda", new MathIdentifierInterpretation(MathMLSymbol.LAMBDA));
-        corePackage.addSimpleMathCommand("mu", new MathIdentifierInterpretation(MathMLSymbol.MU));
-        corePackage.addSimpleMathCommand("nu", new MathIdentifierInterpretation(MathMLSymbol.NU));
-        corePackage.addSimpleMathCommand("xi", new MathIdentifierInterpretation(MathMLSymbol.XI));
-        corePackage.addSimpleMathCommand("pi", new MathIdentifierInterpretation(MathMLSymbol.PI));
-        corePackage.addSimpleMathCommand("varpi", new MathIdentifierInterpretation(MathMLSymbol.VARPI));
-        corePackage.addSimpleMathCommand("rho", new MathIdentifierInterpretation(MathMLSymbol.RHO));
-        corePackage.addSimpleMathCommand("varrho", new MathIdentifierInterpretation(MathMLSymbol.VARRHO));
-        corePackage.addSimpleMathCommand("sigma", new MathIdentifierInterpretation(MathMLSymbol.SIGMA));
-        corePackage.addSimpleMathCommand("varsigma", new MathIdentifierInterpretation(MathMLSymbol.VARSIGMA));
-        corePackage.addSimpleMathCommand("tau", new MathIdentifierInterpretation(MathMLSymbol.TAU));
-        corePackage.addSimpleMathCommand("upsilon", new MathIdentifierInterpretation(MathMLSymbol.UPSILON));
-        corePackage.addSimpleMathCommand("phi", new MathIdentifierInterpretation(MathMLSymbol.PHI));
-        corePackage.addSimpleMathCommand("varphi", new MathIdentifierInterpretation(MathMLSymbol.VARPHI));
-        corePackage.addSimpleMathCommand("chi", new MathIdentifierInterpretation(MathMLSymbol.CHI));
-        corePackage.addSimpleMathCommand("psi", new MathIdentifierInterpretation(MathMLSymbol.PSI));
-        corePackage.addSimpleMathCommand("omega", new MathIdentifierInterpretation(MathMLSymbol.OMEGA));
-        corePackage.addSimpleMathCommand("Gamma", new MathIdentifierInterpretation(MathMLSymbol.UC_GAMMA));
-        corePackage.addSimpleMathCommand("Delta", new MathIdentifierInterpretation(MathMLSymbol.UC_DELTA));
-        corePackage.addSimpleMathCommand("Theta", new MathIdentifierInterpretation(MathMLSymbol.UC_THETA));
-        corePackage.addSimpleMathCommand("Lambda", new MathIdentifierInterpretation(MathMLSymbol.UC_LAMBDA));
-        corePackage.addSimpleMathCommand("Xi", new MathIdentifierInterpretation(MathMLSymbol.UC_XI));
-        corePackage.addSimpleMathCommand("Pi", new MathIdentifierInterpretation(MathMLSymbol.UC_PI));
-        corePackage.addSimpleMathCommand("Sigma", new MathIdentifierInterpretation(MathMLSymbol.UC_SIGMA));
-        corePackage.addSimpleMathCommand("Upsilon", new MathIdentifierInterpretation(MathMLSymbol.UC_UPSILON));
-        corePackage.addSimpleMathCommand("Phi", new MathIdentifierInterpretation(MathMLSymbol.UC_PHI));
-        corePackage.addSimpleMathCommand("Psi", new MathIdentifierInterpretation(MathMLSymbol.UC_PSI));
-        corePackage.addSimpleMathCommand("Omega", new MathIdentifierInterpretation(MathMLSymbol.UC_OMEGA));
-        
         /* Math "functions" (treated as identifiers in MathML) */
         corePackage.addSimpleMathCommand("arccos", new MathFunctionInterpretation("arccos"));
         corePackage.addSimpleMathCommand("arcsin", new MathFunctionInterpretation("arcsin"));
@@ -518,45 +454,45 @@ public final class CorePackageDefinitions {
         corePackage.addSimpleMathCommand("biguplus", new MathOperatorInterpretation(MathMLSymbol.BIGUPLUS), bigLimitOwner);
         
         /* Binary operators */
-        corePackage.addSimpleMathCommand("pm", new MathOperatorInterpretation(MathMLSymbol.PM));
-        corePackage.addSimpleMathCommand("mp", new MathOperatorInterpretation(MathMLSymbol.MP));
-        corePackage.addSimpleMathCommand("times", new MathOperatorInterpretation(MathMLSymbol.TIMES));
-        corePackage.addSimpleMathCommand("div", new MathOperatorInterpretation(MathMLSymbol.DIV));
-        corePackage.addSimpleMathCommand("ast", new MathOperatorInterpretation(MathMLSymbol.AST));
-        corePackage.addSimpleMathCommand("star", new MathOperatorInterpretation(MathMLSymbol.STAR));
-        corePackage.addSimpleMathCommand("circ", new MathOperatorInterpretation(MathMLSymbol.CIRC));
-        corePackage.addSimpleMathCommand("bullet", new MathOperatorInterpretation(MathMLSymbol.BULLET));
-        corePackage.addSimpleMathCommand("cdot", new MathOperatorInterpretation(MathMLSymbol.CDOT));
-        corePackage.addSimpleMathCommand("cap", new MathOperatorInterpretation(MathMLSymbol.CAP));
-        corePackage.addSimpleMathCommand("cup", new MathOperatorInterpretation(MathMLSymbol.CUP));
-        corePackage.addSimpleMathCommand("uplus", new MathOperatorInterpretation(MathMLSymbol.UPLUS));
-        corePackage.addSimpleMathCommand("sqcap", new MathOperatorInterpretation(MathMLSymbol.SQCAP));
-        corePackage.addSimpleMathCommand("sqcup", new MathOperatorInterpretation(MathMLSymbol.SQCUP));
-        corePackage.addSimpleMathCommand("vee", new MathOperatorInterpretation(MathMLSymbol.VEE));
-        corePackage.addSimpleMathCommand("lor", new MathOperatorInterpretation(MathMLSymbol.VEE));
-        corePackage.addSimpleMathCommand("wedge", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
-        corePackage.addSimpleMathCommand("land", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
-        corePackage.addSimpleMathCommand("setminus", new MathOperatorInterpretation(MathMLSymbol.SETMINUS));
-        corePackage.addSimpleMathCommand("wr", new MathOperatorInterpretation(MathMLSymbol.WR));
-        corePackage.addSimpleMathCommand("diamond", new MathOperatorInterpretation(MathMLSymbol.DIAMOND));
-        corePackage.addSimpleMathCommand("bigtriangleup", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEUP));
-        corePackage.addSimpleMathCommand("bigtriangledown", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEDOWN));
-        corePackage.addSimpleMathCommand("triangleleft", new MathOperatorInterpretation(MathMLSymbol.TRIANGLELEFT));
-        corePackage.addSimpleMathCommand("triangleright", new MathOperatorInterpretation(MathMLSymbol.TRIANGLERIGHT));
-        corePackage.addSimpleMathCommand("oplus", new MathOperatorInterpretation(MathMLSymbol.OPLUS));
-        corePackage.addSimpleMathCommand("ominus", new MathOperatorInterpretation(MathMLSymbol.OMINUS));
-        corePackage.addSimpleMathCommand("otimes", new MathOperatorInterpretation(MathMLSymbol.OTIMES));
-        corePackage.addSimpleMathCommand("oslash", new MathOperatorInterpretation(MathMLSymbol.OSLASH));
-        corePackage.addSimpleMathCommand("odot", new MathOperatorInterpretation(MathMLSymbol.ODOT));
-        corePackage.addSimpleMathCommand("bigcirc", new MathOperatorInterpretation(MathMLSymbol.BIGCIRC));
-        corePackage.addSimpleMathCommand("dagger", new MathOperatorInterpretation(MathMLSymbol.DAGGER));
-        corePackage.addSimpleMathCommand("ddagger", new MathOperatorInterpretation(MathMLSymbol.DDAGGER));
-        corePackage.addSimpleMathCommand("amalg", new MathOperatorInterpretation(MathMLSymbol.AMALG));
+//        corePackage.addSimpleMathCommand("pm", new MathOperatorInterpretation(MathMLSymbol.PM));
+//        corePackage.addSimpleMathCommand("mp", new MathOperatorInterpretation(MathMLSymbol.MP));
+//        corePackage.addSimpleMathCommand("times", new MathOperatorInterpretation(MathMLSymbol.TIMES));
+//        corePackage.addSimpleMathCommand("div", new MathOperatorInterpretation(MathMLSymbol.DIV));
+//        corePackage.addSimpleMathCommand("ast", new MathOperatorInterpretation(MathMLSymbol.AST));
+//        corePackage.addSimpleMathCommand("star", new MathOperatorInterpretation(MathMLSymbol.STAR));
+//        corePackage.addSimpleMathCommand("circ", new MathOperatorInterpretation(MathMLSymbol.CIRC));
+//        corePackage.addSimpleMathCommand("bullet", new MathOperatorInterpretation(MathMLSymbol.BULLET));
+//        corePackage.addSimpleMathCommand("cdot", new MathOperatorInterpretation(MathMLSymbol.CDOT));
+//        corePackage.addSimpleMathCommand("cap", new MathOperatorInterpretation(MathMLSymbol.CAP));
+//        corePackage.addSimpleMathCommand("cup", new MathOperatorInterpretation(MathMLSymbol.CUP));
+//        corePackage.addSimpleMathCommand("uplus", new MathOperatorInterpretation(MathMLSymbol.UPLUS));
+//        corePackage.addSimpleMathCommand("sqcap", new MathOperatorInterpretation(MathMLSymbol.SQCAP));
+//        corePackage.addSimpleMathCommand("sqcup", new MathOperatorInterpretation(MathMLSymbol.SQCUP));
+//        corePackage.addSimpleMathCommand("vee", new MathOperatorInterpretation(MathMLSymbol.VEE));
+//        corePackage.addSimpleMathCommand("lor", new MathOperatorInterpretation(MathMLSymbol.VEE));
+//        corePackage.addSimpleMathCommand("wedge", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
+//        corePackage.addSimpleMathCommand("land", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
+//        corePackage.addSimpleMathCommand("setminus", new MathOperatorInterpretation(MathMLSymbol.SETMINUS));
+//        corePackage.addSimpleMathCommand("wr", new MathOperatorInterpretation(MathMLSymbol.WR));
+//        corePackage.addSimpleMathCommand("diamond", new MathOperatorInterpretation(MathMLSymbol.DIAMOND));
+//        corePackage.addSimpleMathCommand("bigtriangleup", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEUP));
+//        corePackage.addSimpleMathCommand("bigtriangledown", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEDOWN));
+//        corePackage.addSimpleMathCommand("triangleleft", new MathOperatorInterpretation(MathMLSymbol.TRIANGLELEFT));
+//        corePackage.addSimpleMathCommand("triangleright", new MathOperatorInterpretation(MathMLSymbol.TRIANGLERIGHT));
+//        corePackage.addSimpleMathCommand("oplus", new MathOperatorInterpretation(MathMLSymbol.OPLUS));
+//        corePackage.addSimpleMathCommand("ominus", new MathOperatorInterpretation(MathMLSymbol.OMINUS));
+//        corePackage.addSimpleMathCommand("otimes", new MathOperatorInterpretation(MathMLSymbol.OTIMES));
+//        corePackage.addSimpleMathCommand("oslash", new MathOperatorInterpretation(MathMLSymbol.OSLASH));
+//        corePackage.addSimpleMathCommand("odot", new MathOperatorInterpretation(MathMLSymbol.ODOT));
+//        corePackage.addSimpleMathCommand("bigcirc", new MathOperatorInterpretation(MathMLSymbol.BIGCIRC));
+//        corePackage.addSimpleMathCommand("dagger", new MathOperatorInterpretation(MathMLSymbol.DAGGER));
+//        corePackage.addSimpleMathCommand("ddagger", new MathOperatorInterpretation(MathMLSymbol.DDAGGER));
+//        corePackage.addSimpleMathCommand("amalg", new MathOperatorInterpretation(MathMLSymbol.AMALG));
         corePackage.addSimpleMathCommand("leq", new MathOperatorInterpretation(MathMLSymbol.LEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_LEQ));
         corePackage.addSimpleMathCommand("le", new MathOperatorInterpretation(MathMLSymbol.LEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_LEQ));
         corePackage.addSimpleMathCommand("prec", new MathOperatorInterpretation(MathMLSymbol.PREC), new MathNegatableInterpretation(MathMLSymbol.NOT_PREC));
-        corePackage.addSimpleMathCommand("preceq", new MathOperatorInterpretation(MathMLSymbol.PRECEQ));
-        corePackage.addSimpleMathCommand("ll", new MathOperatorInterpretation(MathMLSymbol.LL));
+//        corePackage.addSimpleMathCommand("preceq", new MathOperatorInterpretation(MathMLSymbol.PRECEQ));
+//        corePackage.addSimpleMathCommand("ll", new MathOperatorInterpretation(MathMLSymbol.LL));
         corePackage.addSimpleMathCommand("subset", new MathOperatorInterpretation(MathMLSymbol.SUBSET), new MathNegatableInterpretation(MathMLSymbol.NOT_SUBSET));
         corePackage.addSimpleMathCommand("subseteq", new MathOperatorInterpretation(MathMLSymbol.SUBSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SUBSETEQ));
         corePackage.addSimpleMathCommand("sqsubset", new MathOperatorInterpretation(MathMLSymbol.SQSUBSET));
@@ -567,7 +503,7 @@ public final class CorePackageDefinitions {
         corePackage.addSimpleMathCommand("ge", new MathOperatorInterpretation(MathMLSymbol.GEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_GEQ));
         corePackage.addSimpleMathCommand("succ", new MathOperatorInterpretation(MathMLSymbol.SUCC), new MathNegatableInterpretation(MathMLSymbol.NOT_SUCC));
         corePackage.addSimpleMathCommand("succeq", new MathOperatorInterpretation(MathMLSymbol.SUCCEQ));
-        corePackage.addSimpleMathCommand("gg", new MathOperatorInterpretation(MathMLSymbol.GG));
+//        corePackage.addSimpleMathCommand("gg", new MathOperatorInterpretation(MathMLSymbol.GG));
         corePackage.addSimpleMathCommand("supset", new MathOperatorInterpretation(MathMLSymbol.SUPSET), new MathNegatableInterpretation(MathMLSymbol.NOT_SUPSET));
         corePackage.addSimpleMathCommand("supseteq", new MathOperatorInterpretation(MathMLSymbol.SUPSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SUPSETEQ));
         corePackage.addSimpleMathCommand("sqsupset", new MathOperatorInterpretation(MathMLSymbol.SQSUPSET));
@@ -586,83 +522,12 @@ public final class CorePackageDefinitions {
         corePackage.addSimpleMathCommand("models", new MathOperatorInterpretation(MathMLSymbol.MODELS));
         corePackage.addSimpleMathCommand("perp", new MathOperatorInterpretation(MathMLSymbol.PERP));
         corePackage.addSimpleMathCommand("mid", new MathOperatorInterpretation(MathMLSymbol.MID), new MathNegatableInterpretation(MathMLSymbol.NOT_MID));
-        corePackage.addSimpleMathCommand("parallel", new MathOperatorInterpretation(MathMLSymbol.PARALLEL));
-        corePackage.addSimpleMathCommand("bowtie", new MathOperatorInterpretation(MathMLSymbol.BOWTIE));
-        corePackage.addSimpleMathCommand("smile", new MathOperatorInterpretation(MathMLSymbol.SMILE));
-        corePackage.addSimpleMathCommand("frown", new MathOperatorInterpretation(MathMLSymbol.FROWN));
-        corePackage.addSimpleMathCommand("propto", new MathOperatorInterpretation(MathMLSymbol.PROPTO));
+//        corePackage.addSimpleMathCommand("parallel", new MathOperatorInterpretation(MathMLSymbol.PARALLEL));
+//        corePackage.addSimpleMathCommand("bowtie", new MathOperatorInterpretation(MathMLSymbol.BOWTIE));
+//        corePackage.addSimpleMathCommand("smile", new MathOperatorInterpretation(MathMLSymbol.SMILE));
+//        corePackage.addSimpleMathCommand("frown", new MathOperatorInterpretation(MathMLSymbol.FROWN));
+//        corePackage.addSimpleMathCommand("propto", new MathOperatorInterpretation(MathMLSymbol.PROPTO));
         
-        /* Arrows */
-        corePackage.addSimpleMathCommand("leftarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTARROW));
-        corePackage.addSimpleMathCommand("Leftarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTARROW));
-        corePackage.addSimpleMathCommand("rightarrow", new MathOperatorInterpretation(MathMLSymbol.RIGHTARROW));
-        corePackage.addSimpleMathCommand("Rightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_RIGHTARROW));
-        corePackage.addSimpleMathCommand("leftrightarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTRIGHTARROW));
-        corePackage.addSimpleMathCommand("Leftrightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTRIGHTARROW));
-        corePackage.addSimpleMathCommand("mapsto", new MathOperatorInterpretation(MathMLSymbol.MAPSTO));
-        corePackage.addSimpleMathCommand("hookleftarrow", new MathOperatorInterpretation(MathMLSymbol.HOOKLEFTARROW));
-        corePackage.addSimpleMathCommand("leftharpoonup", new MathOperatorInterpretation(MathMLSymbol.LEFTHARPOONUP));
-        corePackage.addSimpleMathCommand("leftharpoondown", new MathOperatorInterpretation(MathMLSymbol.LEFTHARPOONDOWN));
-        corePackage.addSimpleMathCommand("rightleftharpoons", new MathOperatorInterpretation(MathMLSymbol.RIGHTLEFTHARPOONS));
-        corePackage.addSimpleMathCommand("longleftarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTARROW)); /* NB: No appropriate Unicode symbols for long operators! */
-        corePackage.addSimpleMathCommand("Longleftarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTARROW));
-        corePackage.addSimpleMathCommand("longrightarrow", new MathOperatorInterpretation(MathMLSymbol.RIGHTARROW));
-        corePackage.addSimpleMathCommand("Longrightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_RIGHTARROW));
-        corePackage.addSimpleMathCommand("longleftrightarrow", new MathOperatorInterpretation(MathMLSymbol.LEFTRIGHTARROW));
-        corePackage.addSimpleMathCommand("Longleftrightarrow", new MathOperatorInterpretation(MathMLSymbol.UC_LEFTRIGHTARROW));
-        corePackage.addSimpleMathCommand("longmapsto", new MathOperatorInterpretation(MathMLSymbol.MAPSTO));
-        corePackage.addSimpleMathCommand("hookrightarrow", new MathOperatorInterpretation(MathMLSymbol.HOOKRIGHTARROW));
-        corePackage.addSimpleMathCommand("rightharpoonup", new MathOperatorInterpretation(MathMLSymbol.RIGHTHARPOONOUP));
-        corePackage.addSimpleMathCommand("rightharpoondown", new MathOperatorInterpretation(MathMLSymbol.RIGHTHARPOONDOWN));
-        corePackage.addSimpleMathCommand("uparrow", new MathOperatorInterpretation(MathMLSymbol.UPARROW));
-        corePackage.addSimpleMathCommand("Uparrow", new MathOperatorInterpretation(MathMLSymbol.UC_UPARROW));
-        corePackage.addSimpleMathCommand("downarrow", new MathOperatorInterpretation(MathMLSymbol.DOWNARROW));
-        corePackage.addSimpleMathCommand("Downarrow", new MathOperatorInterpretation(MathMLSymbol.UC_DOWNARROW));
-        corePackage.addSimpleMathCommand("updownarrow", new MathOperatorInterpretation(MathMLSymbol.UPDOWNARROW));
-        corePackage.addSimpleMathCommand("Updownarrow", new MathOperatorInterpretation(MathMLSymbol.UC_UPDOWNARROW));
-        corePackage.addSimpleMathCommand("nearrow", new MathOperatorInterpretation(MathMLSymbol.NEARROW));
-        corePackage.addSimpleMathCommand("searrow", new MathOperatorInterpretation(MathMLSymbol.SEARROW));
-        corePackage.addSimpleMathCommand("swarrow", new MathOperatorInterpretation(MathMLSymbol.SWARROW));
-        corePackage.addSimpleMathCommand("nwarrow", new MathOperatorInterpretation(MathMLSymbol.NWARROW));
-        
-        /* Miscellaneous symbols */
-        corePackage.addSimpleMathCommand("aleph", new MathIdentifierInterpretation(MathMLSymbol.ALEPH));
-        corePackage.addSimpleMathCommand("imath", new MathIdentifierInterpretation(MathMLSymbol.IMATH));
-        corePackage.addSimpleMathCommand("jmath", new MathIdentifierInterpretation(MathMLSymbol.JMATH));
-        corePackage.addSimpleMathCommand("ell", new MathIdentifierInterpretation(MathMLSymbol.ELL));
-        corePackage.addSimpleMathCommand("wp", new MathIdentifierInterpretation(MathMLSymbol.WP));
-        corePackage.addSimpleMathCommand("Re", new MathIdentifierInterpretation(MathMLSymbol.RE));
-        corePackage.addSimpleMathCommand("Im", new MathIdentifierInterpretation(MathMLSymbol.IM));
-        corePackage.addSimpleMathCommand("mho", new MathIdentifierInterpretation(MathMLSymbol.MHO));
-        corePackage.addSimpleMathCommand("prime", new MathIdentifierInterpretation(MathMLSymbol.PRIME));
-        corePackage.addSimpleMathCommand("emptyset", new MathIdentifierInterpretation(MathMLSymbol.EMPTYSET));
-        corePackage.addSimpleMathCommand("nabla", new MathOperatorInterpretation(MathMLSymbol.NABLA));
-        corePackage.addSimpleMathCommand("surd", new MathOperatorInterpretation(MathMLSymbol.SURD));
-        corePackage.addSimpleMathCommand("top", new MathOperatorInterpretation(MathMLSymbol.TOP));
-        corePackage.addSimpleMathCommand("bot", new MathOperatorInterpretation(MathMLSymbol.BOT));
-        corePackage.addSimpleMathCommand("|", new MathOperatorInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET));
-        corePackage.addSimpleMathCommand("angle", new MathOperatorInterpretation(MathMLSymbol.ANGLE));
-        corePackage.addSimpleMathCommand("forall", new MathOperatorInterpretation(MathMLSymbol.FORALL));
-        corePackage.addSimpleMathCommand("exists", new MathOperatorInterpretation(MathMLSymbol.EXISTS));
-        corePackage.addSimpleMathCommand("neg", new MathOperatorInterpretation(MathMLSymbol.NEG));
-        corePackage.addSimpleMathCommand("lnot", new MathOperatorInterpretation(MathMLSymbol.NEG));
-        corePackage.addSimpleMathCommand("flat", new MathIdentifierInterpretation(MathMLSymbol.FLAT));
-        corePackage.addSimpleMathCommand("natural", new MathIdentifierInterpretation(MathMLSymbol.NATURAL));
-        corePackage.addSimpleMathCommand("sharp", new MathIdentifierInterpretation(MathMLSymbol.SHARP));
-        corePackage.addSimpleMathCommand("backslash", new MathOperatorInterpretation(MathMLSymbol.BACKSLASH));
-        corePackage.addSimpleMathCommand("partial", new MathOperatorInterpretation(MathMLSymbol.PARTIAL));
-        corePackage.addSimpleMathCommand("infty", new MathIdentifierInterpretation(MathMLSymbol.INFTY));
-        corePackage.addSimpleMathCommand("triangle", new MathIdentifierInterpretation(MathMLSymbol.TRIANGLE));
-        corePackage.addSimpleMathCommand("clubsuit", new MathIdentifierInterpretation(MathMLSymbol.CLUBSUIT));
-        corePackage.addSimpleMathCommand("diamondsuit", new MathIdentifierInterpretation(MathMLSymbol.DIAMONDSUIT));
-        corePackage.addSimpleMathCommand("heartsuit", new MathIdentifierInterpretation(MathMLSymbol.HEARTSUIT));
-        corePackage.addSimpleMathCommand("spadesuit", new MathIdentifierInterpretation(MathMLSymbol.SPADESUIT));
-        
-        /* Extra identifiers */
-        corePackage.addSimpleMathCommand("hbar", new MathIdentifierInterpretation(MathMLSymbol.HBAR));
-        corePackage.addSimpleMathCommand("aa", new MathIdentifierInterpretation(MathMLSymbol.AA));
-        corePackage.addSimpleMathCommand("AA", new MathIdentifierInterpretation(MathMLSymbol.UC_AA));
-
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.
          */

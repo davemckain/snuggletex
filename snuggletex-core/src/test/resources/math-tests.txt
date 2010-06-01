@@ -33,6 +33,9 @@ x
 1+x
 <mn>1</mn><mo>+</mo><mi>x</mi>
 ====
+1\pm x
+<mn>1</mn><mo>&#xb1;</mo><mi>x</mi>
+====
 x = 3
 <mi>x</mi><mo>=</mo><mn>3</mn>
 ====
@@ -752,4 +755,18 @@ x/2
 <mn>1</mn>
 <mo>&#x2271;</mo>
 <mn>2</mn>
+====
+## Unicode input support
+%u03b1
+<mi>&#x3b1;</mi>
+====
+%u222b
+<mo>&#x222b;</mo>
+====
+%u222b_0^1 f
+<msubsup><mo>&#x222b;</mo><mn>0</mn><mn>1</mn></msubsup><mi>f</mi>
+====
+## Input macros for certain characters
+\mathdollar
+<mo>$</mo>
 ====

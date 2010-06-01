@@ -6,23 +6,15 @@
 package uk.ac.ed.ph.snuggletex.semantics;
 
 /**
- * Defines the resulting content of various MathML "symbols" (i.e. identifiers and operators). 
+ * Defines the resulting content of various MathML "symbols" (i.e. identifiers and operators).
  * 
- * @author David McKain
+ * FIXME: This is on its way out for 1.3.0, or at least partially.
+ * 
+ * @author  David McKain
  * @version $Revision:179 $
  */
 public interface MathMLSymbol {
     
-//    public static final String ADD = "+";
-//    public static final String SUBTRACT = "-";
-//    public static final String ASTERISK = "*";
-//    public static final String SLASH = "/";
-//    public static final String COMMA = ",";
-//    public static final String EQUALS = "=";
-//    public static final String DOT = ".";
-    
-//    public static final String LESS_THAN = "<";
-//    public static final String GREATER_THAN = ">";
     public static final String OPEN_BRACKET = "(";
     public static final String CLOSE_BRACKET = ")";
     public static final String OPEN_CURLY_BRACKET = "{";
@@ -32,102 +24,9 @@ public interface MathMLSymbol {
     public static final String DIVIDES = "|";
     public static final String VERT_BRACKET = "|";
 
-//    public static final String FACTORIAL = "!";
-    public static final String BACKSLASH = "\\";
-    
-    public static final String JMATH = "\u006a";
-    public static final String NEG = "\u00ac";
-    public static final String PM = "\u00b1";
-
-    public static final String UC_AA = "\u00c5";
-    public static final String TIMES = "\u00d7";
-    public static final String AA = "\u00e5";
-    public static final String DIV = "\u00f7";
-    
-    public static final String IMATH = "\u0131";
-    
-    public static final String ALPHA = "\u03b1";
-    public static final String BETA = "\u03b2";
-    public static final String GAMMA = "\u03b3";
-    public static final String DELTA = "\u03b4";
-    public static final String EPSILON = "\u03f5";
-    public static final String VAREPSILON = "\u03b5";
-    public static final String ZETA = "\u03b6";
-    public static final String ETA = "\u03b7";
-    public static final String THETA = "\u03b8";
-    public static final String VARTHETA = "\u03d1";
-    public static final String IOTA = "\u03b9";
-    public static final String KAPPA = "\u03ba";
-    public static final String LAMBDA = "\u03bb";
-    public static final String MU = "\u03bc";
-    public static final String NU = "\u03bd";
-    public static final String XI = "\u03be";
-    public static final String PI = "\u03c0";
-    public static final String VARPI = "\u03d6";
-    public static final String RHO = "\u03c1";
-    public static final String VARRHO = "\u03f1";
-    public static final String SIGMA = "\u03c3";
-    public static final String VARSIGMA = "\u03c2";
-    public static final String TAU = "\u03c4";
-    public static final String UPSILON = "\u03c5";
-    public static final String PHI = "\u03c6";
-    public static final String VARPHI = "\u03d5";
-    public static final String CHI = "\u03c7";
-    public static final String PSI = "\u03c8";
-    public static final String OMEGA = "\u03c9";
-    public static final String UC_GAMMA = "\u0393";
-    public static final String UC_DELTA = "\u0394";
-    public static final String UC_THETA = "\u0398";
-    public static final String UC_LAMBDA = "\u039b";
-    public static final String UC_XI = "\u039e";
-    public static final String UC_PI = "\u03a0";
-    public static final String UC_SIGMA = "\u03a3";
-    public static final String UC_UPSILON = "\u03a5";
-    public static final String UC_PHI = "\u03a6";
-    public static final String UC_PSI = "\u03a8";
-    public static final String UC_OMEGA = "\u03a9";
-
-    public static final String PRIME = "\u2032";
-    public static final String DAGGER = "\u2020";
-    public static final String DDAGGER = "\u2021";
-    public static final String BULLET = "\u2022";
     public static final String APPLY_FUNCTION = "\u2061";
     public static final String INVISIBLE_TIMES = "\u2062";
     
-    public static final String HBAR = "\u210f";
-    public static final String ELL = "\u2113";
-    public static final String WP = "\u2118";
-    public static final String RE = "\u211c";
-    public static final String IM = "\u2111";
-    public static final String MHO = "\u2127";
-    public static final String ALEPH = "\u2135";
-    public static final String LEFTARROW = "\u2190";
-    public static final String UPARROW = "\u2191";
-    public static final String RIGHTARROW = "\u2192";
-    public static final String DOWNARROW = "\u2193";
-    public static final String LEFTRIGHTARROW = "\u2194";
-    public static final String UPDOWNARROW = "\u2195";
-    public static final String NWARROW = "\u2196";
-    public static final String NEARROW = "\u2197";
-    public static final String SEARROW = "\u2198";
-    public static final String SWARROW = "\u2199";
-    public static final String MAPSTO = "\u21a6";
-    public static final String HOOKLEFTARROW = "\u21a9";
-    public static final String HOOKRIGHTARROW = "\u21aa";
-    public static final String LEFTHARPOONUP = "\u21bc";
-    public static final String LEFTHARPOONDOWN = "\u21bd";
-    public static final String RIGHTHARPOONOUP = "\u21c0";
-    public static final String RIGHTHARPOONDOWN = "\u21c1";
-    public static final String RIGHTLEFTHARPOONS = "\u21cc";
-    public static final String UC_LEFTARROW = "\u21d0";
-    public static final String UC_UPARROW = "\u21d1";
-    public static final String UC_RIGHTARROW = "\u21d2";
-    public static final String UC_DOWNARROW = "\u21d3";
-    public static final String UC_LEFTRIGHTARROW = "\u21d4";
-    public static final String UC_UPDOWNARROW = "\u21d5";
-
-    public static final String FORALL = "\u2200";
-    public static final String PARTIAL = "\u2202";
     public static final String EXISTS = "\u2203";
     public static final String EMPTYSET = "\u2205";
     public static final String NABLA = "\u2207";
@@ -225,12 +124,7 @@ public interface MathMLSymbol {
     public static final String NOT_SQSUPSETEQ = "\u22e3";
     public static final String BIGCAP = "\u22c2";
     public static final String BIGCUP = "\u22c3";
-    public static final String VDOTS = "\u22ee";
-    public static final String CDOTS = "\u22ef";
-    public static final String DDOTS = "\u22f1";
     
-    public static final String FROWN = "\u2322";
-    public static final String SMILE = "\u2323";
     public static final String OPEN_ANGLE_BRACKET = "\u2329";
     public static final String CLOSE_ANGLE_BRACKET = "\u232a";
 
@@ -239,14 +133,6 @@ public interface MathMLSymbol {
     public static final String BIGTRIANGLEDOWN = "\u25bd";
     public static final String BIGCIRC = "\u25cb";
     
-    public static final String SPADESUIT = "\u2660";
-    public static final String HEARTSUIT = "\u2661"; /* (NB: This is not filled in, as per LaTeX. The MathML entity for heartsuit is mapped to U+2665) */
-    public static final String DIAMONDSUIT = "\u2662"; /* (NB: This is not filled in, as per LaTeX. The MathML entity for diamondsuit is mapped to U+2666) */
-    public static final String CLUBSUIT = "\u2663";
-    public static final String FLAT = "\u266d";
-    public static final String NATURAL = "\u266e";
-    public static final String SHARP = "\u266f";
-
     public static final String BIGODOT = "\u2a00";
     public static final String BIGOPLUS = "\u2a01";
     public static final String BIGOTIMES = "\u2a02";

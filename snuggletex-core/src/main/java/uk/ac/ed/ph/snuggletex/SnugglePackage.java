@@ -19,10 +19,14 @@ import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -164,11 +168,36 @@ public final class SnugglePackage {
     }
     
     //-------------------------------------------------------
-    
-    public MathCharacter addMathCharacter(int codePoint, MathCharacterType type) {
-        MathCharacter mathCharacter = new MathCharacter(codePoint, type);
-        mathCharacterMap.put(Integer.valueOf(codePoint), mathCharacter);
-        return mathCharacter;
+
+    public void loadMathCharacterDefinitions(final String resourceLocation) {
+        InputStream mathCharacterDefsStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
+        if (mathCharacterDefsStream==null) {
+            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
+        }
+        try {
+            BufferedReader mathCharacterDefsReader = new BufferedReader(new InputStreamReader(mathCharacterDefsStream, "US-ASCII"));
+            String line;
+            while ((line = mathCharacterDefsReader.readLine())!=null) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                String[] fields = line.split(":"); /* codePointHex:commandName:type */
+                int codePoint = Integer.parseInt(fields[0], 16);
+                String commandName = StringUtilities.nullIfEmpty(fields[1]);
+                MathCharacterType mathCharacterType = MathCharacterType.valueOf(fields[2]);
+                MathCharacter mathCharacter = new MathCharacter(codePoint, commandName, mathCharacterType);
+                
+                /* Define character input and (maybe) input command */
+                mathCharacterMap.put(Integer.valueOf(codePoint), mathCharacter);
+                if (commandName!=null) {
+                    addMathCharacterCommand(mathCharacter);
+                }
+            }
+            mathCharacterDefsReader.close();
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
+        }
     }
     
     //-------------------------------------------------------
@@ -184,7 +213,7 @@ public final class SnugglePackage {
             final Interpretation[] interpretations, final CommandHandler handler,
             final TextFlowContext context) {
         return addCommand(new BuiltinCommand(name, CommandType.SIMPLE, false, 0,
-                allowedModes, null, makeInterpretationMap(interpretations),
+                allowedModes, null, SnugglePackage.makeInterpretationMap(interpretations),
                 handler, context, null));
     }
     
@@ -192,8 +221,12 @@ public final class SnugglePackage {
             final Interpretation interpretation, final CommandHandler handler,
             final TextFlowContext context) {
         return addCommand(new BuiltinCommand(name, CommandType.SIMPLE, false, 0,
-                allowedModes, null, makeInterpretationMap(interpretation),
+                allowedModes, null, SnugglePackage.makeInterpretationMap(interpretation),
                 handler, context, null));
+    }
+    
+    public BuiltinCommand addMathCharacterCommand(final MathCharacter mathCharacter) {
+        return addSimpleMathCommand(mathCharacter.getInputCommandName(), mathCharacter.getMathCharacterInterpretation(), interpretableSimpleMathBuilder);
     }
 
     public BuiltinCommand addSimpleMathCommand(final String name, final MathInterpretation... interpretations) {
@@ -203,16 +236,17 @@ public final class SnugglePackage {
     public BuiltinCommand addSimpleMathCommand(final String name,
             final MathInterpretation interpretation, final CommandHandler handler) {
         return addCommand(new BuiltinCommand(name, CommandType.SIMPLE, false, 0,
-                Globals.MATH_MODE_ONLY, null, makeInterpretationMap(interpretation),
+                Globals.MATH_MODE_ONLY, null, SnugglePackage.makeInterpretationMap(interpretation),
                 handler, null, null));
     }
     
     public BuiltinCommand addSimpleMathCommand(final String name,
             final MathInterpretation[] interpretations, final CommandHandler handler) {
         return addCommand(new BuiltinCommand(name, CommandType.SIMPLE, false, 0,
-                Globals.MATH_MODE_ONLY, null, makeInterpretationMap(interpretations),
+                Globals.MATH_MODE_ONLY, null, SnugglePackage.makeInterpretationMap(interpretations),
                 handler, null, null));
     }
+
     
     public BuiltinCommand addCombinerCommand(final String name, final EnumSet<LaTeXMode> allowedModes,
             final CombinerTargetMatcher combinerTargetMatcher,
@@ -248,7 +282,7 @@ public final class SnugglePackage {
             final TextFlowContext context) {
         return addCommand(new BuiltinCommand(name, CommandType.COMPLEX, allowOptionalArgument, arguments,
                 allowedModes, null,
-                makeInterpretationMap(interpretation), handler,
+                SnugglePackage.makeInterpretationMap(interpretation), handler,
                 context, null));
     }
     
@@ -267,7 +301,7 @@ public final class SnugglePackage {
             final TextFlowContext context) {
         return addCommand(new BuiltinCommand(name, CommandType.COMPLEX, allowOptionalArgument, 1,
                 allowedModes, new LaTeXMode[] { argumentMode },
-                makeInterpretationMap(interpretation), handler,
+                SnugglePackage.makeInterpretationMap(interpretation), handler,
                 context, null));
     }
     
@@ -278,13 +312,22 @@ public final class SnugglePackage {
         return command;
     }
     
+    
+    public void addCommandInterpretation(final String name, final Interpretation interpretation) {
+        BuiltinCommand command = getBuiltinCommandByTeXName(name);
+        if (command==null) {
+            throw new IllegalArgumentException("No command defined with name " + name);
+        }
+        command.getInterpretationMap().put(interpretation.getType(), interpretation);
+    }
+    
     //-------------------------------------------------------
     
     public BuiltinEnvironment addEnvironment(final String name, final EnumSet<LaTeXMode> allowedModes,
             final LaTeXMode contentMode, final Interpretation interpretation,
             final EnvironmentHandler handler, final TextFlowContext context) {
         return addEnvironment(new BuiltinEnvironment(name, false, 0, allowedModes,
-                contentMode, makeInterpretationMap(interpretation), handler, context));
+                contentMode, SnugglePackage.makeInterpretationMap(interpretation), handler, context));
     }
     
     public BuiltinEnvironment addEnvironment(final String name, final boolean allowOptionalArgument,
@@ -292,7 +335,7 @@ public final class SnugglePackage {
             final LaTeXMode contentMode, final Interpretation interpretation,
             final EnvironmentHandler handler, final TextFlowContext context) {
         return addEnvironment(new BuiltinEnvironment(name, allowOptionalArgument, argumentCount,
-                allowedModes, contentMode, makeInterpretationMap(interpretation), handler, context));
+                allowedModes, contentMode, SnugglePackage.makeInterpretationMap(interpretation), handler, context));
     }
     
     public BuiltinEnvironment addEnvironment(final BuiltinEnvironment environment) {
@@ -300,28 +343,6 @@ public final class SnugglePackage {
             builtinEnvironmentMap.put(environment.getTeXName(), environment);
         }
         return environment;
-    }
-    
-    //-------------------------------------------------------
-    
-    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation interpretation) {
-        if (interpretation==null) {
-            return null;
-        }
-        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
-        result.put(interpretation.getType(), interpretation);
-        return result;
-    }
-    
-    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation... interpretations) {
-        if (interpretations.length==0) {
-            return null;
-        }
-        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
-        for (Interpretation interpretation : interpretations) {
-            result.put(interpretation.getType(), interpretation);
-        }
-        return result;
     }
     
     //-------------------------------------------------------
@@ -344,4 +365,27 @@ public final class SnugglePackage {
             addErrorCode(errorCode);
         }
     }
+    
+    //-------------------------------------------------------
+
+    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation interpretation) {
+        if (interpretation==null) {
+            return null;
+        }
+        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
+        result.put(interpretation.getType(), interpretation);
+        return result;
+    }
+
+    public static EnumMap<InterpretationType, Interpretation> makeInterpretationMap(final Interpretation... interpretations) {
+        if (interpretations.length==0) {
+            return null;
+        }
+        EnumMap<InterpretationType, Interpretation> result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
+        for (Interpretation interpretation : interpretations) {
+            result.put(interpretation.getType(), interpretation);
+        }
+        return result;
+    }
+
 }

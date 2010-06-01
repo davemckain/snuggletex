@@ -43,7 +43,7 @@ public abstract class AbstractErrorTest {
         /* Parse document and build XML */
         SnuggleSession session = createSnuggleSession();
         try {
-            session.parseInput(new SnuggleInput(AbstractGoodTest.massageInputLaTeX(inputLaTeX)));
+            session.parseInput(new SnuggleInput(TestUtilities.massageInputLaTeX(inputLaTeX)));
             session.buildXMLString();
         }
         catch (Exception e) {

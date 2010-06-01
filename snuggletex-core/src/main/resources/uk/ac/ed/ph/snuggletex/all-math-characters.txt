@@ -1,3 +1,4 @@
+# This is generated from snuggletex-core/unicode-math-table.tex - do not edit!
 00021:exclam:PUNCT
 00023:octothorpe:ORD
 00024:mathdollar:ORD

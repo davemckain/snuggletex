@@ -585,7 +585,7 @@ public final class LaTeXTokeniser {
              * we might want to use a flywheel pattern here to reduce the number of objects
              * created.
              */
-            mathCharacter = new MathCharacter(codePoint, MathCharacterType.ALPHA);
+            mathCharacter = new MathCharacter(codePoint, null, MathCharacterType.ALPHA);
         }
         return new MathCharacterToken(thisCharSlice, mathCharacter);
     }

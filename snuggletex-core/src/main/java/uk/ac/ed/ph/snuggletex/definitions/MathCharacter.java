@@ -38,12 +38,14 @@ public final class MathCharacter {
     }
 
     private final int codePoint;
+    private final String inputCommandName;
     private final MathCharacterType type;
     private final MathCharacterInterpretation mathCharacterInterpretation;
     private final EnumMap<InterpretationType, Interpretation> interpretationMap;
     
-    public MathCharacter(int codePoint, MathCharacterType type) {
+    public MathCharacter(int codePoint, String inputCommandName, MathCharacterType type) {
         this.codePoint = codePoint;
+        this.inputCommandName = inputCommandName;
         this.type = type;
         this.mathCharacterInterpretation = new MathCharacterInterpretation(this);
         this.interpretationMap = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
@@ -54,6 +56,10 @@ public final class MathCharacter {
         return codePoint;
     }
     
+    public String getInputCommandName() {
+        return inputCommandName;
+    }
+
     public MathCharacterType getType() {
         return type;
     }
