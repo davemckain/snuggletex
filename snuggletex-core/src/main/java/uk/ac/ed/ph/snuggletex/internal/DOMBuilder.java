@@ -25,6 +25,7 @@ import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
@@ -490,6 +491,32 @@ public final class DOMBuilder {
             MathFunctionInterpretation functionInterp = (MathFunctionInterpretation) interpretationMap.get(InterpretationType.MATH_FUNCTION);
             appendMathMLIdentifierElement(parentElement, functionInterp.getName());
         }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_CHARACTER)) {
+            MathCharacterInterpretation characterInterp = (MathCharacterInterpretation) interpretationMap.get(InterpretationType.MATH_CHARACTER);
+            String encodedCharacter = new String(Character.toChars(characterInterp.getCodePoint()));
+            switch (characterInterp.getCharacterType()) {
+                case ALPHA:
+                    appendMathMLIdentifierElement(parentElement, encodedCharacter);
+                    break;
+                    
+                case BIN:
+                case OP:
+                case ORD:
+                case PUNCT:
+                case REL:
+                case CLOSE:
+                case FENCE:
+                case OPEN:
+                    appendMathMLOperatorElement(parentElement, encodedCharacter);
+                    break;
+                    
+                case ACCENT:
+                    throw new SnuggleLogicException("No handling for ACCENT coded yet!");
+                    
+                default:
+                    throw new SnuggleLogicException("Unexpected switch case " + characterInterp.getCharacterType());
+            }
+        }
         else {
             throw new SnuggleLogicException("Unexpected logic branch based on InterpretationMap, which was: " + interpretationMap);
         }
@@ -606,6 +633,8 @@ public final class DOMBuilder {
             if (options.isMathVariantMapping()) {
                 /* Client has asked to try to map this character to a suitable target Unicode
                  * character, so let's try this.
+                 * 
+                 * FIXME: This probably needs to become codepoint aware!
                  */
                 char mappedChar = currentMathCharacterMap.getAccentedChar(name.charAt(0));
                 if (mappedChar!=0) {

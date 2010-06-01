@@ -34,7 +34,7 @@ public abstract class Token {
     /** LaTeX Mode that this token was parsed in */
     protected final LaTeXMode latexMode;
     
-    /** Interpretation(s) of this token, if it can be readily deduced from the input */
+    /** Interpretation(s) of this token, if it can be readily deduced from the input. May be null. */
     protected final EnumMap<InterpretationType, Interpretation> interpretationMap;
     
     protected Token(final FrozenSlice slice, final TokenType type, final LaTeXMode latexMode,

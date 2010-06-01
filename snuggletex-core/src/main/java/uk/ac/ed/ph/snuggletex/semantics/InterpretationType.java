@@ -24,6 +24,7 @@ public enum InterpretationType {
     STYLE_DECLARATION,
     
     /* Principal Math Interpretations. These ones are mutually exclusive */
+    MATH_CHARACTER,
     MATH_NUMBER,
     MATH_IDENTIFIER,
     MATH_FUNCTION,
@@ -35,6 +36,11 @@ public enum InterpretationType {
     MATH_NEGATABLE,
     MATH_BRACKET,
     MATH_BIG_LIMIT_OWNER,
+    
+    //-------------------------------------------------------
+    // These are "marker" interpretations in that they get attached to certain
+    // tokens so that they can be handled in a certain way during token fixing.
+    // This is a bit messy and might be better done in a better way...
     
     /* These can be applied to both Text and Math stuff. (Generally only environments) */
     TABULAR,

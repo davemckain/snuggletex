@@ -27,7 +27,14 @@ TTEG00
 \
 TTEG01
 ====
+# C1 control characters. They're legal in XML but we're not going to allow them.
+%u0080
+TTEG02
+====
 %u0000
+TTEG02
+====
+%u007F
 TTEG02
 ====
 \]

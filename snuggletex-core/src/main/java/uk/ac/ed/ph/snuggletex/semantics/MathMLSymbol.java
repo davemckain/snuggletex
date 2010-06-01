@@ -13,16 +13,16 @@ package uk.ac.ed.ph.snuggletex.semantics;
  */
 public interface MathMLSymbol {
     
-    public static final String ADD = "+";
-    public static final String SUBTRACT = "-";
-    public static final String ASTERISK = "*";
-    public static final String SLASH = "/";
-    public static final String COMMA = ",";
-    public static final String EQUALS = "=";
-    public static final String DOT = ".";
+//    public static final String ADD = "+";
+//    public static final String SUBTRACT = "-";
+//    public static final String ASTERISK = "*";
+//    public static final String SLASH = "/";
+//    public static final String COMMA = ",";
+//    public static final String EQUALS = "=";
+//    public static final String DOT = ".";
     
-    public static final String LESS_THAN = "<";
-    public static final String GREATER_THAN = ">";
+//    public static final String LESS_THAN = "<";
+//    public static final String GREATER_THAN = ">";
     public static final String OPEN_BRACKET = "(";
     public static final String CLOSE_BRACKET = ")";
     public static final String OPEN_CURLY_BRACKET = "{";
@@ -32,7 +32,7 @@ public interface MathMLSymbol {
     public static final String DIVIDES = "|";
     public static final String VERT_BRACKET = "|";
 
-    public static final String FACTORIAL = "!";
+//    public static final String FACTORIAL = "!";
     public static final String BACKSLASH = "\\";
     
     public static final String JMATH = "\u006a";

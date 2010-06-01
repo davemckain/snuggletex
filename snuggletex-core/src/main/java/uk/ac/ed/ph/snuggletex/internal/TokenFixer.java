@@ -17,8 +17,7 @@ import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
@@ -588,7 +587,7 @@ public final class TokenFixer {
     }
     
     /**
-     * Converts leading occurrences of {@link MathMLSymbol#SUBTRACT} followed by a {@link MathNumberInterpretation}
+     * Converts leading occurrences of '-' followed by a {@link MathNumberInterpretation}
      * into a single token representing the negation of the given number.
      * 
      * @param tokens
@@ -599,8 +598,8 @@ public final class TokenFixer {
         }
         FlowToken firstToken = tokens.get(0);
         FlowToken secondToken = tokens.get(1);
-        if (firstToken.hasInterpretationType(InterpretationType.MATH_OPERATOR) &&
-                ((MathOperatorInterpretation) firstToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent()==MathMLSymbol.SUBTRACT
+        if (firstToken.hasInterpretationType(InterpretationType.MATH_CHARACTER) &&
+                ((MathCharacterInterpretation) firstToken.getInterpretation(InterpretationType.MATH_CHARACTER)).getCodePoint()=='-'
                 && secondToken.hasInterpretationType(InterpretationType.MATH_NUMBER)) {
             CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation(InterpretationType.MATH_NUMBER)).getNumber();
             SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
@@ -660,8 +659,8 @@ public final class TokenFixer {
         FrozenSlice replacementSlice;
         for (int i=0; i<tokens.size()-1; i++) { /* We're fixing in place so tokens.size() may decrease over time */
             maybePrimeToken = tokens.get(i+1);
-            if (maybePrimeToken.hasInterpretationType(InterpretationType.MATH_IDENTIFIER)
-                    && ((MathIdentifierInterpretation) maybePrimeToken.getInterpretation(InterpretationType.MATH_IDENTIFIER)).getName().equals("'")) {
+            if (maybePrimeToken.hasInterpretationType(InterpretationType.MATH_CHARACTER)
+                    && ((MathCharacterInterpretation) maybePrimeToken.getInterpretation(InterpretationType.MATH_CHARACTER)).getCodePoint()=='\'') {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());

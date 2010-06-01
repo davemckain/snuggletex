@@ -27,8 +27,9 @@ import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation.CharacterType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -579,7 +580,7 @@ public final class LaTeXTokeniser {
         FrozenSlice thisCharSlice = workingDocument.freezeSlice(position, position+utf16Width);
         
         /* Look up interpretations for this code point */
-        EnumMap<InterpretationType, Interpretation> interpretationMap = Globals.getMathCharacterInterpretationMap(codePoint);
+        EnumMap<InterpretationType, Interpretation> interpretationMap = Globals.getMathCharacterInterpretations(codePoint);
         if (interpretationMap!=null) {
             return new SimpleToken(thisCharSlice,
                     TokenType.MATH_SINGLE_CHARACTER,
@@ -587,12 +588,11 @@ public final class LaTeXTokeniser {
                     null, interpretationMap);
         }
         
-        /* If no interpretations, we'll treat as a plain old identifier (e.g. 'x', 'y' etc.) */
+        /* If nothing defined, we'll assume alphabetic character */
         return new SimpleToken(thisCharSlice,
                 TokenType.MATH_SINGLE_CHARACTER,
                 LaTeXMode.MATH,
-                null,
-                new MathIdentifierInterpretation(thisCharSlice.extract().toString()));
+                null, new MathCharacterInterpretation(CharacterType.ALPHA, codePoint));
     }
     
     /**
