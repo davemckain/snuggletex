@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
@@ -15,37 +16,18 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
  */
 public class MathCharacterInterpretation implements MathInterpretation {
     
-    public static enum CharacterType {
-        ACCENT,
-        ALPHA,
-        BIN,
-        CLOSE,
-        FENCE,
-        OP,
-        OPEN,
-        ORD,
-        PUNCT,
-        REL,
-    }
-    
     public InterpretationType getType() {
         return InterpretationType.MATH_CHARACTER;
     }
     
-    private final CharacterType characterType;
-    private final int codePoint;
+    private final MathCharacter mathCharacter;
     
-    public MathCharacterInterpretation(CharacterType characterType, int codePoint) {
-        this.characterType = characterType;
-        this.codePoint = codePoint;
+    public MathCharacterInterpretation(MathCharacter mathCharacter) {
+        this.mathCharacter = mathCharacter;
     }
     
-    public CharacterType getCharacterType() {
-        return characterType;
-    }
-    
-    public int getCodePoint() {
-        return codePoint;
+    public MathCharacter getMathCharacter() {
+        return mathCharacter;
     }
     
     @Override

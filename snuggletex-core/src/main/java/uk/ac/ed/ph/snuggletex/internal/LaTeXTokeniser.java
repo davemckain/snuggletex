@@ -19,17 +19,15 @@ import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommandOrEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
-import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
-import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation.CharacterType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -43,7 +41,6 @@ import uk.ac.ed.ph.snuggletex.tokens.TokenType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -580,19 +577,21 @@ public final class LaTeXTokeniser {
         FrozenSlice thisCharSlice = workingDocument.freezeSlice(position, position+utf16Width);
         
         /* Look up interpretations for this code point */
-        EnumMap<InterpretationType, Interpretation> interpretationMap = Globals.getMathCharacterInterpretations(codePoint);
-        if (interpretationMap!=null) {
-            return new SimpleToken(thisCharSlice,
-                    TokenType.MATH_SINGLE_CHARACTER,
-                    LaTeXMode.MATH,
-                    null, interpretationMap);
+        MathCharacter mathCharacter = Globals.getMathCharacter(codePoint);
+        if (mathCharacter==null) {
+            /* If nothing defined, we'll assume alphabetic character */
+            
+            /* FIXME: It's likely that we'll see a small number of characters frequently, so
+             * we might want to use a flywheel pattern here to reduce the number of objects
+             * created.
+             */
+            mathCharacter = new MathCharacter(codePoint, MathCharacterType.ALPHA);
         }
         
-        /* If nothing defined, we'll assume alphabetic character */
         return new SimpleToken(thisCharSlice,
                 TokenType.MATH_SINGLE_CHARACTER,
                 LaTeXMode.MATH,
-                null, new MathCharacterInterpretation(CharacterType.ALPHA, codePoint));
+                null, mathCharacter.getInterpretationMap());
     }
     
     /**

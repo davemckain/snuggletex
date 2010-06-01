@@ -15,6 +15,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
@@ -492,9 +493,9 @@ public final class DOMBuilder {
             appendMathMLIdentifierElement(parentElement, functionInterp.getName());
         }
         else if (interpretationMap.containsKey(InterpretationType.MATH_CHARACTER)) {
-            MathCharacterInterpretation characterInterp = (MathCharacterInterpretation) interpretationMap.get(InterpretationType.MATH_CHARACTER);
-            String encodedCharacter = new String(Character.toChars(characterInterp.getCodePoint()));
-            switch (characterInterp.getCharacterType()) {
+            MathCharacter mathCharacter = ((MathCharacterInterpretation) interpretationMap.get(InterpretationType.MATH_CHARACTER)).getMathCharacter();
+            String encodedCharacter = new String(Character.toChars(mathCharacter.getCodePoint()));
+            switch (mathCharacter.getType()) {
                 case ALPHA:
                     appendMathMLIdentifierElement(parentElement, encodedCharacter);
                     break;
@@ -514,7 +515,7 @@ public final class DOMBuilder {
                     throw new SnuggleLogicException("No handling for ACCENT coded yet!");
                     
                 default:
-                    throw new SnuggleLogicException("Unexpected switch case " + characterInterp.getCharacterType());
+                    throw new SnuggleLogicException("Unexpected switch case " + mathCharacter.getType());
             }
         }
         else {

@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.AccentMap;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
@@ -81,8 +82,8 @@ public final class AccentHandler implements CommandHandler {
         char mathAccent = 0; /* Will be set to non-zero accent character if success */
         if (accentMap!=null && content.size()==1 && content.get(0).hasInterpretationType(InterpretationType.MATH_CHARACTER)) {
             /* Possible accent! Let's see if we the resulting Unicode is safe for most browsers. */
-            MathCharacterInterpretation mathIdentifier = (MathCharacterInterpretation) content.get(0).getInterpretation(InterpretationType.MATH_CHARACTER);
-            mathAccent = accentMap.getAccentedMathChar(mathIdentifier.getCodePoint());
+            MathCharacter mathCharacter = ((MathCharacterInterpretation) content.get(0).getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
+            mathAccent = accentMap.getAccentedMathChar(mathCharacter.getCodePoint());
         }
         if (mathAccent!=0) {
             /* Construct accent */

@@ -41,6 +41,8 @@ public enum InterpretationType {
     // These are "marker" interpretations in that they get attached to certain
     // tokens so that they can be handled in a certain way during token fixing.
     // This is a bit messy and might be better done in a better way...
+    // (In particular, there's no need to have these as Map keys as the values
+    // are meaningless. Might be better then to separate them into a bitset or something?)
     
     /* These can be applied to both Text and Math stuff. (Generally only environments) */
     TABULAR,

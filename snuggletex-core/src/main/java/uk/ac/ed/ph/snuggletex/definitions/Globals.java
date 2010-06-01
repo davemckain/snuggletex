@@ -12,9 +12,9 @@ import static uk.ac.ed.ph.snuggletex.definitions.LaTeXMode.PARAGRAPH;
 import uk.ac.ed.ph.snuggletex.SerializationSpecifier;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
-import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
@@ -22,12 +22,10 @@ import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation.CharacterType;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,25 +118,18 @@ public final class Globals {
     // complicated. And uses up too much memory 'cos of the number of EnumMaps with only 1 entry
     // in then. Refactor this signficantly!!!
     
-    private static final Map<Integer, MathCharacterInterpretation> mathCharacterCoreInterpretationMap;
-    private static final Map<Integer, EnumMap<InterpretationType, Interpretation>> mathCharacterInterpretationMap;
+    private static final Map<Integer, MathCharacter> mathCharacterMap;
     
     /** 
-     * Literal Math characters, mapped to any interpretation(s) over and above the standard
+     * Math characters, mapped to any interpretation(s) over and above the standard
      * {@link MathCharacterInterpretation}s defined for them.
      */
     private static final Object[] mathCharacterAdditionalInterpretationData = new Object[] {
+        /* NB: These first 2 characters are converted into alternative forms during token fixing */
        '_', new MathOperatorInterpretation(Globals.SUB_PLACEHOLDER),
        '^', new MathOperatorInterpretation(Globals.SUP_PLACEHOLDER),
-//       '+', new MathCharacterInterpretation(CharacterType.BIN, MathMLSymbol.ADD),
-//       '-', new MathOperatorInterpretation(MathMLSymbol.SUBTRACT),
-//       '=', new MathOperatorInterpretation(MathMLSymbol.EQUALS), new MathNegatableInterpretation(MathMLSymbol.NOT_EQUALS),
+       
        '=', new MathNegatableInterpretation(MathMLSymbol.NOT_EQUALS),
-//       ',', new MathOperatorInterpretation(MathMLSymbol.COMMA),
-//       '/', new MathOperatorInterpretation(MathMLSymbol.SLASH),
-//       '*', new MathOperatorInterpretation(MathMLSymbol.ASTERISK),
-//       '!', new MathOperatorInterpretation(MathMLSymbol.FACTORIAL),
-//       '.', new MathOperatorInterpretation(MathMLSymbol.DOT),
        '(', new MathBracketInterpretation(MathMLSymbol.OPEN_BRACKET, BracketType.OPENER, true),
        ')', new MathBracketInterpretation(MathMLSymbol.CLOSE_BRACKET, BracketType.CLOSER, true),
        '[', new MathBracketInterpretation(MathMLSymbol.OPEN_SQUARE_BRACKET, BracketType.OPENER, true),
@@ -146,11 +137,17 @@ public final class Globals {
        '<', new MathNegatableInterpretation(MathMLSymbol.NOT_LESS_THAN), new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
        '>', new MathNegatableInterpretation(MathMLSymbol.NOT_GREATER_THAN), new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
        '|', new MathNegatableInterpretation(MathMLSymbol.NOT_MID), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
+       /* Etc... */
     };
     
+    private static void defineMathCharacter(int codePoint, MathCharacterType type) {
+        mathCharacterMap.put(codePoint, new MathCharacter(codePoint, type));
+    }
+    
     static {
-        /* Read in "core" definitions */
-        mathCharacterCoreInterpretationMap = new HashMap<Integer, MathCharacterInterpretation>();
+        mathCharacterMap = new HashMap<Integer, MathCharacter>();
+        
+        /* Read in definitions */
         InputStream mathCharacterDefsStream = Globals.class.getClassLoader().getResourceAsStream(MATH_CHARACTER_DEFS_RESOURCE_NAME);
         if (mathCharacterDefsStream==null) {
             throw new SnuggleRuntimeException("Could not load resource " + MATH_CHARACTER_DEFS_RESOURCE_NAME);
@@ -161,8 +158,8 @@ public final class Globals {
             while ((line = mathCharacterDefsReader.readLine())!=null) {
                 String[] fields = line.split(":"); /* codePoint:commandName:type */
                 int codePoint = Integer.parseInt(fields[0], 16);
-                CharacterType characterType = CharacterType.valueOf(fields[2]);
-                mathCharacterCoreInterpretationMap.put(codePoint, new MathCharacterInterpretation(characterType, codePoint));
+                MathCharacterType characterType = MathCharacterType.valueOf(fields[2]);
+                mathCharacterMap.put(codePoint, new MathCharacter(codePoint, characterType));
             }
             mathCharacterDefsReader.close();
         }
@@ -171,57 +168,38 @@ public final class Globals {
         }
         
         /* Some important chars aren't defined in the core defs for some reason */
-        mathCharacterCoreInterpretationMap.put(Integer.valueOf('-'), new MathCharacterInterpretation(CharacterType.OP, '-'));
-        mathCharacterCoreInterpretationMap.put(Integer.valueOf('*'), new MathCharacterInterpretation(CharacterType.OP, '*'));
+        defineMathCharacter('-', MathCharacterType.OP);
+        defineMathCharacter('*', MathCharacterType.OP);
+        
+        /* Also need to define '_' and '^', even though they'll disappear by the time DOM building starts */
+        defineMathCharacter('_', MathCharacterType.OP);
+        defineMathCharacter('^', MathCharacterType.OP);
         
         /* Then do any additional definitions. Not that some don't override core defs */
-        mathCharacterInterpretationMap = new HashMap<Integer, EnumMap<InterpretationType, Interpretation>>();
         Object object;
         Integer currentCodePoint = null;
-        EnumMap<InterpretationType, Interpretation> currentMapBuilder = null;
         for (int i=0; i<mathCharacterAdditionalInterpretationData.length; i++) {
             object = mathCharacterAdditionalInterpretationData[i];
             if (object instanceof Character) {
-                if (currentCodePoint!=null) {
-                    /* Save map previously accumulated */
-                    mathCharacterInterpretationMap.put(currentCodePoint, currentMapBuilder);
-                }
-                /* Create new map */
                 currentCodePoint = Integer.valueOf((Character) object);
-                currentMapBuilder = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
-                
-                /* Merge in core character interp into map, if available */
-                MathCharacterInterpretation mathCharacterInterpretation = mathCharacterCoreInterpretationMap.get(currentCodePoint);
-                if (mathCharacterInterpretation!=null) {
-                    currentMapBuilder.put(InterpretationType.MATH_CHARACTER, mathCharacterInterpretation);
-                }
             }
             else if (object instanceof MathInterpretation) {
-                if (currentMapBuilder==null) {
-                    throw new SnuggleLogicException("Expected a Character in data before this item " + object);
+                if (currentCodePoint==null) {
+                    throw new SnuggleLogicException("Bad raw data - currentCodePoint is null and we've now got an Interpretation");
                 }
-                MathInterpretation currentInterpretation = (MathInterpretation) object;
-                currentMapBuilder.put(currentInterpretation.getType(), currentInterpretation);
+                MathCharacter mathCharacter = mathCharacterMap.get(currentCodePoint);
+                if (mathCharacter==null) {
+                    throw new SnuggleLogicException("No MathCharacter previously defined for codePoint " + currentCodePoint);
+                }
+                mathCharacter.addInterpretation((Interpretation) object);
             }
             else {
                 throw new SnuggleLogicException("Unexpected logic branch: got " + object);
             }
         }
-        if (currentCodePoint!=null) {
-            mathCharacterInterpretationMap.put(currentCodePoint, currentMapBuilder);
-        }
     }
     
-    public static EnumMap<InterpretationType, Interpretation> getMathCharacterInterpretations(int codePoint) {
-        EnumMap<InterpretationType, Interpretation> result = mathCharacterInterpretationMap.get(Integer.valueOf(codePoint));
-        if (result==null) {
-            /* Try for just core interpretation */
-            MathCharacterInterpretation mathCharacterInterpretation = mathCharacterCoreInterpretationMap.get(codePoint);
-            if (mathCharacterInterpretation!=null) {
-                result = new EnumMap<InterpretationType, Interpretation>(InterpretationType.class);
-                result.put(InterpretationType.MATH_CHARACTER, mathCharacterInterpretation);
-            }
-        }
-        return result;
+    public static MathCharacter getMathCharacter(int codePoint) {
+        return mathCharacterMap.get(codePoint);
     }
 }

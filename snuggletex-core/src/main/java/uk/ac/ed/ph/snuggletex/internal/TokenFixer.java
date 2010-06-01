@@ -599,7 +599,8 @@ public final class TokenFixer {
         FlowToken firstToken = tokens.get(0);
         FlowToken secondToken = tokens.get(1);
         if (firstToken.hasInterpretationType(InterpretationType.MATH_CHARACTER) &&
-                ((MathCharacterInterpretation) firstToken.getInterpretation(InterpretationType.MATH_CHARACTER)).getCodePoint()=='-'
+                ((MathCharacterInterpretation) firstToken.getInterpretation(InterpretationType.MATH_CHARACTER))
+                    .getMathCharacter().getCodePoint()=='-'
                 && secondToken.hasInterpretationType(InterpretationType.MATH_NUMBER)) {
             CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation(InterpretationType.MATH_NUMBER)).getNumber();
             SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
@@ -660,7 +661,8 @@ public final class TokenFixer {
         for (int i=0; i<tokens.size()-1; i++) { /* We're fixing in place so tokens.size() may decrease over time */
             maybePrimeToken = tokens.get(i+1);
             if (maybePrimeToken.hasInterpretationType(InterpretationType.MATH_CHARACTER)
-                    && ((MathCharacterInterpretation) maybePrimeToken.getInterpretation(InterpretationType.MATH_CHARACTER)).getCodePoint()=='\'') {
+                    && ((MathCharacterInterpretation) maybePrimeToken.getInterpretation(InterpretationType.MATH_CHARACTER))
+                        .getMathCharacter().getCodePoint()=='\'') {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());
