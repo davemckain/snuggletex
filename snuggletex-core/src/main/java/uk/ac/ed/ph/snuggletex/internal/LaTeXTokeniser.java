@@ -17,7 +17,6 @@ import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.CommandOrEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
@@ -578,7 +577,7 @@ public final class LaTeXTokeniser {
         FrozenSlice thisCharSlice = workingDocument.freezeSlice(position, position+utf16Width);
         
         /* Look up interpretations for this code point */
-        MathCharacter mathCharacter = Globals.getMathCharacter(codePoint);
+        MathCharacter mathCharacter = sessionContext.getMathCharacter(codePoint);
         if (mathCharacter==null) {
             /* If nothing defined, we'll assume alphabetic character */
             

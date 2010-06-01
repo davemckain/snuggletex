@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.SessionConfiguration;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
@@ -27,6 +28,8 @@ public interface SessionContext {
     SessionConfiguration getConfiguration();
 
     List<InputError> getErrors();
+    
+    MathCharacter getMathCharacter(int codePoint);
 
     BuiltinCommand getBuiltinCommandByTeXName(String texName);
     

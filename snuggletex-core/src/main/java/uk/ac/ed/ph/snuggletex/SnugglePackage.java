@@ -12,7 +12,9 @@ import uk.ac.ed.ph.snuggletex.definitions.CommandType;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
@@ -70,6 +72,8 @@ public final class SnugglePackage {
     /** Thread-safe Map of built-in environments, keyed on name */
     private final ConcurrentHashMap<String, BuiltinEnvironment> builtinEnvironmentMap;
     
+    private final ConcurrentHashMap<Integer, MathCharacter> mathCharacterMap;
+    
     /** Thread-safe List of all {@link ErrorGroup}s */
     private final List<ErrorGroup> errorGroupList;
 
@@ -84,6 +88,7 @@ public final class SnugglePackage {
         this.name = name;
         this.builtinCommandMap = new ConcurrentHashMap<String, BuiltinCommand>();
         this.builtinEnvironmentMap = new ConcurrentHashMap<String, BuiltinEnvironment>();
+        this.mathCharacterMap = new ConcurrentHashMap<Integer, MathCharacter>();
         this.errorGroupList = Collections.synchronizedList(new ArrayList<ErrorGroup>());
         this.errorGroupMap = new ConcurrentHashMap<ErrorGroup, List<ErrorCode>>();
     }
@@ -124,6 +129,10 @@ public final class SnugglePackage {
         this.errorMessageBundle = errorMessageBundle;
     }
 
+
+    public MathCharacter getMathCharacter(int codePoint) {
+        return mathCharacterMap.get(Integer.valueOf(codePoint));
+    }
     
     /**
      * Returns the {@link BuiltinCommand} corresponding to LaTeX command called
@@ -152,6 +161,14 @@ public final class SnugglePackage {
      */
     public static boolean isInputableTeXName(final String texName) {
         return texName!=null && !(texName.charAt(0)=='<' && texName.length()>3 && texName.endsWith(">"));
+    }
+    
+    //-------------------------------------------------------
+    
+    public MathCharacter addMathCharacter(int codePoint, MathCharacterType type) {
+        MathCharacter mathCharacter = new MathCharacter(codePoint, type);
+        mathCharacterMap.put(Integer.valueOf(codePoint), mathCharacter);
+        return mathCharacter;
     }
     
     //-------------------------------------------------------

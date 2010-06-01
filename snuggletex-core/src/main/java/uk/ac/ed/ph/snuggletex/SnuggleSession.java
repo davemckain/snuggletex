@@ -7,6 +7,7 @@ package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
@@ -571,6 +572,16 @@ public final class SnuggleSession implements SessionContext {
     //---------------------------------------------
     // Business helpers
     
+    public MathCharacter getMathCharacter(int codePoint) {
+        MathCharacter result = null;
+        for (SnugglePackage snugglePackage : packages) {
+            result = snugglePackage.getMathCharacter(codePoint);
+            if (result!=null) {
+                break;
+            }
+        }
+        return result;
+    }
     
     /**
      * Returns the {@link BuiltinCommand} corresponding to LaTeX command called

@@ -17,8 +17,10 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.ALLOW_INLINE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.IGNORE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML_BLOCK;
 
+import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.AnchorHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ArrayHandler;
@@ -66,6 +68,7 @@ import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
@@ -73,6 +76,9 @@ import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -149,6 +155,74 @@ public final class CorePackageDefinitions {
         }
         catch (MissingResourceException e) {
             throw new SnuggleRuntimeException(e);
+        }
+        
+        /* =============================== MATH CHARACTERS ============================== */
+        
+        /* Read in main definitions for each defined (generally non-alpha) math character */
+        InputStream mathCharacterDefsStream = Globals.class.getClassLoader().getResourceAsStream(Globals.MATH_CHARACTER_DEFS_RESOURCE_NAME);
+        if (mathCharacterDefsStream==null) {
+            throw new SnuggleRuntimeException("Could not load resource " + Globals.MATH_CHARACTER_DEFS_RESOURCE_NAME);
+        }
+        try {
+            BufferedReader mathCharacterDefsReader = new BufferedReader(new InputStreamReader(mathCharacterDefsStream, "US-ASCII"));
+            String line;
+            while ((line = mathCharacterDefsReader.readLine())!=null) {
+                String[] fields = line.split(":"); /* codePoint:commandName:type */
+                int codePoint = Integer.parseInt(fields[0], 16);
+                MathCharacterType mathCharacterType = MathCharacterType.valueOf(fields[2]);
+                corePackage.addMathCharacter(codePoint, mathCharacterType);
+            }
+            mathCharacterDefsReader.close();
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Got Exception while reading and parsing Math character definitions", e);
+        }
+        
+        /* Some important chars aren't defined in the core defs for some reason */
+        corePackage.addMathCharacter('-', MathCharacterType.OP);
+        corePackage.addMathCharacter('*', MathCharacterType.OP);
+        
+        /* Also need to define '_' and '^', even though they'll disappear by the time DOM building starts */
+        corePackage.addMathCharacter('_', MathCharacterType.OP);
+        corePackage.addMathCharacter('^', MathCharacterType.OP);
+
+        /* Additional interpretation data for polymorphic math characters */
+        final Object[] mathCharacterAdditionalInterpretationData = new Object[] {
+            /* NB: These first 2 characters are converted into alternative forms during token fixing */
+           '_', new MathOperatorInterpretation(Globals.SUB_PLACEHOLDER),
+           '^', new MathOperatorInterpretation(Globals.SUP_PLACEHOLDER),
+           
+           '=', new MathNegatableInterpretation(MathMLSymbol.NOT_EQUALS),
+           '(', new MathBracketInterpretation(MathMLSymbol.OPEN_BRACKET, BracketType.OPENER, true),
+           ')', new MathBracketInterpretation(MathMLSymbol.CLOSE_BRACKET, BracketType.CLOSER, true),
+           '[', new MathBracketInterpretation(MathMLSymbol.OPEN_SQUARE_BRACKET, BracketType.OPENER, true),
+           ']', new MathBracketInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET, BracketType.CLOSER, true),
+           '<', new MathNegatableInterpretation(MathMLSymbol.NOT_LESS_THAN), new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
+           '>', new MathNegatableInterpretation(MathMLSymbol.NOT_GREATER_THAN), new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
+           '|', new MathNegatableInterpretation(MathMLSymbol.NOT_MID), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
+           /* Etc... */
+        };
+        Object object;
+        Integer currentCodePoint = null;
+        for (int i=0; i<mathCharacterAdditionalInterpretationData.length; i++) {
+            object = mathCharacterAdditionalInterpretationData[i];
+            if (object instanceof Character) {
+                currentCodePoint = Integer.valueOf((Character) object);
+            }
+            else if (object instanceof MathInterpretation) {
+                if (currentCodePoint==null) {
+                    throw new SnuggleLogicException("Bad raw data - currentCodePoint is null and we've now got an Interpretation");
+                }
+                MathCharacter mathCharacter = corePackage.getMathCharacter(currentCodePoint);
+                if (mathCharacter==null) {
+                    throw new SnuggleLogicException("No MathCharacter previously defined for codePoint " + currentCodePoint);
+                }
+                mathCharacter.addInterpretation((Interpretation) object);
+            }
+            else {
+                throw new SnuggleLogicException("Unexpected logic branch: got " + object);
+            }
         }
         
         /* =================================== COMMANDS ================================= */
