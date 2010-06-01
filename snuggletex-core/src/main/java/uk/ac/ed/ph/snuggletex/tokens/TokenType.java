@@ -23,6 +23,7 @@ public enum TokenType {
     ENVIRONMENT,
     COMMAND,
     ERROR,
+    MATH_CHARACTER,
 
     /* Simple tokens */
     NEW_PARAGRAPH, /* (This is stripped out during fixing) */
@@ -31,7 +32,6 @@ public enum TokenType {
     LR_MODE_NEW_PARAGRAPH, /* (This is substituted in during fixing - not entered directly) */
     VERBATIM_MODE_TEXT,
     MATH_NUMBER,
-    MATH_SINGLE_CHARACTER,
     
     ;
 

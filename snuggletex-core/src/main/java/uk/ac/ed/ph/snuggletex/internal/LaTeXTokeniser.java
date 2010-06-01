@@ -34,6 +34,7 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.tokens.MathCharacterToken;
 import uk.ac.ed.ph.snuggletex.tokens.SimpleToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
 import uk.ac.ed.ph.snuggletex.tokens.TokenType;
@@ -587,11 +588,7 @@ public final class LaTeXTokeniser {
              */
             mathCharacter = new MathCharacter(codePoint, MathCharacterType.ALPHA);
         }
-        
-        return new SimpleToken(thisCharSlice,
-                TokenType.MATH_SINGLE_CHARACTER,
-                LaTeXMode.MATH,
-                null, mathCharacter.getInterpretationMap());
+        return new MathCharacterToken(thisCharSlice, mathCharacter);
     }
     
     /**

@@ -353,7 +353,7 @@ public final class DOMBuilder {
             /* Math tokens (it's assumed that these all have Interpretations attached) */
                 
             case MATH_NUMBER:
-            case MATH_SINGLE_CHARACTER:
+            case MATH_CHARACTER:
                 /* First check we are in a suitable mode */
                 if (isBuildingMathMLIsland()) {
                     appendSimpleMathElement(parentElement, token);
@@ -476,23 +476,7 @@ public final class DOMBuilder {
 
     public void appendSimpleMathElement(Element parentElement, Token token) {
         EnumMap<InterpretationType, Interpretation> interpretationMap = token.getInterpretationMap();
-        if (interpretationMap.containsKey(InterpretationType.MATH_IDENTIFIER)) {
-            MathIdentifierInterpretation identifierInterp = (MathIdentifierInterpretation) interpretationMap.get(InterpretationType.MATH_IDENTIFIER);
-            appendMathMLIdentifierElement(parentElement, identifierInterp.getName());
-        }
-        else if (interpretationMap.containsKey(InterpretationType.MATH_NUMBER)) {
-            MathNumberInterpretation numberInterp = (MathNumberInterpretation) interpretationMap.get(InterpretationType.MATH_NUMBER);
-            appendMathMLNumberElement(parentElement, numberInterp.getNumber().toString());
-        }
-        else if (interpretationMap.containsKey(InterpretationType.MATH_OPERATOR)) {
-            MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) interpretationMap.get(InterpretationType.MATH_OPERATOR);
-            appendMathMLOperatorElement(parentElement, operatorInterp.getMathMLOperatorContent());
-        }
-        else if (interpretationMap.containsKey(InterpretationType.MATH_FUNCTION)) {
-            MathFunctionInterpretation functionInterp = (MathFunctionInterpretation) interpretationMap.get(InterpretationType.MATH_FUNCTION);
-            appendMathMLIdentifierElement(parentElement, functionInterp.getName());
-        }
-        else if (interpretationMap.containsKey(InterpretationType.MATH_CHARACTER)) {
+        if (interpretationMap.containsKey(InterpretationType.MATH_CHARACTER)) {
             MathCharacter mathCharacter = ((MathCharacterInterpretation) interpretationMap.get(InterpretationType.MATH_CHARACTER)).getMathCharacter();
             String encodedCharacter = new String(Character.toChars(mathCharacter.getCodePoint()));
             switch (mathCharacter.getType()) {
@@ -518,6 +502,23 @@ public final class DOMBuilder {
                     throw new SnuggleLogicException("Unexpected switch case " + mathCharacter.getType());
             }
         }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_IDENTIFIER)) {
+            MathIdentifierInterpretation identifierInterp = (MathIdentifierInterpretation) interpretationMap.get(InterpretationType.MATH_IDENTIFIER);
+            appendMathMLIdentifierElement(parentElement, identifierInterp.getName());
+        }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_NUMBER)) {
+            MathNumberInterpretation numberInterp = (MathNumberInterpretation) interpretationMap.get(InterpretationType.MATH_NUMBER);
+            appendMathMLNumberElement(parentElement, numberInterp.getNumber().toString());
+        }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_OPERATOR)) {
+            MathOperatorInterpretation operatorInterp = (MathOperatorInterpretation) interpretationMap.get(InterpretationType.MATH_OPERATOR);
+            appendMathMLOperatorElement(parentElement, operatorInterp.getMathMLOperatorContent());
+        }
+        else if (interpretationMap.containsKey(InterpretationType.MATH_FUNCTION)) {
+            MathFunctionInterpretation functionInterp = (MathFunctionInterpretation) interpretationMap.get(InterpretationType.MATH_FUNCTION);
+            appendMathMLIdentifierElement(parentElement, functionInterp.getName());
+        }
+
         else {
             throw new SnuggleLogicException("Unexpected logic branch based on InterpretationMap, which was: " + interpretationMap);
         }

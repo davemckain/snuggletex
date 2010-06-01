@@ -86,7 +86,7 @@ public final class TokenFixer {
             case VERBATIM_MODE_TEXT:
             case LR_MODE_NEW_PARAGRAPH:
             case MATH_NUMBER:
-            case MATH_SINGLE_CHARACTER:
+            case MATH_CHARACTER:
             case ERROR:
             case TAB_CHARACTER:
                 /* Nothing to do here */
