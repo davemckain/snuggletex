@@ -8,14 +8,12 @@ package uk.ac.ed.ph.snuggletex.dombuilding;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.CombinerTargetMatcher;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
-import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
@@ -41,12 +39,9 @@ public final class MathFenceHandler implements EnvironmentHandler {
             if (target.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
                 isAllowed = true;
             }
-            else if (target.hasInterpretationType(InterpretationType.MATH_CHARACTER)) {
+            else if (target.getMathCharacterCodePoint()=='.') {
                 /* Check for special case of combiner being a '.', which signifies "no bracket" */
-                MathCharacter mathCharacter = ((MathCharacterInterpretation) target.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
-                if (mathCharacter.getCodePoint()=='.') {
-                    isAllowed = true;
-                }
+                isAllowed = true;
             }
             return isAllowed;
         }
@@ -81,10 +76,7 @@ public final class MathFenceHandler implements EnvironmentHandler {
         /* Now add contents, grouping on comma operators */
         List<FlowToken> groupBuilder = new ArrayList<FlowToken>();
         for (FlowToken contentToken : contentContainer) {
-            if (contentToken.hasInterpretationType(InterpretationType.MATH_CHARACTER)
-                    && ((MathCharacterInterpretation) contentToken.getInterpretation(InterpretationType.MATH_CHARACTER))
-                        .getMathCharacter()
-                        .getCodePoint()==',') {
+            if (contentToken.getMathCharacterCodePoint()==',') {
                 /* Found a comma, so add Node based on what's been found so far */
                 makeFenceGroup(builder, mfenced, groupBuilder);
                 groupBuilder.clear();
@@ -136,12 +128,9 @@ public final class MathFenceHandler implements EnvironmentHandler {
                 /* This is a proper bracket */
                 result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET)).getMfencedAttributeContent();
             }
-            else if (bracketToken.hasInterpretationType(InterpretationType.MATH_CHARACTER)) {
-                MathCharacter character = ((MathCharacterInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
-                if (character.getCodePoint()=='.') {
-                    /* "No bracket" */
-                    result = "";
-                }
+            else if (bracketToken.getMathCharacterCodePoint()=='.') {
+                /* "No bracket" */
+                result = "";
             }
 
             if (result==null) {

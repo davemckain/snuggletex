@@ -226,7 +226,9 @@ public final class SnugglePackage {
     }
     
     public BuiltinCommand addMathCharacterCommand(final MathCharacter mathCharacter) {
-        return addSimpleMathCommand(mathCharacter.getInputCommandName(), mathCharacter.getMathCharacterInterpretation(), interpretableSimpleMathBuilder);
+        return addCommand(new BuiltinCommand(mathCharacter.getInputCommandName(), CommandType.SIMPLE, false, 0,
+                Globals.MATH_MODE_ONLY, null, mathCharacter.getInterpretationMap(),
+                interpretableSimpleMathBuilder, null, null));
     }
 
     public BuiltinCommand addSimpleMathCommand(final String name, final MathInterpretation... interpretations) {

@@ -4,8 +4,11 @@
 5E::OP:^ (This will disappear during token fixing)
 5F::OP:_ (This will disappear during token fixing)
 ## Common useful characters/commands
+6A:jmath:ALPHA
 C5:AA:ORD
 E5:aa:ORD
+131:imath:ALPHA
+2022:bullet:ORD: (Overridden)
 210F:hbar:ORD
 22EF:cdots:ORD: (Overridden)
 ## Greek letters

@@ -64,6 +64,10 @@ public final class MathCharacter {
         return type;
     }
     
+    public String getChars() {
+        return new String(Character.toChars(codePoint));
+    }
+    
     @ObjectDumperOptions(DumpMode.IGNORE)
     @BeanToStringOptions(PropertyOptions.IGNORE_PROPERTY)
     public MathCharacterInterpretation getMathCharacterInterpretation() {

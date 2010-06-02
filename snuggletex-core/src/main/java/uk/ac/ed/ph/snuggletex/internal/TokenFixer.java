@@ -12,14 +12,11 @@ import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.Command;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
-import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
@@ -598,10 +595,7 @@ public final class TokenFixer {
         }
         FlowToken firstToken = tokens.get(0);
         FlowToken secondToken = tokens.get(1);
-        if (firstToken.hasInterpretationType(InterpretationType.MATH_CHARACTER) &&
-                ((MathCharacterInterpretation) firstToken.getInterpretation(InterpretationType.MATH_CHARACTER))
-                    .getMathCharacter().getCodePoint()=='-'
-                && secondToken.hasInterpretationType(InterpretationType.MATH_NUMBER)) {
+        if (firstToken.getMathCharacterCodePoint()=='-' && secondToken.hasInterpretationType(InterpretationType.MATH_NUMBER)) {
             CharSequence negation = "-" + ((MathNumberInterpretation) secondToken.getInterpretation(InterpretationType.MATH_NUMBER)).getNumber();
             SimpleToken replacementToken = new SimpleToken(firstToken.getSlice().rightOuterSpan(secondToken.getSlice()),
                     TokenType.MATH_NUMBER, firstToken.getLatexMode(),
@@ -660,9 +654,7 @@ public final class TokenFixer {
         FrozenSlice replacementSlice;
         for (int i=0; i<tokens.size()-1; i++) { /* We're fixing in place so tokens.size() may decrease over time */
             maybePrimeToken = tokens.get(i+1);
-            if (maybePrimeToken.hasInterpretationType(InterpretationType.MATH_CHARACTER)
-                    && ((MathCharacterInterpretation) maybePrimeToken.getInterpretation(InterpretationType.MATH_CHARACTER))
-                        .getMathCharacter().getCodePoint()=='\'') {
+            if (maybePrimeToken.getMathCharacterCodePoint()=='\'') {
                 /* Found a prime, so combine with previous token */
                 leftToken = tokens.get(i);
                 replacementSlice = leftToken.getSlice().rightOuterSpan(maybePrimeToken.getSlice());
@@ -690,21 +682,20 @@ public final class TokenFixer {
      */
     private void fixSubscriptAndSuperscripts(Token parentToken, List<FlowToken> tokens) throws SnuggleParseException {
         int size, startModifyIndex;
-        FlowToken subOrSuperToken;
+        FlowToken token;
         FlowToken t1, t2, t3;
-        String tokenOperator = null;
-        String followingOperator;
+        int tokenCodePoint;
+        int followingCodePoint;
         boolean isSubOrSuper;
         boolean firstIsSuper;
         for (int i=0; i<tokens.size(); i++) { /* NB: tokens.size() may decrease during this loop! */
             size = tokens.size();
-            subOrSuperToken = tokens.get(i);
+            token = tokens.get(i);
             firstIsSuper = false;
             isSubOrSuper = false;
-            if (subOrSuperToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                tokenOperator = ((MathOperatorInterpretation) subOrSuperToken.getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent();
-                isSubOrSuper = tokenOperator==Globals.SUP_PLACEHOLDER || tokenOperator==Globals.SUB_PLACEHOLDER;
-            }
+            tokenCodePoint = token.getMathCharacterCodePoint();
+            firstIsSuper = tokenCodePoint=='^';
+            isSubOrSuper = firstIsSuper || tokenCodePoint=='_';
             if (!isSubOrSuper) {
                 continue;
             }
@@ -714,7 +705,7 @@ public final class TokenFixer {
              */
             if (i==size-1) {
                 /* Error: Trailing subscript/superscript */
-                tokens.set(i, createError(subOrSuperToken, CoreErrorCode.TFEM01));
+                tokens.set(i, createError(token, CoreErrorCode.TFEM01));
                 continue;
             }
             if (i==0) {
@@ -732,24 +723,24 @@ public final class TokenFixer {
             
             /* See if there's another '^' or '_' afterwards */
             t3 = null;
-            followingOperator = null;
-            if (i+2<size && tokens.get(i+2).hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
-                followingOperator = ((MathOperatorInterpretation) tokens.get(i+2).getInterpretation(InterpretationType.MATH_OPERATOR)).getMathMLOperatorContent();
-                if (followingOperator==Globals.SUP_PLACEHOLDER || followingOperator==Globals.SUB_PLACEHOLDER) {
+            followingCodePoint = 0;
+            if (i+2<size) {
+                followingCodePoint = tokens.get(i+2).getMathCharacterCodePoint();
+                if (followingCodePoint=='_' || followingCodePoint=='^') {
                     /* OK, need to find the "T3" operator! */
                     if (i+3>=size) {
                         /* Trailing super/subscript */
-                        tokens.set(i-1, createError(subOrSuperToken, CoreErrorCode.TFEM01));
+                        tokens.set(i-1, createError(token, CoreErrorCode.TFEM01));
                         tokens.subList(i, i+3).clear();
                         continue;
                     }
                     t3 = tokens.get(i+3);
                     
                     /* Make sure we've got the right pair of operators e.g. not something like T1^T2^T3 */
-                    if (tokenOperator==Globals.SUP_PLACEHOLDER && followingOperator==Globals.SUP_PLACEHOLDER
-                            || tokenOperator==Globals.SUB_PLACEHOLDER && followingOperator==Globals.SUB_PLACEHOLDER) {
+                    if ((tokenCodePoint=='^' && followingCodePoint=='^')
+                            || (tokenCodePoint=='_' && followingCodePoint=='_')) {
                         /* Double super/subscript */
-                        tokens.set(i-1, createError(subOrSuperToken, CoreErrorCode.TFEM02));
+                        tokens.set(i-1, createError(token, CoreErrorCode.TFEM02));
                         tokens.subList(i, i+3).clear();
                         continue;
                     }
@@ -758,7 +749,6 @@ public final class TokenFixer {
             /* Now be build the replacements */
             FrozenSlice replacementSlice;
             BuiltinCommand replacementCommand;
-            firstIsSuper = tokenOperator==Globals.SUP_PLACEHOLDER;
             if (t3!=null) {
                 /* Create replacement, replacing tokens at i-1,i+1,i+2 and i+3 */
                 replacementSlice = t1.getSlice().rightOuterSpan(t3.getSlice());

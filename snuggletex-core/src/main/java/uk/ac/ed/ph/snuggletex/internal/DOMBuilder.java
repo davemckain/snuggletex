@@ -26,7 +26,6 @@ import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
@@ -473,34 +472,38 @@ public final class DOMBuilder {
             appendTextNode(parentElement, resultString, false);
         }
     }
+    
+    public void appendMathCharacter(Element parentElement, MathCharacter character) {
+        String encodedCharacter = new String(Character.toChars(character.getCodePoint()));
+        switch (character.getType()) {
+            case ALPHA:
+                appendMathMLIdentifierElement(parentElement, encodedCharacter);
+                break;
+                
+            case BIN:
+            case OP:
+            case ORD:
+            case PUNCT:
+            case REL:
+            case CLOSE:
+            case FENCE:
+            case OPEN:
+                appendMathMLOperatorElement(parentElement, encodedCharacter);
+                break;
+                
+            case ACCENT:
+                throw new SnuggleLogicException("No handling for ACCENT coded yet!");
+                
+            default:
+                throw new SnuggleLogicException("Unexpected switch case " + character.getType());
+        }
+    }
 
     public void appendSimpleMathElement(Element parentElement, Token token) {
         EnumMap<InterpretationType, Interpretation> interpretationMap = token.getInterpretationMap();
         if (interpretationMap.containsKey(InterpretationType.MATH_CHARACTER)) {
-            MathCharacter mathCharacter = ((MathCharacterInterpretation) interpretationMap.get(InterpretationType.MATH_CHARACTER)).getMathCharacter();
-            String encodedCharacter = new String(Character.toChars(mathCharacter.getCodePoint()));
-            switch (mathCharacter.getType()) {
-                case ALPHA:
-                    appendMathMLIdentifierElement(parentElement, encodedCharacter);
-                    break;
-                    
-                case BIN:
-                case OP:
-                case ORD:
-                case PUNCT:
-                case REL:
-                case CLOSE:
-                case FENCE:
-                case OPEN:
-                    appendMathMLOperatorElement(parentElement, encodedCharacter);
-                    break;
-                    
-                case ACCENT:
-                    throw new SnuggleLogicException("No handling for ACCENT coded yet!");
-                    
-                default:
-                    throw new SnuggleLogicException("Unexpected switch case " + mathCharacter.getType());
-            }
+            MathCharacter mathCharacter = token.getMathCharacter();
+            appendMathCharacter(parentElement, mathCharacter);
         }
         else if (interpretationMap.containsKey(InterpretationType.MATH_IDENTIFIER)) {
             MathIdentifierInterpretation identifierInterp = (MathIdentifierInterpretation) interpretationMap.get(InterpretationType.MATH_IDENTIFIER);

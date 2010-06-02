@@ -57,9 +57,6 @@ public final class Globals {
     public static final String GENERAL_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/general-messages";
     public static final String CSS_PROPERTIES_NAME = "uk/ac/ed/ph/snuggletex/css.properties";
     
-    public static final String CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/core-math-characters.txt";
-    public static final String ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/all-math-characters.txt";
-    
     /** Specifies the ClassPath location of the Stylesheet used by {@link XMLUtilities#serializeNodeChildren(uk.ac.ed.ph.snuggletex.utilities.StylesheetManager, org.w3c.dom.Node, SerializationSpecifier)} */
     public static final String EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/extract-child-nodes.xsl";
     
@@ -78,12 +75,6 @@ public final class Globals {
     /** URN used in MathML -> XHTML to call up XML containing current CSS Properties */
     public static final String CSS_PROPERTIES_DOCUMENT_URN = "urn:snuggletex-css-properties";
 
-    /** Placeholder operator representing ^. This is replaced by an appropriate Command during token fixing */
-    public static final String SUP_PLACEHOLDER = "^";
-    
-    /** Placeholder operator representing ^. This is replaced by an appropriate Command during token fixing */
-    public static final String SUB_PLACEHOLDER = "_";
-    
     public static final EnumSet<LaTeXMode> MATH_MODE_ONLY = EnumSet.of(MATH);
     public static final EnumSet<LaTeXMode> PARA_MODE_ONLY = EnumSet.of(PARAGRAPH);
     public static final EnumSet<LaTeXMode> TEXT_MODE_ONLY = EnumSet.of(PARAGRAPH, LR);

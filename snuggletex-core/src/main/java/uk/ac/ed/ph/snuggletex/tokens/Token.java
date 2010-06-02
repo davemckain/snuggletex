@@ -11,9 +11,11 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumperOptions;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinCommand;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 
 import java.util.EnumMap;
 
@@ -76,7 +78,7 @@ public abstract class Token {
     }
     
     //------------------------------------------------------
-    // Convenience
+    // Convenience methods
 
     public boolean hasInterpretationType(InterpretationType... types) {
         if (interpretationMap==null) {
@@ -93,6 +95,21 @@ public abstract class Token {
     public boolean isCommand(BuiltinCommand command) {
         return this instanceof CommandToken && ((CommandToken) this).getCommand()==command;
     }
+    
+    public MathCharacter getMathCharacter() {
+        if (interpretationMap==null) {
+            return null;
+        }
+        MathCharacterInterpretation mcInterpretation = (MathCharacterInterpretation) interpretationMap.get(InterpretationType.MATH_CHARACTER);
+        return mcInterpretation!=null ? mcInterpretation.getMathCharacter() : null;
+    }
+    
+    public int getMathCharacterCodePoint() {
+        MathCharacter character = getMathCharacter();
+        return character!=null ? character.getCodePoint() : -1;
+    }
+    
+    //------------------------------------------------------
 
     @Override
     public String toString() {

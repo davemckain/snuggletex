@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 public final class ObjectDumper {
     
     public static int DEFAULT_INDENT_WIDTH = 4;
-    public static int DEFAULT_MAX_DEPTH = 10;
+    public static int DEFAULT_MAX_DEPTH = 16;
     
     private static final String EMPTY = "(empty)";
     

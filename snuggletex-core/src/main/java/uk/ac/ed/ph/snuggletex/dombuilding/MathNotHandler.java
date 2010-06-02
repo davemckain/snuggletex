@@ -26,7 +26,7 @@ public final class MathNotHandler implements CommandHandler {
         if (combinerInterpretation==null) {
             throw new SnuggleLogicException("Expeted combiner of \\not to have a " + InterpretationType.MATH_NEGATABLE + " Interpretation");
         }
-        builder.appendMathMLOperatorElement(parentElement, combinerInterpretation.getMathMLNegatedOperatorContent());
+        builder.appendMathCharacter(parentElement, combinerInterpretation.getNegatedCharacter());
     }
 
 }

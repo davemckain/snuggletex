@@ -65,6 +65,7 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
@@ -101,11 +102,11 @@ public final class CorePackageDefinitions {
     /** Location of {@link ResourceBundle} providing error messages for this bundle */
     public static final String CORE_ERROR_MESSAGES_PROPERTIES_BASENAME = "uk/ac/ed/ph/snuggletex/core-error-messages";
     
+    public static final String CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/core-math-characters.txt";
+    public static final String ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/all-math-characters.txt";
+    
     public static BuiltinCommand CMD_CHAR_BACKSLASH;
     public static BuiltinCommand CMD_FRAC;
-    public static BuiltinCommand CMD_NOT;
-    public static BuiltinCommand CMD_APPLY_FUNCTION;
-    public static BuiltinCommand CMD_INVISIBLE_TIMES;
     public static BuiltinCommand CMD_ITEM;
     public static BuiltinCommand CMD_LIST_ITEM;
     public static BuiltinCommand CMD_LEFT;
@@ -159,31 +160,19 @@ public final class CorePackageDefinitions {
          * We read in the 'CORE' defs first so that they can override anything dodgy in
          * the 'ALL' defs, which are auto-generated.
          */
-        corePackage.loadMathCharacterDefinitions(Globals.ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME);
-        corePackage.loadMathCharacterDefinitions(Globals.CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME);
+        corePackage.loadMathCharacterDefinitions(CorePackageDefinitions.ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME);
+        corePackage.loadMathCharacterDefinitions(CorePackageDefinitions.CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME);
         
-//        /* Some important chars aren't defined in the core defs for some reason */
-//        corePackage.addMathCharacter('-', MathCharacterType.OP);
-//        corePackage.addMathCharacter('*', MathCharacterType.OP);
-//        
-//        /* Also need to define '_' and '^', even though they'll disappear by the time DOM building starts */
-//        corePackage.addMathCharacter('_', MathCharacterType.OP);
-//        corePackage.addMathCharacter('^', MathCharacterType.OP);
-
         /* Additional interpretation data for polymorphic math characters */
+        /* FIXME: These are all now brackets, so might be better done in a more structured way */
         final Object[] mathCharacterAdditionalInterpretationData = new Object[] {
-            /* NB: These first 2 characters are converted into alternative forms during token fixing */
-           '_', new MathOperatorInterpretation(Globals.SUB_PLACEHOLDER),
-           '^', new MathOperatorInterpretation(Globals.SUP_PLACEHOLDER),
-           
-           '=', new MathNegatableInterpretation(MathMLSymbol.NOT_EQUALS),
            '(', new MathBracketInterpretation(MathMLSymbol.OPEN_BRACKET, BracketType.OPENER, true),
            ')', new MathBracketInterpretation(MathMLSymbol.CLOSE_BRACKET, BracketType.CLOSER, true),
            '[', new MathBracketInterpretation(MathMLSymbol.OPEN_SQUARE_BRACKET, BracketType.OPENER, true),
            ']', new MathBracketInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET, BracketType.CLOSER, true),
-           '<', new MathNegatableInterpretation(MathMLSymbol.NOT_LESS_THAN), new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
-           '>', new MathNegatableInterpretation(MathMLSymbol.NOT_GREATER_THAN), new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
-           '|', new MathNegatableInterpretation(MathMLSymbol.NOT_MID), new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
+           '<', new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
+           '>', new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
+           '|', new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
            /* Etc... */
         };
         Object object;
@@ -356,8 +345,8 @@ public final class CorePackageDefinitions {
         // Math Mode stuff (see LaTeX Companion pp39-52)
         
         /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
-        CMD_APPLY_FUNCTION = corePackage.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLSymbol.APPLY_FUNCTION));
-        CMD_INVISIBLE_TIMES = corePackage.addSimpleMathCommand("itimes", new MathOperatorInterpretation(MathMLSymbol.INVISIBLE_TIMES));
+        corePackage.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLSymbol.APPLY_FUNCTION));
+        corePackage.addSimpleMathCommand("itimes", new MathOperatorInterpretation(MathMLSymbol.INVISIBLE_TIMES));
         
         /* Placeholders for corresponding MathML constructs. These are substituted from traditional LaTeX constructs
          * by {@link TokenFixer}.
@@ -436,97 +425,102 @@ public final class CorePackageDefinitions {
         corePackage.addSimpleMathCommand("arccsch", new MathFunctionInterpretation("arccsch"));
         corePackage.addSimpleMathCommand("arccoth", new MathFunctionInterpretation("arccoth"));
 
-        /* Variable-sized symbols */
+        /* Add big limits to certain symbols */
         MathBigLimitOwnerInterpretation bigLimitOwner = new MathBigLimitOwnerInterpretation();
-        corePackage.addSimpleMathCommand("sum", new MathOperatorInterpretation(MathMLSymbol.SUM), bigLimitOwner);
-        corePackage.addSimpleMathCommand("prod", new MathOperatorInterpretation(MathMLSymbol.PROD), bigLimitOwner);
-        corePackage.addSimpleMathCommand("coprod", new MathOperatorInterpretation(MathMLSymbol.COPROD), bigLimitOwner);
-        corePackage.addSimpleMathCommand("int", new MathOperatorInterpretation(MathMLSymbol.INTEGRAL));
-        corePackage.addSimpleMathCommand("oint", new MathOperatorInterpretation(MathMLSymbol.OINT), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigcap", new MathOperatorInterpretation(MathMLSymbol.BIGCAP), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigcup", new MathOperatorInterpretation(MathMLSymbol.BIGCUP), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigsqcup", new MathOperatorInterpretation(MathMLSymbol.BIGSQCUP), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigvee", new MathOperatorInterpretation(MathMLSymbol.BIGVEE), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigwedge", new MathOperatorInterpretation(MathMLSymbol.BIGWEDGE), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigodot", new MathOperatorInterpretation(MathMLSymbol.BIGODOT), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigotimes", new MathOperatorInterpretation(MathMLSymbol.BIGOTIMES), bigLimitOwner);
-        corePackage.addSimpleMathCommand("bigoplus", new MathOperatorInterpretation(MathMLSymbol.BIGOPLUS), bigLimitOwner);
-        corePackage.addSimpleMathCommand("biguplus", new MathOperatorInterpretation(MathMLSymbol.BIGUPLUS), bigLimitOwner);
+        String[] bigLimitCommandNames = {
+                /* NB: no "int" here */
+                "sum", "prod", "coprod", "oint",
+                "bigcap", "bigcup", "bigsqcup", "bigvee", "bigwedge",
+                "bigodot", "bigoplus", "biguplus"
+        };
+        for (String commandName : bigLimitCommandNames) {
+            /* (These commands will already have been defined) */
+            BuiltinCommand command = corePackage.getBuiltinCommandByTeXName(commandName);
+            MathCharacter mathCharacter = ((MathCharacterInterpretation) command.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
+            
+            mathCharacter.addInterpretation(bigLimitOwner);
+        }
+
+        /* This is a LaTeX-specific combiner macro that always comes before certain characters
+         * or commands...
+         */
+        CombinerTargetMatcher notTargetMatcher = new CombinerTargetMatcher() {
+            public boolean isAllowed(FlowToken target) {
+                return target.hasInterpretationType(InterpretationType.MATH_NEGATABLE);
+            }  
+        };
+        corePackage.addCombinerCommand("not", MATH_MODE_ONLY, notTargetMatcher, new MathNotHandler(), null);
         
-        /* Binary operators */
-//        corePackage.addSimpleMathCommand("pm", new MathOperatorInterpretation(MathMLSymbol.PM));
-//        corePackage.addSimpleMathCommand("mp", new MathOperatorInterpretation(MathMLSymbol.MP));
-//        corePackage.addSimpleMathCommand("times", new MathOperatorInterpretation(MathMLSymbol.TIMES));
-//        corePackage.addSimpleMathCommand("div", new MathOperatorInterpretation(MathMLSymbol.DIV));
-//        corePackage.addSimpleMathCommand("ast", new MathOperatorInterpretation(MathMLSymbol.AST));
-//        corePackage.addSimpleMathCommand("star", new MathOperatorInterpretation(MathMLSymbol.STAR));
-//        corePackage.addSimpleMathCommand("circ", new MathOperatorInterpretation(MathMLSymbol.CIRC));
-//        corePackage.addSimpleMathCommand("bullet", new MathOperatorInterpretation(MathMLSymbol.BULLET));
-//        corePackage.addSimpleMathCommand("cdot", new MathOperatorInterpretation(MathMLSymbol.CDOT));
-//        corePackage.addSimpleMathCommand("cap", new MathOperatorInterpretation(MathMLSymbol.CAP));
-//        corePackage.addSimpleMathCommand("cup", new MathOperatorInterpretation(MathMLSymbol.CUP));
-//        corePackage.addSimpleMathCommand("uplus", new MathOperatorInterpretation(MathMLSymbol.UPLUS));
-//        corePackage.addSimpleMathCommand("sqcap", new MathOperatorInterpretation(MathMLSymbol.SQCAP));
-//        corePackage.addSimpleMathCommand("sqcup", new MathOperatorInterpretation(MathMLSymbol.SQCUP));
-//        corePackage.addSimpleMathCommand("vee", new MathOperatorInterpretation(MathMLSymbol.VEE));
-//        corePackage.addSimpleMathCommand("lor", new MathOperatorInterpretation(MathMLSymbol.VEE));
-//        corePackage.addSimpleMathCommand("wedge", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
-//        corePackage.addSimpleMathCommand("land", new MathOperatorInterpretation(MathMLSymbol.WEDGE));
-//        corePackage.addSimpleMathCommand("setminus", new MathOperatorInterpretation(MathMLSymbol.SETMINUS));
-//        corePackage.addSimpleMathCommand("wr", new MathOperatorInterpretation(MathMLSymbol.WR));
-//        corePackage.addSimpleMathCommand("diamond", new MathOperatorInterpretation(MathMLSymbol.DIAMOND));
-//        corePackage.addSimpleMathCommand("bigtriangleup", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEUP));
-//        corePackage.addSimpleMathCommand("bigtriangledown", new MathOperatorInterpretation(MathMLSymbol.BIGTRIANGLEDOWN));
-//        corePackage.addSimpleMathCommand("triangleleft", new MathOperatorInterpretation(MathMLSymbol.TRIANGLELEFT));
-//        corePackage.addSimpleMathCommand("triangleright", new MathOperatorInterpretation(MathMLSymbol.TRIANGLERIGHT));
-//        corePackage.addSimpleMathCommand("oplus", new MathOperatorInterpretation(MathMLSymbol.OPLUS));
-//        corePackage.addSimpleMathCommand("ominus", new MathOperatorInterpretation(MathMLSymbol.OMINUS));
-//        corePackage.addSimpleMathCommand("otimes", new MathOperatorInterpretation(MathMLSymbol.OTIMES));
-//        corePackage.addSimpleMathCommand("oslash", new MathOperatorInterpretation(MathMLSymbol.OSLASH));
-//        corePackage.addSimpleMathCommand("odot", new MathOperatorInterpretation(MathMLSymbol.ODOT));
-//        corePackage.addSimpleMathCommand("bigcirc", new MathOperatorInterpretation(MathMLSymbol.BIGCIRC));
-//        corePackage.addSimpleMathCommand("dagger", new MathOperatorInterpretation(MathMLSymbol.DAGGER));
-//        corePackage.addSimpleMathCommand("ddagger", new MathOperatorInterpretation(MathMLSymbol.DDAGGER));
-//        corePackage.addSimpleMathCommand("amalg", new MathOperatorInterpretation(MathMLSymbol.AMALG));
-        corePackage.addSimpleMathCommand("leq", new MathOperatorInterpretation(MathMLSymbol.LEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_LEQ));
-        corePackage.addSimpleMathCommand("le", new MathOperatorInterpretation(MathMLSymbol.LEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_LEQ));
-        corePackage.addSimpleMathCommand("prec", new MathOperatorInterpretation(MathMLSymbol.PREC), new MathNegatableInterpretation(MathMLSymbol.NOT_PREC));
-//        corePackage.addSimpleMathCommand("preceq", new MathOperatorInterpretation(MathMLSymbol.PRECEQ));
-//        corePackage.addSimpleMathCommand("ll", new MathOperatorInterpretation(MathMLSymbol.LL));
-        corePackage.addSimpleMathCommand("subset", new MathOperatorInterpretation(MathMLSymbol.SUBSET), new MathNegatableInterpretation(MathMLSymbol.NOT_SUBSET));
-        corePackage.addSimpleMathCommand("subseteq", new MathOperatorInterpretation(MathMLSymbol.SUBSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SUBSETEQ));
-        corePackage.addSimpleMathCommand("sqsubset", new MathOperatorInterpretation(MathMLSymbol.SQSUBSET));
-        corePackage.addSimpleMathCommand("sqsubseteq", new MathOperatorInterpretation(MathMLSymbol.SQSUBSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SQSUBSETEQ));
-        corePackage.addSimpleMathCommand("in", new MathOperatorInterpretation(MathMLSymbol.IN), new MathNegatableInterpretation(MathMLSymbol.NOT_IN));
-        corePackage.addSimpleMathCommand("vdash", new MathOperatorInterpretation(MathMLSymbol.VDASH), new MathNegatableInterpretation(MathMLSymbol.NOT_VDASH));
-        corePackage.addSimpleMathCommand("geq", new MathOperatorInterpretation(MathMLSymbol.GEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_GEQ));
-        corePackage.addSimpleMathCommand("ge", new MathOperatorInterpretation(MathMLSymbol.GEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_GEQ));
-        corePackage.addSimpleMathCommand("succ", new MathOperatorInterpretation(MathMLSymbol.SUCC), new MathNegatableInterpretation(MathMLSymbol.NOT_SUCC));
-        corePackage.addSimpleMathCommand("succeq", new MathOperatorInterpretation(MathMLSymbol.SUCCEQ));
-//        corePackage.addSimpleMathCommand("gg", new MathOperatorInterpretation(MathMLSymbol.GG));
-        corePackage.addSimpleMathCommand("supset", new MathOperatorInterpretation(MathMLSymbol.SUPSET), new MathNegatableInterpretation(MathMLSymbol.NOT_SUPSET));
-        corePackage.addSimpleMathCommand("supseteq", new MathOperatorInterpretation(MathMLSymbol.SUPSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SUPSETEQ));
-        corePackage.addSimpleMathCommand("sqsupset", new MathOperatorInterpretation(MathMLSymbol.SQSUPSET));
-        corePackage.addSimpleMathCommand("sqsupseteq", new MathOperatorInterpretation(MathMLSymbol.SQSUPSETEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SQSUPSETEQ));
-        corePackage.addSimpleMathCommand("ni", new MathOperatorInterpretation(MathMLSymbol.NI), new MathNegatableInterpretation(MathMLSymbol.NOT_NI));
-        corePackage.addSimpleMathCommand("dashv", new MathOperatorInterpretation(MathMLSymbol.DASHV));
-        corePackage.addSimpleMathCommand("equiv", new MathOperatorInterpretation(MathMLSymbol.EQUIV), new MathNegatableInterpretation(MathMLSymbol.NOT_EQUIV));
-        corePackage.addSimpleMathCommand("sim", new MathOperatorInterpretation(MathMLSymbol.SIM), new MathNegatableInterpretation(MathMLSymbol.NOT_SIM));
-        corePackage.addSimpleMathCommand("simeq", new MathOperatorInterpretation(MathMLSymbol.SIMEQ), new MathNegatableInterpretation(MathMLSymbol.NOT_SIMEQ));
-        corePackage.addSimpleMathCommand("asymp", new MathOperatorInterpretation(MathMLSymbol.ASYMP));
-        corePackage.addSimpleMathCommand("approx", new MathOperatorInterpretation(MathMLSymbol.APPROX), new MathNegatableInterpretation(MathMLSymbol.NOT_APPROX));
-        corePackage.addSimpleMathCommand("cong", new MathOperatorInterpretation(MathMLSymbol.CONG), new MathNegatableInterpretation(MathMLSymbol.NOT_CONG));
-        corePackage.addSimpleMathCommand("neq", new MathOperatorInterpretation(MathMLSymbol.NOT_EQUALS));
-        corePackage.addSimpleMathCommand("doteq", new MathOperatorInterpretation(MathMLSymbol.DOTEQ));
-        corePackage.addSimpleMathCommand("notin", new MathOperatorInterpretation(MathMLSymbol.NOT_IN));
-        corePackage.addSimpleMathCommand("models", new MathOperatorInterpretation(MathMLSymbol.MODELS));
-        corePackage.addSimpleMathCommand("perp", new MathOperatorInterpretation(MathMLSymbol.PERP));
-        corePackage.addSimpleMathCommand("mid", new MathOperatorInterpretation(MathMLSymbol.MID), new MathNegatableInterpretation(MathMLSymbol.NOT_MID));
-//        corePackage.addSimpleMathCommand("parallel", new MathOperatorInterpretation(MathMLSymbol.PARALLEL));
-//        corePackage.addSimpleMathCommand("bowtie", new MathOperatorInterpretation(MathMLSymbol.BOWTIE));
-//        corePackage.addSimpleMathCommand("smile", new MathOperatorInterpretation(MathMLSymbol.SMILE));
-//        corePackage.addSimpleMathCommand("frown", new MathOperatorInterpretation(MathMLSymbol.FROWN));
-//        corePackage.addSimpleMathCommand("propto", new MathOperatorInterpretation(MathMLSymbol.PROPTO));
+        /* ...and these are the commands/characters which are "nottable" */
+        String[] notData = {
+                /* "commandName" or "commandName:notCommandName".
+                 * In former case, "not" command is formed by prefixing
+                 * commdnName with an 'n'.
+                 * 
+                 * E.g. \less -> \nless
+                 */
+                "equal:ne",
+                "less",
+                "greater:ngtr",
+                "leq",
+                "geq",
+                "vert:nmid",
+                "subset",
+                "supset",
+                "subseteq",
+                "supseteq",
+                "prec",
+                "succ",
+                "asymp",
+                "equiv",
+                "in:notin",
+                "ni",
+                "vdash",
+                "Vdash",
+                "vDash",
+                "VDash",
+                "sqsubseteq",
+                "sqsupseteq",
+                "sim",
+                "simeq:nsime",
+                "cong",
+                "mid",
+                "parallel",
+                "exists",
+                "approx",
+                "lesssim",
+                "gtrsim",
+                "lessgtr",
+                "gtrless",
+                "preccurlyeq",
+                "succcurlyeq",
+                "triangleleft",
+                "triangleright",
+                "trianglelefteq",
+                "trianglerighteq",
+                
+        };
+        for (String notDatum : notData) {
+            String sourceName, targetName;
+            int colonIndex = notDatum.indexOf(':');
+            if (colonIndex!=-1) {
+                sourceName = notDatum.substring(0, colonIndex);
+                targetName = notDatum.substring(colonIndex + 1);
+            }
+            else {
+                sourceName = notDatum;
+                targetName = "n" + sourceName;
+            }
+            BuiltinCommand source = corePackage.getBuiltinCommandByTeXName(sourceName);
+            BuiltinCommand target = corePackage.getBuiltinCommandByTeXName(targetName);
+            if (source==null || target==null) {
+                throw new SnuggleRuntimeException("Failed defining 'not' association: source=" + source + " ,target=" + target);
+            }
+            MathCharacter sourceCharacter = ((MathCharacterInterpretation) source.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
+            MathCharacter targetCharacter = ((MathCharacterInterpretation) target.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
+            
+            sourceCharacter.addInterpretation(new MathNegatableInterpretation(targetCharacter));
+        }
         
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.
@@ -543,15 +537,6 @@ public final class CorePackageDefinitions {
                 new MathOperatorInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET),
                 new MathBracketInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
 
-        /* This is a LaTeX-specific combiner macro that always comes before a
-         * {@link MathRelationInterpretation} command.
-         */
-        CombinerTargetMatcher notTargetMatcher = new CombinerTargetMatcher() {
-            public boolean isAllowed(FlowToken target) {
-                return target.hasInterpretationType(InterpretationType.MATH_NEGATABLE);
-            }  
-        };
-        CMD_NOT = corePackage.addCombinerCommand("not", MATH_MODE_ONLY, notTargetMatcher, new MathNotHandler(), null);
 
         /* Complex math macros */
         corePackage.addComplexCommandSameArgMode("sqrt", true, 1, MATH_MODE_ONLY, new MathRootHandler(), null);
@@ -686,4 +671,5 @@ public final class CorePackageDefinitions {
         corePackage.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, null, new XMLInlineElementHandler(), ALLOW_INLINE);
         corePackage.addEnvironment("xmlUnparse", false, 0, TEXT_MODE_ONLY, null, null, new XMLUnparseHandler(), ALLOW_INLINE);
     }
+
 }

@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
@@ -19,14 +20,14 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
  */
 public final class MathNegatableInterpretation implements MathInterpretation {
     
-    private final String mathmlNegatedOperatorContent;
+    private final MathCharacter negatedCharacter;
     
-    public MathNegatableInterpretation(final String mathmlNegatedOperatorContent) {
-        this.mathmlNegatedOperatorContent = mathmlNegatedOperatorContent;
+    public MathNegatableInterpretation(final MathCharacter negatedCharacter) {
+        this.negatedCharacter = negatedCharacter;
     }
     
-    public String getMathMLNegatedOperatorContent() {
-        return mathmlNegatedOperatorContent;
+    public MathCharacter getNegatedCharacter() {
+        return negatedCharacter;
     }
     
     public InterpretationType getType() {

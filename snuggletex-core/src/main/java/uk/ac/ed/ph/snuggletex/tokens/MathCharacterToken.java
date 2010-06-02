@@ -26,6 +26,7 @@ public final class MathCharacterToken extends FlowToken {
         this.mathCharacter = mathCharacter;
     }
     
+    @Override
     public MathCharacter getMathCharacter() {
         return mathCharacter;
     }
