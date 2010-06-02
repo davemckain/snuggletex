@@ -100,7 +100,7 @@ All Rights Reserved
   <xsl:variable name="local:relation-characters" as="xs:string+"
     select="('=', '&lt;', '&gt;', '|',
             '&#x2192;' (: \rightarrow :),
-            '&#x21d2;' (: \Rightaroow :),
+            '&#x21d2;' (: \Rightarrow :),
             '&#x2208;' (: \in :),
             '&#x2209;' (: \not\in :),
             '&#x2224;' (: \not\mid :),
@@ -161,7 +161,8 @@ All Rights Reserved
             $local:relation-characters,
             '&#x222a;' (: \cup :),
             '&#x2229;' (: \cap :),
-            '&#x2216;' (: \setminus :),
+            '&#x2216;' (: \smallsetminus :),
+            '&#x29f5;' (: \setminus :),
             '+', '-',
             $local:explicit-multiplication-characters,
             $local:explicit-division-characters
@@ -323,11 +324,11 @@ All Rights Reserved
           <xsl:with-param name="match" select="('&#x2229;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-strict-infix-operator(., ('&#x2216;'))]">
+      <xsl:when test="$elements[local:is-matching-strict-infix-operator(., ('&#x2216;', '&#x29f5;'))]">
         <!-- Set Difference -->
         <xsl:call-template name="local:group-left-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x2216;')"/>
+          <xsl:with-param name="match" select="('&#x2216;', '&#x29f5;')"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[local:is-matching-strict-infix-operator(., ('+'))]">

@@ -938,14 +938,14 @@ A\subset B\subseteq C \not\subset D \not\subseteq E
   </apply>
 </apply>
 ====
-x \longrightarrow 1
+x \rightarrow 1
 <apply>
   <tendsto/>
   <ci>x</ci>
   <cn>1</cn>
 </apply>
 ====
-A \Longrightarrow B
+A \Rightarrow B
 <apply>
   <implies/>
   <ci>A</ci>

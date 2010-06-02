@@ -477,12 +477,12 @@ public final class DOMBuilder {
         String encodedCharacter = new String(Character.toChars(character.getCodePoint()));
         switch (character.getType()) {
             case ALPHA:
+            case ORD:
                 appendMathMLIdentifierElement(parentElement, encodedCharacter);
                 break;
                 
             case BIN:
             case OP:
-            case ORD:
             case PUNCT:
             case REL:
             case CLOSE:

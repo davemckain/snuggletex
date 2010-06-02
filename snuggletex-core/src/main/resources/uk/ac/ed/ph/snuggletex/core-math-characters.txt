@@ -1,16 +1,18 @@
 ## This is hand-edited. Add all of the non-auto-generated definitions
 2A::OP:*
 2D::OP:-
-5E::OP:^ (This will disappear during token fixing)
-5F::OP:_ (This will disappear during token fixing)
+2F:slash:BIN # (Redefined to make this an operator)
+5E::OP # ^ (This will disappear during token fixing)
+5F::OP # _ (This will disappear during token fixing)
 ## Common useful characters/commands
 6A:jmath:ALPHA
+AC:neg:BIN # (Redefined as operator)
 C5:AA:ORD
 E5:aa:ORD
 131:imath:ALPHA
-2022:bullet:ORD: (Overridden)
+2022:bullet:ORD # (Overridden)
 210F:hbar:ORD
-22EF:cdots:ORD: (Overridden)
+22EF:cdots:ORD # (Overridden)
 ## Greek letters
 393:Gamma:ALPHA
 394:Delta:ALPHA

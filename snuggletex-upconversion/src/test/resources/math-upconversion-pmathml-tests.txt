@@ -607,7 +607,7 @@ A \cup B \cap C
 ====
 A \setminus x+B
 <mi>A</mi>
-<mo>&#x2216;</mo>
+<mo>&#x29f5;</mo>
 <mrow>
   <mi>x</mi>
   <mo>+</mo>
@@ -619,7 +619,7 @@ A \cup B \setminus C
 <mo>&#x222a;</mo>
 <mrow>
   <mi>B</mi>
-  <mo>&#x2216;</mo>
+  <mo>&#x29f5;</mo>
   <mi>C</mi>
 </mrow>
 ====

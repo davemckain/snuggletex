@@ -170,7 +170,6 @@ x^{2_1}
 </msup>
 ====
 a\in A
-
 <mi>a</mi>
 <mo>&#x2208;</mo>
 <mi>A</mi>
@@ -183,6 +182,10 @@ a\not\in A
 a\not \in A
 <mi>a</mi>
 <mo>&#x2209;</mo>
+<mi>A</mi>
+====
+\neg A
+<mo>&#xac;</mo>
 <mi>A</mi>
 ====
 # Tests of fence inference. This has changed significantly in SnuggleTeX 1.1
@@ -768,12 +771,12 @@ x/2
 ====
 ## Input macros for certain characters
 \mathdollar
-<mo>$</mo>
+<mi>$</mi>
 ====
 ## Command aliases
 \le
 <mo>&#x2264;</mo>
 ====
 \lor
-<mo>&#x2227;</mo>
+<mo>&#x2228;</mo>
 ====

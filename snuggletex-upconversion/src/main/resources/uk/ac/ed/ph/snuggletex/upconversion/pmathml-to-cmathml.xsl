@@ -70,7 +70,7 @@ All Rights Reserved
     <local:operator inputs="&#x2227;" output="and" nary="true" allow-unary="false"/>
     <local:operator inputs="&#x222a;" output="union" nary="true" allow-unary="false"/>
     <local:operator inputs="&#x2229;" output="intersect" nary="true" allow-unary="false"/>
-    <local:operator inputs="&#x2216;" output="setdiff" nary="false" allow-unary="false"/>
+    <local:operator inputs="&#x2216;&#x29f5;" output="setdiff" nary="false" allow-unary="false"/>
   </xsl:variable>
 
   <xsl:variable name="local:standard-operator-characters" as="xs:string"
