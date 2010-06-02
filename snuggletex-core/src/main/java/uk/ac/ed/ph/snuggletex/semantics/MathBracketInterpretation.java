@@ -5,6 +5,7 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
@@ -22,11 +23,11 @@ public final class MathBracketInterpretation implements MathInterpretation {
     }
 
     /** 
-     * Content for resulting mfenced open/close attribute. This allows brackets
+     * {@link MathCharacter} for resulting mfenced open/close attribute. This allows brackets
      * to map to different open/close characters if they also have meaning as standalone operators,
      * such as the '<' operator.
      */
-    private final String mfencedAttributeContent;
+    private final MathCharacter mfencedAttributeCharacter;
     
     private final BracketType bracketType;
     
@@ -37,15 +38,15 @@ public final class MathBracketInterpretation implements MathInterpretation {
      */
     private final boolean pairingInferencePossible;
     
-    public MathBracketInterpretation(final String mfencedAttributeContent, final BracketType bracketType,
+    public MathBracketInterpretation(final MathCharacter mfencedAttributeCharacter, final BracketType bracketType,
             final boolean pairingInferencePossible) {
-        this.mfencedAttributeContent = mfencedAttributeContent;
+        this.mfencedAttributeCharacter = mfencedAttributeCharacter;
         this.bracketType = bracketType;
         this.pairingInferencePossible = pairingInferencePossible;
     }
     
-    public String getMfencedAttributeContent() {
-        return mfencedAttributeContent;
+    public MathCharacter getMfencedAttributeCharacter() {
+        return mfencedAttributeCharacter;
     }
 
     public BracketType getBracketType() {

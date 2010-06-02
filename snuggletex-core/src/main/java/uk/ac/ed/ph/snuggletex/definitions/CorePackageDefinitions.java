@@ -17,7 +17,6 @@ import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.ALLOW_INLINE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.IGNORE;
 import static uk.ac.ed.ph.snuggletex.definitions.TextFlowContext.START_NEW_XHTML_BLOCK;
 
-import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.SnuggleRuntimeException;
 import uk.ac.ed.ph.snuggletex.dombuilding.AccentHandler;
@@ -63,13 +62,8 @@ import uk.ac.ed.ph.snuggletex.dombuilding.XMLNameOrIdHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.XMLUnparseHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
-import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
@@ -103,8 +97,11 @@ public final class CorePackageDefinitions {
     
     public static final String CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/core-math-characters.txt";
     public static final String ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/all-math-characters.txt";
+    public static final String MATH_CHARACTER_BRACKETS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-brackets.txt";
     public static final String MATH_CHARACTER_ALIASES_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-aliases.txt";
     public static final String MATH_CHARACTER_NEGATIONS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-negations.txt";
+    public static final String MATH_CHARACTER_BIG_LIMITS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-big-limits.txt";
+    public static final String MATH_FUNCTION_DEFINITIONS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-function-definitions.txt";
     
     public static BuiltinCommand CMD_CHAR_BACKSLASH;
     public static BuiltinCommand CMD_FRAC;
@@ -166,45 +163,16 @@ public final class CorePackageDefinitions {
         corePackage.loadMathCharacterDefinitions(CorePackageDefinitions.ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME);
         corePackage.loadMathCharacterDefinitions(CorePackageDefinitions.CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME);
         
-        /* Read in details about math char/command negations and aliases */
+        /* Read in details about math char/command negations, brackets, aliases etc. */
         corePackage.loadMathCharacterNegations(MATH_CHARACTER_NEGATIONS_RESOURCE_NAME);
         corePackage.loadMathCharacterAliases(MATH_CHARACTER_ALIASES_RESOURCE_NAME);
-        
-        /* Additional interpretation data for polymorphic math characters */
-        /* FIXME: These are all now brackets, so might be better done in a more structured way */
-        final Object[] mathCharacterAdditionalInterpretationData = new Object[] {
-           '(', new MathBracketInterpretation(MathMLSymbol.OPEN_BRACKET, BracketType.OPENER, true),
-           ')', new MathBracketInterpretation(MathMLSymbol.CLOSE_BRACKET, BracketType.CLOSER, true),
-           '[', new MathBracketInterpretation(MathMLSymbol.OPEN_SQUARE_BRACKET, BracketType.OPENER, true),
-           ']', new MathBracketInterpretation(MathMLSymbol.CLOSE_SQUARE_BRACKET, BracketType.CLOSER, true),
-           '<', new MathBracketInterpretation(MathMLSymbol.OPEN_ANGLE_BRACKET, BracketType.OPENER, false),
-           '>', new MathBracketInterpretation(MathMLSymbol.CLOSE_ANGLE_BRACKET, BracketType.OPENER, false),
-           '|', new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, false)
-           /* Etc... */
-        };
-        Object object;
-        Integer currentCodePoint = null;
-        for (int i=0; i<mathCharacterAdditionalInterpretationData.length; i++) {
-            object = mathCharacterAdditionalInterpretationData[i];
-            if (object instanceof Character) {
-                currentCodePoint = Integer.valueOf((Character) object);
-            }
-            else if (object instanceof MathInterpretation) {
-                if (currentCodePoint==null) {
-                    throw new SnuggleLogicException("Bad raw data - currentCodePoint is null and we've now got an Interpretation");
-                }
-                MathCharacter mathCharacter = corePackage.getMathCharacter(currentCodePoint);
-                if (mathCharacter==null) {
-                    throw new SnuggleLogicException("No MathCharacter previously defined for codePoint " + currentCodePoint);
-                }
-                mathCharacter.addInterpretation((Interpretation) object);
-            }
-            else {
-                throw new SnuggleLogicException("Unexpected logic branch: got " + object);
-            }
-        }
+        corePackage.loadMathCharacterBigLimitTargets(MATH_CHARACTER_BIG_LIMITS_RESOURCE_NAME);
+        corePackage.loadMathCharacterBrackets(MATH_CHARACTER_BRACKETS_RESOURCE_NAME);
         
         /* =================================== COMMANDS ================================= */
+        
+        /* Load in function definitions */
+        corePackage.loadMathFunctionDefinitions(MATH_FUNCTION_DEFINITIONS_RESOURCE_NAME);
         
         //------------------------------------------------------------
         // Single (funny) character commands. These do not eat trailing whitespace
@@ -217,12 +185,12 @@ public final class CorePackageDefinitions {
         corePackage.addSimpleCommand("&", ALL_MODES, new CharacterCommandHandler("&"), ALLOW_INLINE);
         corePackage.addSimpleCommand("_", ALL_MODES, new CharacterCommandHandler("_"), ALLOW_INLINE);
         corePackage.addSimpleCommand("{", ALL_MODES, new Interpretation[] {
-                new MathOperatorInterpretation(MathMLSymbol.OPEN_CURLY_BRACKET),
-                new MathBracketInterpretation(MathMLSymbol.OPEN_CURLY_BRACKET, BracketType.OPENER, true),                
+                new MathOperatorInterpretation("{"),
+                new MathBracketInterpretation(corePackage.getBuiltinCommandByTeXName("lbrace").getMathCharacter(), BracketType.OPENER, true),                
             }, new ModeDelegatingHandler(new CharacterCommandHandler("{"), new InterpretableSimpleMathHandler()), null);
         corePackage.addSimpleCommand("}", ALL_MODES, new Interpretation[] {
-                new MathOperatorInterpretation(MathMLSymbol.CLOSE_CURLY_BRACKET),
-                new MathBracketInterpretation(MathMLSymbol.CLOSE_CURLY_BRACKET, BracketType.CLOSER, true),                
+                new MathOperatorInterpretation("}"),
+                new MathBracketInterpretation(corePackage.getBuiltinCommandByTeXName("rbrace").getMathCharacter(), BracketType.CLOSER, true),                
             }, new ModeDelegatingHandler(new CharacterCommandHandler("}"), new InterpretableSimpleMathHandler()), null);
         corePackage.addSimpleCommand(",", ALL_MODES, new SpaceHandler("\u2009", "0.167em"), ALLOW_INLINE); /* Thin space, all modes */
         corePackage.addSimpleCommand(":", MATH_MODE_ONLY, new SpaceHandler(null, "0.222em"), null); /* Medium space, math only */
@@ -352,8 +320,9 @@ public final class CorePackageDefinitions {
         // Math Mode stuff (see LaTeX Companion pp39-52)
         
         /* Semantic versions of MathML "&ApplyFunction;" and "&InvisibleTimes;" entities */
-        corePackage.addSimpleMathCommand("af", new MathOperatorInterpretation(MathMLSymbol.APPLY_FUNCTION));
-        corePackage.addSimpleMathCommand("itimes", new MathOperatorInterpretation(MathMLSymbol.INVISIBLE_TIMES));
+        /* FIXME: Maybe these should now be deprecated? */
+        corePackage.addSimpleMathCommand("af", new MathOperatorInterpretation("\u2061"));
+        corePackage.addSimpleMathCommand("itimes", new MathOperatorInterpretation("\u2062"));
         
         /* Placeholders for corresponding MathML constructs. These are substituted from traditional LaTeX constructs
          * by {@link TokenFixer}.
@@ -383,71 +352,6 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommandSameArgMode("mathbb", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.DOUBLE_STRUCK), null);
         corePackage.addComplexCommandSameArgMode("mathfrak", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.FRAKTUR), null);
         
-        /* Math "functions" (treated as identifiers in MathML) */
-        corePackage.addSimpleMathCommand("arccos", new MathFunctionInterpretation("arccos"));
-        corePackage.addSimpleMathCommand("arcsin", new MathFunctionInterpretation("arcsin"));
-        corePackage.addSimpleMathCommand("arctan", new MathFunctionInterpretation("arctan"));
-        corePackage.addSimpleMathCommand("arg", new MathFunctionInterpretation("arg"));
-        corePackage.addSimpleMathCommand("cos", new MathFunctionInterpretation("cos"));
-        corePackage.addSimpleMathCommand("cosh", new MathFunctionInterpretation("cosh"));
-        corePackage.addSimpleMathCommand("cot", new MathFunctionInterpretation("cot"));
-        corePackage.addSimpleMathCommand("coth", new MathFunctionInterpretation("coth"));
-        corePackage.addSimpleMathCommand("csc", new MathFunctionInterpretation("csc"));
-        corePackage.addSimpleMathCommand("deg", new MathFunctionInterpretation("deg"));
-        corePackage.addSimpleMathCommand("det", new MathFunctionInterpretation("det"));
-        corePackage.addSimpleMathCommand("dim", new MathFunctionInterpretation("dim"));
-        corePackage.addSimpleMathCommand("exp", new MathFunctionInterpretation("exp"));
-        corePackage.addSimpleMathCommand("gcd", new MathFunctionInterpretation("gcd"));
-        corePackage.addSimpleMathCommand("hom", new MathFunctionInterpretation("hom"));
-        corePackage.addSimpleMathCommand("inf", new MathFunctionInterpretation("inf"));
-        corePackage.addSimpleMathCommand("ker", new MathFunctionInterpretation("ker"));
-        corePackage.addSimpleMathCommand("lg", new MathFunctionInterpretation("lg"));
-        corePackage.addSimpleMathCommand("lcm", new MathFunctionInterpretation("lcm"));
-        corePackage.addSimpleMathCommand("lim", new MathFunctionInterpretation("lim"));
-        corePackage.addSimpleMathCommand("liminf", new MathFunctionInterpretation("lim inf"));
-        corePackage.addSimpleMathCommand("limsup", new MathFunctionInterpretation("lim sup"));
-        corePackage.addSimpleMathCommand("ln", new MathFunctionInterpretation("ln"));
-        corePackage.addSimpleMathCommand("log", new MathFunctionInterpretation("log"));
-        corePackage.addSimpleMathCommand("max", new MathFunctionInterpretation("max"));
-        corePackage.addSimpleMathCommand("min", new MathFunctionInterpretation("min"));
-        corePackage.addSimpleMathCommand("Pr", new MathFunctionInterpretation("Pr"));
-        corePackage.addSimpleMathCommand("sec", new MathFunctionInterpretation("sec"));
-        corePackage.addSimpleMathCommand("sin", new MathFunctionInterpretation("sin"));
-        corePackage.addSimpleMathCommand("sinh", new MathFunctionInterpretation("sinh"));
-        corePackage.addSimpleMathCommand("sup", new MathFunctionInterpretation("sup"));
-        corePackage.addSimpleMathCommand("tan", new MathFunctionInterpretation("tan"));
-        corePackage.addSimpleMathCommand("tanh", new MathFunctionInterpretation("tanh"));
-        
-        /* Extra Math functions (added for consistency with standard Content MathML operators) */
-        corePackage.addSimpleMathCommand("sech", new MathFunctionInterpretation("sech"));
-        corePackage.addSimpleMathCommand("csch", new MathFunctionInterpretation("csch"));
-        corePackage.addSimpleMathCommand("coth", new MathFunctionInterpretation("coth"));
-        corePackage.addSimpleMathCommand("arcsec", new MathFunctionInterpretation("arcsec"));
-        corePackage.addSimpleMathCommand("arccsc", new MathFunctionInterpretation("arccsc"));
-        corePackage.addSimpleMathCommand("arccot", new MathFunctionInterpretation("arccot"));
-        corePackage.addSimpleMathCommand("arccosh", new MathFunctionInterpretation("arccosh"));
-        corePackage.addSimpleMathCommand("arcsinh", new MathFunctionInterpretation("arcsinh"));
-        corePackage.addSimpleMathCommand("arctanh", new MathFunctionInterpretation("arctanh"));
-        corePackage.addSimpleMathCommand("arcsech", new MathFunctionInterpretation("arcsech"));
-        corePackage.addSimpleMathCommand("arccsch", new MathFunctionInterpretation("arccsch"));
-        corePackage.addSimpleMathCommand("arccoth", new MathFunctionInterpretation("arccoth"));
-
-        /* Add big limits to certain symbols */
-        MathBigLimitOwnerInterpretation bigLimitOwner = new MathBigLimitOwnerInterpretation();
-        String[] bigLimitCommandNames = {
-                /* NB: no "int" here */
-                "sum", "prod", "coprod", "oint",
-                "bigcap", "bigcup", "bigsqcup", "bigvee", "bigwedge",
-                "bigodot", "bigoplus", "biguplus"
-        };
-        for (String commandName : bigLimitCommandNames) {
-            /* (These commands will already have been defined) */
-            BuiltinCommand command = corePackage.getBuiltinCommandByTeXName(commandName);
-            MathCharacter mathCharacter = ((MathCharacterInterpretation) command.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
-            
-            mathCharacter.addInterpretation(bigLimitOwner);
-        }
-
         /* This is a LaTeX-specific combiner macro that always comes before certain characters
          * or commands...
          */
@@ -458,23 +362,12 @@ public final class CorePackageDefinitions {
         };
         corePackage.addCombinerCommand("not", MATH_MODE_ONLY, notTargetMatcher, new MathNotHandler(), null);
 
-
-        
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.
          */
         CombinerTargetMatcher bracketTargetMatcher = new MathFenceHandler.BracketCombinerTargetMatcher();
         CMD_LEFT = corePackage.addCombinerCommand("left", MATH_MODE_ONLY, bracketTargetMatcher, null, null);
         CMD_RIGHT = corePackage.addCombinerCommand("right", MATH_MODE_ONLY, bracketTargetMatcher, null, null);
-        
-        /* Special bracket commands */
-        corePackage.addSimpleMathCommand("vert",
-                new MathOperatorInterpretation(MathMLSymbol.VERT_BRACKET),
-                new MathBracketInterpretation(MathMLSymbol.VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
-        corePackage.addSimpleMathCommand("Vert",
-                new MathOperatorInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET),
-                new MathBracketInterpretation(MathMLSymbol.DOUBLE_VERT_BRACKET, BracketType.OPENER_OR_CLOSER, true));
-
 
         /* Complex math macros */
         corePackage.addComplexCommandSameArgMode("sqrt", true, 1, MATH_MODE_ONLY, new MathRootHandler(), null);
@@ -552,17 +445,17 @@ public final class CorePackageDefinitions {
         
         corePackage.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, Interpretation.TABULAR, new TabularHandler(), START_NEW_XHTML_BLOCK);
         corePackage.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new ArrayHandler(), null);
-        corePackage.addEnvironment("cases", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(2, MathMLSymbol.OPEN_CURLY_BRACKET, ""), null);
+        corePackage.addEnvironment("cases", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(2, "{", ""), null);
         corePackage.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, Interpretation.TABULAR, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
         corePackage.addEnvironment("eqnarray*", PARA_MODE_ONLY, MATH, Interpretation.TABULAR, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
         
         /* AMS-LaTeX convenience environments */
         corePackage.addEnvironment("matrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(), null);
-        corePackage.addEnvironment("pmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.OPEN_BRACKET, MathMLSymbol.CLOSE_BRACKET), null);
-        corePackage.addEnvironment("bmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.OPEN_SQUARE_BRACKET, MathMLSymbol.CLOSE_SQUARE_BRACKET), null);
-        corePackage.addEnvironment("Bmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.OPEN_CURLY_BRACKET, MathMLSymbol.CLOSE_CURLY_BRACKET), null);
-        corePackage.addEnvironment("vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.VERT_BRACKET, MathMLSymbol.VERT_BRACKET), null);
-        corePackage.addEnvironment("Vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(MathMLSymbol.DOUBLE_VERT_BRACKET, MathMLSymbol.DOUBLE_VERT_BRACKET), null);
+        corePackage.addEnvironment("pmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler("(", ")"), null);
+        corePackage.addEnvironment("bmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler("[", "]"), null);
+        corePackage.addEnvironment("Bmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler("{", "}"), null);
+        corePackage.addEnvironment("vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler("|", "|"), null);
+        corePackage.addEnvironment("Vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler("\u2225", "\u2225"), null);
         
         /* Simple text environments */
         corePackage.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);

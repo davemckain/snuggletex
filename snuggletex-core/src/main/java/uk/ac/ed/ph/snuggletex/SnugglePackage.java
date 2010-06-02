@@ -22,8 +22,12 @@ import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -169,20 +173,30 @@ public final class SnugglePackage {
     }
     
     //-------------------------------------------------------
+    
+    public void loadMathFunctionDefinitions(final String resourceLocation) {
+        readResourceData(resourceLocation, new LineHandler() {
+            public void handleLine(String line) {
+                /* (Line is either functionName or laTexFunctionName->MathMLFunctionName) */
+                String latexName, outputName;
+                int mapsToIndex = line.indexOf("->");
+                if (mapsToIndex!=-1) {
+                    latexName = line.substring(0, mapsToIndex);
+                    outputName = line.substring(mapsToIndex + 2);
+                }
+                else {
+                    latexName = line;
+                    outputName = line;
+                }
+                addSimpleMathCommand(latexName, new MathFunctionInterpretation(outputName));
+            }
+        });
+    }
 
     public void loadMathCharacterDefinitions(final String resourceLocation) {
-        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
-        if (inputStream==null) {
-            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
-        }
-        try {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
-            String line;
-            while ((line = inputReader.readLine())!=null) {
-                if (line.startsWith("#")) {
-                    continue;
-                }
-                line = line.replaceFirst("\\s+#.+$", "");
+        readResourceData(resourceLocation, new LineHandler() {
+            @SuppressWarnings("synthetic-access")
+            public void handleLine(String line) {
                 String[] fields = line.split(":"); /* codePointHex:commandName:type */
                 int codePoint = Integer.parseInt(fields[0], 16);
                 String commandName = StringUtilities.nullIfEmpty(fields[1]);
@@ -195,27 +209,12 @@ public final class SnugglePackage {
                     addMathCharacterCommand(mathCharacter);
                 }
             }
-            inputReader.close();
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
-        }
+        });
     }
     
     public void loadMathCharacterNegations(final String resourceLocation) {
-        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
-        if (inputStream==null) {
-            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
-        }
-        try {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
-            String line;
-            while ((line = inputReader.readLine())!=null) {
-                if (line.startsWith("#")) {
-                    continue;
-                }
-                line = line.replaceFirst("\\s+#.+$", "");
-                
+        readResourceData(resourceLocation, new LineHandler() {
+            public void handleLine(String line) {
                 /* Line is either of the form commandName or commandName->negatedCommandName.
                  * 
                  * In the first case, the negatedCommandName is formed by prefixing the commandName
@@ -242,25 +241,33 @@ public final class SnugglePackage {
                 }
                 sourceCharacter.addInterpretation(new MathNegatableInterpretation(targetCharacter));
             }
-            inputReader.close();
-        }
-        catch (Exception e) {
-            throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
-        }
+        });
+    }
+    
+    public void loadMathCharacterBrackets(final String resourceLocation) {
+        readResourceData(resourceLocation, new LineHandler() {
+            public void handleLine(String line) {
+                /* Line is of the form inputCommandName:outputBracketCommandName:bracketType:(INFER|NOINFER) */
+                String[] fields = line.split(":");
+                String inputCommandName = fields[0];
+                String outputBracketCommandName = fields[1];
+                BracketType bracketType = BracketType.valueOf(fields[2]);
+                boolean inferFences = "INFER".equals(fields[3]);
+                
+                /* FIXME: Do checking like in other methods */
+                BuiltinCommand inputCommand = getBuiltinCommandByTeXName(inputCommandName);
+                BuiltinCommand outputBracketCommand = getBuiltinCommandByTeXName(outputBracketCommandName);
+                MathCharacter inputMathCharacter = inputCommand.getMathCharacter();
+                MathCharacter outputBracketMathCharacter = outputBracketCommand.getMathCharacter();
+
+                inputMathCharacter.addInterpretation(new MathBracketInterpretation(outputBracketMathCharacter, bracketType, inferFences));
+            }
+        });
     }
     
     public void loadMathCharacterAliases(final String resourceLocation) {
-        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
-        if (inputStream==null) {
-            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
-        }
-        try {
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
-            String line;
-            while ((line = inputReader.readLine())!=null) {
-                if (line.startsWith("#")) {
-                    continue;
-                }
+        readResourceData(resourceLocation, new LineHandler() {
+            public void handleLine(String line) {
                 line = line.replaceFirst("\\s+#.+$", "");
                 String[] fields = line.split("->"); /* aliasCommandName:targetCommandName */
                 
@@ -276,11 +283,51 @@ public final class SnugglePackage {
                 }
                 addMathCharacterCommandAlias(aliasCommandName, targetCommand.getMathCharacter());
             }
+        });
+    }
+    
+    public void loadMathCharacterBigLimitTargets(final String resourceLocation) {
+        final MathBigLimitOwnerInterpretation bigLimitOwner = new MathBigLimitOwnerInterpretation();
+        readResourceData(resourceLocation, new LineHandler() {
+            public void handleLine(String line) {
+                /* (Line is name of an existing command) */
+                BuiltinCommand targetCommand = getBuiltinCommandByTeXName(line);
+                if (targetCommand==null) {
+                    throw new SnuggleRuntimeException("Target command " + line + " for big limit owner");
+                }
+                MathCharacter mathCharacter = targetCommand.getMathCharacter();
+                if (mathCharacter==null) {
+                    throw new SnuggleRuntimeException("Target command " + line + " for big limit owner is not a math character input command");
+                }
+                mathCharacter.addInterpretation(bigLimitOwner);
+            }
+        });
+    }
+    
+    private void readResourceData(final String resourceLocation, final LineHandler handler) {
+        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
+        if (inputStream==null) {
+            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
+        }
+        try {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
+            String line;
+            while ((line = inputReader.readLine())!=null) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                line = line.replaceFirst("\\s+#.+$", "");
+                handler.handleLine(line);
+            }
             inputReader.close();
         }
         catch (Exception e) {
             throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
         }
+    }
+    
+    private interface LineHandler {
+        void handleLine(String line);
     }
     
     //-------------------------------------------------------

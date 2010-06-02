@@ -126,7 +126,9 @@ public final class MathFenceHandler implements EnvironmentHandler {
             FlowToken bracketToken = contents.get(0);
             if (bracketToken.hasInterpretationType(InterpretationType.MATH_BRACKET)) {
                 /* This is a proper bracket */
-                result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET)).getMfencedAttributeContent();
+                result = ((MathBracketInterpretation) bracketToken.getInterpretation(InterpretationType.MATH_BRACKET))
+                    .getMfencedAttributeCharacter()
+                    .getChars();
             }
             else if (bracketToken.getMathCharacterCodePoint()=='.') {
                 /* "No bracket" */
