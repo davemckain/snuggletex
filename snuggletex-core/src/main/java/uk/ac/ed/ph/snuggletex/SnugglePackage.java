@@ -214,6 +214,7 @@ public final class SnugglePackage {
     
     public void loadMathCharacterNegations(final String resourceLocation) {
         readResourceData(resourceLocation, new LineHandler() {
+            @SuppressWarnings("synthetic-access")
             public void handleLine(String line) {
                 /* Line is either of the form commandName or commandName->negatedCommandName.
                  * 
@@ -230,15 +231,8 @@ public final class SnugglePackage {
                     sourceName = line;
                     targetName = "n" + sourceName;
                 }
-                BuiltinCommand source = getBuiltinCommandByTeXName(sourceName);
-                BuiltinCommand target = getBuiltinCommandByTeXName(targetName);
-                MathCharacter sourceCharacter = source!=null ? source.getMathCharacter() : null;
-                MathCharacter targetCharacter = target!=null ? target.getMathCharacter() : null;
-                if (source==null || target==null || sourceCharacter==null || targetCharacter==null) {
-                    throw new SnuggleRuntimeException("Failed defining 'not' association: source="
-                            + source + " and target="
-                            + target + " must both have been already defined and be math character commands");
-                }
+                MathCharacter sourceCharacter = ensureBuiltinMathCharacterCommand(sourceName, "Source command for negation");
+                MathCharacter targetCharacter = ensureBuiltinMathCharacterCommand(targetName, "Target command for negation");
                 sourceCharacter.addInterpretation(new MathNegatableInterpretation(targetCharacter));
             }
         });
@@ -246,6 +240,7 @@ public final class SnugglePackage {
     
     public void loadMathCharacterBrackets(final String resourceLocation) {
         readResourceData(resourceLocation, new LineHandler() {
+            @SuppressWarnings("synthetic-access")
             public void handleLine(String line) {
                 /* Line is of the form inputCommandName:outputBracketCommandName:bracketType:(INFER|NOINFER) */
                 String[] fields = line.split(":");
@@ -254,12 +249,8 @@ public final class SnugglePackage {
                 BracketType bracketType = BracketType.valueOf(fields[2]);
                 boolean inferFences = "INFER".equals(fields[3]);
                 
-                /* FIXME: Do checking like in other methods */
-                BuiltinCommand inputCommand = getBuiltinCommandByTeXName(inputCommandName);
-                BuiltinCommand outputBracketCommand = getBuiltinCommandByTeXName(outputBracketCommandName);
-                MathCharacter inputMathCharacter = inputCommand.getMathCharacter();
-                MathCharacter outputBracketMathCharacter = outputBracketCommand.getMathCharacter();
-
+                MathCharacter inputMathCharacter = ensureBuiltinMathCharacterCommand(inputCommandName, "Bracket input command");
+                MathCharacter outputBracketMathCharacter = ensureBuiltinMathCharacterCommand(outputBracketCommandName, "Fence target");
                 inputMathCharacter.addInterpretation(new MathBracketInterpretation(outputBracketMathCharacter, bracketType, inferFences));
             }
         });
@@ -267,21 +258,14 @@ public final class SnugglePackage {
     
     public void loadMathCharacterAliases(final String resourceLocation) {
         readResourceData(resourceLocation, new LineHandler() {
+            @SuppressWarnings("synthetic-access")
             public void handleLine(String line) {
                 line = line.replaceFirst("\\s+#.+$", "");
                 String[] fields = line.split("->"); /* aliasCommandName:targetCommandName */
                 
                 String aliasCommandName = fields[0];
-                String targetCommandName = fields[1];
-                BuiltinCommand targetCommand = getBuiltinCommandByTeXName(targetCommandName);
-                if (targetCommand==null) {
-                    throw new SnuggleRuntimeException("Target command for alias " + line + " has not been defined");
-                }
-                MathCharacter mathCharacter = targetCommand.getMathCharacter();
-                if (mathCharacter==null) {
-                    throw new SnuggleRuntimeException("Target command for alias " + line + " is not a math character input command");
-                }
-                addMathCharacterCommandAlias(aliasCommandName, targetCommand.getMathCharacter());
+                MathCharacter targetCharacter = ensureBuiltinMathCharacterCommand(fields[1], "Target command for alias");
+                addMathCharacterCommandAlias(aliasCommandName, targetCharacter);
             }
         });
     }
@@ -289,17 +273,11 @@ public final class SnugglePackage {
     public void loadMathCharacterBigLimitTargets(final String resourceLocation) {
         final MathBigLimitOwnerInterpretation bigLimitOwner = new MathBigLimitOwnerInterpretation();
         readResourceData(resourceLocation, new LineHandler() {
+            @SuppressWarnings("synthetic-access")
             public void handleLine(String line) {
                 /* (Line is name of an existing command) */
-                BuiltinCommand targetCommand = getBuiltinCommandByTeXName(line);
-                if (targetCommand==null) {
-                    throw new SnuggleRuntimeException("Target command " + line + " for big limit owner");
-                }
-                MathCharacter mathCharacter = targetCommand.getMathCharacter();
-                if (mathCharacter==null) {
-                    throw new SnuggleRuntimeException("Target command " + line + " for big limit owner is not a math character input command");
-                }
-                mathCharacter.addInterpretation(bigLimitOwner);
+                MathCharacter target = ensureBuiltinMathCharacterCommand(line, "Target command for big limit owner");
+                target.addInterpretation(bigLimitOwner);
             }
         });
     }
@@ -326,7 +304,16 @@ public final class SnugglePackage {
         }
     }
     
-    private interface LineHandler {
+    private MathCharacter ensureBuiltinMathCharacterCommand(String texName, String errorMessageContext) {
+        BuiltinCommand command = getBuiltinCommandByTeXName(texName);
+        MathCharacter mathCharacter = command!=null ? command.getMathCharacter() : null;
+        if (command==null || mathCharacter==null) {
+            throw new SnuggleRuntimeException(errorMessageContext + " must be a previously-defined math character input command");
+        }
+        return mathCharacter;
+    }
+    
+    private static interface LineHandler {
         void handleLine(String line);
     }
     
