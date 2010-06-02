@@ -9,6 +9,7 @@ import uk.ac.ed.ph.snuggletex.SnugglePackage;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
+import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -65,4 +66,18 @@ public final class BuiltinCommand extends BuiltinCommandOrEnvironment<CommandHan
     public CombinerTargetMatcher getCombinerTargetMatcher() {
         return combinerTargetMatcher;
     }
+    
+    //--------------------------------------------------
+    // Convenience method
+    
+    public MathCharacter getMathCharacter() {
+        MathCharacterInterpretation mcInterpretation = (MathCharacterInterpretation) getInterpretation(InterpretationType.MATH_CHARACTER);
+        return mcInterpretation!=null ? mcInterpretation.getMathCharacter() : null;
+    }
+    
+    public int getMathCharacterCodePoint() {
+        MathCharacter mathCharacter = getMathCharacter();
+        return mathCharacter!=null ? mathCharacter.getCodePoint() : -1;
+    }
+
 }

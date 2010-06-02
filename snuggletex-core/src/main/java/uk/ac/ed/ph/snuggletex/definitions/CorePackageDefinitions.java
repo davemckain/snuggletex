@@ -70,7 +70,6 @@ import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
-import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
@@ -104,6 +103,8 @@ public final class CorePackageDefinitions {
     
     public static final String CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/core-math-characters.txt";
     public static final String ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/all-math-characters.txt";
+    public static final String MATH_CHARACTER_ALIASES_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-aliases.txt";
+    public static final String MATH_CHARACTER_NEGATIONS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-negations.txt";
     
     public static BuiltinCommand CMD_CHAR_BACKSLASH;
     public static BuiltinCommand CMD_FRAC;
@@ -137,6 +138,8 @@ public final class CorePackageDefinitions {
     public static BuiltinEnvironment ENV_BRACKETED;
     
     private static final SnugglePackage corePackage;
+
+
     
     public static final SnugglePackage getPackage() {
         return corePackage;
@@ -162,6 +165,10 @@ public final class CorePackageDefinitions {
          */
         corePackage.loadMathCharacterDefinitions(CorePackageDefinitions.ALL_MATH_CHARACTER_DEFS_RESOURCE_NAME);
         corePackage.loadMathCharacterDefinitions(CorePackageDefinitions.CORE_MATH_CHARACTER_DEFS_RESOURCE_NAME);
+        
+        /* Read in details about math char/command negations and aliases */
+        corePackage.loadMathCharacterNegations(MATH_CHARACTER_NEGATIONS_RESOURCE_NAME);
+        corePackage.loadMathCharacterAliases(MATH_CHARACTER_ALIASES_RESOURCE_NAME);
         
         /* Additional interpretation data for polymorphic math characters */
         /* FIXME: These are all now brackets, so might be better done in a more structured way */
@@ -450,77 +457,8 @@ public final class CorePackageDefinitions {
             }  
         };
         corePackage.addCombinerCommand("not", MATH_MODE_ONLY, notTargetMatcher, new MathNotHandler(), null);
-        
-        /* ...and these are the commands/characters which are "nottable" */
-        String[] notData = {
-                /* "commandName" or "commandName:notCommandName".
-                 * In former case, "not" command is formed by prefixing
-                 * commdnName with an 'n'.
-                 * 
-                 * E.g. \less -> \nless
-                 */
-                "equal:ne",
-                "less",
-                "greater:ngtr",
-                "leq",
-                "geq",
-                "vert:nmid",
-                "subset",
-                "supset",
-                "subseteq",
-                "supseteq",
-                "prec",
-                "succ",
-                "asymp",
-                "equiv",
-                "in:notin",
-                "ni",
-                "vdash",
-                "Vdash",
-                "vDash",
-                "VDash",
-                "sqsubseteq",
-                "sqsupseteq",
-                "sim",
-                "simeq:nsime",
-                "cong",
-                "mid",
-                "parallel",
-                "exists",
-                "approx",
-                "lesssim",
-                "gtrsim",
-                "lessgtr",
-                "gtrless",
-                "preccurlyeq",
-                "succcurlyeq",
-                "triangleleft",
-                "triangleright",
-                "trianglelefteq",
-                "trianglerighteq",
-                
-        };
-        for (String notDatum : notData) {
-            String sourceName, targetName;
-            int colonIndex = notDatum.indexOf(':');
-            if (colonIndex!=-1) {
-                sourceName = notDatum.substring(0, colonIndex);
-                targetName = notDatum.substring(colonIndex + 1);
-            }
-            else {
-                sourceName = notDatum;
-                targetName = "n" + sourceName;
-            }
-            BuiltinCommand source = corePackage.getBuiltinCommandByTeXName(sourceName);
-            BuiltinCommand target = corePackage.getBuiltinCommandByTeXName(targetName);
-            if (source==null || target==null) {
-                throw new SnuggleRuntimeException("Failed defining 'not' association: source=" + source + " ,target=" + target);
-            }
-            MathCharacter sourceCharacter = ((MathCharacterInterpretation) source.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
-            MathCharacter targetCharacter = ((MathCharacterInterpretation) target.getInterpretation(InterpretationType.MATH_CHARACTER)).getMathCharacter();
-            
-            sourceCharacter.addInterpretation(new MathNegatableInterpretation(targetCharacter));
-        }
+
+
         
         /* Math combiner commands that absorb the (bracket) token immediately after. These are
          * converted to fences during token fixing.

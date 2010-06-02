@@ -1,0 +1,4 @@
+le->leq
+ge->geq
+lor->wedge
+land->vee

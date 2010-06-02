@@ -23,6 +23,7 @@ import uk.ac.ed.ph.snuggletex.internal.util.StringUtilities;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -170,17 +171,18 @@ public final class SnugglePackage {
     //-------------------------------------------------------
 
     public void loadMathCharacterDefinitions(final String resourceLocation) {
-        InputStream mathCharacterDefsStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
-        if (mathCharacterDefsStream==null) {
+        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
+        if (inputStream==null) {
             throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
         }
         try {
-            BufferedReader mathCharacterDefsReader = new BufferedReader(new InputStreamReader(mathCharacterDefsStream, "US-ASCII"));
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
             String line;
-            while ((line = mathCharacterDefsReader.readLine())!=null) {
+            while ((line = inputReader.readLine())!=null) {
                 if (line.startsWith("#")) {
                     continue;
                 }
+                line = line.replaceFirst("\\s+#.+$", "");
                 String[] fields = line.split(":"); /* codePointHex:commandName:type */
                 int codePoint = Integer.parseInt(fields[0], 16);
                 String commandName = StringUtilities.nullIfEmpty(fields[1]);
@@ -193,7 +195,88 @@ public final class SnugglePackage {
                     addMathCharacterCommand(mathCharacter);
                 }
             }
-            mathCharacterDefsReader.close();
+            inputReader.close();
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
+        }
+    }
+    
+    public void loadMathCharacterNegations(final String resourceLocation) {
+        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
+        if (inputStream==null) {
+            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
+        }
+        try {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
+            String line;
+            while ((line = inputReader.readLine())!=null) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                line = line.replaceFirst("\\s+#.+$", "");
+                
+                /* Line is either of the form commandName or commandName->negatedCommandName.
+                 * 
+                 * In the first case, the negatedCommandName is formed by prefixing the commandName
+                 * with 'n'. E.g. \leq -> \nleq.
+                 */
+                String sourceName, targetName;
+                int mapsToIndex = line.indexOf("->");
+                if (mapsToIndex!=-1) {
+                    sourceName = line.substring(0, mapsToIndex);
+                    targetName = line.substring(mapsToIndex + 2);
+                }
+                else {
+                    sourceName = line;
+                    targetName = "n" + sourceName;
+                }
+                BuiltinCommand source = getBuiltinCommandByTeXName(sourceName);
+                BuiltinCommand target = getBuiltinCommandByTeXName(targetName);
+                MathCharacter sourceCharacter = source!=null ? source.getMathCharacter() : null;
+                MathCharacter targetCharacter = target!=null ? target.getMathCharacter() : null;
+                if (source==null || target==null || sourceCharacter==null || targetCharacter==null) {
+                    throw new SnuggleRuntimeException("Failed defining 'not' association: source="
+                            + source + " and target="
+                            + target + " must both have been already defined and be math character commands");
+                }
+                sourceCharacter.addInterpretation(new MathNegatableInterpretation(targetCharacter));
+            }
+            inputReader.close();
+        }
+        catch (Exception e) {
+            throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
+        }
+    }
+    
+    public void loadMathCharacterAliases(final String resourceLocation) {
+        InputStream inputStream = Globals.class.getClassLoader().getResourceAsStream(resourceLocation);
+        if (inputStream==null) {
+            throw new SnuggleRuntimeException("Could not load ClassPath resource at  " + resourceLocation);
+        }
+        try {
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream, "US-ASCII"));
+            String line;
+            while ((line = inputReader.readLine())!=null) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                line = line.replaceFirst("\\s+#.+$", "");
+                String[] fields = line.split("->"); /* aliasCommandName:targetCommandName */
+                
+                String aliasCommandName = fields[0];
+                String targetCommandName = fields[1];
+                BuiltinCommand targetCommand = getBuiltinCommandByTeXName(targetCommandName);
+                if (targetCommand==null) {
+                    throw new SnuggleRuntimeException("Target command for alias " + line + " has not been defined");
+                }
+                MathCharacter mathCharacter = targetCommand.getMathCharacter();
+                if (mathCharacter==null) {
+                    throw new SnuggleRuntimeException("Target command for alias " + line + " is not a math character input command");
+                }
+                addMathCharacterCommandAlias(aliasCommandName, targetCommand.getMathCharacter());
+            }
+            inputReader.close();
         }
         catch (Exception e) {
             throw new SnuggleRuntimeException("Got Exception while reading and parsing math character definitions from resource " + resourceLocation, e);
@@ -226,7 +309,11 @@ public final class SnugglePackage {
     }
     
     public BuiltinCommand addMathCharacterCommand(final MathCharacter mathCharacter) {
-        return addCommand(new BuiltinCommand(mathCharacter.getInputCommandName(), CommandType.SIMPLE, false, 0,
+        return addMathCharacterCommandAlias(mathCharacter.getInputCommandName(), mathCharacter);
+    }
+    
+    public BuiltinCommand addMathCharacterCommandAlias(final String name, final MathCharacter mathCharacter) {
+        return addCommand(new BuiltinCommand(name, CommandType.SIMPLE, false, 0,
                 Globals.MATH_MODE_ONLY, null, mathCharacter.getInterpretationMap(),
                 interpretableSimpleMathBuilder, null, null));
     }
