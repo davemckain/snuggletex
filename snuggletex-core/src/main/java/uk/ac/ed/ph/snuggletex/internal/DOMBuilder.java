@@ -491,6 +491,10 @@ public final class DOMBuilder {
                 appendMathMLOperatorElement(parentElement, encodedCharacter);
                 break;
                 
+            case NUMERIC:
+                appendMathMLNumberElement(parentElement, encodedCharacter);
+                break;
+                
             case ACCENT:
                 throw new SnuggleLogicException("No handling for ACCENT coded yet!");
                 

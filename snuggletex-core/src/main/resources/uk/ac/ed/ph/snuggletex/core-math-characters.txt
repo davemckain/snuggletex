@@ -9,6 +9,12 @@
 ## Common useful characters/commands
 6A:jmath:ALPHA
 AC:neg:BIN # (Redefined as operator)
+B2::OP
+B3::OP
+B9::OP
+BC::NUMERIC
+BD::NUMERIC
+BE::NUMERIC
 C5:AA:ORD
 E5:aa:ORD
 131:imath:ALPHA

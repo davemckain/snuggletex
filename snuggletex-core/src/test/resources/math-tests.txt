@@ -131,6 +131,15 @@ x^2 + 1
 <mo>+</mo>
 <mn>1</mn>
 ====
+## These don't generate <msup>
+x%ub2
+<mi>x</mi><mo>&#xb2;</mo>
+====
+## The 3 fraction characters currently generate numbers, though I'm not
+## convinced this is the best treatment...!
+%ubc
+<mn>&#xbc;</mn>
+====
 a_1
 <msub>
   <mi>a</mi>

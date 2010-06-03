@@ -30,6 +30,7 @@ public final class MathCharacter {
         BIN,
         CLOSE,
         FENCE,
+        NUMERIC,
         OP,
         OPEN,
         ORD,
