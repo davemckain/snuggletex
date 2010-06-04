@@ -19,6 +19,10 @@ All Rights Reserved
   </properties>
   <body>
     <release version="1.2.3" date="TBA" description="Version 1.2.3 (SVN revision ???)">
+      <action dev="davemckain" type="fix" date="2010-06-04">
+        Generation of SnuggleTex error elements now uses the namespace prefix configured
+        by the caller's DOMOutputOptions.
+      </action>
       <action dev="davemckain" type="update" date="2010-05-26">
         Provided pure XSLT alternative for the error formatting functions in the up-conversion
         stylesheets, meaning they can now be used independently of the Java code, which will

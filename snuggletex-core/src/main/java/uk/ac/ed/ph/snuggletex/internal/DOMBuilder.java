@@ -520,16 +520,14 @@ public final class DOMBuilder {
     }
     
     public Element appendSnuggleElement(Element parentElement, String elementLocalName) {
-        String qName;
-        if (options.isPrefixingSnuggleXML()) {
-            qName = options.getSnuggleXMLPrefix() + ":" + elementLocalName;
-        }
-        else {
-            qName = elementLocalName;
-        }
+        String qName = createSnuggleElementQName(elementLocalName);
         Element element = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, qName);
         parentElement.appendChild(element);
         return element;
+    }
+    
+    private String createSnuggleElementQName(String elementLocalName) {
+        return options.isPrefixingSnuggleXML() ? options.getSnuggleXMLPrefix() + ":" + elementLocalName : elementLocalName;
     }
     
     public Element appendXHTMLElement(Element parentElement, String elementLocalName) {
@@ -951,6 +949,7 @@ public final class DOMBuilder {
             case XML_SHORT:
                 /* Output XML at the current point in the DOM */
                 errorElement = MessageFormatter.formatErrorAsXML(document,
+                        createSnuggleElementQName("error"),
                         errorToken.getError(),
                         errorOptions==ErrorOutputOptions.XML_FULL);
                 parentElement.appendChild(errorElement);
