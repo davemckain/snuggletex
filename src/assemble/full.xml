@@ -36,6 +36,27 @@ All Rights Reserved
         <unpack>false</unpack>
       </binaries>
     </moduleSet>
+    <!-- Source JARs -->
+    <moduleSet>
+      <includes>
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-core</include>
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-upconversion</include>
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-jeuclid</include>
+        <include>uk.ac.ed.ph.snuggletex:snuggletex-webapp</include>
+      </includes>
+      <sources>
+        <includeModuleDirectory>false</includeModuleDirectory>
+        <fileSets>
+          <fileSet>
+            <directory>target</directory>
+            <outputDirectory>src/dist</outputDirectory>
+            <includes>
+              <include>*-sources.jar</include>
+            </includes>
+          </fileSet>
+        </fileSets>
+      </sources>
+    </moduleSet>
     <!-- (We need the generated snuggletex.css) -->
     <moduleSet>
       <includes>
@@ -67,7 +88,7 @@ All Rights Reserved
     <!-- Put rest of project source in 'src' container directory -->
     <fileSet>
       <directory>${project.basedir}</directory>
-      <outputDirectory>src</outputDirectory>
+      <outputDirectory>src/project</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>*/target/**</exclude>
