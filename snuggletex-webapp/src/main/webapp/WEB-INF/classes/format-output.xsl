@@ -55,9 +55,9 @@ All Rights Reserved
       <link rel="stylesheet" type="text/css" href="{$context-path}/includes/content-styles.css" />
       <link rel="stylesheet" type="text/css" href="{$context-path}/includes/snuggletex-webapp.css" />
       <link rel="stylesheet" type="text/css" href="{$context-path}/includes/snuggletex.css" />
-      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/jquery-ui-1.7.2.custom.css" />
-      <script type="text/javascript" src="{$context-path}/includes/jquery.js"></script>
-      <script type="text/javascript" src="{$context-path}/includes/jquery-ui-1.7.2.custom.js"></script>
+      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/jquery/redmond/jquery-ui-1.8.7.custom.css" />
+      <script type="text/javascript" src="{$context-path}/includes/jquery/jquery-1.4.4.min.js"></script>
+      <script type="text/javascript" src="{$context-path}/includes/jquery/jquery-ui-1.8.7.custom.min.js"></script>
       <script type="text/javascript" src="{$context-path}/includes/snuggletex-webapp.js"></script>
       <xsl:apply-templates select="." mode="extra-head"/>
     </head>
