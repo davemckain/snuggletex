@@ -50,14 +50,15 @@ All Rights Reserved
       <meta name="description" content="SnuggleTeX Documentation" />
       <meta name="author" content="David McKain" />
       <meta name="publisher" content="The University of Edinburgh" />
-      <link rel="stylesheet" href="{$context-path}/includes/core.css" />
-      <link rel="stylesheet" href="{$context-path}/includes/webapp.css" />
-      <link rel="stylesheet" href="{$context-path}/includes/snuggletex.css" />
-      <link rel="stylesheet" href="{$context-path}/includes/jquery-ui-1.7.2.custom.css" />
+      <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
+      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/webapp-base.css" />
+      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/content-styles.css" />
+      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/snuggletex-webapp.css" />
+      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/snuggletex.css" />
+      <link rel="stylesheet" type="text/css" href="{$context-path}/includes/jquery-ui-1.7.2.custom.css" />
       <script type="text/javascript" src="{$context-path}/includes/jquery.js"></script>
       <script type="text/javascript" src="{$context-path}/includes/jquery-ui-1.7.2.custom.js"></script>
-      <script type="text/javascript" src="{$context-path}/includes/webapp.js"></script>
-      <title>SnuggleTeX - <xsl:value-of select="$title"/></title>
+      <script type="text/javascript" src="{$context-path}/includes/snuggletex-webapp.js"></script>
       <xsl:apply-templates select="." mode="extra-head"/>
     </head>
   </xsl:template>
@@ -67,74 +68,87 @@ All Rights Reserved
 
   <xsl:template match="body">
     <body id="{$pageId}">
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" id="header">
-        <tr>
-          <td align="left" valign="top" id="logo">
-            <a href="http://www.ed.ac.uk" class="headertext"><img
-              src="{$context-path}/includes/uoe_logo.jpg"
-              alt="The University of Edinburgh"
-              width="84" height="84" /></a>
-          </td>
-          <td align="left">
-            <h3>THE UNIVERSITY of EDINBURGH</h3>
-            <h1>SCHOOL OF PHYSICS AND ASTRONOMY</h1>
-          </td>
-        </tr>
-      </table>
-      <h1 id="location">
-        <a href="{$context-path}">SnuggleTeX (<xsl:value-of select="$snuggletex-version"/>)</a>
-      </h1>
-      <div id="content">
-        <div id="skipnavigation">
-          <a href="#maincontent">Skip Navigation</a>
-        </div>
-        <div id="navigation">
-          <div id="navinner">
-            <!-- Build navigation -->
-            <xsl:apply-templates select="$navigation" mode="make-navigation"/>
+      <div id="container">
+        <div id="header">
+          <div id="identities">
+            <div id="edlogo"><a href="http://www.ed.ac.uk"><img src="{$context-path}/includes/images/ed_logo.gif" alt="University of Edinburgh Logo"/></a></div>
+            <div id="edname"><a href="http://www.ed.ac.uk"><img src="{$context-path}/includes/images/uofe2.gif" alt="University of Edinburgh" /></a></div>
+            <div id="schoolname"><a href="/"><img src="{$context-path}/includes/images/panda.gif" alt="School of Physics &amp; Astronomy" /></a></div>
+          </div>
+          <div id="GlobalNav">
+            <ul>
+              <li class="active"><a href="http://www2.ph.ed.ac.uk/elearning/" class="active"><span>e-Learning</span></a></li>
+            </ul>
+          </div>
+          <div id="utility">
+            <a class="utilContact" href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">Contact us</a>
           </div>
         </div>
-        <div id="maincontent">
-          <!-- Create empty container for popups -->
-          <div id="popup"></div>
-
-          <!-- Do main content -->
-          <div id="maininner">
-
-            <!-- Add page title, and maybe a box about page types -->
-            <h2>
-              <xsl:value-of select="$title"/>
-            </h2>
-            <xsl:if test="exists($page-type)">
-              <div class="note">
-                <strong>NOTE:</strong>
-                This particular rendition of this page has been generated using the
-                <xsl:value-of select="$page-type"/>
-                Web Page Type.
+        <div id="sectionHeader">
+          <div id="sectionHeaderTitle">
+            <a href="{$context-path}">SnuggleTeX (<xsl:value-of select="$snuggletex-version"/>)</a>
+          </div>
+        </div>
+        <div id="contentArea">
+          <div id="content">
+            <div id="skipnavigation">
+              <a href="#maincontent">Skip Navigation</a>
+            </div>
+            <div id="navigation">
+              <div id="navinner">
+                <!-- Build navigation -->
+                <xsl:apply-templates select="$navigation" mode="make-navigation"/>
               </div>
-            </xsl:if>
+            </div>
+            <div id="maincontent">
+              <!-- Create empty container for popups -->
+              <div id="popup"></div>
 
-            <!-- Generate page content -->
-            <xsl:apply-templates select="." mode="make-content"/>
+              <!-- Do main content -->
+              <div id="maininner">
+
+                <!-- Add page title, and maybe a box about page types -->
+                <h2>
+                  <xsl:value-of select="$title"/>
+                </h2>
+                <xsl:if test="exists($page-type)">
+                  <div class="note">
+                    <strong>NOTE:</strong>
+                    This particular rendition of this page has been generated using the
+                    <xsl:value-of select="$page-type"/>
+                    Web Page Type.
+                  </div>
+                </xsl:if>
+
+                <!-- Generate page content -->
+                <xsl:apply-templates select="." mode="make-content"/>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div id="copyright">
-        <p>
-          SnuggleTeX Release <xsl:value-of select="$snuggletex-version"/> &#x2014;
-          <a href="{$context-path}/documentation/release-notes.html">Release Notes</a>
-          <br />
-          Copyright &#xa9; 2009
-          <a href="http://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
-          <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
-          <br />
-          For more information, contact
-          <a href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">David McKain</a>.
-        </p>
-        <p>
-          The University of Edinburgh is a charitable body, registered in Scotland,
-          with registration number SC005336.
-        </p>
+      <!-- Standard Footer -->
+      <div id="footer">
+        <div id="copyright">
+          <div id="footer-text">
+            <p>
+              SnuggleTeX Release <xsl:value-of select="$snuggletex-version"/> &#x2014;
+              <a href="{$context-path}/documentation/release-notes.html">Release Notes</a>
+              <br />
+              Copyright &#xa9; 2010
+              <a href="http://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
+              <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
+              <br />
+              For more information, contact
+              <a href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">David McKain</a>.
+            </p>
+            <p>
+              The University of Edinburgh is a charitable body, registered in Scotland,
+              with registration number SC005336.
+            </p>
+          </div>
+          <div class="clearFloat"></div>
+        </div>
       </div>
     </body>
   </xsl:template>
