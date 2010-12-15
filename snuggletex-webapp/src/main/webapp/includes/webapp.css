@@ -4,10 +4,10 @@
  * $Id$
  */
 
-#content {
+#contentArea {
   padding: 0;
   margin: 0;
-  background-color: #f2d7da;
+  background-color: #eaeff5;
   font-family: Arial, Helvetica, Sans-Serif;
 }
 
@@ -20,8 +20,7 @@
 #navigation {
   float: right;
   width: 27%;
-  font-size: 80%;
-  background-color: #f2d7da;
+  background-color: #eaeff5;
 }
 
 #navinner {
@@ -29,9 +28,9 @@
 }
 
 #navinner h2 {
-  color: #f25c69;
+  color: #26476c;
   padding: 0;
-  border-bottom: 1px solid #f25c69;
+  border-bottom: 1px solid #26476c;
   margin: 0 0 0.2em 0;
   font-weight: bold;
   font-size: 120%;
@@ -57,22 +56,22 @@
 }
 
 #navinner a:link, #navinner a:visited {
-  color: #736667;
+  color: #26476c;
   text-decoration: none;
 }
 
 #navinner a:active {
-  color: #f25c69;
+  color: #26476c;
   text-decoration: none;
 }
 
 #navinner a:hover {
-  color: #f25c69;
+  color: #26476c;
   text-decoration: none;
 }
 
 #navinner a.selected {
-  color: #f25c69 !important;
+  color: #26476c !important;
   font-weight: bold;
 }
 
@@ -83,7 +82,7 @@
   margin: 0 27% 0 0;
   background-color: white;
   border: 1px solid white;
-  font-size: 90%;
+  x-font-size: 90%;
 }
 
 #maininner {
@@ -92,19 +91,16 @@
 }
 
 #maininner h2 {
-  color: #f25c69;
+  color: #26476c;
   margin-top: 0;
-  padding: 0.5em;
+  padding: 0 0 0.5em 0;
   font-weight: bold;
-  font-size: 150%;
-  background-color: #f2d7da;
-  -moz-border-radius: 0.5em;
-  -webkit-border-radius: 0.5em;
+  font-size: 160%;
 }
 
 #maininner h3 {
   color: black;
-  font-size: 140%;
+  font-size: 130%;
   padding: 0.1em 0;
 }
 
@@ -119,7 +115,7 @@
 }
 
 #maininner a:link {
-  color: #f25c69;
+  color: #26476c;
 }
 
 #maininner a:visited {
@@ -282,17 +278,6 @@ a.upconversionExample {
   border: 1px solid #dddddd;
   -moz-border-radius: 0.3em;
   -webkit-border-radius: 0.3em;
-}
-
-/************************************************************/
-
-/* Override setting in main stylesheet */
-#copyright {
-  background-color: white;
-  border-top: 1px dotted #f2d7da;
-  margin-top: 0;
-  padding-top: 1em;
-  font-size: smaller;
 }
 
 #maincontent li {
