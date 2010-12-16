@@ -15,8 +15,7 @@ body {
   margin: 0;
   padding: 0;
   color: black;
-  background-image: url(images/centralsitebg.gif);
-  background-repeat: repeat-x;
+  background: white url(images/centralsitebg.gif) repeat-x;
 }
 
 /* (Style for IE<=6) */
