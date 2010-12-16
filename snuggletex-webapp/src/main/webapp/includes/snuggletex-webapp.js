@@ -16,7 +16,7 @@ var popup = null;
 
 jQuery(document).ready(function() {
     /* Attach handlers to dialog popups links for example links */
-    jQuery(".dialog").bind("click", function(event) {
+    jQuery(".dialog").bind("click", function() {
         var latexInput = this.getAttribute('title');
         var popup = jQuery("#popup");
         popup.load(this.href + " .exampleResult", null, function() {
@@ -24,7 +24,7 @@ jQuery(document).ready(function() {
             popup.dialog({
                 title: 'Example: ' + latexInput,
                 width: 600,
-                height: 400,
+                height: 400
             });
         });
         return false;
