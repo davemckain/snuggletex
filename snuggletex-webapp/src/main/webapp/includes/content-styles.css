@@ -23,8 +23,7 @@ body {
 /* Paragraph styles */
 p {
   font-size: 100%; /* 13px*/
-  margin-bottom: 0.5em;
-  margin-top: 0.5em;
+  margin: 1em 0;
 }
 
 /* List Styles */
