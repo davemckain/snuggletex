@@ -100,10 +100,11 @@ a:hover {
 /* Global Navigation Tabs (top right) */
 
 #GlobalNav {
+  position: absolute;
+  right: 0;
+  top: 0;
   background-color: #25476C;
   font-size: 85%; /* 11px*/
-  float: right;
-  width: 360px;
   text-align: right;
 }
 

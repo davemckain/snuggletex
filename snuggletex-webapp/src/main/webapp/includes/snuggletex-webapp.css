@@ -7,7 +7,7 @@
 #contentArea {
   padding: 0;
   margin: 0;
-  background-color: #cad8e5;
+  background: url(images/background-gradient.png) repeat-y center right;
   font-family: Arial, Helvetica, Sans-Serif;
 }
 
@@ -19,12 +19,12 @@
 
 #navigation {
   float: right;
-  width: 27%;
-  background-color: #cad8e5;
+  width: 290px;
+  background: url(images/background-gradient.png) repeat-y center right;
 }
 
 #navinner {
-  padding: 20px 16px 0 16px;
+  padding: 20px 16px 0 20px;
 }
 
 #navinner h2 {
@@ -79,14 +79,12 @@
 /************************************************************/
 
 #maincontent {
-  margin: 0 27% 0 0;
-  background-color: white;
-  x-background: white url(images/white-to-cad8e5.png) center right repeat-y;
-  background: white;
+  margin: 0 280px 0 0;
 }
 
 #maininner {
-  padding: 20px 16px 40px 16px;
+  padding: 20px 20px 40px 20px;
+  margin: 1px;
   overflow-x: auto;
 }
 
@@ -130,6 +128,10 @@
 }
 
 #maininner p {
+  margin: 1em 0;
+}
+
+#maininner li {
   margin: 1em 0;
 }
 
@@ -272,6 +274,7 @@ blockquote {
 
 .ui-dialog .ui-dialog-content {
   padding: 0 !important;
+  font-size: small;
 }
 
 .ui-tabs .ui-tabs-nav li {
@@ -290,9 +293,4 @@ a.upconversionExample {
   border: 1px solid #dddddd;
   -moz-border-radius: 0.5em;
   -webkit-border-radius: 0.5em;
-}
-
-#maincontent li {
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
