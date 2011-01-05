@@ -19,11 +19,11 @@ import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
+import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommand;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedCommandOrEnvironment;
 import uk.ac.ed.ph.snuggletex.definitions.UserDefinedEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument.SourceContext;
 import uk.ac.ed.ph.snuggletex.internal.util.ArrayListStack;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
@@ -34,6 +34,7 @@ import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 import uk.ac.ed.ph.snuggletex.tokens.MathCharacterToken;
+import uk.ac.ed.ph.snuggletex.tokens.RootToken;
 import uk.ac.ed.ph.snuggletex.tokens.SimpleToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
 import uk.ac.ed.ph.snuggletex.tokens.TokenType;
@@ -301,7 +302,7 @@ public final class LaTeXTokeniser {
      * Tokenises the input specified by the given {@link SnuggleInputReader}, returning an
      * {@link ArgumentContainerToken} containing the roots of the parsed token tree.
      */
-    public ArgumentContainerToken tokenise(final SnuggleInputReader reader)
+    public RootToken tokenise(final SnuggleInputReader reader)
             throws SnuggleParseException, IOException {
         /* Reset state (should already be clean) */
         reset();
@@ -320,8 +321,7 @@ public final class LaTeXTokeniser {
             }
 
             /* That's it! Simply reset state and return the tokens that have been accrued */
-            return new ArgumentContainerToken(workingDocument.freezeSlice(0, workingDocument.length()),
-                    LaTeXMode.PARAGRAPH, topLevelResult.tokens);
+            return new RootToken(workingDocument, topLevelResult.tokens);
         }
         finally {
             /* Tidy up state for next run */

@@ -16,14 +16,15 @@ import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
+import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.tokens.RootToken;
 import uk.ac.ed.ph.snuggletex.tokens.SimpleToken;
 import uk.ac.ed.ph.snuggletex.tokens.Token;
 import uk.ac.ed.ph.snuggletex.tokens.TokenType;
@@ -51,25 +52,51 @@ public final class TokenFixer {
     
     //-----------------------------------------
 
-    public void fixTokenTree(ArgumentContainerToken token) throws SnuggleParseException {
-        visitBranch(token);
+    public void fixTokenTree(RootToken rootToken) throws SnuggleParseException {
+        visitSiblings(rootToken, rootToken.getContents());
     }
     
     //-----------------------------------------
     
-    private void visitBranch(Token rootToken) throws SnuggleParseException {
+    private void visitSiblings(Token parent, List<FlowToken> content) throws SnuggleParseException {
+        /* Handle content as appropriate for the current mode */
+        switch (parent.getLatexMode()) {
+            case PARAGRAPH:
+                visitSiblingsParagraphMode(parent, content);
+                break;
+                
+            case LR:
+                visitSiblingsLRMode(parent, content);
+                break;
+                
+            case MATH:
+                visitSiblingsMathMode(parent, content);
+                break;
+                
+            case VERBATIM:
+                /* Nothing to do here! */
+                break;
+                
+            default:
+                throw new SnuggleLogicException("Unhandled mode " + parent.getLatexMode());
+        }
+    }
+    
+    //-----------------------------------------
+    
+    private void visitToken(Token startToken) throws SnuggleParseException {
         /* Dive into containers */
-        switch (rootToken.getType()) {
+        switch (startToken.getType()) {
             case ARGUMENT_CONTAINER:
-                visitContainerContent((ArgumentContainerToken) rootToken);
+                visitContainerContent((ArgumentContainerToken) startToken);
                 break;
                 
             case COMMAND:
-                visitCommand((CommandToken) rootToken);
+                visitCommand((CommandToken) startToken);
                 break;
                 
             case ENVIRONMENT:
-                visitEnvironment(((EnvironmentToken) rootToken));
+                visitEnvironment((EnvironmentToken) startToken);
                 break;
                 
             case TEXT_MODE_TEXT:
@@ -77,7 +104,7 @@ public final class TokenFixer {
                 break;
                 
             case BRACE_CONTAINER:
-                visitContainerContent(((BraceContainerToken) rootToken).getBraceContent());
+                visitContainerContent(((BraceContainerToken) startToken).getBraceContent());
                 break;
                 
             case VERBATIM_MODE_TEXT:
@@ -90,15 +117,18 @@ public final class TokenFixer {
                 break;
                 
             case NEW_PARAGRAPH:
-                throw new SnuggleLogicException("Unfixed " + rootToken.getType() + " token: "
-                        + rootToken);
+                throw new SnuggleLogicException("Unfixed " + startToken.getType() + " token: "
+                        + startToken);
                 
             default:
-                throw new SnuggleLogicException("Unhandled type " + rootToken.getType());
+                throw new SnuggleLogicException("Unhandled type " + startToken.getType());
         }
     }
 
     private void visitEnvironment(EnvironmentToken environmentToken) throws SnuggleParseException {
+        /* Compute Styles */
+        /* FIXME: This needs to go here! */
+        
         /* We may do special handling for certain environments */
         BuiltinEnvironment environment = environmentToken.getEnvironment();
         if (environment.hasInterpretation(InterpretationType.LIST)) {
@@ -149,29 +179,10 @@ public final class TokenFixer {
     //-----------------------------------------
     
     private void visitContainerContent(ArgumentContainerToken parent) throws SnuggleParseException {
-        /* Handle content as appropriate for the current mode */
-        List<FlowToken> content = parent.getContents();
-        switch (parent.getLatexMode()) {
-            case PARAGRAPH:
-                visitSiblingsParagraphMode(parent, content);
-                break;
-                
-            case LR:
-                visitSiblingsLRMode(parent, content);
-                break;
-                
-            case MATH:
-                visitSiblingsMathMode(parent, content);
-                break;
-                
-            case VERBATIM:
-                /* Nothing to do here! */
-                break;
-                
-            default:
-                throw new SnuggleLogicException("Unhandled mode " + parent.getLatexMode());
-        }
+        visitSiblings(parent, parent.getContents());
     }
+    
+
     
     //-----------------------------------------
     // PARAGRAPH mode stuff
@@ -186,7 +197,7 @@ public final class TokenFixer {
         stripRedundantWhitespaceTokens(tokens);
         inferParagraphs(tokens);
         for (FlowToken token : tokens) {
-            visitBranch(token);
+            visitToken(token);
         }
     }
     
@@ -361,7 +372,7 @@ public final class TokenFixer {
         groupStyleCommands(parentToken, tokens);
         stripBlocks(tokens);
         for (FlowToken token : tokens) {
-            visitBranch(token);
+            visitToken(token);
         }
     }
     
@@ -543,7 +554,7 @@ public final class TokenFixer {
     //-----------------------------------------
     // MathML stuff
     
-    private void visitSiblingsMathMode(ArgumentContainerToken parentToken, List<FlowToken> tokens)
+    private void visitSiblingsMathMode(Token parentToken, List<FlowToken> tokens)
             throws SnuggleParseException {
         if (tokens.isEmpty()) {
             return;
@@ -579,7 +590,7 @@ public final class TokenFixer {
         
         /* Visit each sub-token */
         for (FlowToken token : tokens) {
-            visitBranch(token);
+            visitToken(token);
         }
     }
     
@@ -610,7 +621,7 @@ public final class TokenFixer {
      * As with LaTeX, we only allow one \over in a single level.
      * @throws SnuggleParseException 
      */
-    private void fixOverInstances(ArgumentContainerToken parentToken, List<FlowToken> tokens) throws SnuggleParseException {
+    private void fixOverInstances(Token parentToken, List<FlowToken> tokens) throws SnuggleParseException {
         int overIndex = -1; /* Will be set to index of \over token, if found */
         FlowToken token;
         for (int i=0; i<tokens.size(); i++) { /* Note: size() may change here */

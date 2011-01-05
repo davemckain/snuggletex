@@ -9,7 +9,7 @@ import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumper;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
+import uk.ac.ed.ph.snuggletex.tokens.RootToken;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
 
 import java.util.List;
@@ -82,16 +82,16 @@ public abstract class AbstractGoodTest {
         
         /* Tokenise */
         LaTeXTokeniser tokeniser = new LaTeXTokeniser(session);
-        ArgumentContainerToken outerToken = tokeniser.tokenise(inputReader);
-        rawDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);
+        RootToken rootToken = tokeniser.tokenise(inputReader);
+        rawDump = ObjectDumper.dumpObject(rootToken, DumpMode.DEEP);
         
         /* Make sure we got no errors */
         checkNoErrors(session);
         
         /* Run token fixer */
         TokenFixer fixer = new TokenFixer(session);
-        fixer.fixTokenTree(outerToken);
-        fixedDump = ObjectDumper.dumpObject(outerToken, DumpMode.DEEP);
+        fixer.fixTokenTree(rootToken);
+        fixedDump = ObjectDumper.dumpObject(rootToken, DumpMode.DEEP);
            
         /* Make sure we have still got no errors */
         checkNoErrors(session);
@@ -103,7 +103,7 @@ public abstract class AbstractGoodTest {
         
         DOMOutputOptions domOptions = createDOMOutputOptions();
         DOMBuildingController domBuildingController = new DOMBuildingController(session, domOptions);
-        domBuildingController.buildDOMSubtree(rootElement, outerToken.getContents());
+        domBuildingController.buildDOMSubtree(rootElement, rootToken.getContents());
            
         /* Make sure we have still got no errors */
         checkNoErrors(session);

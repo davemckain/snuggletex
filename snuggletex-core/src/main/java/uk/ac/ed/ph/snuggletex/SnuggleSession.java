@@ -19,8 +19,8 @@ import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.WebPageBuilder;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
 import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
-import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
+import uk.ac.ed.ph.snuggletex.tokens.RootToken;
 import uk.ac.ed.ph.snuggletex.utilities.SerializationOptions;
 import uk.ac.ed.ph.snuggletex.utilities.StylesheetManager;
 
@@ -214,7 +214,7 @@ public final class SnuggleSession implements SessionContext {
         /* Perform tokenisation, then fix up and store the results */
         try {
             SnuggleInputReader reader = new SnuggleInputReader(this, snuggleInput);
-            ArgumentContainerToken result = tokeniser.tokenise(reader);
+            RootToken result = tokeniser.tokenise(reader);
             tokenFixer.fixTokenTree(result);
             parsedTokens.addAll(result.getContents());
         }

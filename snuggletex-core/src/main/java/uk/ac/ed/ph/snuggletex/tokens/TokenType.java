@@ -18,6 +18,7 @@ package uk.ac.ed.ph.snuggletex.tokens;
 public enum TokenType {
     
     /** Main types, correspond to a subclass of {@link Token} */
+    ROOT,
     ARGUMENT_CONTAINER,
     BRACE_CONTAINER,
     ENVIRONMENT,
