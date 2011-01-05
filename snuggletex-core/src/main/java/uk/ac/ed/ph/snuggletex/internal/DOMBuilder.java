@@ -567,6 +567,10 @@ public final class DOMBuilder {
         return element;
     }
     
+    private String makeSnuggleElementQName(String elementLocalName) {
+        return options.isPrefixingSnuggleXML() ? options.getSnuggleXMLPrefix() + ":" + elementLocalName : elementLocalName;
+    }
+    
     public Element appendXHTMLElement(Element parentElement, String elementLocalName) {
         String qName;
         if (options.isPrefixingXHTML()) {
@@ -988,6 +992,7 @@ public final class DOMBuilder {
             case XML_SHORT:
                 /* Output XML at the current point in the DOM */
                 errorElement = MessageFormatter.formatErrorAsXML(document,
+                        makeSnuggleElementQName("error"),
                         errorToken.getError(),
                         errorOptions==ErrorOutputOptions.XML_FULL);
                 parentElement.appendChild(errorElement);

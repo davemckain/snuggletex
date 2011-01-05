@@ -29,6 +29,7 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -106,13 +107,36 @@ public final class MessageFormatter {
     /**
      * Creates a DOM {@link Element} containing information about the given error, including
      * either just the {@link ErrorCode} or full details.
+     * <p>
+     * The error {@link Element} will have qualified name <tt>error</tt> and belong to the
+     * {@link SnuggleConstants#SNUGGLETEX_NAMESPACE} namespace.
      * 
      * @param ownerDocument {@link Document} that will contain the resulting element.
      * @param error {@link InputError} to format
      * @param fullDetails false if you just want the error code, true for full details.
+     * 
+     * @throws DOMException
      */
     public static Element formatErrorAsXML(Document ownerDocument, InputError error, boolean fullDetails) {
-        Element result = ownerDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, "error");
+        return formatErrorAsXML(ownerDocument, "error", error, fullDetails);
+    }
+    
+    /**
+     * Creates a DOM {@link Element} containing information about the given error, including
+     * either just the {@link ErrorCode} or full details.
+     * <p>
+     * The error {@link Element} will have the given qualified name and belong to the
+     * {@link SnuggleConstants#SNUGGLETEX_NAMESPACE} namespace.
+     * 
+     * @param ownerDocument {@link Document} that will contain the resulting element.
+     * @param errorElementQName Qualified Name for the resulting error message.
+     * @param error {@link InputError} to format
+     * @param fullDetails false if you just want the error code, true for full details.
+     * 
+     * @throws DOMException
+     */
+    public static Element formatErrorAsXML(Document ownerDocument, String errorElementQName, InputError error, boolean fullDetails) {
+        Element result = ownerDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, errorElementQName);
         result.setAttribute("code", error.getErrorCode().getName());
         result.setAttribute("package", error.getErrorCode().getErrorGroup().getPackage().getName());
         
