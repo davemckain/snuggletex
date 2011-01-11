@@ -10,7 +10,7 @@ IMPORTANT NOTE: This stylesheet is NOT intended to be applied to more general
 Content MathML elements as it assumes certain post-conditions of the earlier
 conversion to Content MathML, making life very easy here.
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 TODO: Handle the lack of support for log to base 10 (or indeed other bases)

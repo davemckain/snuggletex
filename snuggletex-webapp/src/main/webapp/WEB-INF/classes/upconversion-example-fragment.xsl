@@ -7,7 +7,7 @@ Formats the mini pages containing up-conversion example results.
 (These are normally loaded using AJAX with most of the content thrown away,
 but we'll generated full pages here anyway as that can be useful.)
 
-Copyright (c) 2010, The University of Edinburgh.
+Copyright (c) 2008-2011, The University of Edinburgh.
 All Rights Reserved
 
 -->

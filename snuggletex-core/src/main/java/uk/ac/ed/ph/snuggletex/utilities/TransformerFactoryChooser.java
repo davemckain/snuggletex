@@ -1,6 +1,6 @@
 /* $Id:XMLFactory.java 2824 2008-08-01 15:46:17Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;

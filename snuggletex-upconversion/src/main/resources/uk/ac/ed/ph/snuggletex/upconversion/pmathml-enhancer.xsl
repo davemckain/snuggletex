@@ -15,7 +15,7 @@ are established.
 
 TODO: <mstyle/> is essentially being treated as neutering its contents... is this a good idea? It's a hard problem to solve in general.
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 -->

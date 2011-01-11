@@ -8,7 +8,7 @@ MathML.
 I've factored this out as we use some of these in both the Presentation
 MathML enrichment stylesheet and the PMathML -> CMathML stylesheet.
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 -->
