@@ -135,7 +135,7 @@ All Rights Reserved
               SnuggleTeX Release <xsl:value-of select="$snuggletex-version"/> &#x2014;
               <a href="{$context-path}/documentation/release-notes.html">Release Notes</a>
               <br />
-              Copyright &#xa9; 2008&#2012;2011
+              Copyright &#xa9; 2008&#x2012;2011
               <a href="http://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
               <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
               <br />
