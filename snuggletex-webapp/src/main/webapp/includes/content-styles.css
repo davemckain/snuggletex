@@ -20,22 +20,18 @@ body {
 
 /* ======================================================================== */
 
-/* Paragraph styles */
 p {
   font-size: 100%; /* 13px*/
   margin: 1em 0;
 }
 
-/* List Styles */
 ul {
-  padding: 0 0 0 15px;
+  padding: 0 0 0 2em;
   list-style: square;
 }
 
-/* h1 + ul {float: left; width: 100%; padding-bottom: 15px;} */
 ol {
-  padding: 0 0 0 15px;
-  margin-left: 5px;
+  padding: 0 0 0 2em;
 }
 
 ul li,
@@ -43,43 +39,49 @@ ol li {
   padding: 0;
 }
 
-/* Heading levels */
 h1 {
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
+  font-style: normal;
   font-size: 167%; /* 22px */
   color: #24476b;
-  width: 100%;
-  font-style: normal;
+  padding: 0;
+  margin: 0.67em 0;
+  font-size: 160%;
 }
 
 h2 {
-  padding-top: 0.5em;
-  padding-bottom: 0.2em;
   font-size: 153.9%; /* 20px */
   color: #24476b;
+  padding: 0;
+  margin: 0.83em 0;
 }
 
 h3 {
-  padding-top: 0.5em;
   font-size: 123.1%; /* 16px */
   color: #24476b;
+  padding: 0;
+  margin: 1em 0;
 }
 
 h4 {
-  padding-top: 0.5em;
   font-size: 108%; /* 14px */
   color: #24476b;
+  padding: 0;
+  margin: 1.33em 0;
 }
 
 h5 {
-  padding-top: 0.25em;
   font-size: 93%; /* 12px */
-  font-weight: bold;
+  padding: 0;
+  margin: 1.67em 0;
 }
 
 h6 {
-  padding-top: 0.25em;
   font-size: 93%; /* 12px */
   font-style: italic;
+  padding: 0;
+  margin: 1.67em 0;
+}
+
+hr {
+  margin: 1em 0;
 }
