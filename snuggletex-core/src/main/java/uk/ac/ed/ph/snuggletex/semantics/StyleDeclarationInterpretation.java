@@ -5,85 +5,59 @@
  */
 package uk.ac.ed.ph.snuggletex.semantics;
 
+import uk.ac.ed.ph.snuggletex.definitions.Command;
+import uk.ac.ed.ph.snuggletex.definitions.Environment;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontFamily;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontSize;
+import uk.ac.ed.ph.snuggletex.internal.StyleEvaluator;
+
 /**
- * Represents styled text in either MATH and/or TEXT Modes.
+ * Represents styled text in either MATH and/or TEXT Modes. {@link Command}s and
+ * {@link Environment}s having this interpretation are removed from the parse tree
+ * by the {@link StyleEvaluator}, so these are somewhat transient.
  * 
  * @author  David McKain
  * @version $Revision:179 $
  */
 public enum StyleDeclarationInterpretation implements TextInterpretation {
 
-    BF("div", "bf", "b",    null, "bold"),
-    RM("div", "rm", "span", "rm", "normal"),
-    EM("div", "em", "em",   null, "italic"),
-    IT("div", "it", "i",    null, "italic"),
-    TT("div", "tt", "tt",   null, "monospace"),
-    SC("div", "sc", "span", "sc", null),
-    SL("div", "sl", "span", "sl", null),
-    SF("div", "sf", "span", "sf", "sans-serif"),
+    BF(FontFamily.BF, null),
+    RM(FontFamily.RM, null),
+    EM(FontFamily.EM, null),
+    IT(FontFamily.IT, null),
+    TT(FontFamily.TT, null),
+    SC(FontFamily.SC, null),
+    SL(FontFamily.SL, null),
+    SF(FontFamily.SF, null),
 
-    TINY("div", "tiny", "span", "tiny", null),
-    SCRIPTSIZE("div", "scriptsize", "span", "scriptsize", null),
-    FOOTNOTESIZE("div", "footnotesize", "span", "footnotesize", null),
-    SMALL("div", "small", "span", "small", null),
-    NORMALSIZE("div", "normalsize", "span", "normalsize", null),
-    LARGE("div", "large", "span", "large", null),
-    LARGE_2("div", "large2", "span", "large2", null),
-    LARGE_3("div", "large3", "span", "large3", null),
-    HUGE("div", "huge", "span", "huge", null),
-    HUGE_2("div", "huge2", "span", "huge2", null),
+    TINY(null, FontSize.TINY),
+    SCRIPTSIZE(null, FontSize.SCRIPTSIZE),
+    FOOTNOTESIZE(null, FontSize.FOOTNOTESIZE),
+    SMALL(null, FontSize.SMALL),
+    NORMALSIZE(null, FontSize.NORMALSIZE),
+    LARGE(null, FontSize.LARGE),
+    LARGE_2(null, FontSize.LARGE_2),
+    LARGE_3(null, FontSize.LARGE_3),
+    HUGE(null, FontSize.HUGE),
+    HUGE_2(null, FontSize.HUGE_2),
 
-    UNDERLINE("div", "underline", "span", "underline", null),
-    
     ;
     
-    /** Name of resulting XHTML block element name */
-    private final String targetBlockXHTMLElementName;
+    private final FontFamily fontFamily;
     
-    /** Name of resulting CSS class for XHTML block elements */
-    private final String targetBlockCSSClassName;
-    
-    /** Name of resulting XHTML inline element name */
-    private final String targetInlineXHTMLElementName;
-    
-    /** Name of resulting CSS class for XHTML inline elements */
-    private final String targetInlineCSSClassName;
-    
-    /** 
-     * Name of 'variant' attribute in resulting MathML <mstyle/> element, if supported, or null
-     * if this style cannot be used in Math mode.
-     */
-    private final String targetMathMLMathVariantName;
-    
-    private StyleDeclarationInterpretation(final String targetBlockXHTMLElementName,
-            final String targetBlockCSSClassName, final String targetInlineXHTMLElementName,
-            final String targetInlineCSSClassName, final String targetMathMLMathVariantName) {
-        this.targetBlockXHTMLElementName = targetBlockXHTMLElementName;
-        this.targetBlockCSSClassName = targetBlockCSSClassName;
-        this.targetInlineXHTMLElementName = targetInlineXHTMLElementName;
-        this.targetInlineCSSClassName = targetInlineCSSClassName;
-        this.targetMathMLMathVariantName = targetMathMLMathVariantName;
+    private final FontSize fontSize;
+
+    private StyleDeclarationInterpretation(final FontFamily fontFamily, final FontSize fontSize) {
+        this.fontFamily = fontFamily;
+        this.fontSize = fontSize;
     }
     
-    public String getTargetBlockXHTMLElementName() {
-        return targetBlockXHTMLElementName;
-    }
-    
-    public String getTargetBlockCSSClassName() {
-        return targetBlockCSSClassName;
+    public FontFamily getFontFamily() {
+        return fontFamily;
     }
 
-
-    public String getTargetInlineXHTMLElementName() {
-        return targetInlineXHTMLElementName;
-    }
-    
-    public String getTargetInlineCSSClassName() {
-        return targetInlineCSSClassName;
-    }
-
-    public String getTargetMathMLMathVariantName() {
-        return targetMathMLMathVariantName;
+    public FontSize getFontSize() {
+        return fontSize;
     }
 
     public InterpretationType getType() {

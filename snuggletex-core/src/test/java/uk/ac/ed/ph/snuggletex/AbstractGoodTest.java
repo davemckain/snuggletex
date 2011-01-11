@@ -5,6 +5,8 @@ import uk.ac.ed.ph.snuggletex.internal.DOMBuildingController;
 import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser;
 import uk.ac.ed.ph.snuggletex.internal.SessionContext;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleInputReader;
+import uk.ac.ed.ph.snuggletex.internal.StyleEvaluator;
+import uk.ac.ed.ph.snuggletex.internal.StyleRebuilder;
 import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
 import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumper;
@@ -33,7 +35,9 @@ public abstract class AbstractGoodTest {
     protected final String inputLaTeX;
     
     protected String rawDump = null;
+    protected String styledDump = null;
     protected String fixedDump = null;
+    protected String rebuiltDump = null;
     
     /**
      * Subclasses should call this to initialise {@link #inputLaTeX} as appropriate.
@@ -88,10 +92,20 @@ public abstract class AbstractGoodTest {
         /* Make sure we got no errors */
         checkNoErrors(session);
         
+        /* Evaluate styles */
+        StyleEvaluator styleEvaluator = new StyleEvaluator(session);
+        styleEvaluator.evaluateStyles(rootToken);
+        styledDump = ObjectDumper.dumpObject(rootToken, DumpMode.DEEP);
+        
         /* Run token fixer */
         TokenFixer fixer = new TokenFixer(session);
         fixer.fixTokenTree(rootToken);
         fixedDump = ObjectDumper.dumpObject(rootToken, DumpMode.DEEP);
+        
+        /* Rebuild styles */
+        StyleRebuilder styleRebuilder = new StyleRebuilder(session);
+        styleRebuilder.rebuildStyles(rootToken);
+        rebuiltDump = ObjectDumper.dumpObject(rootToken, DumpMode.DEEP);
            
         /* Make sure we have still got no errors */
         checkNoErrors(session);

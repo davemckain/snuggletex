@@ -412,9 +412,11 @@ a\not|b
 \textrm{ }
 <mstyle mathvariant="normal"><mspace width="1ex"/></mstyle>
 ====
-## Regression: empty \textrm generated empty <mstyle/> until 1.2.0. Now replaced with empty <mrow/>
-\textrm{}
-<mrow/>
+## Regression: empty \textrm generated empty <mstyle/> until 1.2.0.
+## Was replaced with empty <mrow/> in 1.2.1,
+## then nothing at all in 1.3.0
+x\textrm{}
+<mi>x</mi>
 ====
 \mbox{\mbox{A}}
 <mrow><mrow><mtext>A</mtext></mrow></mrow>

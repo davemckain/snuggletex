@@ -120,7 +120,7 @@ public final class SessionConfiguration implements Cloneable {
     public void setNumberMatcher(NumberMatcher numberMatcher) {
         this.numberMatcher = numberMatcher;
     }
-
+    
 
     @Override
     public Object clone() {

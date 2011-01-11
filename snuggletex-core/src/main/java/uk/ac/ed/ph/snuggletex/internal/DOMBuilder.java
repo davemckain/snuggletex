@@ -6,18 +6,20 @@
 package uk.ac.ed.ph.snuggletex.internal;
 
 import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.InputError;
 import uk.ac.ed.ph.snuggletex.LinkResolver;
 import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
-import uk.ac.ed.ph.snuggletex.DOMOutputOptions.ErrorOutputOptions;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
-import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontFamily;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontSize;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayHandler;
@@ -31,7 +33,6 @@ import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
-import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
@@ -115,6 +116,8 @@ public final class DOMBuilder {
     /** Stack of active {@link MathVariantMap}s. */
     private final ArrayListStack<MathVariantMap> mathVariantMapStack;
     
+    private final ArrayListStack<ComputedStyle> textStyleStack;
+    
     //-------------------------------------------
     
     public DOMBuilder(final SessionContext sessionContext, final Element buildRootElement,
@@ -127,6 +130,7 @@ public final class DOMBuilder {
         this.currentInlineCSSProperties = null;
         this.outputContextStack = new ArrayListStack<OutputContext>();
         this.mathVariantMapStack = new ArrayListStack<MathVariantMap>();
+        this.textStyleStack = new ArrayListStack<ComputedStyle>();
     }
     
     //-------------------------------------------
@@ -144,10 +148,13 @@ public final class DOMBuilder {
         /* Reset state */
         outputContextStack.clear();
         mathVariantMapStack.clear();
+        textStyleStack.clear();
         
         /* Do work */
         outputContextStack.push(OutputContext.XHTML);
+        textStyleStack.push(ComputedStyle.DEFAULT_STYLE);
         handleTokens(buildRootElement, fixedTokens, true);
+        textStyleStack.pop();
         outputContextStack.pop();
         
         /* Perform state sanity check at end */
@@ -156,6 +163,9 @@ public final class DOMBuilder {
         }
         if (!outputContextStack.isEmpty()) {
             throw new SnuggleLogicException("outputContextStack was non-empty at end of DOM building process");
+        }
+        if (!textStyleStack.isEmpty()) {
+            throw new SnuggleLogicException("textStyleStack was non-empty at end of DOM building process");
         }
     }
     
@@ -277,32 +287,6 @@ public final class DOMBuilder {
             
             /* Complex Tokens */
             
-            case BRACE_CONTAINER:
-                /* Create an appropriate content container */
-                BraceContainerToken braceToken = (BraceContainerToken) token;
-                ArgumentContainerToken content = braceToken.getBraceContent();
-                Element container = null;
-                if (braceToken.getLatexMode()==LaTeXMode.MATH) {
-                    container = appendMathMLElement(parentElement, "mrow");
-                }
-                else {
-                    container = appendXHTMLElement(parentElement, "span");
-                }
-                
-                /* Handle the children of this token */
-                handleTokens(container, content, true);
-                
-                /* If we only added one child, we'll remove from the container and add directly
-                 * to the tree instead.
-                 */
-                NodeList childNodes = container.getChildNodes();
-                if (childNodes.getLength()==1) {
-                    Node singleNode = childNodes.item(0);
-                    parentElement.removeChild(container);
-                    parentElement.appendChild(singleNode);
-                }
-                break;
-                
             case COMMAND:
                 /* Each command has its own builder instance to do the work here */
                 CommandToken commandToken = (CommandToken) token;
@@ -714,6 +698,63 @@ public final class DOMBuilder {
             }
         }
     }
+    
+    //-------------------------------------------
+    
+    public Element openStyle(Element parentElement, ComputedStyle newStyle, boolean hasBlockContent, boolean hasEmptyContent) {
+        Element builderElement = parentElement; /* Default if we can't do any sensible styling */
+        if (isBuildingMathMLIsland()) {
+            /* We're doing MathML. We create an <mstyle/> element, but only if we can reasonably
+             * handle this style.
+             * 
+             * NB: Currently we only support setting font family styles.
+             * 
+             * Note: Even though there is no \mathsc{...}, we can legally end up here if doing
+             * something like \mbox{\sc ....} so we'll ignore unsupported stylings, rather than
+             * failing.
+             * 
+             * Regression Note: If the content is truly empty, we'll generate an empty <mrow/>
+             * instead of an empty <mstyle/>
+             */
+            String mathVariantName = newStyle.getFontFamily().getTargetMathMLMathVariantName();
+            if (mathVariantName!=null && !hasEmptyContent) {
+                builderElement = appendMathMLElement(builderElement, "mstyle");
+                builderElement.setAttribute("mathvariant", mathVariantName);
+            }
+            else {
+                builderElement = appendMathMLElement(builderElement, "mrow");
+            }
+        }
+        else {
+            /* We're doing XHTML */
+            
+            /* Adjust font size if required */
+            ComputedStyle currentTextStyle = textStyleStack.peek();
+            FontSize newFontSize = newStyle.getFontSize();
+            if (newFontSize!=currentTextStyle.getFontSize()) {
+                builderElement = appendXHTMLElement(builderElement, hasBlockContent ? "div" : "span");
+                applyCSSStyle(builderElement, newFontSize.getTargetCSSClassName());
+            }
+            
+            /* Adjust font family if required */
+            FontFamily newFontFamily = newStyle.getFontFamily();
+            if (newFontFamily!=currentTextStyle.getFontFamily()) {
+                String elementName = hasBlockContent ? newFontFamily.getTargetBlockXHTMLElementName() : newFontFamily.getTargetInlineXHTMLElementName();
+                String cssClassName = hasBlockContent ? newFontFamily.getTargetBlockCSSClassName() : newFontFamily.getTargetInlineCSSClassName();
+                builderElement = appendXHTMLElement(builderElement, elementName);
+                if (cssClassName!=null) {
+                    applyCSSStyle(builderElement, cssClassName);
+                }
+            }
+        }
+        textStyleStack.push(newStyle);
+        return builderElement;
+    }
+    
+    public ComputedStyle closeStyle() {
+        return textStyleStack.pop();
+    }
+    
     
     //-------------------------------------------
     

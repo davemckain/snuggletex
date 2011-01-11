@@ -9,7 +9,7 @@ import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 /**
- * FIXME: Document this type!
+ * Represents a mathematical character
  *
  * @author  David McKain
  * @version $Revision$

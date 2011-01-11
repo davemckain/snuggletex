@@ -5,7 +5,6 @@
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
-import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
 import uk.ac.ed.ph.snuggletex.internal.SnuggleParseException;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
@@ -33,7 +32,7 @@ public final class ModeDelegatingHandler implements CommandHandler {
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
-        if (token.getLatexMode()==LaTeXMode.MATH) {
+        if (builder.isBuildingMathMLIsland()) {
             mathModeBuilder.handleCommand(builder, parentElement, token);
         }
         else {

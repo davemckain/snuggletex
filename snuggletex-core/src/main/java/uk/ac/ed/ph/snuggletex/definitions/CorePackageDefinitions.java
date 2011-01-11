@@ -50,8 +50,9 @@ import uk.ac.ed.ph.snuggletex.dombuilding.ParagraphHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.SetVarHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.SimpleXHTMLContainerBuildingHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.SpaceHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.StyleInterpretationHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.StyleHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.TabularHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.TextClassHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.TextSafeInterpretableMathIdentifierHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.UnitsHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.VerbatimHandler;
@@ -63,10 +64,10 @@ import uk.ac.ed.ph.snuggletex.dombuilding.XMLUnparseHandler;
 import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.util.MissingResourceException;
@@ -133,6 +134,7 @@ public final class CorePackageDefinitions {
     public static BuiltinEnvironment ENV_MATH;
     public static BuiltinEnvironment ENV_DISPLAYMATH;
     public static BuiltinEnvironment ENV_BRACKETED;
+    public static BuiltinEnvironment ENV_STYLE;
     
     private static final SnugglePackage corePackage;
 
@@ -153,6 +155,11 @@ public final class CorePackageDefinitions {
         catch (MissingResourceException e) {
             throw new SnuggleRuntimeException(e);
         }
+        
+        /* We'll sometimes need a 'null' handler for special commands/envs with corresponding
+         * special functionality
+         */
+        DoNothingHandler doNothingHandler = new DoNothingHandler();
         
         /* ======================= MATH CHARACTERS & INPUT MACROS ============================== */
         
@@ -263,14 +270,14 @@ public final class CorePackageDefinitions {
          * As of 1.0.0-beta4, these are supported in MATH mode and behave in the same way as
          * the corresponding member of \mathxx{..} command family (defined below).
          */
-        corePackage.addSimpleCommand("em", ALL_MODES, StyleDeclarationInterpretation.EM, null, null);
-        corePackage.addSimpleCommand("bf", ALL_MODES, StyleDeclarationInterpretation.BF, null, null);
-        corePackage.addSimpleCommand("rm", ALL_MODES, StyleDeclarationInterpretation.RM, null, null);
-        corePackage.addSimpleCommand("it", ALL_MODES, StyleDeclarationInterpretation.IT, null, null);
-        corePackage.addSimpleCommand("tt", ALL_MODES, StyleDeclarationInterpretation.TT, null, null);
-        corePackage.addSimpleCommand("sc", ALL_MODES, StyleDeclarationInterpretation.SC, null, null);
-        corePackage.addSimpleCommand("sl", ALL_MODES, StyleDeclarationInterpretation.SL, null, null);
-        corePackage.addSimpleCommand("sf", ALL_MODES, StyleDeclarationInterpretation.SF, null, null);
+        corePackage.addSimpleCommand("em", ALL_MODES, StyleDeclarationInterpretation.EM, doNothingHandler, null);
+        corePackage.addSimpleCommand("bf", ALL_MODES, StyleDeclarationInterpretation.BF, doNothingHandler, null);
+        corePackage.addSimpleCommand("rm", ALL_MODES, StyleDeclarationInterpretation.RM, doNothingHandler, null);
+        corePackage.addSimpleCommand("it", ALL_MODES, StyleDeclarationInterpretation.IT, doNothingHandler, null);
+        corePackage.addSimpleCommand("tt", ALL_MODES, StyleDeclarationInterpretation.TT, doNothingHandler, null);
+        corePackage.addSimpleCommand("sc", ALL_MODES, StyleDeclarationInterpretation.SC, doNothingHandler, null);
+        corePackage.addSimpleCommand("sl", ALL_MODES, StyleDeclarationInterpretation.SL, doNothingHandler, null);
+        corePackage.addSimpleCommand("sf", ALL_MODES, StyleDeclarationInterpretation.SF, doNothingHandler, null);
         
         /* New style P/LR mode style change macros. These take the text they are being applied to
          * as a single argument.
@@ -279,29 +286,28 @@ public final class CorePackageDefinitions {
          * into LR mode here so that the resulting content will end up inside <mtext/>
          * element(s) wrapped inside a <mstyle/> setting the appropriate style.
          */
-        StyleInterpretationHandler styleInterpretationNodeBuilder = new StyleInterpretationHandler(); /* (Stateless so can share) */
-        corePackage.addComplexCommandOneArg("textrm", false, ALL_MODES, LR, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textsf", false, ALL_MODES, LR, StyleDeclarationInterpretation.SF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textit", false, ALL_MODES, LR, StyleDeclarationInterpretation.IT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textsl", false, ALL_MODES, LR, StyleDeclarationInterpretation.SL, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textsc", false, ALL_MODES, LR, StyleDeclarationInterpretation.SC, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("textbf", false, ALL_MODES, LR, StyleDeclarationInterpretation.BF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("texttt", false, ALL_MODES, LR, StyleDeclarationInterpretation.TT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandOneArg("emph",   false, ALL_MODES, LR, StyleDeclarationInterpretation.EM, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textrm", false, ALL_MODES, LR, StyleDeclarationInterpretation.RM, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textsf", false, ALL_MODES, LR, StyleDeclarationInterpretation.SF, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textit", false, ALL_MODES, LR, StyleDeclarationInterpretation.IT, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textsl", false, ALL_MODES, LR, StyleDeclarationInterpretation.SL, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textsc", false, ALL_MODES, LR, StyleDeclarationInterpretation.SC, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("textbf", false, ALL_MODES, LR, StyleDeclarationInterpretation.BF, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("texttt", false, ALL_MODES, LR, StyleDeclarationInterpretation.TT, null, ALLOW_INLINE);
+        corePackage.addComplexCommandOneArg("emph",   false, ALL_MODES, LR, StyleDeclarationInterpretation.EM, null, ALLOW_INLINE);
         
         /* Text size control macros. As above, these are converted to environments of the same name
          * during token fixing, which are easier to deal with.
          */
-        corePackage.addSimpleCommand("tiny", TEXT_MODE_ONLY, StyleDeclarationInterpretation.TINY, null, null);
-        corePackage.addSimpleCommand("scriptsize", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SCRIPTSIZE, null, null);
-        corePackage.addSimpleCommand("footnotesize", TEXT_MODE_ONLY, StyleDeclarationInterpretation.FOOTNOTESIZE, null, null);
-        corePackage.addSimpleCommand("small", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SMALL, null, null);
-        corePackage.addSimpleCommand("normalsize", TEXT_MODE_ONLY, StyleDeclarationInterpretation.NORMALSIZE, null, null);
-        corePackage.addSimpleCommand("large", TEXT_MODE_ONLY, StyleDeclarationInterpretation.LARGE, null, null);
-        corePackage.addSimpleCommand("Large", TEXT_MODE_ONLY, StyleDeclarationInterpretation.LARGE_2, null, null);
-        corePackage.addSimpleCommand("LARGE", TEXT_MODE_ONLY, StyleDeclarationInterpretation.LARGE_3, null, null);
-        corePackage.addSimpleCommand("huge", TEXT_MODE_ONLY, StyleDeclarationInterpretation.HUGE, null, null);
-        corePackage.addSimpleCommand("Huge", TEXT_MODE_ONLY, StyleDeclarationInterpretation.HUGE_2, null, null);
+        corePackage.addSimpleCommand("tiny", TEXT_MODE_ONLY, StyleDeclarationInterpretation.TINY, doNothingHandler, null);
+        corePackage.addSimpleCommand("scriptsize", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SCRIPTSIZE, doNothingHandler, null);
+        corePackage.addSimpleCommand("footnotesize", TEXT_MODE_ONLY, StyleDeclarationInterpretation.FOOTNOTESIZE, doNothingHandler, null);
+        corePackage.addSimpleCommand("small", TEXT_MODE_ONLY, StyleDeclarationInterpretation.SMALL, doNothingHandler, null);
+        corePackage.addSimpleCommand("normalsize", TEXT_MODE_ONLY, StyleDeclarationInterpretation.NORMALSIZE, doNothingHandler, null);
+        corePackage.addSimpleCommand("large", TEXT_MODE_ONLY, StyleDeclarationInterpretation.LARGE, doNothingHandler, null);
+        corePackage.addSimpleCommand("Large", TEXT_MODE_ONLY, StyleDeclarationInterpretation.LARGE_2, doNothingHandler, null);
+        corePackage.addSimpleCommand("LARGE", TEXT_MODE_ONLY, StyleDeclarationInterpretation.LARGE_3, doNothingHandler, null);
+        corePackage.addSimpleCommand("huge", TEXT_MODE_ONLY, StyleDeclarationInterpretation.HUGE, doNothingHandler, null);
+        corePackage.addSimpleCommand("Huge", TEXT_MODE_ONLY, StyleDeclarationInterpretation.HUGE_2, doNothingHandler, null);
         
         /* Non-English symbols (non-math, simple) See Table 3.2, p.39 on LaTeX companion */
         corePackage.addSimpleCommand("ae", TEXT_MODE_ONLY, new CharacterCommandHandler("\u00e6"), ALLOW_INLINE);
@@ -340,11 +346,11 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelHandler(), null);
         
         /* Styling (c.f. equivalents in text mode, listed above) */
-        corePackage.addComplexCommandSameArgMode("mathrm", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandSameArgMode("mathsf", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.SF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandSameArgMode("mathit", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.IT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandSameArgMode("mathbf", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.BF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addComplexCommandSameArgMode("mathtt", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.TT, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addComplexCommandSameArgMode("mathrm", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.RM, null, ALLOW_INLINE);
+        corePackage.addComplexCommandSameArgMode("mathsf", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.SF, null, ALLOW_INLINE);
+        corePackage.addComplexCommandSameArgMode("mathit", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.IT, null, ALLOW_INLINE);
+        corePackage.addComplexCommandSameArgMode("mathbf", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.BF, null, ALLOW_INLINE);
+        corePackage.addComplexCommandSameArgMode("mathtt", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.TT, null, ALLOW_INLINE);
         
         /* Styling done via character mappings (e.g. calligraphic) */
         corePackage.addComplexCommandSameArgMode("mathcal", false, 1, MATH_MODE_ONLY, new MathVariantMapHandler(MathVariantMaps.SCRIPT), null);
@@ -396,7 +402,7 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommandSameArgMode("overleftarrow", false, 1, MATH_MODE_ONLY, new AccentHandler(null, '\u20d6', "mover"), null);
         
         /* Dual-mode accents */
-        corePackage.addComplexCommandSameArgMode("underline", false, 1, ALL_MODES, StyleDeclarationInterpretation.UNDERLINE, new ModeDelegatingHandler(styleInterpretationNodeBuilder, new AccentHandler(null, '\u00af', "munder")), null);
+        corePackage.addComplexCommandSameArgMode("underline", false, 1, ALL_MODES, null, new ModeDelegatingHandler(new TextClassHandler("underline"), new AccentHandler(null, '\u00af', "munder")), null);
         
         /* Complex multi-mode macros */
         corePackage.addComplexCommandOneArg("mbox", false, ALL_MODES, LR, new BoxHandler("mbox"), null);
@@ -406,7 +412,7 @@ public final class CorePackageDefinitions {
         CMD_HLINE = corePackage.addSimpleCommand("hline", ALL_MODES, new TabularHandler(), IGNORE);
         
         /* Commands for creating user-defined commands and environments */
-        DoNothingHandler doNothingHandler = new DoNothingHandler();
+
         CMD_NEWCOMMAND = corePackage.addComplexCommandSameArgMode("newcommand", false, 1, ALL_MODES, doNothingHandler, IGNORE);
         CMD_RENEWCOMMAND = corePackage.addComplexCommandSameArgMode("renewcommand", false, 1, ALL_MODES, doNothingHandler, IGNORE);
         CMD_NEWENVIRONMENT = corePackage.addComplexCommandSameArgMode("newenvironment", false, 2, ALL_MODES, doNothingHandler, IGNORE);
@@ -468,25 +474,25 @@ public final class CorePackageDefinitions {
         /* Alternative versions of \em and friends. These are converted internally to
          * environments as they're easier to deal with like that.
          */
-        corePackage.addEnvironment("em", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.EM, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("bf", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.BF, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("rm", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("it", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.IT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("tt", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.TT, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("sc", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SC, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("sl", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SL, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("sf", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SF, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addEnvironment("em", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.EM, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("bf", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.BF, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("rm", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.RM, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("it", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.IT, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("tt", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.TT, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("sc", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SC, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("sl", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SL, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("sf", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SF, doNothingHandler, ALLOW_INLINE);
         
-        corePackage.addEnvironment("tiny", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.TINY, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("scriptsize", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SCRIPTSIZE, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("footnotesize", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.FOOTNOTESIZE, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("small", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SMALL, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("normalsize", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.NORMALSIZE, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("large", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.LARGE, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("Large", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.LARGE_2, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("LARGE", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.LARGE_3, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE, styleInterpretationNodeBuilder, ALLOW_INLINE);
-        corePackage.addEnvironment("Huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE_2, styleInterpretationNodeBuilder, ALLOW_INLINE);
+        corePackage.addEnvironment("tiny", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.TINY, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("scriptsize", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SCRIPTSIZE, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("footnotesize", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.FOOTNOTESIZE, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("small", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.SMALL, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("normalsize", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.NORMALSIZE, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("large", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.LARGE, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("Large", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.LARGE_2, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("LARGE", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.LARGE_3, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE, doNothingHandler, ALLOW_INLINE);
+        corePackage.addEnvironment("Huge", TEXT_MODE_ONLY, null, StyleDeclarationInterpretation.HUGE_2, doNothingHandler, ALLOW_INLINE);
         
         /* Special internal environment for enclosing content within two brackets. These are
          * inferred during token fixing, also handling the case where an opener or closer is missing.
@@ -497,6 +503,9 @@ public final class CorePackageDefinitions {
          */
         ENV_BRACKETED = corePackage.addEnvironment("<mfenced>", false, 2, MATH_MODE_ONLY, MATH, null, new MathFenceHandler(), null);
 
+        /* Special internal environment delimiting content to be rendered with a specific style */
+        ENV_STYLE = corePackage.addEnvironment("<style>", ALL_MODES, null, null, new StyleHandler(), ALLOW_INLINE);
+        
         /* Environments for generating custom XML islands (see corresponding command versions as well) */
         corePackage.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, null, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
         corePackage.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, null, new XMLInlineElementHandler(), ALLOW_INLINE);

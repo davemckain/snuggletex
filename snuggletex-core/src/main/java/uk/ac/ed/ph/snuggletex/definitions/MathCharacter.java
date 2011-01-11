@@ -17,7 +17,7 @@ import uk.ac.ed.ph.snuggletex.semantics.MathCharacterInterpretation;
 import java.util.EnumMap;
 
 /**
- * FIXME: Document this type!
+ * Represents a mathematical character.
  *
  * @author  David McKain
  * @version $Revision$

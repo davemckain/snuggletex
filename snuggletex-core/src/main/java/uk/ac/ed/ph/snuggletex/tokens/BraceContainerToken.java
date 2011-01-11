@@ -7,26 +7,38 @@ package uk.ac.ed.ph.snuggletex.tokens;
 
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.internal.FrozenSlice;
+import uk.ac.ed.ph.snuggletex.internal.TokenFixer;
+import uk.ac.ed.ph.snuggletex.internal.util.DumpMode;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectDumperOptions;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Represents a literal braced section the incoming LaTeX document, i.e. something like
+ * Represents a literal braced section in the original LaTeX document, i.e. something like
  * <tt>{ ... }</tt>.
  * <p>
- * Its content is represented by a single {@link ArgumentContainerToken}.
+ * All instances of these tokens will have disappeared once the {@link TokenFixer} has run.
  *
  * @author  David McKain
  * @version $Revision$
  */
-public final class BraceContainerToken extends FlowToken {
+public final class BraceContainerToken extends FlowToken implements Iterable<FlowToken>  {
     
-    private final ArgumentContainerToken braceContent;
+    private final List<FlowToken> contents;
 
-    public BraceContainerToken(FrozenSlice slice, LaTeXMode latexMode, ArgumentContainerToken braceContent) {
+    public BraceContainerToken(final FrozenSlice slice, final LaTeXMode latexMode,
+            final List<FlowToken> contents) {
         super(slice, TokenType.BRACE_CONTAINER, latexMode, null);
-        this.braceContent = braceContent;
+        this.contents = contents;
     }
 
-    public ArgumentContainerToken getBraceContent() {
-        return braceContent;
+    @ObjectDumperOptions(DumpMode.DEEP)
+    public List<FlowToken> getContents() {
+        return contents;
+    }
+    
+    public Iterator<FlowToken> iterator() {
+        return contents.iterator();
     }
 }

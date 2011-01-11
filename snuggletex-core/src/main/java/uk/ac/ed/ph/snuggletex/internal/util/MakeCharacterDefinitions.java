@@ -3,9 +3,7 @@
  * Copyright (c) 2010, The University of Edinburgh.
  * All Rights Reserved
  */
-package uk.ac.ed.ph.snuggletex.internal.codegen;
-
-import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
+package uk.ac.ed.ph.snuggletex.internal.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,20 +17,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * FIXME: Document this type!
+ * This is used during the build process to create the SnuggleTeX <tt>all-math-characters.txt</tt>
+ * from the <tt>unicode-math-table.tex</tt> from the <tt>unicode-math</tt> LaTeX package.
  *
  * @author  David McKain
  * @version $Revision$
  */
 public final class MakeCharacterDefinitions {
     
-    private static final String CHARACTER_DATA_FILE = "snuggletex-core/src/main/resources/uk/ac/ed/ph/snuggletex/all-math-characters.txt";
-    
     public static void main(String[] args) throws Exception {
-        String fileName = "snuggletex-core/unicode-math-table.tex";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "US-ASCII"));
-        BufferedWriter characterFileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(CHARACTER_DATA_FILE), "US-ASCII"));
-        characterFileWriter.write("# This is generated from " + fileName + " - do not edit!\n");
+        if (args.length!=2) {
+            throw new IllegalArgumentException("The unicode-math-table.tex input and all-math-characters.txt output text files must both be provided");
+        }
+        String inputFile = args[0];
+        String outputFile = args[1];
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "US-ASCII"));
+        BufferedWriter characterFileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "US-ASCII"));
+        characterFileWriter.write("# This was generated from " + inputFile + " during the SnuggleTeX build - do not edit!\n");
         
         String line;
         Pattern linePattern = Pattern.compile("\\\\UnicodeMathSymbol\\{\"(.{5})\\}\\{\\\\(\\w+)\\s*\\}\\{\\\\(\\w+)\\}");
@@ -77,7 +78,7 @@ public final class MakeCharacterDefinitions {
                 characterFileWriter.write('\n');
             }
             else {
-                throw new SnuggleLogicException("Could not parse line " + line);
+                throw new RuntimeException("Could not parse line " + line);
             }
         }
         reader.close();

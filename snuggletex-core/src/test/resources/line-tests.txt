@@ -442,7 +442,7 @@ x
 <span class="fbox">Hello</span>
 ====
 \Huge This is \small small
-<span class="huge2">This is <span class="small">small</span></span>
+<span class="huge2">This is </span><span class="small">small</span>
 ====
 \textrm{Hello}
 <span class="rm">Hello</span>
@@ -530,8 +530,9 @@ A\setvar[ns]{x}{Hello}\getvar{x}
 A
 ====
 ## Regression: Empty style commands were not being handled correctly before. Silly me!
-{\rm }
-<span class="rm"/>
+## (Note: the result of this changed in 1.3.0.)
+X{\rm }
+X
 ====
 ## Regression: Bug 2801656
 \verb|%|

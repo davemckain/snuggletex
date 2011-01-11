@@ -33,17 +33,17 @@ public final class CommandToken extends FlowToken {
     private final ArgumentContainerToken[] arguments;
     
     /** 
-     * For {@link CommandType#COMBINER}, this returns the token that the command is being
+     * For {@link CommandType#COMBINER}, this returns the token(s) that the command is being
      * combined with.
      */
-    private final FlowToken combinerTarget;
+    private final ArgumentContainerToken combinerTarget;
     
     public CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command) {
         this(slice, latexMode, command, null, null, null);
     }
     
     public CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command,
-            final FlowToken combinerTarget) {
+            final ArgumentContainerToken combinerTarget) {
         this(slice, latexMode, command, combinerTarget, null, null);
     }
     
@@ -53,7 +53,7 @@ public final class CommandToken extends FlowToken {
     }
     
     private CommandToken(final FrozenSlice slice, final LaTeXMode latexMode, final BuiltinCommand command,
-            final FlowToken combinerTarget, final ArgumentContainerToken optionalArgument,
+            final ArgumentContainerToken combinerTarget, final ArgumentContainerToken optionalArgument,
             final ArgumentContainerToken[] arguments) {
         super(slice, TokenType.COMMAND, latexMode, command.getTextFlowContext(), command.getInterpretationMap());
         this.command = command;
@@ -66,7 +66,7 @@ public final class CommandToken extends FlowToken {
         return command;
     }
     
-    public FlowToken getCombinerTarget() {
+    public ArgumentContainerToken getCombinerTarget() {
         return combinerTarget;
     }
 

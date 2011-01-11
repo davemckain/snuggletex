@@ -68,6 +68,31 @@ All Rights Reserved
           </arguments>
         </configuration>
       </plugin>
+      <!-- Builds all-math-characters.txt from unicode-math-table.tex from the unicode-math LaTeX package -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>MakeCharactersDefinitions</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>compile</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>java</executable>
+          <classpathScope>runtime</classpathScope>
+          <arguments>
+            <argument>-classpath</argument>
+            <classpath/>
+            <argument>uk.ac.ed.ph.snuggletex.internal.util.MakeCharacterDefinitions</argument>
+            <argument>${basedir}/src/main/resources/uk/ac/ed/ph/snuggletex/unicode-math-table.tex</argument>
+            <argument>${project.build.outputDirectory}/uk/ac/ed/ph/snuggletex/all-math-characters.txt</argument>
+          </arguments>
+        </configuration>
+      </plugin>
       <!-- Build JAR with main class + one with test classes for use in other modules -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

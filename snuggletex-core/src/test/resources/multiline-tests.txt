@@ -439,3 +439,90 @@ Hello
 ----
 Hello
 ====
+#######################################################
+## Required fixes for SnuggleTeX 1.3.0
+A \bf B
+
+C
+----
+<p>A <b>B</b></p>
+<div class="bf"><p>C</p></div>
+====
+A \begin{bf}B
+
+C\end{bf}
+----
+<p>A <b>B</b></p>
+<div class="bf"><p>C</p></div>
+====
+A{ B
+
+C}
+----
+<p>A B</p>
+<p>C</p>
+====
+A \em B
+
+C
+----
+<p>A <em>B</em></p>
+<div class="em"><p>C</p></div>
+====
+A {\em B
+
+C} D
+----
+<p>A <em>B</em></p>
+<div class="em"><p>C<span class="rm"> D</span></p></div>
+====
+A {\huge B
+
+C} D
+----
+<p>A <span class="huge">B</span></p>
+<div class="huge"><p>C<span class="normalsize"> D</span></p></div>
+====
+\huge{A
+
+B}
+----
+<div class="huge">
+<p>A</p>
+<p>B</p>
+</div>
+====
+\begin{itemize}
+\item A
+\begin{em} \item B \end{em}
+\end{itemize}
+----
+<ul>
+  <li>A</li>
+  <li><div class="em">B</div></li>
+</ul>
+====
+## This one would be equivalent to \frac{a \bf b}{\bf c}
+$$ a \bf b \over c $$
+----
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mfrac>
+    <mrow>
+      <mi>a</mi>
+      <mstyle mathvariant="bold"><mi>b</mi></mstyle>
+    </mrow>
+    <mstyle mathvariant="bold"><mi>c</mi></mstyle>
+  </mfrac>
+</math>
+====
+## Make sure styles go into maths correctly: font size, but not family
+\bf \huge $ 1 $
+----
+<span class="huge">
+  <b>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <mn>1</mn>
+    </math>
+  </b>
+</span>
+====
