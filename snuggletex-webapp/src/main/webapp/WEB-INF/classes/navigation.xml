@@ -29,6 +29,7 @@ All Rights Reserved
     <node id="upConversionDemo" href="/UpConversionDemo" name="MathML Semantic Enrichment Demo"/>
     <node id="asciiMathMLUpConversionDemo" href="/ASCIIMathMLUpConversionDemo" name="ASCIIMathML Enrichment Demo"/>
     <node id="samples" href="/documentation/web-output-samples.html" name="Web Output Samples"/>
+    <node id="mathplayground" href="/documentation/mathplayground.html" name="SnuggleTeX Math Playground"/>
   </section>
   <section name="User Guide">
     <node id="download" href="/documentation/getting-snuggletex.html" name="Getting SnuggleTeX"/>
