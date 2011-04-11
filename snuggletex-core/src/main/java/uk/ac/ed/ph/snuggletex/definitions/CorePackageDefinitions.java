@@ -41,7 +41,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.MathFenceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathNotHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathRootHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathUnderOrOverHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MatrixHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingHandler;
@@ -64,6 +64,7 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathMLSymbol;
@@ -71,7 +72,6 @@ import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.StyleDeclarationInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.TabularInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.tokens.FlowToken;
 
 import java.util.MissingResourceException;
@@ -315,8 +315,10 @@ public final class CorePackageDefinitions {
         CMD_MSUP_OR_MOVER = corePackage.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, mathLimitsBuilder, null);
         CMD_MSUBSUP_OR_MUNDEROVER = corePackage.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, mathLimitsBuilder, null);
         
-        /* A related idea to sub/super is \\stackrel */
-        corePackage.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelHandler(), null);
+        /* A related idea to sub/super is \\stackrel and the AMS variants \\overset and \\underset */
+        corePackage.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathUnderOrOverHandler("mover"), null);
+        corePackage.addComplexCommand("overset", false, 2, MATH_MODE_ONLY, null, new MathUnderOrOverHandler("mover"), null);
+        corePackage.addComplexCommand("underset", false, 2, MATH_MODE_ONLY, null, new MathUnderOrOverHandler("munder"), null);
         
         /* Styling (c.f. equivalents in text mode, listed above) */
         corePackage.addComplexCommandSameArgMode("mathrm", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.RM, styleInterpretationNodeBuilder, ALLOW_INLINE);

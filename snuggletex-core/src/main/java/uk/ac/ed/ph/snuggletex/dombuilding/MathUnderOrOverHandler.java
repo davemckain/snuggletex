@@ -13,16 +13,22 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import org.w3c.dom.Element;
 
 /**
- * Handles the <tt>\\stackrel</tt> command.
+ * Handles the <tt>\\stackrel</tt>, <tt>\\overset</tt> and <tt>\\underset</tt> commands.
  *
  * @author  David McKain
  * @version $Revision$
  */
-public final class MathStackrelHandler implements CommandHandler {
+public final class MathUnderOrOverHandler implements CommandHandler {
+    
+    private final String mathmlContainerName;
+    
+    public MathUnderOrOverHandler(String mathmlContainerName) {
+        this.mathmlContainerName = mathmlContainerName;
+    }
     
     public void handleCommand(DOMBuilder builder, Element parentElement, CommandToken token)
             throws SnuggleParseException {
-        Element result = builder.appendMathMLElement(parentElement, "mover");
+        Element result = builder.appendMathMLElement(parentElement, mathmlContainerName);
 
         /* Extract the top and bottom tokens */
         ArgumentContainerToken topToken = token.getArguments()[0];
