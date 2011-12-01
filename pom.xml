@@ -20,11 +20,11 @@ All Rights Reserved
     <module>snuggletex-upconversion</module>
   </modules>
   <properties>
-    <junit.version>4.8.1</junit.version>
+    <junit.version>4.8.2</junit.version>
     <easymock.version>3.0</easymock.version>
     <jeuclid.version>3.1.9</jeuclid.version>
     <saxon9.version>9.1.0.8</saxon9.version>
-    <slf4j.version>1.6.0</slf4j.version>
+    <slf4j.version>1.5.11</slf4j.version>
     <log4j.version>1.2.16</log4j.version>
     <maven.site.url>http://snuggletex.sourceforge.net/maven/</maven.site.url>
   </properties>
@@ -142,6 +142,35 @@ All Rights Reserved
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <versionRange>[1.2,)</versionRange>
+                    <goals>
+                      <goal>exec</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
   <reporting>
     <plugins>
