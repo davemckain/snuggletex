@@ -50,14 +50,16 @@ so you should check errors \emph{after} generating an output as well!
 
 SnuggleTeX error messages are considerably different from what you might be used to in
 LaTeX. They are encapsulated as \verb|InputError| Objects. Each has an error
-code; these are all enumerated in the \verb|ErrorCode| enumeration class and
-listed on the \href[SnuggleTeX Error Codes]{docs://errorCodes} page here.
-SnuggleTeX is also reasonably good at resolving errors that manifest themselves
-once user-defined commands and environments have been evaluated.
+code; these are all enumerated in various implementations of the \verb|ErrorCode|
+interface and listed on the \href[SnuggleTeX Error Codes]{docs://errorCodes}
+page here.  SnuggleTeX is also reasonably good at resolving errors that
+manifest themselves once user-defined commands and environments have been
+evaluated.
 
 The \verb|MessageFormatter| class has some convenience methods for nicely formatting
 these error messages in various ways.
 
-It is also possible to "inline" errors into the resulting XML outputs by
+It is also possible to embed error information into the resulting XML outputs by
 calling the \verb|setErrorOutputOptions(...)| on a \verb|DOMOutputOptions|
-or \verb|WebPageOutputOptions| Object.
+or \verb|WebPageOutputOptions| Object, which may be useful if you want to handle
+errors in a rather loose visual way.
