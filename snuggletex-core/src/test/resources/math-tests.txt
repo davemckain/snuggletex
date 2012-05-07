@@ -490,6 +490,12 @@ x\textrm{}
 \stackrel{a}{+}
 <mover><mo>+</mo><mi>a</mi></mover>
 ====
+\overset{a}{+}
+<mover><mo>+</mo><mi>a</mi></mover>
+====
+\underset{a}{+}
+<munder><mo>+</mo><mi>a</mi></munder>
+====
 x'
 <msup><mi>x</mi><mi>'</mi></msup>
 ====
@@ -535,6 +541,10 @@ v_{\mbox{\rm av}}
 ====
 \_
 <mi>_</mi>
+====
+## \backslash is treated as an operator as of SnuggleTeX 1.3.0
+\backslash
+<mo>\</mo>
 ====
 \begin{array}{lc} 1 & 2 \\ 3 & 4 \end{array}
 <mtable>
@@ -790,4 +800,26 @@ x/2
 ====
 \lor
 <mo>&#x2228;</mo>
+====
+## Brace handling in MATH mode (redone in SnuggleTeX 1.3)
+\neg{A\vee B}
+<mo>&#xac;</mo>
+<mrow>
+  <mi>A</mi>
+  <mo>&#x2228;</mo>
+  <mi>B</mi>
+</mrow>
+====
+\sin{}
+<mi>sin</mi>
+<mrow/>
+====
+{{{{A}}}}
+<mi>A</mi>
+====
+\sin{{{{A}}}}
+<mi>sin</mi>
+<mrow>
+  <mi>A</mi>
+</mrow>
 ====

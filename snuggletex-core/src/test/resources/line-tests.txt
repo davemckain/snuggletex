@@ -100,19 +100,19 @@ Empty <math xmlns="http://www.w3.org/1998/Math/MathML"/> Maths
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math>
 ====
 \verb|x|
-<tt class="verb">x</tt>
+<span class="verb">x</span>
 ====
 This is \verb|x| some verbatim
-This is <tt class="verb">x</tt> some verbatim
+This is <span class="verb">x</span> some verbatim
 ====
 This is \verb'verbatim!'
-This is <tt class="verb">verbatim!</tt>
+This is <span class="verb">verbatim!</span>
 ====
 \verb!Verbatim With Space!
-<tt class="verb">Verbatim&#xa0;With&#xa0;Space</tt>
+<span class="verb">Verbatim&#xa0;With&#xa0;Space</span>
 ====
 \verb*!Verbatim With Space!
-<tt class="verb">Verbatim&#x2423;With&#x2423;Space</tt>
+<span class="verb">Verbatim&#x2423;With&#x2423;Space</span>
 ====
 \begin{verbatim}This is verbatim\end{verbatim}
 <pre class="verbatim">This is verbatim</pre>
@@ -495,13 +495,13 @@ Hello&#x2014;There
 <a href="urn:x%20b">urn:x%20b</a>
 ====
 \anchor{susan}
-<a id="susan" name="susan"/>
+<a id="susan"/>
 ====
 \xmlName{a}
 a
 ====
 \xmlUnparse{$x$}
-<tt class="unparsed-xml">&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;</tt>
+<span class="unparsed-xml">&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;</span>
 ====
 \ux{31}
 1
@@ -536,7 +536,7 @@ X
 ====
 ## Regression: Bug 2801656
 \verb|%|
-<tt class="verb">%</tt>
+<span class="verb">%</span>
 ====
 ## Regression: handling of whitespace in mboxes was incomplete through to 1.2.0
 \mbox{ }

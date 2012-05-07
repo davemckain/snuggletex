@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal;
@@ -39,7 +39,10 @@ import java.util.Stack;
  * This takes the parse tree after {@link StyleEvaluator} has run and performs grouping operations
  * on the {@link FlowToken}s to convert them to a more tree-like structure that is easier to handle.
  * <p>
- * Once this has run, all {@link BraceContainerToken} tokens will have been unwrapped or flattened.
+ * Once this has run, all {@link BraceContainerToken} tokens present in PARAGRAPH mode will have
+ * been unwrapped or flattened. They are however kept in MATH and LR mode as they can be used for
+ * implicit brackets. (Unwinding of redundantly nested containers is done in all cases, though.)
+ * <p>
  * Many other types of tokens, such as the "new paragraph" or "new list item" token will have been
  * removed, with the surrounding content grouped accordingly.
  * 
@@ -119,10 +122,10 @@ public final class TokenFixer {
                 visitEnvironment((EnvironmentToken) startToken);
                 break;
                 
-//            case BRACE_CONTAINER:
-//                BraceContainerToken braceContainer = (BraceContainerToken) startToken;
-//                visitSiblings(braceContainer, braceContainer.getContents());
-//                break;
+            case BRACE_CONTAINER:
+                BraceContainerToken braceContainer = (BraceContainerToken) startToken;
+                visitSiblings(braceContainer, braceContainer.getContents());
+                break;
                 
             case TEXT_MODE_TEXT:
             case VERBATIM_MODE_TEXT:
@@ -576,8 +579,8 @@ public final class TokenFixer {
             fixPrimes(tokens);
         }
         
-        /* Then flatten braces */
-        flattenBraceContainers(tokens);
+//        /* Then flatten braces */
+//        flattenBraceContainers(tokens);
         
         /* Visit each sub-token */
         visitChildren(tokens);

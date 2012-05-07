@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;
@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Map.Entry;
 
@@ -79,7 +80,7 @@ public final class CSSUtilities {
      * saving the results to the given {@link OutputStream}.
      */
     public static void writeStylesheet(Properties cssProperties, OutputStream cssOutputStream) {
-        writeStylesheet(cssProperties, new OutputStreamWriter(cssOutputStream));
+        writeStylesheet(cssProperties, new OutputStreamWriter(cssOutputStream, Charset.forName("UTF-8")));
     }
     
     /**

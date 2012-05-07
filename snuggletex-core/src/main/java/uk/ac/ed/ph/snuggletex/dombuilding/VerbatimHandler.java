@@ -1,6 +1,6 @@
 /* $Id:VerbatimBuilder.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -39,7 +39,7 @@ public final class VerbatimHandler implements CommandHandler, EnvironmentHandler
         else {
             verbContent = verbContent.replace(' ', '\u00a0'); /* Convert spaces to non-breaking spaces */
         }
-        Element verbatimElement = builder.appendXHTMLElement(parentElement, "tt");
+        Element verbatimElement = builder.appendXHTMLElement(parentElement, "span");
         verbatimElement.setAttribute("class", "verb");
         builder.appendTextNode(verbatimElement, verbContent, false);
         appendEmbeddedErrors(builder, parentElement, argumentToken);

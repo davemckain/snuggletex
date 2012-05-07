@@ -49,6 +49,12 @@ x
 <mo>+</mo>
 <mn>1</mn>
 ====
+## Support for \pm was added in SnuggleTeX 1.3
+1 \pm 2
+<mn>1</mn>
+<mo>&#xb1;</mo>
+<mn>2</mn>
+====
 ## Implicit Multiplication
 2x
 <mn>2</mn>
@@ -158,15 +164,15 @@ a/b/c
   </mrow>
 </msqrt>
 ====
-## The Quadractic Equation (phew!)
-\frac{-b+\sqrt{b^2-4ac}}{2a}
+## The Quadractic Formula!
+\frac{-b \pm \sqrt{b^2-4ac}}{2a}
 <mfrac>
   <mrow>
     <mrow>
       <mo>-</mo>
       <mi>b</mi>
     </mrow>
-    <mo>+</mo>
+    <mo>&#xb1;</mo>
     <msqrt>
       <msup>
         <mi>b</mi>
@@ -613,6 +619,11 @@ A \setminus x+B
   <mo>+</mo>
   <mi>B</mi>
 </mrow>
+====
+A \backslash B
+<mi>A</mi>
+<mo>\</mo>
+<mi>B</mi>
 ====
 A \cup B \setminus C
 <mi>A</mi>

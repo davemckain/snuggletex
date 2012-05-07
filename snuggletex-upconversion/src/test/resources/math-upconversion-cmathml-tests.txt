@@ -112,6 +112,14 @@ x-y-z
   <ci>z</ci>
 </apply>
 ====
+## Basic support for \pm added in SnuggleTeX 1.3.0, even though CMathML doesn't define the operator
+1 \pm 2
+<apply>
+  <csymbol><mo>&#xb1;</mo></csymbol>
+  <cn>1</cn>
+  <cn>2</cn>
+</apply>
+====
 *
 <times/>
 ====
@@ -291,11 +299,13 @@ a/b/c
   </apply>
 </apply>
 ====
-\frac{-b+\sqrt{b^2-4ac}}{2a}
+\frac{-b\pm\sqrt{b^2-4ac}}{2a}
 <apply>
   <divide/>
   <apply>
-    <plus/>
+    <csymbol>
+      <mo>&#xb1;</mo>
+    </csymbol>
     <apply>
       <minus/>
       <ci>b</ci>
@@ -370,17 +380,12 @@ x\,y\,z
   <ci>y</ci>
 </apply>
 ====
-## I'm not sure what I really want with this one!
-\frac{}{}
-<apply>
-  <divide/>
-</apply>
+\frac{x}{}
+!UCFG04
 ====
 ## Similarly pathological case!
 {}+{}
-<apply>
-  <plus/>
-</apply>
+!UCFG04
 ====
 ## Test inference of apply function on inverses
 \sin^{-1} x
@@ -456,9 +461,7 @@ x\,y\,z
 <sin/>
 ====
 \sin {}
-<apply>
-  <sin/>
-</apply>
+!UCFG04
 ====
 ## Erroneous n-ary application of \sin
 \sin(x,y)
@@ -468,9 +471,7 @@ x\,y\,z
 <arcsin/>
 ====
 \sin^{-1} {}
-<apply>
-  <arcsin/>
-</apply>
+!UCFG04
 ====
 !
 <factorial/>

@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal;
@@ -108,10 +108,8 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
     private StringBuilder readCharacterStream(Reader reader) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
-        int size = 0;
         StringBuilder result = new StringBuilder();
         while ((line = bufferedReader.readLine()) != null) {
-            size += line.length() + 1;
             result.append(line).append("\n");
         }
         bufferedReader.close();

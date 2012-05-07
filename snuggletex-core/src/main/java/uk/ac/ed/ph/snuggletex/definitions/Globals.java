@@ -1,6 +1,6 @@
 /* $Id:Globals.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -63,11 +63,11 @@ public final class Globals {
     /** Specifies the location of the XSLT that converts MathML symbol characters to named entities */
     public static final String MATHML_ENTITIES_MAP_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/mathml-entities-map.xsl";
     
-    /** Specifies the location of the XSLT that serializes and converts MathML symbol characters to named entities */
-    public static final String SERIALIZE_WITH_NAMED_ENTITIES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/serialize-with-named-entities.xsl";
+    /** Specifies the ClassPath location of the XHTML -> no namespace used for serializing as legacy HTML */
+    public static final String STRIP_XHTML_NAMESPACE_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/strip-xhtml-namespace.xsl";
     
-    /** Specifies the ClassPath location of the XHTML -> HTML used for serializing as legacy HTML */
-    public static final String XHTML_TO_HTML_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/xhtml-to-html.xsl";
+    /** Specifies the ClassPath location of the all XML -> no namespace used for serializing as legacy HTML */
+    public static final String STRIP_ALL_NAMESPACES_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/strip-all-namespaces.xsl";
     
     /** Specifies the ClassPath location of the MathML -> XHTML stylesheet to use for down-transforming */
     public static final String MATHML_TO_XHTML_XSL_RESOURCE_NAME = "classpath:/uk/ac/ed/ph/snuggletex/mathml-to-xhtml.xsl";

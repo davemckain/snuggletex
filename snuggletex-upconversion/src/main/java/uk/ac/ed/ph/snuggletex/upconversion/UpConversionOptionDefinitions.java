@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -22,8 +22,11 @@ public final class UpConversionOptionDefinitions {
     public static final String UPCONVERSION_VARIABLE_NAMESPACE = "upconversion";
     public static final String OPTIONS_VARIABLE_NAME = "options";
     
+    /** @since 1.3.0 */
+    public static final String DO_BRACKETED_PRESENTATION_MATHML = "doBracketedPresentationMathML";
     public static final String DO_CONTENT_MATHML_NAME = "doContentMathML";
     public static final String DO_MAXIMA_NAME = "doMaxima";
+    
     public static final String ADD_OPTIONS_ANNOTATION_NAME = "addOptionsAnnotation";
     
     public static final String ROUND_BRACKET_HANDLING = "roundBracketHandling";
@@ -62,6 +65,7 @@ public final class UpConversionOptionDefinitions {
     /** Defines all of the allowed options for controlling the up-conversion process. */
     public static final LinkedHashMap<String, OptionValueDefinition> OPTION_DEFINITIONS = makeDefinitionMap(new Object[] {
             /* General processing control */
+            DO_BRACKETED_PRESENTATION_MATHML, BOOLEAN_VALUES, "false",
             DO_CONTENT_MATHML_NAME, BOOLEAN_VALUES, "true",
             DO_MAXIMA_NAME, BOOLEAN_VALUES, "true",
             ADD_OPTIONS_ANNOTATION_NAME, BOOLEAN_VALUES, "false",

@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  * @author  David McKain
  * @version $Revision$
  */
-public final class UpConversionOptions {
+public final class UpConversionOptions implements Cloneable {
     
     private final Map<String, String> specifiedOptionMap;
     
@@ -124,5 +124,15 @@ public final class UpConversionOptions {
         else {
             throw new IllegalUpconversionOptionException(UpConversionErrorCode.UAESY2);
         }
+    }
+    
+    //-------------------------------------------------------------
+    
+    @Override
+    public Object clone() {
+        UpConversionOptions result = new UpConversionOptions();
+        result.specifiedOptionMap.putAll(specifiedOptionMap);
+        result.symbolAssumptions.putAll(symbolAssumptions);
+        return result;
     }
 }

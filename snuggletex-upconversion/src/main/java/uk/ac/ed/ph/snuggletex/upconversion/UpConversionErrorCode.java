@@ -1,6 +1,6 @@
 /* $Id:ErrorCode.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -26,6 +26,7 @@ public enum UpConversionErrorCode implements ErrorCode {
     UCFG01(UpConversionErrorGroup.UCF),
     UCFG02(UpConversionErrorGroup.UCF),
     UCFG03(UpConversionErrorGroup.UCF),
+    UCFG04(UpConversionErrorGroup.UCF),
     UCFOP0(UpConversionErrorGroup.UCF),
     UCFOP1(UpConversionErrorGroup.UCF),
     UCFOP2(UpConversionErrorGroup.UCF),

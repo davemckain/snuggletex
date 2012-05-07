@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -41,7 +41,7 @@ import uk.ac.ed.ph.snuggletex.dombuilding.MathFenceHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathLimitsHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathNotHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathRootHandler;
-import uk.ac.ed.ph.snuggletex.dombuilding.MathStackrelHandler;
+import uk.ac.ed.ph.snuggletex.dombuilding.MathUnderOrOverHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MathVariantMapHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.MatrixHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.ModeDelegatingHandler;
@@ -104,37 +104,37 @@ public final class CorePackageDefinitions {
     public static final String MATH_CHARACTER_BIG_LIMITS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-character-big-limits.txt";
     public static final String MATH_FUNCTION_DEFINITIONS_RESOURCE_NAME = "uk/ac/ed/ph/snuggletex/math-function-definitions.txt";
     
-    public static BuiltinCommand CMD_CHAR_BACKSLASH;
-    public static BuiltinCommand CMD_FRAC;
-    public static BuiltinCommand CMD_ITEM;
-    public static BuiltinCommand CMD_LIST_ITEM;
-    public static BuiltinCommand CMD_LEFT;
-    public static BuiltinCommand CMD_RIGHT;
-    public static BuiltinCommand CMD_MROW;
-    public static BuiltinCommand CMD_MSUB_OR_MUNDER;
-    public static BuiltinCommand CMD_MSUP_OR_MOVER;
-    public static BuiltinCommand CMD_MSUBSUP_OR_MUNDEROVER;
-    public static BuiltinCommand CMD_NEWCOMMAND;
-    public static BuiltinCommand CMD_RENEWCOMMAND;
-    public static BuiltinCommand CMD_NEWENVIRONMENT;
-    public static BuiltinCommand CMD_RENEWENVIRONMENT;
-    public static BuiltinCommand CMD_OVER;
-    public static BuiltinCommand CMD_PAR;
-    public static BuiltinCommand CMD_PARAGRAPH;
-    public static BuiltinCommand CMD_TABLE_ROW;
-    public static BuiltinCommand CMD_TABLE_COLUMN;
-    public static BuiltinCommand CMD_VERB;
-    public static BuiltinCommand CMD_VERBSTAR;
-    public static BuiltinCommand CMD_HLINE;
-    public static BuiltinCommand CMD_XML_ATTR;
+    public static final BuiltinCommand CMD_CHAR_BACKSLASH;
+    public static final BuiltinCommand CMD_FRAC;
+    public static final BuiltinCommand CMD_ITEM;
+    public static final BuiltinCommand CMD_LIST_ITEM;
+    public static final BuiltinCommand CMD_LEFT;
+    public static final BuiltinCommand CMD_RIGHT;
+    public static final BuiltinCommand CMD_MROW;
+    public static final BuiltinCommand CMD_MSUB_OR_MUNDER;
+    public static final BuiltinCommand CMD_MSUP_OR_MOVER;
+    public static final BuiltinCommand CMD_MSUBSUP_OR_MUNDEROVER;
+    public static final BuiltinCommand CMD_NEWCOMMAND;
+    public static final BuiltinCommand CMD_RENEWCOMMAND;
+    public static final BuiltinCommand CMD_NEWENVIRONMENT;
+    public static final BuiltinCommand CMD_RENEWENVIRONMENT;
+    public static final BuiltinCommand CMD_OVER;
+    public static final BuiltinCommand CMD_PAR;
+    public static final BuiltinCommand CMD_PARAGRAPH;
+    public static final BuiltinCommand CMD_TABLE_ROW;
+    public static final BuiltinCommand CMD_TABLE_COLUMN;
+    public static final BuiltinCommand CMD_VERB;
+    public static final BuiltinCommand CMD_VERBSTAR;
+    public static final BuiltinCommand CMD_HLINE;
+    public static final BuiltinCommand CMD_XML_ATTR;
 
-    public static BuiltinEnvironment ENV_VERBATIM;
-    public static BuiltinEnvironment ENV_ITEMIZE;
-    public static BuiltinEnvironment ENV_ENUMERATE;
-    public static BuiltinEnvironment ENV_MATH;
-    public static BuiltinEnvironment ENV_DISPLAYMATH;
-    public static BuiltinEnvironment ENV_BRACKETED;
-    public static BuiltinEnvironment ENV_STYLE;
+    public static final BuiltinEnvironment ENV_VERBATIM;
+    public static final BuiltinEnvironment ENV_ITEMIZE;
+    public static final BuiltinEnvironment ENV_ENUMERATE;
+    public static final BuiltinEnvironment ENV_MATH;
+    public static final BuiltinEnvironment ENV_DISPLAYMATH;
+    public static final BuiltinEnvironment ENV_BRACKETED;
+    public static final BuiltinEnvironment ENV_STYLE;
     
     private static final SnugglePackage corePackage;
 
@@ -238,15 +238,16 @@ public final class CorePackageDefinitions {
         /* Tree version of standard \item. Any \items are converted to these during token fixing.
          * I'm not allowing this to be directly input, which makes list handling a bit easier.
          */
-        CMD_LIST_ITEM = corePackage.addComplexCommandSameArgMode("<list item>", false, 1, PARA_MODE_ONLY, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
+        ListEnvironmentHandler listEnvironmentHandler = new ListEnvironmentHandler();
+        CMD_LIST_ITEM = corePackage.addComplexCommandSameArgMode("<list item>", false, 1, PARA_MODE_ONLY, Interpretation.STYLE_SENTINEL, listEnvironmentHandler, START_NEW_XHTML_BLOCK);
         
         /* Tree-like placeholders for specifying columns and rows in environments such as 'tabular'.
          * We don't allow to be inputed as the containment requirements can make it awkward to ensure
          * that the input is valid. These tokens are produced during the fixing process and make it
          * easier to handle the table content further down the line.
          */
-        CMD_TABLE_ROW = corePackage.addComplexCommandSameArgMode("<tr>", false, 1, ALL_MODES, null, null);
-        CMD_TABLE_COLUMN = corePackage.addComplexCommandSameArgMode("<td>", false, 1, ALL_MODES, null, null);
+        CMD_TABLE_ROW = corePackage.addComplexCommandSameArgMode("<tr>", false, 1, ALL_MODES, Interpretation.STYLE_SENTINEL, null, null);
+        CMD_TABLE_COLUMN = corePackage.addComplexCommandSameArgMode("<td>", false, 1, ALL_MODES, Interpretation.STYLE_SENTINEL, null, null);
         
         /* We'll support the usual LaTeX sectioning commands...
          * 
@@ -342,8 +343,10 @@ public final class CorePackageDefinitions {
         CMD_MSUP_OR_MOVER = corePackage.addComplexCommandSameArgMode("<msupormover>", false, 2, MATH_MODE_ONLY, mathLimitsBuilder, null);
         CMD_MSUBSUP_OR_MUNDEROVER = corePackage.addComplexCommandSameArgMode("<msubsupormunderover>", false, 3, MATH_MODE_ONLY, mathLimitsBuilder, null);
         
-        /* A related idea to sub/super is \\stackrel */
-        corePackage.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathStackrelHandler(), null);
+        /* A related idea to sub/super is \\stackrel and the AMS variants \\overset and \\underset */
+        corePackage.addComplexCommand("stackrel", false, 2, MATH_MODE_ONLY, null, new MathUnderOrOverHandler("mover"), null);
+        corePackage.addComplexCommand("overset", false, 2, MATH_MODE_ONLY, null, new MathUnderOrOverHandler("mover"), null);
+        corePackage.addComplexCommand("underset", false, 2, MATH_MODE_ONLY, null, new MathUnderOrOverHandler("munder"), null);
         
         /* Styling (c.f. equivalents in text mode, listed above) */
         corePackage.addComplexCommandSameArgMode("mathrm", false, 1, MATH_MODE_ONLY, StyleDeclarationInterpretation.RM, null, ALLOW_INLINE);
@@ -409,7 +412,8 @@ public final class CorePackageDefinitions {
         corePackage.addComplexCommandOneArg("fbox", false, ALL_MODES, LR, new BoxHandler("fbox"), null);
         
         /* Table stuff */
-        CMD_HLINE = corePackage.addSimpleCommand("hline", ALL_MODES, new TabularHandler(), IGNORE);
+        TabularHandler tabularHandler = new TabularHandler();
+        CMD_HLINE = corePackage.addSimpleCommand("hline", ALL_MODES, Interpretation.STYLE_SENTINEL, tabularHandler, IGNORE);
         
         /* Commands for creating user-defined commands and environments */
 
@@ -443,13 +447,13 @@ public final class CorePackageDefinitions {
         
         /* =================================== ENVIRONMENTS ================================= */
         
-        ENV_MATH = corePackage.addEnvironment("math", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentHandler(), ALLOW_INLINE);
-        ENV_DISPLAYMATH = corePackage.addEnvironment("displaymath", TEXT_MODE_ONLY, MATH, null, new MathEnvironmentHandler(), ALLOW_INLINE);
-        ENV_VERBATIM = corePackage.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, null, new VerbatimHandler(false), START_NEW_XHTML_BLOCK);
-        ENV_ITEMIZE = corePackage.addEnvironment("itemize", PARA_MODE_ONLY, null, Interpretation.LIST, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
-        ENV_ENUMERATE = corePackage.addEnvironment("enumerate", PARA_MODE_ONLY, null, Interpretation.LIST, new ListEnvironmentHandler(), START_NEW_XHTML_BLOCK);
+        ENV_MATH = corePackage.addEnvironment("math", TEXT_MODE_ONLY, MATH, (Interpretation) null, new MathEnvironmentHandler(), ALLOW_INLINE);
+        ENV_DISPLAYMATH = corePackage.addEnvironment("displaymath", TEXT_MODE_ONLY, MATH, (Interpretation) null, new MathEnvironmentHandler(), ALLOW_INLINE);
+        ENV_VERBATIM = corePackage.addEnvironment("verbatim", PARA_MODE_ONLY, VERBATIM, (Interpretation) null, new VerbatimHandler(false), START_NEW_XHTML_BLOCK);
+        ENV_ITEMIZE = corePackage.addEnvironment("itemize", PARA_MODE_ONLY, null, new Interpretation[] { Interpretation.LIST, Interpretation.STYLE_SENTINEL }, listEnvironmentHandler, START_NEW_XHTML_BLOCK);
+        ENV_ENUMERATE = corePackage.addEnvironment("enumerate", PARA_MODE_ONLY, null, new Interpretation[] { Interpretation.LIST, Interpretation.STYLE_SENTINEL }, listEnvironmentHandler, START_NEW_XHTML_BLOCK);
         
-        corePackage.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, Interpretation.TABULAR, new TabularHandler(), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("tabular", false, 1, PARA_MODE_ONLY, PARAGRAPH, new Interpretation[] { Interpretation.STYLE_SENTINEL, Interpretation.TABULAR  }, tabularHandler, START_NEW_XHTML_BLOCK);
         corePackage.addEnvironment("array", false, 1, MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new ArrayHandler(), null);
         corePackage.addEnvironment("cases", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler(2, "{", ""), null);
         corePackage.addEnvironment("eqnarray", PARA_MODE_ONLY, MATH, Interpretation.TABULAR, new EqnArrayHandler(), START_NEW_XHTML_BLOCK);
@@ -464,12 +468,12 @@ public final class CorePackageDefinitions {
         corePackage.addEnvironment("Vmatrix", MATH_MODE_ONLY, MATH, Interpretation.TABULAR, new MatrixHandler("\u2225", "\u2225"), null);
         
         /* Simple text environments */
-        corePackage.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("quote", PARA_MODE_ONLY, PARAGRAPH, (Interpretation) null, new SimpleXHTMLContainerBuildingHandler("blockquote"), START_NEW_XHTML_BLOCK);
         
         /* Text justification environments. (Note that each line is supposed to be delimited by '\\' */
-        corePackage.addEnvironment("center", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("div", "center"), START_NEW_XHTML_BLOCK);
-        corePackage.addEnvironment("flushleft", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("div", "flushleft"), START_NEW_XHTML_BLOCK);
-        corePackage.addEnvironment("flushright", PARA_MODE_ONLY, PARAGRAPH, null, new SimpleXHTMLContainerBuildingHandler("div", "flushright"), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("center", PARA_MODE_ONLY, PARAGRAPH, (Interpretation) null, new SimpleXHTMLContainerBuildingHandler("div", "center"), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("flushleft", PARA_MODE_ONLY, PARAGRAPH, (Interpretation) null, new SimpleXHTMLContainerBuildingHandler("div", "flushleft"), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("flushright", PARA_MODE_ONLY, PARAGRAPH, (Interpretation) null, new SimpleXHTMLContainerBuildingHandler("div", "flushright"), START_NEW_XHTML_BLOCK);
         
         /* Alternative versions of \em and friends. These are converted internally to
          * environments as they're easier to deal with like that.
@@ -501,15 +505,15 @@ public final class CorePackageDefinitions {
          * 
          * NOTE: The arguments for this actually end up being in MATH mode.
          */
-        ENV_BRACKETED = corePackage.addEnvironment("<mfenced>", false, 2, MATH_MODE_ONLY, MATH, null, new MathFenceHandler(), null);
+        ENV_BRACKETED = corePackage.addEnvironment("<mfenced>", false, 2, MATH_MODE_ONLY, MATH, (Interpretation) null, new MathFenceHandler(), null);
 
         /* Special internal environment delimiting content to be rendered with a specific style */
-        ENV_STYLE = corePackage.addEnvironment("<style>", ALL_MODES, null, null, new StyleHandler(), ALLOW_INLINE);
+        ENV_STYLE = corePackage.addEnvironment("<style>", ALL_MODES, null, (Interpretation) null, new StyleHandler(), ALLOW_INLINE);
         
         /* Environments for generating custom XML islands (see corresponding command versions as well) */
-        corePackage.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, null, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
-        corePackage.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, null, new XMLInlineElementHandler(), ALLOW_INLINE);
-        corePackage.addEnvironment("xmlUnparse", false, 0, TEXT_MODE_ONLY, null, null, new XMLUnparseHandler(), ALLOW_INLINE);
+        corePackage.addEnvironment("xmlBlockElement", true, 2, ALL_MODES, null, (Interpretation) null, new XMLBlockElementHandler(), START_NEW_XHTML_BLOCK);
+        corePackage.addEnvironment("xmlInlineElement", true, 2, ALL_MODES, null, (Interpretation) null, new XMLInlineElementHandler(), ALLOW_INLINE);
+        corePackage.addEnvironment("xmlUnparse", false, 0, TEXT_MODE_ONLY, null, (Interpretation) null, new XMLUnparseHandler(), ALLOW_INLINE);
     }
 
 }

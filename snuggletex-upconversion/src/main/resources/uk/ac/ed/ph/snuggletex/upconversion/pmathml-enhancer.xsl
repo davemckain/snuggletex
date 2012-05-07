@@ -15,7 +15,7 @@ are established.
 
 TODO: <mstyle/> is essentially being treated as neutering its contents... is this a good idea? It's a hard problem to solve in general.
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 -->
@@ -37,7 +37,7 @@ All Rights Reserved
   <!-- ************************************************************ -->
 
   <!-- Entry point -->
-  <xsl:template name="s:enhance-pmathml">
+  <xsl:template name="s:enhance-pmathml" as="element()*">
     <xsl:param name="elements" as="element()*"/>
     <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
     <xsl:call-template name="local:process-group">
@@ -154,6 +154,12 @@ All Rights Reserved
   NOTE: We're allowing infix operators to act as prefix operators here, even though
   this won't make sense further in the up-conversion process
   -->
+  <xsl:variable name="local:infix-setdiff-characters" as="xs:string+"
+    select="('\',
+            '&#x2216;' (: \smallsetminus :),
+            '&#x29f5;' (: \setminus :)
+    )"/>
+
   <xsl:variable name="local:infix-operators" as="xs:string+"
     select="(',',
             '&#x2228;' (: \vee :),
@@ -161,9 +167,10 @@ All Rights Reserved
             $local:relation-characters,
             '&#x222a;' (: \cup :),
             '&#x2229;' (: \cap :),
-            '&#x2216;' (: \smallsetminus :),
-            '&#x29f5;' (: \setminus :),
-            '+', '-',
+            $local:infix-setdiff-characters,
+            '+',
+            '-',
+            '&#xb1;' (: \pm :),
             $local:explicit-multiplication-characters,
             $local:explicit-division-characters
     )"/>
@@ -280,7 +287,7 @@ All Rights Reserved
   strict subset of the children of a particular element, so an expression like
   $elements[1]/preceding-sibling::* may actually be non-empty.
   -->
-  <xsl:template name="local:process-group" as="element()*">
+  <xsl:template name="local:process-group">
     <xsl:param name="elements" as="element()*" required="yes"/>
     <xsl:choose>
       <xsl:when test="$elements[local:is-matching-strict-infix-operator(., (','))]">
@@ -324,11 +331,18 @@ All Rights Reserved
           <xsl:with-param name="match" select="('&#x2229;')"/>
         </xsl:call-template>
       </xsl:when>
-      <xsl:when test="$elements[local:is-matching-strict-infix-operator(., ('&#x2216;', '&#x29f5;'))]">
+      <xsl:when test="$elements[local:is-matching-strict-infix-operator(., $local:infix-setdiff-characters)]">
         <!-- Set Difference -->
         <xsl:call-template name="local:group-left-associative-infix-mo">
           <xsl:with-param name="elements" select="$elements"/>
-          <xsl:with-param name="match" select="('&#x2216;', '&#x29f5;')"/>
+          <xsl:with-param name="match" select="$local:infix-setdiff-characters"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$elements[local:is-matching-strict-infix-operator(., ('&#xb1;'))]">
+        <!-- Plus or minus -->
+        <xsl:call-template name="local:group-left-associative-infix-mo">
+          <xsl:with-param name="elements" select="$elements"/>
+          <xsl:with-param name="match" select="('&#xb1;')"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:when test="$elements[local:is-matching-strict-infix-operator(., ('+'))]">
@@ -362,12 +376,6 @@ All Rights Reserved
       <xsl:when test="$elements[self::mspace]">
         <!-- Any <mspace/> is kept but interpreted as an implicit multiplication as well -->
         <xsl:call-template name="local:handle-mspace-group">
-          <xsl:with-param name="elements" select="$elements"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$elements[1][local:is-infix-operator(.)]">
-        <!-- An infix operator being used as in prefix context -->
-        <xsl:call-template name="local:apply-unary-infix-operator">
           <xsl:with-param name="elements" select="$elements"/>
         </xsl:call-template>
       </xsl:when>
@@ -495,28 +503,6 @@ All Rights Reserved
     </xsl:choose>
   </xsl:template>
 
-  <!-- Groups up a prefix operator, provided it is being applied to something -->
-  <xsl:template name="local:apply-unary-infix-operator">
-    <xsl:param name="elements" as="element()+" required="yes"/>
-    <xsl:choose>
-      <xsl:when test="$elements[2]">
-        <mrow>
-          <xsl:copy-of select="$elements[1]"/>
-          <xsl:call-template name="s:maybe-wrap-in-mrow">
-            <xsl:with-param name="elements" as="element()*">
-              <xsl:call-template name="local:process-group">
-                <xsl:with-param name="elements" select="$elements[position()!=1]"/>
-              </xsl:call-template>
-            </xsl:with-param>
-          </xsl:call-template>
-        </mrow>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:copy-of select="$elements[1]"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
   <!-- <mspace/> as explicit multiplication -->
   <xsl:template name="local:handle-mspace-group" as="element()+">
     <xsl:param name="elements" as="element()+" required="yes"/>
@@ -583,6 +569,27 @@ All Rights Reserved
             </xsl:call-template>
           </xsl:with-param>
         </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="local:is-infix-operator($first-element)">
+        <!-- An infix operator being used as in prefix context -->
+        <xsl:choose>
+          <xsl:when test="exists($after-first-element)">
+            <mrow>
+              <xsl:copy-of select="$first-element"/>
+              <xsl:call-template name="s:maybe-wrap-in-mrow">
+                <xsl:with-param name="elements" as="element()*">
+                  <xsl:call-template name="local:apply-prefix-functions-and-operators">
+                    <xsl:with-param name="elements" select="$after-first-element"/>
+                    <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
+                  </xsl:call-template>
+                </xsl:with-param>
+              </xsl:call-template>
+            </mrow>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="$first-element"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:when test="local:is-prefix-operator($first-element)">
         <!-- This is a prefix operator. Apply to everything that follows. -->
@@ -866,7 +873,23 @@ All Rights Reserved
     </xsl:copy>
   </xsl:template>
 
-  <!-- Default template for other MathML elements -->
+  <!-- MathML elements where each child is a standalone sub-expression -->
+  <xsl:template match="mfrac|mfenced" mode="enhance-pmathml" as="element()">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:for-each select="*">
+        <xsl:call-template name="s:maybe-wrap-in-mrow">
+          <xsl:with-param name="elements" as="element()*">
+            <xsl:call-template name="local:process-group">
+              <xsl:with-param name="elements" select="."/>
+            </xsl:call-template>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:for-each>
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- Default template for other MathML elements, assumed to have free child content -->
   <xsl:template match="*" mode="enhance-pmathml" as="element()">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -879,4 +902,3 @@ All Rights Reserved
   </xsl:template>
 
 </xsl:stylesheet>
-

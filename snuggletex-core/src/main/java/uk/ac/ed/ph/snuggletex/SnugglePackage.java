@@ -1,6 +1,6 @@
 /* $Id:DefinitionMap.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -453,12 +453,27 @@ public final class SnugglePackage {
                 contentMode, SnugglePackage.makeInterpretationMap(interpretation), handler, context));
     }
     
+    public BuiltinEnvironment addEnvironment(final String name, final EnumSet<LaTeXMode> allowedModes,
+            final LaTeXMode contentMode, final Interpretation[] interpretations,
+            final EnvironmentHandler handler, final TextFlowContext context) {
+        return addEnvironment(new BuiltinEnvironment(name, false, 0, allowedModes,
+                contentMode, SnugglePackage.makeInterpretationMap(interpretations), handler, context));
+    }
+    
     public BuiltinEnvironment addEnvironment(final String name, final boolean allowOptionalArgument,
             final int argumentCount, final EnumSet<LaTeXMode> allowedModes,
             final LaTeXMode contentMode, final Interpretation interpretation,
             final EnvironmentHandler handler, final TextFlowContext context) {
         return addEnvironment(new BuiltinEnvironment(name, allowOptionalArgument, argumentCount,
                 allowedModes, contentMode, SnugglePackage.makeInterpretationMap(interpretation), handler, context));
+    }
+    
+    public BuiltinEnvironment addEnvironment(final String name, final boolean allowOptionalArgument,
+            final int argumentCount, final EnumSet<LaTeXMode> allowedModes,
+            final LaTeXMode contentMode, final Interpretation[] interpretations,
+            final EnvironmentHandler handler, final TextFlowContext context) {
+        return addEnvironment(new BuiltinEnvironment(name, allowOptionalArgument, argumentCount,
+                allowedModes, contentMode, SnugglePackage.makeInterpretationMap(interpretations), handler, context));
     }
     
     public BuiltinEnvironment addEnvironment(final BuiltinEnvironment environment) {

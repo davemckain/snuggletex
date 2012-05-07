@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -28,10 +28,10 @@ import java.nio.channels.FileChannel;
 public final class IOUtilities {
     
     /** Buffer size when transferring streams */
-    public static int BUFFER_SIZE = 32 * 1024;
+    public static final int BUFFER_SIZE = 32 * 1024;
 
     /** Maximum size of characters we'll read from a text stream before complaining */
-    public static int MAX_TEXT_STREAM_SIZE = 1024 * 1024;
+    public static final int MAX_TEXT_STREAM_SIZE = 1024 * 1024;
 
     //----------------------------------------------------------------------------
 

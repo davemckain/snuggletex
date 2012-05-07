@@ -1,13 +1,12 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
 
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.definitions.BuiltinEnvironment;
-import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.internal.DOMBuilder;
@@ -46,22 +45,16 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
             throw new SnuggleLogicException("No logic to handle list environment " + environment.getTeXName());
         }
         Element listElement = builder.appendXHTMLElement(parentElement, listElementName);
-        handleListContent(builder, parentElement, listElement, token.getContent().getContents(), null);
+        handleListContent(builder, parentElement, listElement, token.getContent().getContents());
     }
     
     private void handleListContent(DOMBuilder builder, Element parentElement, Element listElement,
-            List<FlowToken> content, ComputedStyle style)
+            List<FlowToken> content)
             throws SnuggleParseException {
         for (FlowToken token : content) {
             if (token.isCommand(CorePackageDefinitions.CMD_LIST_ITEM)) {
                 /* Good list item */
-                handleListItem(builder, listElement, (CommandToken) token, style);
-            }
-            else if (token.isEnvironment(CorePackageDefinitions.ENV_STYLE)) {
-                /* Style element, which will wrap up one or more list items */
-                EnvironmentToken styleToken = (EnvironmentToken) token;
-                ComputedStyle innerStyle = styleToken.getComputedStyle();
-                handleListContent(builder, parentElement, listElement, styleToken.getContent().getContents(), innerStyle);
+                handleListItem(builder, listElement, (CommandToken) token);
             }
             else if (token.getType()==TokenType.ERROR) {
                 /* We'll append errors immediately *after* the list element */
@@ -76,17 +69,10 @@ public final class ListEnvironmentHandler implements EnvironmentHandler, Command
         }
     }
     
-    private void handleListItem(DOMBuilder builder, Element listElement, CommandToken itemToken,
-            ComputedStyle overriddenStyle) throws SnuggleParseException {
+    private void handleListItem(DOMBuilder builder, Element listElement, CommandToken itemToken)
+            throws SnuggleParseException {
         Element listItemElement = builder.appendXHTMLElement(listElement, "li");
-        Element listContentContainer = listItemElement;
-        if (overriddenStyle!=null) {
-            listContentContainer = builder.openStyle(listItemElement, overriddenStyle, true, false);
-        }
-        builder.handleTokens(listContentContainer, itemToken.getArguments()[0], true);
-        if (overriddenStyle!=null) {
-            builder.closeStyle();
-        }
+        builder.handleTokens(listItemElement, itemToken.getArguments()[0], true);
     }
     
     /* (List items are handled above, so anything matching here is an error.) */

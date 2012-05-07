@@ -2,6 +2,7 @@
 2A::OP:*
 2D::OP:-
 2F:slash:BIN # (Redefined to make this an operator)
+5C:backslash:BIN # (Redefined to make this an operator)
 5E::OP # ^ (This will disappear during token fixing)
 5F::OP # _ (This will disappear during token fixing)
 7B:lbrace:OPEN # (Reinforced here as we need to refer to this character, even though it can't be input directly)

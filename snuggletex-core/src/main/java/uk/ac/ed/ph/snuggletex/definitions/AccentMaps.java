@@ -1,6 +1,6 @@
 /* $Id:AccentMaps.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -54,6 +54,7 @@ public interface AccentMaps {
             'a', '\u00e2',
             'e', '\u00ea',
             'i', '\u00ee',
+            'j', '\u0135',
             'o', '\u00f4',
             'u', '\u00fb'
         }, "");

@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -57,7 +57,7 @@ public final class XMLUnparseHandler implements EnvironmentHandler, CommandHandl
             parentElement.removeChild(childNodes.item(i));
         }
         Element resultElement = builder.appendXHTMLTextElement(parentElement,
-                isBlock ? "pre" : "tt",
+                isBlock ? "pre" : "span",
                 parentContentUnparsed, true);
         resultElement.setAttribute("class", "unparsed-xml");
     }

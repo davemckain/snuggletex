@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -16,9 +16,11 @@ import uk.ac.ed.ph.snuggletex.internal.util.XMLUtilities;
 import uk.ac.ed.ph.snuggletex.upconversion.UpConversionOptionDefinitions.OptionValueDefinition;
 import uk.ac.ed.ph.snuggletex.utilities.MathMLUtilities;
 import uk.ac.ed.ph.snuggletex.utilities.MessageFormatter;
+import uk.ac.ed.ph.snuggletex.utilities.UnwrappedParallelMathMLDOM;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
@@ -42,6 +44,8 @@ public final class UpConversionUtilities {
      * {@link #appendUpConversionOptionsElement(Document, Element, UpConversionOptions, boolean)}
      */
     public static final String UPCONVERSION_OPTIONS_XML_LOCAL_NAME = "upconversion-options";
+    
+    //-------------------------------------------------------
     
     /**
      * Returns a full error message for the given {@link UpConversionFailure}, using
@@ -127,10 +131,43 @@ public final class UpConversionUtilities {
         return new UpConversionFailure(errorCode, xPath, context, arguments.toArray(new String[arguments.size()]));
     }
     
+    /**
+     * Extracts all of the <tt>s:fail</tt> elements within the given {@link UnwrappedParallelMathMLDOM}
+     * 
+     * @since 1.3.0
+     */
+    public static List<UpConversionFailure> extractUpConversionFailures(UnwrappedParallelMathMLDOM unwrappedDocument) {
+        Map<String, NodeList> xmlAnnotations = unwrappedDocument.getXmlAnnotations();
+        List<UpConversionFailure> result = new ArrayList<UpConversionFailure>();
+        extractUpConversionFailures(xmlAnnotations.get(MathMLUpConverter.CONTENT_FAILURES_ANNOTATION_NAME), result);
+        extractUpConversionFailures(xmlAnnotations.get(MathMLUpConverter.MAXIMA_FAILURES_ANNOTATION_NAME), result);
+        return result;
+    }
+    
+    private static void extractUpConversionFailures(NodeList failureAnnotationContent, List<UpConversionFailure> resultBuilder) {
+        if (failureAnnotationContent!=null) {
+            Node child;
+            for (int i=0, size=failureAnnotationContent.getLength(); i<size; i++) {
+                child = failureAnnotationContent.item(i);
+                if (isUpConversionFailureElement(child)) {
+                    resultBuilder.add(extractUpConversionFailure((Element) child));
+                }
+            }
+        }
+
+    }
+    
+    /**
+     * Searches the given DOM {@link Document} for all <tt>s:fail</tt> elements contained therein.
+     */
     public static List<UpConversionFailure> extractUpConversionFailures(Document upConvertedDocument) {
         return extractUpConversionFailures(upConvertedDocument.getDocumentElement());
     }
     
+    /**
+     * Searches the given DOM {@link Element} and all its descendents for all <tt>s:fail</tt> elements
+     * contained therein.
+     */
     public static List<UpConversionFailure> extractUpConversionFailures(Element startSearchElement) {
         List<UpConversionFailure> result = new ArrayList<UpConversionFailure>();
         walkDOM(startSearchElement, result);
@@ -155,7 +192,7 @@ public final class UpConversionUtilities {
      * @param resultBuilder
      */
     private static void walkDOM(Element searchElement, List<UpConversionFailure> resultBuilder) {
-        if (SNUGGLETEX_NAMESPACE.equals(searchElement.getNamespaceURI()) && searchElement.getLocalName().equals("fail")) {
+        if (isUpConversionFailureElement(searchElement)) {
             resultBuilder.add(extractUpConversionFailure(searchElement));
         }
         else {
@@ -169,6 +206,18 @@ public final class UpConversionUtilities {
                 }
             }
         }
+    }
+    
+    /**
+     * Checks to see whether the given DOM Node is an <tt>s:fail</tt> element.
+     * 
+     * @since 1.3.0
+     */
+    public static boolean isUpConversionFailureElement(Node node) {
+        return node!=null
+            && node.getNodeType()==Node.ELEMENT_NODE
+            && SNUGGLETEX_NAMESPACE.equals(node.getNamespaceURI())
+            && "fail".equals(node.getLocalName());
     }
     
     //-------------------------------------------------------
@@ -225,6 +274,7 @@ public final class UpConversionUtilities {
                 Element assumeElement = appendSnuggleElement(document, optionsContainer, "symbol");
                 assumeElement.setAttribute("assume", assumptionType);
                 Node assumptionTargetCopy = elementWrapper.getSymbolElement().cloneNode(true);
+                document.adoptNode(assumptionTargetCopy);
                 assumeElement.appendChild(assumptionTargetCopy);
             }
         }

@@ -1,6 +1,6 @@
 /* $Id:InterpretationType.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.semantics;
@@ -47,6 +47,7 @@ public enum InterpretationType {
     /* These can be applied to both Text and Math stuff. (Generally only environments) */
     TABULAR,
     LIST,
+    STYLE_SENTINEL,
     
     ;
 }

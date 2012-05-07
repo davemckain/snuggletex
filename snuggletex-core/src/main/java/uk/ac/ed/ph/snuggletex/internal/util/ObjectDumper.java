@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -23,8 +23,8 @@ import java.util.Map.Entry;
  */
 public final class ObjectDumper {
     
-    public static int DEFAULT_INDENT_WIDTH = 4;
-    public static int DEFAULT_MAX_DEPTH = 16;
+    public static final int DEFAULT_INDENT_WIDTH = 4;
+    public static final int DEFAULT_MAX_DEPTH = 16;
     
     private static final String EMPTY = "(empty)";
     
@@ -158,10 +158,10 @@ public final class ObjectDumper {
     private void appendArray(Object[] array, DumpMode dumpMode, int depth) {
         Class<?> componentType = array.getClass().getComponentType();
         result.append(componentType.getName())
-            .append("[]@")
-            .append(Integer.toHexString(array.hashCode()))
-            .append("[");
-        if (array.length==0) {
+                .append("[]@")
+                .append(Integer.toHexString(System.identityHashCode(array)))
+                .append("[");
+        if (array.length == 0) {
             result.append(EMPTY);
         }
         else {

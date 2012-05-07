@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -28,7 +28,7 @@ public final class ComputedStyle {
         RM("div", "rm", "span", "rm", "normal"),
         EM("div", "em", "em", null, "italic"),
         IT("div", "it", "i", null, "italic"),
-        TT("div", "tt", "tt", null, "monospace"),
+        TT("div", "tt", "span", "tt", "monospace"),
         SC("div", "sc", "span", "sc", null),
         SL("div", "sl", "span", "sl", null),
         SF("div", "sf", "span", "sf", "sans-serif"),

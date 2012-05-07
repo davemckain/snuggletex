@@ -1,11 +1,11 @@
 /* $Id:MathTests.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
 
-import uk.ac.ed.ph.snuggletex.AbstractErrorTest;
+import uk.ac.ed.ph.snuggletex.ErrorTestBase;
 import uk.ac.ed.ph.snuggletex.MathTests;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -26,7 +26,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MathUpConversionErrorTests extends AbstractErrorTest {
+public class MathUpConversionErrorTests extends ErrorTestBase {
     
     public static final String TEST_RESOURCE_NAME = "math-upconversion-error-tests.txt";
     

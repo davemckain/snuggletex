@@ -26,7 +26,7 @@
  *
  * $Id:web.xml 158 2008-07-31 10:48:14Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh
+ * Copyright (c) 2008-2011, The University of Edinburgh
  * All Rights Reserved
  */
 
@@ -35,6 +35,8 @@
 /* (Reset certain defaults chosen by ASCIIMathML) */
 var mathcolor = "";
 var mathfontfamily = "";
+
+var newline = "\r\n";
 
 /**
  * Simple hash that will keep track of the current value of each
@@ -107,20 +109,20 @@ function updatePreviewIfChanged(inputBoxId, previewElementId, previewSourceId) {
 function extractMathML(previewElementId) {
     var previewElement = document.getElementById(previewElementId);
     var mathNode = previewElement.getElementsByTagName("math")[0];
-    return AMnode2string(mathNode, "").substring(1); // (First char is newline)
+    return AMnode2string(mathNode, "").substring(newline.length); /* Trim off leading newline */
 }
 
 /* Fixed up version of the function of the same name in ASCIIMathMLeditor.js,
  * with the following changes:
  *
- * * Used '\n' for line breaks
+ * * Used newline variable for line breaks
  * * Attribute values are escape correctly
  */
 function AMnode2string(inNode, indent) {
     var i, str = "";
     if (inNode.nodeType == 1) {
         var name = inNode.nodeName.toLowerCase(); // (IE fix)
-        str = "\n" + indent + "<" + name;
+        str = newline + indent + "<" + name;
         for (i=0; i < inNode.attributes.length; i++) {
             var attrValue = inNode.attributes[i].nodeValue;
             if (attrValue!="italic" &&
@@ -136,7 +138,9 @@ function AMnode2string(inNode, indent) {
         for(i=0; i<inNode.childNodes.length; i++) {
             str += AMnode2string(inNode.childNodes[i], indent+"  ");
         }
-        if (name != "mo" && name != "mi" && name != "mn") str += "\n"+indent;
+        if (name != "mo" && name != "mi" && name != "mn") {
+            str += newline + indent;
+        }
         str += "</" + name + ">";
     }
     else if (inNode.nodeType == 3) {

@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
@@ -123,16 +123,6 @@ public final class DocumentationServlet extends BaseServlet {
     }
     
     public DocumentationServlet() {
-        /* Define all supported content types */
-        this.extensionToContentTypeMap = new HashMap<String, String>();
-        extensionToContentTypeMap.put("xhtml", "application/xhtml+xml");
-        extensionToContentTypeMap.put("xml", "application/xhtml+xml");
-        extensionToContentTypeMap.put("cxml", "application/xhtml+xml");
-        extensionToContentTypeMap.put("htm", "text/html");
-        extensionToContentTypeMap.put("html", "text/html");
-        extensionToContentTypeMap.put("tex", "application/x-latex");
-        extensionToContentTypeMap.put("png", "image/png"); /* (Required for JEuclid MathML images) */
-        
         /* Determines which extensions to use for standard web page outputs */
         this.extensionToWebPageTypeMap = new HashMap<String, WebPageType>();
         extensionToWebPageTypeMap.put("xhtml", WebPageType.MOZILLA);
@@ -140,6 +130,18 @@ public final class DocumentationServlet extends BaseServlet {
         extensionToWebPageTypeMap.put("cxml", WebPageType.CROSS_BROWSER_XHTML);
         extensionToWebPageTypeMap.put("htm", WebPageType.MATHPLAYER_HTML);
         extensionToWebPageTypeMap.put("html", WebPageType.PROCESSED_HTML);
+//        extensionToWebPageTypeMap.put("mhtml", WebPageType.MATHJAX_CROSS_BROWSER_XHTML);
+        
+        /* Define all supported content types */
+        this.extensionToContentTypeMap = new HashMap<String, String>();
+        extensionToContentTypeMap.put("xhtml", "application/xhtml+xml");
+        extensionToContentTypeMap.put("xml", "application/xhtml+xml");
+        extensionToContentTypeMap.put("cxml", "application/xhtml+xml");
+        extensionToContentTypeMap.put("htm", "text/html");
+        extensionToContentTypeMap.put("html", "text/html");
+        extensionToContentTypeMap.put("mhtml", "text/html");
+        extensionToContentTypeMap.put("tex", "application/x-latex");
+        extensionToContentTypeMap.put("png", "image/png"); /* (Required for JEuclid MathML images) */
     }
     
     @Override
@@ -272,6 +274,9 @@ public final class DocumentationServlet extends BaseServlet {
             /* Point to our own version of the USS if required */
             options.setClientSideXSLTStylesheetURLs(request.getContextPath() + "/includes/pmathml.xsl");
         }
+//        else if (webPageType==WebPageType.MATHJAX_CROSS_BROWSER_XHTML) {
+//            options.setMathJaxPath(request.getContextPath() + "/lib/MathJax/MathJax.js");
+//        }
         
         /* Set up stylesheet to format the output */
         Transformer stylesheet = getStylesheet(request, FORMAT_OUTPUT_XSLT_URI);

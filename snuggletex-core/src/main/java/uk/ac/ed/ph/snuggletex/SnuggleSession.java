@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -117,10 +117,10 @@ public final class SnuggleSession implements SessionContext {
     private final SessionConfiguration configuration;
     
     /** Default {@link DOMOutputOptions}, copied from the owning {@link SnuggleEngine} during creation */
-    private final DOMOutputOptions defaultDOMOutputOptions;
+    final DOMOutputOptions defaultDOMOutputOptions;
     
     /** Default {@link XMLStringOutputOptions}, copied from the owning {@link SnuggleEngine} during creation */
-    private final XMLStringOutputOptions defaultXMLStringOutputOptions;
+    final XMLStringOutputOptions defaultXMLStringOutputOptions;
     
     //-------------------------------------------------
     // Stateful stuff
@@ -175,18 +175,20 @@ public final class SnuggleSession implements SessionContext {
      * {@link SnuggleSnapshot} via {@link SnuggleSnapshot#createSession()}.)
      */
     SnuggleSession(final SnuggleSnapshot snapshot) {
-        /* Set up main worker Objects */
-        this.tokeniser = new LaTeXTokeniser(this);
-        this.styleEvaluator = new StyleEvaluator(this);
-        this.tokenFixer = new TokenFixer(this);
-        this.styleRebuilder = new StyleRebuilder(this);
-        
         /* Copy stuff from the template */
         this.engine = snapshot.engine;
         this.packages = snapshot.packages;
         this.configuration = snapshot.configuration;
         this.defaultDOMOutputOptions = snapshot.defaultDOMOutputOptions;
         this.defaultXMLStringOutputOptions = snapshot.defaultXMLStringOutputOptions;
+        
+        /* Set up main worker Objects */
+        this.tokeniser = new LaTeXTokeniser(this);
+        this.styleEvaluator = new StyleEvaluator(this);
+        this.tokenFixer = new TokenFixer(this);
+        this.styleRebuilder = new StyleRebuilder(this);
+        
+        /* Re-initialise session state */
         this.errors = new ArrayList<InputError>(snapshot.errors);
         this.userCommandMap = new HashMap<String, UserDefinedCommand>(snapshot.userCommandMap);
         this.userEnvironmentMap = new HashMap<String, UserDefinedEnvironment>(snapshot.userEnvironmentMap);
@@ -463,10 +465,47 @@ public final class SnuggleSession implements SessionContext {
      *   terminated by an error in the input LaTeX and if the session was configured to fail on
      *   the first error. 
      */
-    public Document createWebPage(final WebPageOutputOptions options) {
+    public Document buildWebPage(final WebPageOutputOptions options) {
         ConstraintUtilities.ensureNotNull(options, "options");
         try {
-            return new WebPageBuilder(this, options).createWebPage(parsedTokens);
+            return new WebPageBuilder(this, options).buildWebPage(parsedTokens);
+        }
+        catch (SnuggleParseException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * For naming consistency, please use {@link #buildWebPage(WebPageOutputOptions)} instead.
+     */
+    @Deprecated
+    public Document createWebPage(final WebPageOutputOptions options) {
+        return buildWebPage(options);
+    }
+    
+    /**
+     * Builds a complete web page based on the currently parsed tokens, returning a String
+     * containing the resulting content. This is a convenience method; using
+     * {@link #writeWebPage(WebPageOutputOptions, OutputStream)} might be more efficient.
+     * <p>
+     * The provided {@link WebPageOutputOptions} Object is
+     * used to determine which type of web page to generate and how it should be configured.
+     * <p>
+     * Any XSLT stylesheet specified by {@link WebPageOutputOptions#getStylesheets()}
+     * will have been applied to the result before it is returned. On the other hand, serialisation
+     * options in the {@link WebPageOutputOptions} (such as Content Type and encoding) 
+     * will not have been applied when this method returns.
+     * 
+     * @return resulting Document if the process completed successfully, null if the process was
+     *   terminated by an error in the input LaTeX and if the session was configured to fail on
+     *   the first error. 
+     *   
+     * @since 1.3.0
+     */
+    public String buildWebPageString(final WebPageOutputOptions options) {
+        ConstraintUtilities.ensureNotNull(options, "options");
+        try {
+            return new WebPageBuilder(this, options).buildWebPageString(parsedTokens);
         }
         catch (SnuggleParseException e) {
             return null;

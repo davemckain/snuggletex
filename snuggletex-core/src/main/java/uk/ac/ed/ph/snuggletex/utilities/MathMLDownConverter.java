@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;
@@ -82,7 +82,7 @@ public final class MathMLDownConverter {
         CSSPropertiesURIResolver uriResolver = new CSSPropertiesURIResolver(cssPropertiesDocument);
 
         /* Run the conversion XSLT */
-        Templates templates = stylesheetManager.getStylesheet(Globals.MATHML_TO_XHTML_XSL_RESOURCE_NAME);
+        Templates templates = stylesheetManager.getCompiledStylesheet(Globals.MATHML_TO_XHTML_XSL_RESOURCE_NAME);
         Document result = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             Transformer transformer = templates.newTransformer();

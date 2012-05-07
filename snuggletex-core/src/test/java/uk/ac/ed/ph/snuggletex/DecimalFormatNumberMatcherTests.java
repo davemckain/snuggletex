@@ -1,11 +1,12 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.internal.WorkingDocument;
+import uk.ac.ed.ph.snuggletex.testutil.TestUtilities;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

@@ -1,12 +1,15 @@
 /* $Id:MultiLineTests.java 179 2008-08-01 13:41:24Z davemckain $
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
 
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
+import uk.ac.ed.ph.snuggletex.testutil.SnuggleTeXTestDriver;
+import uk.ac.ed.ph.snuggletex.testutil.SnuggleTeXTestDriver.DriverCallback;
 import uk.ac.ed.ph.snuggletex.testutil.TestFileHelper;
+import uk.ac.ed.ph.snuggletex.testutil.TestUtilities;
 
 import java.util.Collection;
 
@@ -24,7 +27,7 @@ import org.w3c.dom.Document;
  * @version $Revision:179 $
  */
 @RunWith(Parameterized.class)
-public class MultiLineTests extends AbstractGoodXMLTest {
+public class MultiLineTests implements DriverCallback {
     
     public static final String TEST_RESOURCE_NAME = "multiline-tests.txt";
     
@@ -33,24 +36,29 @@ public class MultiLineTests extends AbstractGoodXMLTest {
         return TestFileHelper.readAndParseMultiLineInputTestResource(TEST_RESOURCE_NAME);
     }
     
-    public MultiLineTests(final String inputLaTeX, final String expectedXML) {
-        super(inputLaTeX,
-                "<body xmlns='" + W3CConstants.XHTML_NAMESPACE + "'>"
-                + expectedXML.replaceAll("(?m)^ +", "").replaceAll("(?m) +$", "")
+    private final String inputLaTeX;
+    private final String expectedXML;
+    
+    public MultiLineTests(final String inputLaTeX, final String expectedXMLContent) {
+        this.inputLaTeX = inputLaTeX;
+        this.expectedXML = "<body xmlns='" + W3CConstants.XHTML_NAMESPACE + "'>"
+                + expectedXMLContent.replaceAll("(?m)^ +", "").replaceAll("(?m) +$", "")
                     .replace("\n", "")
                     .replace("%n", "\n")
-                + "</body>"
-        );
+                + "</body>";
     }
     
-    @Override
-    protected void fixupDocument(Document document) {
-        /* Nothing to do */
-    }
-    
-    @Override
     @Test
     public void runTest() throws Throwable {
-        super.runTest();
+        SnuggleEngine engine = new SnuggleEngine();
+        
+        SnuggleTeXTestDriver caller = new SnuggleTeXTestDriver(engine, this);
+        
+        caller.run(inputLaTeX);
+    }
+    
+    public void verifyDOM(Document document) throws Throwable {
+        /* Check XML verifies against what we expect */
+        TestUtilities.verifyXML(expectedXML, document);
     }
 }

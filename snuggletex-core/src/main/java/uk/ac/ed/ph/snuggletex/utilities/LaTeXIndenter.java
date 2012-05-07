@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;
@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 public final class LaTeXIndenter {
     
     /** Default indent width */
-    public static int DEFAULT_INDENT_WIDTH = 2;
+    public static final int DEFAULT_INDENT_WIDTH = 2;
     
     /** Default maximum indent level */
-    public static int DEFAULT_MAX_INDENT_LEVEL = 10;
+    public static final int DEFAULT_MAX_INDENT_LEVEL = 10;
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final String BEGIN = "\\begin";

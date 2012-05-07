@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.tokens;
@@ -18,7 +18,9 @@ import java.util.List;
  * Represents a literal braced section in the original LaTeX document, i.e. something like
  * <tt>{ ... }</tt>.
  * <p>
- * All instances of these tokens will have disappeared once the {@link TokenFixer} has run.
+ * The {@link TokenFixer} strips these out when in PARAGRAPH mode as they're only used to
+ * delimit stylings. They are kept in for MATH and LR mode since they are used as implicit
+ * brackets.
  *
  * @author  David McKain
  * @version $Revision$

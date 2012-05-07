@@ -10,7 +10,7 @@ few other things).
 Some semantic inference is also performed basic on common conventions,
 which can be turned off if required.
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 -->
@@ -35,11 +35,6 @@ All Rights Reserved
   <xsl:template name="s:pmathml-to-cmathml" as="element()*">
     <xsl:param name="elements" as="element()*"/>
     <xsl:param name="upconversion-options" as="element(s:upconversion-options)"/>
-    <!--
-    <xsl:message>
-      INPUT IS <xsl:copy-of select="$elements"/>
-    </xsl:message>
-    -->
     <xsl:call-template name="local:process-group">
       <xsl:with-param name="elements" select="$elements"/>
       <xsl:with-param name="upconversion-options" select="$upconversion-options" tunnel="yes"/>
@@ -47,6 +42,23 @@ All Rights Reserved
   </xsl:template>
 
   <!-- ************************************************************ -->
+
+  <xsl:function name="local:to-cmathml" as="element()">
+    <xsl:param name="operator" as="element(local:operator)"/>
+    <xsl:variable name="output" select="$operator/@output" as="xs:string"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($output, 'csymbol')">
+        <csymbol>
+          <mo>
+            <xsl:value-of select="substring-after($output, 'csymbol')"/>
+          </mo>
+        </csymbol>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:element name="{$output}"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 
   <!--
   Sequence of all "standard" (i.e. non-relation) operators that we support.
@@ -64,13 +76,14 @@ All Rights Reserved
   <xsl:variable name="local:supported-standard-operators" as="element(local:operator)+">
     <local:operator inputs="+" output="plus" nary="true" allow-unary="true"/>
     <local:operator inputs="-" output="minus" nary="false" allow-unary="true"/>
+    <local:operator inputs="&#xb1;" output="csymbol&#xb1;" nary="false" allow-unary="true"/>
     <local:operator inputs="*&#xd7;&#x22c5;&#x2062;" output="times" nary="true" allow-unary="false"/>
     <local:operator inputs="/&#xf7;" output="divide" nary="false" allow-unary="false"/>
     <local:operator inputs="&#x2228;" output="or" nary="true" allow-unary="false"/>
     <local:operator inputs="&#x2227;" output="and" nary="true" allow-unary="false"/>
     <local:operator inputs="&#x222a;" output="union" nary="true" allow-unary="false"/>
     <local:operator inputs="&#x2229;" output="intersect" nary="true" allow-unary="false"/>
-    <local:operator inputs="&#x2216;&#x29f5;" output="setdiff" nary="false" allow-unary="false"/>
+    <local:operator inputs="\&#x2216;&#x29f5;" output="setdiff" nary="false" allow-unary="false"/>
   </xsl:variable>
 
   <xsl:variable name="local:standard-operator-characters" as="xs:string"
@@ -319,7 +332,7 @@ All Rights Reserved
     <xsl:choose>
       <xsl:when test="count($elements)=1 and local:is-matching-standard-operator($elements[1], $operator)">
         <!-- Unapplied operator -->
-        <xsl:element name="{$cmathml-name}"/>
+        <xsl:sequence select="local:to-cmathml($operator)"/>
       </xsl:when>
       <xsl:when test="count($elements)=2 and local:is-matching-standard-operator($elements[1], $operator)
           and not(s:is-operator($elements[2]))">
@@ -332,7 +345,7 @@ All Rights Reserved
           <xsl:otherwise>
             <!-- Legal prefix application -->
             <apply>
-              <xsl:element name="{$cmathml-name}"/>
+              <xsl:sequence select="local:to-cmathml($operator)"/>
               <xsl:call-template name="local:process-group">
                 <xsl:with-param name="elements" select="$elements[2]"/>
               </xsl:call-template>
@@ -382,7 +395,7 @@ All Rights Reserved
           </xsl:when>
           <xsl:otherwise>
             <apply>
-              <xsl:element name="{$cmathml-name}"/>
+              <xsl:sequence select="local:to-cmathml($operator)"/>
               <xsl:copy-of select="$content"/>
             </apply>
           </xsl:otherwise>
@@ -411,7 +424,7 @@ All Rights Reserved
     <xsl:choose>
       <xsl:when test="count($elements)=1 and local:is-matching-standard-operator($elements[1], $operator)">
         <!-- Unapplied operator -->
-        <xsl:element name="{$cmathml-name}"/>
+        <xsl:sequence select="local:to-cmathml($operator)"/>
       </xsl:when>
       <xsl:when test="count($elements)=2 and local:is-matching-standard-operator($elements[1], $operator)
           and not(s:is-operator($elements[2]))">
@@ -424,7 +437,7 @@ All Rights Reserved
           <xsl:otherwise>
             <!-- Legal prefix/unary application -->
             <apply>
-              <xsl:element name="{$cmathml-name}"/>
+              <xsl:sequence select="local:to-cmathml($operator)"/>
               <xsl:call-template name="local:process-group">
                 <xsl:with-param name="elements" select="$elements[2]"/>
               </xsl:call-template>
@@ -443,7 +456,7 @@ All Rights Reserved
       <xsl:otherwise>
         <!-- This is type (1) as outlined above -->
         <apply>
-          <xsl:element name="{$cmathml-name}"/>
+          <xsl:sequence select="local:to-cmathml($operator)"/>
           <xsl:call-template name="local:process-group">
             <xsl:with-param name="elements" select="$elements[1]"/>
           </xsl:call-template>
@@ -454,7 +467,6 @@ All Rights Reserved
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
 
   <!--
   Mix of (positive) relation operators, such as '=', '<', '>'.
@@ -566,22 +578,22 @@ All Rights Reserved
   <xsl:function name="local:create-relation-element" as="element()">
     <xsl:param name="mo" as="element(mo)"/>
     <xsl:param name="arguments" as="element()*"/>
-    <xsl:variable name="positive-native" as="xs:string?" select="$local:supported-relation-operators[@input=string($mo)]/@output"/>
-    <xsl:variable name="negated-native" as="xs:string?" select="$local:supported-relation-operators[@input-negated=string($mo)]/@output-negated"/>
-    <xsl:variable name="negated-synthetic" as="xs:string?" select="$local:supported-relation-operators[@input-negated=string($mo)]/@output"/>
+    <xsl:variable name="positive-native" as="element(local:operator)?"
+      select="$local:supported-relation-operators[@input=string($mo)]"/>
+    <xsl:variable name="negated-synthetic" as="element(local:operator)?"
+      select="$local:supported-relation-operators[@input-negated=string($mo)]"/>
     <xsl:choose>
-      <xsl:when test="exists($positive-native) or exists($negated-native)">
-        <xsl:variable name="output-native" as="xs:string" select="($positive-native, $negated-native)[1]"/>
+      <xsl:when test="exists($positive-native)">
         <xsl:choose>
           <xsl:when test="exists($arguments)">
             <apply>
-              <xsl:element name="{$output-native}"/>
+              <xsl:sequence select="local:to-cmathml($positive-native)"/>
               <xsl:copy-of select="$arguments"/>
             </apply>
           </xsl:when>
           <xsl:otherwise>
             <!-- Unapplied relation -->
-            <xsl:element name="{$output-native}"/>
+            <xsl:sequence select="local:to-cmathml($positive-native)"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
@@ -591,7 +603,7 @@ All Rights Reserved
             <apply>
               <not/>
               <apply>
-                <xsl:element name="{$negated-synthetic}"/>
+                <xsl:sequence select="local:to-cmathml($negated-synthetic)"/>
                 <xsl:copy-of select="$arguments"/>
               </apply>
             </apply>
@@ -600,7 +612,7 @@ All Rights Reserved
             <!-- Unapplied case, though not we still apply "not" to it -->
             <apply>
               <not/>
-              <xsl:element name="{$negated-synthetic}"/>
+              <xsl:sequence select="local:to-cmathml($negated-synthetic)"/>
             </apply>
           </xsl:otherwise>
         </xsl:choose>
@@ -757,9 +769,8 @@ All Rights Reserved
     <xsl:param name="operator-element" as="element()" required="yes"/>
     <xsl:choose>
       <xsl:when test="$operator-element[self::msup and *[1][self::mi]]">
-        <xsl:variable name="function" select="$operator-element/*[1]" as="element(mi)"/>
+        <xsl:variable name="function" select="local:get-supported-function($operator-element/*[1])" as="element(local:function)"/>
         <xsl:variable name="superscript" select="$operator-element/*[2]" as="element()"/>
-        <xsl:variable name="function" select="local:get-supported-function($function)" as="element(local:function)"/>
         <xsl:choose>
           <xsl:when test="$superscript[self::mn and .='-1']">
             <!-- It looks like an inverse function. Make sure we know about it -->
@@ -934,13 +945,10 @@ All Rights Reserved
     <xsl:param name="elements" as="element()+" required="yes"/>
     <!-- Get Content MathML element corresponding to this operator -->
     <xsl:variable name="prefix-operator" as="element(local:operator)" select="local:get-prefix-operator($elements[1])"/>
-    <xsl:variable name="cmathml-operator" as="element()">
-      <xsl:element name="{$prefix-operator/@output}"/>
-    </xsl:variable>
     <xsl:choose>
       <xsl:when test="count($elements)=1">
         <!-- This is case (1) above -->
-        <xsl:copy-of select="$cmathml-operator"/>
+        <xsl:sequence select="local:to-cmathml($prefix-operator)"/>
       </xsl:when>
       <xsl:otherwise>
         <!-- This is (2) -->
@@ -952,7 +960,7 @@ All Rights Reserved
           </xsl:when>
           <xsl:otherwise>
             <apply>
-              <xsl:copy-of select="$cmathml-operator"/>
+              <xsl:sequence select="local:to-cmathml($prefix-operator)"/>
               <xsl:call-template name="local:process-group">
                 <xsl:with-param name="elements" select="$operands"/>
               </xsl:call-template>
@@ -1035,6 +1043,11 @@ All Rights Reserved
   </xsl:template>
 
   <!-- ************************************************************ -->
+
+  <xsl:template match="mrow[not(*)]" mode="pmathml-to-cmathml" as="element()*">
+    <!-- Fail: empty grouping -->
+    <xsl:copy-of select="s:make-error('UCFG04', (.), ())"/>
+  </xsl:template>
 
   <xsl:template match="mrow" mode="pmathml-to-cmathml" as="element()*">
     <xsl:call-template name="local:process-group">

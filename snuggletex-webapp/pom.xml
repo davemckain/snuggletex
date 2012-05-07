@@ -3,7 +3,7 @@
 
 $Id$
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 -->
@@ -62,12 +62,7 @@ All Rights Reserved
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
+      <!-- Dynamically Generated Resources -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -75,10 +70,10 @@ All Rights Reserved
           <!-- Generate snuggletex.css -->
           <execution>
             <id>snuggletex.css</id>
+            <phase>prepare-package</phase>
             <goals>
               <goal>exec</goal>
             </goals>
-            <phase>compile</phase>
             <configuration>
               <executable>java</executable>
               <classpathScope>runtime</classpathScope>
@@ -93,10 +88,10 @@ All Rights Reserved
           <!-- Create Error Codes documentation page source -->
           <execution>
             <id>generate-error-codes-page</id>
+            <phase>prepare-package</phase>
             <goals>
               <goal>exec</goal>
             </goals>
-            <phase>compile</phase>
             <configuration>
               <executable>java</executable>
               <classpathScope>runtime</classpathScope>
@@ -110,10 +105,9 @@ All Rights Reserved
           </execution>
         </executions>
       </plugin>
-      <!-- Pull in auto-generated content created above when building WAR structure -->
+      <!-- Pull in extra content created above when building WAR structure -->
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1-beta-1</version>
         <configuration>
           <warName>snuggletex</warName>
           <webResources>

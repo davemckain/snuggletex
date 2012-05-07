@@ -1,0 +1,87 @@
+/* (This is a severely cut down version of the CSS of the same name that's used
+ * on the School website, and represents normal body elements that would
+ * normally be edited via a rich text editor.)
+ */
+
+/* ======================================================================== */
+
+/* (Reset styles in the same way as main stylesheet so that things work
+ * properly within the CKEditor)
+ */
+
+body {
+  font: 13px arial, helvetica, clean, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* ======================================================================== */
+
+p {
+  font-size: 100%; /* 13px*/
+  margin: 1em 0;
+}
+
+ul {
+  padding: 0 0 0 2em;
+  list-style: square;
+}
+
+ol {
+  padding: 0 0 0 2em;
+}
+
+ul li,
+ol li {
+  padding: 0;
+}
+
+h1 {
+  font-style: normal;
+  font-size: 167%; /* 22px */
+  color: #24476b;
+  padding: 0;
+  margin: 0.67em 0;
+  font-size: 160%;
+}
+
+h2 {
+  font-size: 153.9%; /* 20px */
+  color: #24476b;
+  padding: 0;
+  margin: 0.83em 0;
+}
+
+h3 {
+  font-size: 123.1%; /* 16px */
+  color: #24476b;
+  padding: 0;
+  margin: 1em 0;
+}
+
+h4 {
+  font-size: 108%; /* 14px */
+  color: #24476b;
+  padding: 0;
+  margin: 1.33em 0;
+}
+
+h5 {
+  font-size: 93%; /* 12px */
+  padding: 0;
+  margin: 1.67em 0;
+}
+
+h6 {
+  font-size: 93%; /* 12px */
+  font-style: italic;
+  padding: 0;
+  margin: 1.67em 0;
+}
+
+hr {
+  margin: 1em 0;
+}

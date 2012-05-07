@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -119,6 +120,30 @@ public final class XMLUtilities {
         return tranformer.getClass().getName().startsWith("net.sf.saxon.");
     }
     
+    /**
+     * Helper to turn on indentation for a {@link Transformer} that works correctly for
+     * both Saxon and Xalan.
+     * 
+     * @param transformer {@link Transformer} to configure
+     * @param indent required indentation, where 0 or more provides indentation and negative
+     *   numbers turns indentation off.
+     */
+    public static void setIndentation(Transformer transformer, int indent) {
+        if (indent>=0) {
+            String indentString = String.valueOf(indent);
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            
+            /* Set custom properties for both Saxon and Xalan at once.
+             * This appears safe to do without having to check the underlying processor.
+             */
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", indentString);
+            transformer.setOutputProperty("{http://saxon.sf.net/}indent-spaces", indentString);
+        }
+        else {
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+        }
+    }
+    
     //------------------------------------------------------------------
     
     /**
@@ -197,10 +222,6 @@ public final class XMLUtilities {
     public static String serializeNode(StylesheetManager stylesheetManager, final Node node,
             final SerializationSpecifier serializationOptions) {
         StringWriter resultWriter = new StringWriter();
-        
-        /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
-         * a further optional XSLT 2.0 transform to map character references to named entities.
-         */
         try {
             Transformer serializer = stylesheetManager.getSerializer(null, serializationOptions);
             serializer.transform(new DOMSource(node), new StreamResult(resultWriter));
@@ -224,9 +245,6 @@ public final class XMLUtilities {
             final SerializationSpecifier serializationOptions) {
         StringWriter resultWriter = new StringWriter();
         
-        /* This process consists of an XSLT 1.0 transform to extract the child Nodes, plus
-         * a further optional XSLT 2.0 transform to map character references to named entities.
-         */
         try {
             Transformer serializer = stylesheetManager.getSerializer(Globals.EXTRACT_CHILD_NODES_XSL_RESOURCE_NAME,
                     serializationOptions);

@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -30,7 +30,6 @@ public final class AnchorHandler implements CommandHandler {
             /* Create <a/> element */
             Element aElement = builder.appendXHTMLElement(parentElement, "a");
             aElement.setAttribute("id", validatedId);
-            aElement.setAttribute("name", validatedId);
             aElement.setIdAttribute("id", true);
         }
     }

@@ -9,6 +9,8 @@ $Id$
 -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+  <xsl:import href="identity-transform.xsl"/>
+
   <xsl:output use-character-maps="mathml-entities"/>
 
   <xsl:character-map name="mathml-entities">
@@ -221,5 +223,4 @@ $Id$
     <xsl:output-character character="&#x2a06;" string="&amp;bigsqcup;"/>
     <xsl:output-character character="&#x2a3f;" string="&amp;amalg;"/>
   </xsl:character-map>
-
 </xsl:stylesheet>

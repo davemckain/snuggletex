@@ -1,0 +1,296 @@
+/*
+ * Main stylesheet for the SnuggleTeX webapp
+ *
+ * $Id$
+ */
+
+#contentArea {
+  padding: 0;
+  margin: 0;
+  background: url(images/background-gradient.png) repeat-y center right;
+  font-family: Arial, Helvetica, Sans-Serif;
+}
+
+#skipnavigation {
+  display: none;
+}
+
+/************************************************************/
+
+#navigation {
+  float: right;
+  width: 290px;
+  background: url(images/background-gradient.png) repeat-y center right;
+}
+
+#navinner {
+  padding: 20px 16px 0 20px;
+}
+
+#navinner h2 {
+  color: #25476c;
+  padding: 0;
+  border-bottom: 1px solid #25476c;
+  margin: 0 0 0.2em 0;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+#navinner h2 a:link, #navinner h2 a:visited {
+  color: inherit;
+}
+
+#navinner ul {
+  margin: 0 0 1.5em 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+#navinner ul ul {
+  margin: 0 0 0 1em;
+}
+
+#navinner li {
+  margin: 0;
+  padding: 0;
+}
+
+#navinner a:link, #navinner a:visited {
+  color: #25476c;
+  text-decoration: none;
+}
+
+#navinner a:active {
+  color: #25476c;
+  text-decoration: none;
+}
+
+#navinner a:hover {
+  color: #25476c;
+  text-decoration: none;
+}
+
+#navinner a.selected {
+  color: #25476c !important;
+  font-weight: bold;
+}
+
+
+/************************************************************/
+
+#maincontent {
+  margin: 0 280px 0 0;
+}
+
+#maininner {
+  padding: 20px 20px 40px 20px;
+  margin: 1px;
+  overflow-x: auto;
+}
+
+#maininner h2 {
+  color: #25476c;
+  margin: 0 0 0.8em 0;
+  padding: 0;
+  font-weight: bold;
+  font-size: 160%;
+}
+
+#maininner h3 {
+  color: #25476c;
+  margin: 1em 0;
+  padding: 0;
+  font-size: 130%;
+}
+
+#maininner h3 span.verb {
+  color: #25476c;
+}
+
+#maininner h4 {
+  color: #25476c;
+  text-transform: uppercase;
+  font-size: 120%;
+  padding: 0;
+  margin: 0.3em 0;
+}
+
+#maininner a:link {
+  color: #25476c;
+}
+
+#maininner a:visited {
+  color: #736667;
+}
+
+#maininner a:hover {
+  background-color: #ffdae0;
+}
+
+#maininner p {
+  margin: 1em 0;
+}
+
+#maininner li {
+  margin: 1em 0;
+}
+
+/************************************************************/
+
+span.extlink {
+  padding-right: 12px;
+  margin-left: 2px;
+  background: url(extlink.png) no-repeat center left;
+}
+
+span.verb, code {
+  font-family: Courier, fixed;
+  font-size: 90%;
+  font-weight: bold;
+  color: #333333;
+}
+
+.warning {
+  background-color: #f2d7da;
+  border: 2px solid red;
+  padding: 0.5em;
+  margin: 0.5em 0;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+}
+
+pre.verbatim, .note, .result {
+  background-color: #cad8e5;
+  padding: 1em;
+  color: #25476c;
+  overflow: auto;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+}
+
+.note {
+  background-color: #ffdae0;
+}
+
+/* (Override for things inside tables) */
+.tabular pre.verbatim {
+  background: none;
+  padding: 0;
+  color: black;
+  border: none;
+  font-weight: bold;
+}
+
+/* Demos */
+
+fieldset {
+  border: none;
+}
+
+textarea {
+  width: 100%;
+}
+
+.inputBox {
+  background-color: #ffdae0;
+  color: black;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  padding: 2em;
+  text-align: center;
+  font-size: larger;
+}
+
+.optionsBox {
+  background-color: #f2d7da;
+  border: 1px solid black;
+  color: black;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  padding: 1em;
+}
+
+form.input textarea {
+  width: 100%;
+  background-color: #fff7f7;
+}
+
+form.input input[type='text'] {
+  background-color: #fff7f7;
+}
+
+form.input input[type='button'] {
+  background-color: #fff7f7;
+}
+
+form.input input[type='submit'] {
+  background-color: #fff7f7;
+}
+
+.error {
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+}
+
+table.failures {
+  width: 100%;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+}
+
+table.failures th {
+  background-color: #cad8e5;
+  padding: 0.5em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  text-align: center;
+}
+
+table.failures td {
+  background-color: #eaeff5;
+  padding: 0.5em 0.5em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  text-align: center;
+}
+
+table.failures td pre {
+  text-align: left;
+}
+
+address {
+  font-style: normal;
+}
+
+blockquote {
+  font-style: italic;
+}
+
+/* Up-conversion examples */
+
+#popup {
+  display: none;
+}
+
+.ui-dialog .ui-dialog-content {
+  padding: 0 !important;
+  font-size: small;
+}
+
+.ui-tabs .ui-tabs-nav li {
+  font-size: smaller !important;
+}
+
+div.exampleResult {
+  font-size: small;
+}
+
+a.upconversionExample {
+  display: block;
+  padding: 0.3em;
+  text-align: center;
+  background-color: #eeeeee;
+  border: 1px solid #dddddd;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+}

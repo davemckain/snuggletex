@@ -3,7 +3,7 @@
 
 $Id$
 
-Copyright (c) 2010, The University of Edinburgh
+Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
 -->
@@ -36,6 +36,12 @@ All Rights Reserved
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>uk.ac.ed.ph.asciimath</groupId>
+      <artifactId>asciimath-parser</artifactId>
+      <version>${asciimath-parser.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
@@ -45,6 +51,12 @@ All Rights Reserved
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>${easymock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>thaiopensource</groupId>
+      <artifactId>jing</artifactId>
+      <version>20091111</version>
       <scope>test</scope>
     </dependency>
     <!-- (Pull in test classes from core module, which contain some useful base classes) -->
@@ -59,7 +71,6 @@ All Rights Reserved
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <includes>
@@ -87,6 +98,17 @@ All Rights Reserved
             <argument>${example.class}</argument>
           </arguments>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

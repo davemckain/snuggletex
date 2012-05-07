@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -36,6 +36,8 @@ public interface W3CConstants {
 
     String XHTML_11_MATHML_20_PUBLIC_IDENTIFIER = "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN";
     String XHTML_11_MATHML_20_SYSTEM_IDENTIFIER = "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd";
+    
+    String HTML5_DOCTYPE_HEADER = "<!DOCTYPE html>\n";
     
     //--------------------------------------------------
     // Namespaces

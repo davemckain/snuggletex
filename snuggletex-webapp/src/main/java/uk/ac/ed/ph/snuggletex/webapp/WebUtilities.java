@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public final class WebUtilities {
     
-    public static final String WITHIN_CONTEXT_REQUEST_URL_ATTRIBUTE_NAME = "uk.ac.ed.ph.cst.web.WithinContextRequestUrl";
+    public static final String WITHIN_CONTEXT_REQUEST_URL_ATTRIBUTE_NAME = "uk.ac.ed.ph.snuggletex.webapp.WithinContextRequestUrl";
     
     /**
      * Returns the URL for the given request, starting from AFTER the context path and

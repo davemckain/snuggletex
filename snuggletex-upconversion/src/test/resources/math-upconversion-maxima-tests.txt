@@ -395,32 +395,6 @@ max(x, y)
 ====
 #####################################
 ### Corner Cases
-\sin{}
-sin
-====
-\sin^{-1}{}
-asin
-====
-## This one is very pathological, but I'll accept for the time being
-{}+{}
-operator("+")
-====
-## 2 multiplied by nothing
-2{}
-!UMFOP0
-====
-## This is not be best error here, but will do for the time being
-^2
-!UMFOP0
-====
-## Likewise. (This is currently the only way of obtaining operator("^"))
-{}^{}
-operator("^")
-====
-## Likewise
-\frac{}{}
-operator("/")
-====
 \hbar
 !UMFG03
 ====
@@ -474,10 +448,6 @@ lambda([x], f(x)^2)
 ====
 \assumeSymbol{e}{exponentialNumber} $e^x$
 exp(x)
-====
-# Corner case
-\assumeSymbol{e}{exponentialNumber} $e^{}$
-exp
 ====
 \setUpConversionOption{maximaOperatorFunction}{hello} $+$
 hello("+")

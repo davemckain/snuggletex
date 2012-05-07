@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -78,6 +78,7 @@ public class MathMLUpConverter {
     
     public static final String SNUGGLETEX_ANNOTATION_NAME = "SnuggleTeX";
     public static final String LATEX_ANNOTATION_NAME = "LaTeX";
+    public static final String BRACKETED_PRESENTATION_MATHML_ANNOTATION_NAME = "MathML-Presentation-Bracketed";
     public static final String CONTENT_MATHML_ANNOTATION_NAME = "MathML-Content";
     public static final String CONTENT_FAILURES_ANNOTATION_NAME = "MathML-Content-upconversion-failures";
     public static final String MAXIMA_ANNOTATION_NAME = "Maxima";
@@ -157,7 +158,7 @@ public class MathMLUpConverter {
         Document resultDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
             /* Create required XSLT */
-            Templates upconverterStylesheet = stylesheetManager.getStylesheet(UPCONVERTER_XSL_LOCATION, true);
+            Templates upconverterStylesheet = stylesheetManager.getCompiledStylesheet(UPCONVERTER_XSL_LOCATION, true);
             Transformer upconverter = upconverterStylesheet.newTransformer();
             
             /* Pass UpConversionOptions, using default as required */
@@ -202,7 +203,7 @@ public class MathMLUpConverter {
         /* First of all we convert the ASCIIMathML into something equivalent to SnuggleTeX output */
         Document fixedDocument = XMLUtilities.createNSAwareDocumentBuilder().newDocument();
         try {
-            Templates fixerStylesheet = stylesheetManager.getStylesheet(ASCIIMATH_FIXER_XSL_LOCATION, true);
+            Templates fixerStylesheet = stylesheetManager.getCompiledStylesheet(ASCIIMATH_FIXER_XSL_LOCATION, true);
             fixerStylesheet.newTransformer().transform(new DOMSource(asciiMathMLDocument), new DOMResult(fixedDocument));
         }
         catch (TransformerConfigurationException e) {

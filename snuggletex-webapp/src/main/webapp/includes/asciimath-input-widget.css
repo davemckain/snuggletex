@@ -1,0 +1,29 @@
+div.asciiMathWidgetStatus {
+  width: 20px;
+  height: 16px;
+  display: block;
+  float: left;
+}
+
+div.waiting {
+  background: url('spinner.gif') no-repeat;
+}
+
+div.success {
+  background: url('accept.png') no-repeat;
+}
+
+div.failure {
+  background: url('cancel.png') no-repeat;
+}
+
+div.error {
+  background: url('exclamation.png') no-repeat;
+}
+
+div.asciiMathWidgetMessage {
+}
+
+div.asciiMathWidgetResult {
+  clear: both;
+}

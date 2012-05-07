@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal;
@@ -14,12 +14,12 @@ import uk.ac.ed.ph.snuggletex.SnuggleConstants;
 import uk.ac.ed.ph.snuggletex.SnuggleLogicException;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontFamily;
+import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontSize;
 import uk.ac.ed.ph.snuggletex.definitions.CoreErrorCode;
 import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
 import uk.ac.ed.ph.snuggletex.definitions.MathVariantMap;
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
-import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontFamily;
-import uk.ac.ed.ph.snuggletex.definitions.ComputedStyle.FontSize;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EqnArrayHandler;
@@ -33,6 +33,7 @@ import uk.ac.ed.ph.snuggletex.semantics.MathIdentifierInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNumberInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathOperatorInterpretation;
 import uk.ac.ed.ph.snuggletex.tokens.ArgumentContainerToken;
+import uk.ac.ed.ph.snuggletex.tokens.BraceContainerToken;
 import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
 import uk.ac.ed.ph.snuggletex.tokens.EnvironmentToken;
 import uk.ac.ed.ph.snuggletex.tokens.ErrorToken;
@@ -100,8 +101,8 @@ public final class DOMBuilder {
     /** 
      * Trivial enumeration to keep track of where we are in the outgoing DOM. This makes life
      * a bit easier when handling certain types of tokens. Use the
-     * {@link DOMBuilder#getOutputContext()}, {@link DOMBuilder#pushOutputContext(OutputContext)}
-     * and {@link DOMBuilder#popOutputContext()} to manage the current status.
+     * {@link DOMBuilder#getOutputContext()}, {@link DOMBuilder#setOutputContext(Element, OutputContext)}
+     * to manage the current status.
      */
     public static enum OutputContext {
         XHTML,
@@ -110,8 +111,12 @@ public final class DOMBuilder {
         ;
     }
     
-    /** Stack of {@link OutputContext} scopes. This never gets big but is safer done like this */
-    private final ArrayListStack<OutputContext> outputContextStack;
+    private OutputContext currentOutputContext;
+    
+    private Element currentMathOwnerElement;
+    
+//    /** Stack of {@link OutputContext} scopes. This never gets big but is safer done like this */
+//    private final ArrayListStack<OutputContext> outputContextStack;
     
     /** Stack of active {@link MathVariantMap}s. */
     private final ArrayListStack<MathVariantMap> mathVariantMapStack;
@@ -128,7 +133,8 @@ public final class DOMBuilder {
         this.options = options;
         this.variableManager = new VariableManager();
         this.currentInlineCSSProperties = null;
-        this.outputContextStack = new ArrayListStack<OutputContext>();
+        this.currentOutputContext = null;
+        this.currentMathOwnerElement = null;
         this.mathVariantMapStack = new ArrayListStack<MathVariantMap>();
         this.textStyleStack = new ArrayListStack<ComputedStyle>();
     }
@@ -146,23 +152,19 @@ public final class DOMBuilder {
      */
     public void buildDOMSubtree(final List<FlowToken> fixedTokens) throws SnuggleParseException {
         /* Reset state */
-        outputContextStack.clear();
         mathVariantMapStack.clear();
         textStyleStack.clear();
         
         /* Do work */
-        outputContextStack.push(OutputContext.XHTML);
+        currentOutputContext = OutputContext.XHTML;
         textStyleStack.push(ComputedStyle.DEFAULT_STYLE);
         handleTokens(buildRootElement, fixedTokens, true);
         textStyleStack.pop();
-        outputContextStack.pop();
+        currentOutputContext = null;
         
         /* Perform state sanity check at end */
         if (!mathVariantMapStack.isEmpty()) {
             throw new SnuggleLogicException("mathVariantMapStack was non-empty at end of DOM building process");
-        }
-        if (!outputContextStack.isEmpty()) {
-            throw new SnuggleLogicException("outputContextStack was non-empty at end of DOM building process");
         }
         if (!textStyleStack.isEmpty()) {
             throw new SnuggleLogicException("textStyleStack was non-empty at end of DOM building process");
@@ -205,16 +207,15 @@ public final class DOMBuilder {
     // which is often useful.
     
     public OutputContext getOutputContext() {
-        return outputContextStack.peek();
+        return this.currentOutputContext;
     }
     
-    public void pushOutputContext(OutputContext outputContext) {
-        outputContextStack.push(outputContext);
-    }  
-    
-    public OutputContext popOutputContext() {
-        return outputContextStack.pop();
-    }  
+    public void setOutputContext(Element parentElement, OutputContext outputContext) {
+        this.currentOutputContext = outputContext;
+        if (outputContext==OutputContext.MATHML_BLOCK || outputContext==OutputContext.MATHML_INLINE) {
+            this.currentMathOwnerElement = parentElement;
+        }
+    }
     
     /**
      * Returns whether or not we're building a MathML island by checking the current
@@ -307,6 +308,17 @@ public final class DOMBuilder {
                 envHandler.handleEnvironment(this, parentElement, envToken);
                 break;
                 
+            case BRACE_CONTAINER:
+                BraceContainerToken braceToken = (BraceContainerToken) token;
+                if (isBuildingMathMLIsland()) {
+                    Element mrow = appendMathMLElement(parentElement, "mrow");
+                    handleTokens(mrow, braceToken.getContents(), true);
+                }
+                else {
+                    throw new SnuggleLogicException("BraceContainerTokens should not be present outside Math islands");
+                }
+                break;
+                
             case ERROR:
                 appendErrorElement(parentElement, (ErrorToken) token);
                 break;
@@ -342,7 +354,7 @@ public final class DOMBuilder {
                     appendSimpleMathElement(parentElement, token);
                 }
                 else {
-                    throw new SnuggleLogicException("Math Mode token found but outputContext is currently " + outputContextStack);
+                    throw new SnuggleLogicException("Math Mode token found but outputContext is currently " + currentOutputContext);
                 }
                 break;
                 
@@ -549,10 +561,6 @@ public final class DOMBuilder {
         Element element = document.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, qName);
         parentElement.appendChild(element);
         return element;
-    }
-    
-    private String makeSnuggleElementQName(String elementLocalName) {
-        return options.isPrefixingSnuggleXML() ? options.getSnuggleXMLPrefix() + ":" + elementLocalName : elementLocalName;
     }
     
     public Element appendXHTMLElement(Element parentElement, String elementLocalName) {
@@ -858,7 +866,7 @@ public final class DOMBuilder {
             final boolean isDisplayMath, final MathContentBuilderCallback mathContentBuilderCallback)
             throws SnuggleParseException {
         /* Change outputContext */
-        pushOutputContext(isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
+        setOutputContext(parentElement, isDisplayMath ? OutputContext.MATHML_BLOCK : OutputContext.MATHML_INLINE);
         
         /* Create <math>...</math> container with appropriate attributes */
         Element math = appendMathMLElement(parentElement, "math");
@@ -895,30 +903,18 @@ public final class DOMBuilder {
             mathContentBuilderCallback.buildMathElementContent(math, mathContentToken, false);
         }
         /* Reset OutputContext */
-        popOutputContext();
+        setOutputContext(parentElement, OutputContext.XHTML);
     }
 
     public Element findNearestXHTMLAncestorOrSelf(final Element element) {
-        Element currentElement = element;
-        Node parentNode;
-        while (true) {
-            if (currentElement==buildRootElement) {
-                /* We're at the root of our tree, so stop */
-                return currentElement;
-            }
-            else if (W3CConstants.XHTML_NAMESPACE.equals(currentElement.getNamespaceURI())) {
-                /* We're at an XHTML element, so stop */
-                return currentElement;
-            }
-            else  {
-                /* Go up */
-                parentNode = currentElement.getParentNode();
-                if (parentNode==null || parentNode.getNodeType()!=Node.ELEMENT_NODE) {
-                    throw new SnuggleLogicException("Traversed up DOM tree and never found our root Element!");
-                }
-                currentElement = (Element) parentNode;
-            }
+        Element result;
+        if (currentOutputContext==OutputContext.XHTML) {
+            result = element;
         }
+        else {
+            result = currentMathOwnerElement;
+        }
+        return result;
     }
     
     public boolean isParentElement(final Element parentElement, final String requiredNamespaceUri,
@@ -1033,7 +1029,7 @@ public final class DOMBuilder {
             case XML_SHORT:
                 /* Output XML at the current point in the DOM */
                 errorElement = MessageFormatter.formatErrorAsXML(document,
-                        makeSnuggleElementQName("error"),
+                        options,
                         errorToken.getError(),
                         errorOptions==ErrorOutputOptions.XML_FULL);
                 parentElement.appendChild(errorElement);

@@ -1,10 +1,11 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;
 
+import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.ErrorCode;
 import uk.ac.ed.ph.snuggletex.ErrorGroup;
 import uk.ac.ed.ph.snuggletex.InputError;
@@ -118,25 +119,31 @@ public final class MessageFormatter {
      * @throws DOMException
      */
     public static Element formatErrorAsXML(Document ownerDocument, InputError error, boolean fullDetails) {
-        return formatErrorAsXML(ownerDocument, "error", error, fullDetails);
+        return formatErrorAsXML(ownerDocument, null, error, fullDetails);
     }
     
     /**
      * Creates a DOM {@link Element} containing information about the given error, including
      * either just the {@link ErrorCode} or full details.
      * <p>
-     * The error {@link Element} will have the given qualified name and belong to the
-     * {@link SnuggleConstants#SNUGGLETEX_NAMESPACE} namespace.
+     * The error {@link Element} will have the given qualified name and namespace as
+     * determined by the {@link DOMOutputOptions} passed.
      * 
      * @param ownerDocument {@link Document} that will contain the resulting element.
-     * @param errorElementQName Qualified Name for the resulting error message.
      * @param error {@link InputError} to format
      * @param fullDetails false if you just want the error code, true for full details.
      * 
      * @throws DOMException
      */
-    public static Element formatErrorAsXML(Document ownerDocument, String errorElementQName, InputError error, boolean fullDetails) {
-        Element result = ownerDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, errorElementQName);
+    public static Element formatErrorAsXML(Document ownerDocument, DOMOutputOptions options, InputError error, boolean fullDetails) {
+        String errorQName;
+        if (options==null) {
+            errorQName = "error";
+        }
+        else {
+            errorQName = options.isPrefixingSnuggleXML() ? options.getSnuggleXMLPrefix() + ":error" : "error";
+        }
+        Element result = ownerDocument.createElementNS(SnuggleConstants.SNUGGLETEX_NAMESPACE, errorQName);
         result.setAttribute("code", error.getErrorCode().getName());
         result.setAttribute("package", error.getErrorCode().getErrorGroup().getPackage().getName());
         

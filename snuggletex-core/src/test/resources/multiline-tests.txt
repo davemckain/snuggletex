@@ -494,12 +494,12 @@ B}
 ====
 \begin{itemize}
 \item A
-\begin{em} \item B \end{em}
+\begin{em} \item B\end{em}
 \end{itemize}
 ----
 <ul>
   <li>A</li>
-  <li><div class="em">B</div></li>
+  <li><em>B</em></li>
 </ul>
 ====
 ## This one would be equivalent to \frac{a \bf b}{\bf c}
@@ -525,4 +525,19 @@ $$ a \bf b \over c $$
     </math>
   </b>
 </span>
+====
+\begin{tabular}{c}
+\small 1\\
+\hline
+\end{tabular}
+----
+<table class="tabular">
+  <tbody>
+    <tr>
+      <td class="tabular align-center bottom-border">
+        <span class="small">1</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
 ====

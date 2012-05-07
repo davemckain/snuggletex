@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -15,29 +15,41 @@ import javax.xml.transform.Transformer;
 /**
  * Builds on {@link XMLStringOutputOptions} to add in options for configuring how to build a
  * web page using the relevant methods in {@link SnuggleSession}
- * (e.g. {@link SnuggleSession#createWebPage(WebPageOutputOptions)}).
+ * (e.g. {@link SnuggleSession#buildWebPage(WebPageOutputOptions)}).
  * <p>
- * You will generally want to use
- * {@link WebPageOutputOptionsTemplates#createWebPageOptions(WebPageOutputOptions.WebPageType)}
- * to create pre-configured instances of these Objects, which can then be tweaked as desired.
- * But you can also create and configure {@link WebPageOutputOptions} from scratch if you
- * know exactly what you want to do.
+ * As of SnuggleTeX 1.3, you will generally want to use the various static methods in
+ * {@link WebPageOutputOptionsBuilder} to create instances of this class that you can tweak
+ * slightly.
+ * <p>
+ * The older {@link WebPageOutputOptionsTemplates} is now deprecated and will be removed in
+ * SnuggleTeX 1.4.
  * 
  * @see DOMOutputOptions
  * @see XMLStringOutputOptions
+ * @see WebPageOutputOptionsBuilder
  * @see WebPageOutputOptionsTemplates
  *
  * @author  David McKain
  * @version $Revision$
  */
+@SuppressWarnings("javadoc")
 public class WebPageOutputOptions extends XMLStringOutputOptions {
     
+    /** Default content type */
+    public static final String DEFAULT_CONTENT_TYPE = "application/xhtml+xml";
+    
+    /** Default language */
+    public static final String DEFAULT_LANG = "en";
+    
     /**
-     * Enumerates the different web page "types" supported. This is used both by
-     * {@link WebPageOutputOptionsTemplates} to help generate suitable instances
-     * of {@link WebPageOutputOptions}, and also to tweak certain parts of the page generation
-     * process.
+     * Enumerates the different web page "types" supported. This is used to tweak certain parts of
+     * the page generation process. You should avoid setting this explicitly unless you know what
+     * you're doing - use {@link WebPageOutputOptionsBuilder} instead. 
+     * 
+     * @deprecated Use {@link WebPageOutputOptionsBuilder} to generate different types of web pages.
+     *   More properties have been added to this class to control some of the finer aspects of this.
      */
+    @Deprecated
     public static enum WebPageType {
         
         /** 
@@ -49,7 +61,12 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          * This is the best option for serving content exclusively on Mozilla-based browsers.
          * <p>
          * This will display as an XML tree on IE, which is not useful.
+         * 
+         * @deprecated Use {@link WebPageOutputOptionsBuilder#createMozillaSpecificOptions()} if
+         *   you really need this, otherwise consider some of the MathJax outputs for better
+         *   cross-browser impact.
          */
+        @Deprecated
         MOZILLA,
         
         /**
@@ -66,9 +83,14 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          * <p>
          * The main issue with this is that IE will want to download the relevant DTD, which
          * hinders performance slightly.
+         * 
+         * @deprecated Use {@link WebPageOutputOptionsBuilder#createLegacyCrossBrowserOptions()}
+         *   if you really need this, otherwise consider some of the MathJax outputs for better
+         *   cross-browser impact.
          */
+        @Deprecated
         CROSS_BROWSER_XHTML,
-
+        
         /**
          * HTML + MathML intended for Internet Explorer 6/7 with the MathPlayer plug-in.
          * <p>
@@ -78,7 +100,12 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          * but is a good option if that's your target audience.
          * <p>
          * This will display wrongly on IE6/7 if MathPlayer is not installed.
+         * 
+         * @deprecated See {@link WebPageOutputOptionsBuilder#createIEMathPlayerSpecificOptions()}
+         *   if you really need this, otherwise consider some of the MathJax outputs for better
+         *   cross-browser impact.
          */
+        @Deprecated
         MATHPLAYER_HTML,
         
         //----------------------------------------------------------
@@ -106,7 +133,12 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          * 
          * The SnuggleTeX source distribution contains a slightly fixed version of the
          * USS that works in IE7 that you can use if you like.
+         * 
+         * @deprecated Use {@link WebPageOutputOptionsBuilder#createUniversalStylesheetOptions(String)}
+         *   if you really need this, otherwise consider some of the MathJax outputs for better
+         *   cross-browser impact.
          */
+        @Deprecated
         UNIVERSAL_STYLESHEET,
         
         /**
@@ -117,7 +149,12 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          * <p>
          * Combining this with the Universal Math Stylesheet or something similar can give
          * good cross-browser results.
+         * 
+         * @deprecated Use {@link WebPageOutputOptionsBuilder#createUniversalStylesheetOptions(String)}
+         *   if you really need this, otherwise consider some of the MathJax outputs for better
+         *   cross-browser impact.
          */
+        @Deprecated
         CLIENT_SIDE_XSLT_STYLESHEET,
         
         /**
@@ -127,43 +164,82 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
          * <p>
          * You will have to use a suitable {@link DOMPostProcessor} to convert any MathML islands
          * into other forms. (E.g. replace by an applet, replace by images, ...)
-         * <p>
-         * This is what the SnuggleTeX JEuclid extension hooks into to do its magic. 
+         * 
+         * @deprecated Use {@link WebPageOutputOptionsBuilder#createHTML4Options()}
          */
+        @Deprecated
         PROCESSED_HTML,
         
         ;
     }
     
-    /** Desired "type" of web page to be constructed. Must not be null. */
+    /** 
+     * Desired "type" of web page to be constructed.
+     * 
+     * @deprecated As of SnuggleTeX 1.3.0, this property no longer controls anything. This will be
+     *   removed in SnuggleTeX 1.4
+     * 
+     * @see WebPageOutputOptionsBuilder
+     */
+    @SuppressWarnings("unused")
+    @Deprecated
     private WebPageType webPageType;
     
     /** 
      * MIME type for the resulting page.
-     * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_CONTENT_TYPE}.
+     * <p>
+     * Default is {@link #DEFAULT_CONTENT_TYPE}.
+     * <p>
      * This must not be null.
      */
     private String contentType;
     
     /** 
      * Language code for the resulting page.
-     * Default is <tt>en</tt>.
-     * May be set to null
+     * <p>
+     * Default is {@link #DEFAULT_LANG}.
+     * <p>
+     * This may be set to null
      */
     private String lang;
     
     /** 
      * Title for the resulting page.
      * Default is null.
-     * If null, then no title is added.
+     * If null, then a boilerplate title is added.
      */
     private String title;
     
     /**
      * Indicates whether page title should be inserted at the start of the web page
      * body as an XHTML <tt>h1</tt> element. This has no effect if title is null.
+     * <p>
+     * Default is false.
      */
     private boolean addingTitleHeading;
+    
+    /**
+     * Indicates whether to include the necessary processing instruction and <tt>object</tt>
+     * element required to explicitly trigger the MathPlayer plugin.
+     * <p>
+     * The default is false.
+     * 
+     * @since 1.3.0
+     */
+    private boolean addingMathPlayerImport;
+    
+    /**
+     * Value of the optional <tt>pref:renderer</tt> attribute 
+     * (in the {@link W3CConstants#MATHML_PREF_NAMESPACE})
+     * that can be added to the HTML root element to control certain aspects of the
+     * client-side 
+     * <a href="http://www.w3.org/Math/XSL/Overview-tech.html Universal StyleSheets for MathML</a>
+     * <p>
+     * The default is null, indicating that no attribute will be added
+     * 
+     * @since 1.3.0
+     */
+    private String mathPrefRenderer;
     
     /**
      * Set to include SnuggleTeX-related CSS as a <tt>style</tt> element within the resulting
@@ -216,29 +292,97 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      */
     private Transformer[] stylesheets;
     
+    /**
+     * Determines whether to generate HTML (or XHTML 5) output, which uses a "charset" meta
+     * attribute and a different DOCTYPE declaration.
+     * <p>
+     * Note that if set to true, then this will override whatever is returned by
+     * {@link #getDoctypePublic()} and {@link #getDoctypeSystem()}.
+     * <p>
+     * The default is false.
+     * 
+     * @since 1.3.0
+     */
+    private boolean html5;
+    
+    /**
+     * Determines whether to omit character set details in the Content-Type HTTP header when
+     * streaming web pages.
+     * <p>
+     * MathPlayer can only handle application/xhtml+xml without a "charset" clause, so this should
+     * be used in those cases.
+     * 
+     * @since 1.3.0
+     */
+    private boolean noCharsetInContentTypeHeader;
+    
+    /**
+     * Determines whether to add the required JavaScript to invoke MathJax to render the
+     * resulting web page.
+     * <p>
+     * The default is false.
+     * 
+     * @since 1.3.0
+     */
+    private boolean mathJax;
+    
+    /**
+     * Specifies a custom MathJax URL to use when invoking MathJax. Use this if you want to use
+     * a local installation of MathJax, or want to specify custom configuration directives.
+     * 
+     * See the MathJax <a href="http://www.mathjax.org/docs/2.0/start.html#mathjax-cdn">Getting Started</a>
+     * documentation for more details.
+     * <p>
+     * The default is null, which will use the MathJax CDN with a reasonable default configuration
+     * if {@link #isMathJax()} returns true.
+     * 
+     * @since 1.3.0
+     */
+    private String customMathJaxUrl;
+
+    
     public WebPageOutputOptions() {
         super();
-        this.contentType = WebPageOutputOptionsTemplates.DEFAULT_CONTENT_TYPE;
         this.webPageType = WebPageType.MOZILLA;
-        this.lang = WebPageOutputOptionsTemplates.DEFAULT_LANG;
+        this.contentType = DEFAULT_CONTENT_TYPE;
+        this.lang = DEFAULT_LANG;
+        this.title = null;
+        this.addingTitleHeading = false;
+        this.addingMathPlayerImport = false;
+        this.mathPrefRenderer = null;
         this.includingStyleElement = true;
+        this.cssStylesheetURLs = null;
+        this.clientSideXSLTStylesheetURLs = null;
+        this.stylesheets = null;
+        this.html5 = false;
+        this.noCharsetInContentTypeHeader = false;
+        this.mathJax = false;
+        this.customMathJaxUrl = null;
     }
     
     
     /**
-     * Returns the desired "type" of web page to be constructed.
+     * Before SnuggleTeX 1.3.0, this returned the desired "type" of web page to be constructed.
      * <p>
-     * The default is {@link WebPageType#MOZILLA}
+     * From SnuggleTeX 1.3.0, this property no longer controls anything.
+     * 
+     * @deprecated Use various methods in {@link WebPageOutputOptionsBuilder} to generate
+     *   suitable options for various types of pages, which you can then tweak.
      */
+    @Deprecated
     public WebPageType getWebPageType() {
-        return webPageType;
+        return WebPageType.MOZILLA;
     }
     
     /**
-     * Sets the desired "type" of web page to be constructed.
+     * Before SnuggleTeX 1.3.0, this returned the desired "type" of web page to be constructed.
+     * <p>
+     * From SnuggleTeX 1.3.0, this property no longer controls anything.
      * 
-     * @param webPageType desired type, which must not be null
+     * @deprecated Use various methods in {@link WebPageOutputOptionsBuilder} to generate
+     *   suitable options for various types of pages, which you can then tweak.
      */
+    @Deprecated
     public void setWebPageType(WebPageType webPageType) {
         ConstraintUtilities.ensureNotNull(webPageType, "webPageType");
         this.webPageType = webPageType;
@@ -248,7 +392,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
     /** 
      * Returns the MIME type for the resulting page.
      * <p>
-     * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_CONTENT_TYPE}.
+     * Defaults to {@link #DEFAULT_CONTENT_TYPE}.
      */
     public String getContentType() {
         return contentType;
@@ -268,7 +412,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
     /**
      * Returns the language of the resulting page, null if not set.
      * <p>
-     * Defaults to {@link WebPageOutputOptionsTemplates#DEFAULT_LANG}.
+     * Defaults to {@link #DEFAULT_LANG}.
      */
     public String getLang() {
         return lang;
@@ -333,8 +477,65 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
     public void setAddingTitleHeading(boolean addingTitleHeading) {
         this.addingTitleHeading = addingTitleHeading;
     }
-
     
+    
+    /**
+     * Returns whether to include the necessary processing instruction and <tt>object</tt>
+     * element required to explicitly trigger the MathPlayer plugin.
+     * 
+     * @since 1.3.0
+     * 
+     * @return true if adding MathPlayer import gubbins, false otherwise.
+     */
+    public boolean isAddingMathPlayerImport() {
+        return addingMathPlayerImport;
+    }
+
+
+    /**
+     * Sets whether to include the necessary processing instruction and <tt>object</tt>
+     * element required to explicitly trigger the MathPlayer plugin.
+     *
+     * @since 1.3.0
+     * 
+     * @param addingMathPlayerImport true to add gubbins for importing MathPlayer, false otherwise.
+     */
+    public void setAddingMathPlayerImport(boolean addingMathPlayerImport) {
+        this.addingMathPlayerImport = addingMathPlayerImport;
+    }
+    
+    
+    /**
+     * Gets the value of the optional <tt>pref:renderer</tt> attribute 
+     * (in the {@link W3CConstants#MATHML_PREF_NAMESPACE})
+     * that can be added to the HTML root element to control certain aspects of the
+     * client-side 
+     * <a href="http://www.w3.org/Math/XSL/Overview-tech.html Universal StyleSheets for MathML</a>
+     * <p>
+     * The default is null, indicating that no attribute will be added
+     * 
+     * @since 1.3.0
+     */
+    public String getMathPrefRenderer() {
+        return mathPrefRenderer;
+    }
+    
+    /**
+     * Sets the value of the optional <tt>pref:renderer</tt> attribute 
+     * (in the {@link W3CConstants#MATHML_PREF_NAMESPACE})
+     * that can be added to the HTML root element to control certain aspects of the
+     * client-side 
+     * <a href="http://www.w3.org/Math/XSL/Overview-tech.html Universal StyleSheets for MathML</a>
+     * <p>
+     * A null value is allowed, which prevents such an attribute being added.
+     * 
+     * @since 1.3.0
+     */
+    public void setMathPrefRenderer(String mathPrefRenderer) {
+        this.mathPrefRenderer = mathPrefRenderer;
+    }
+
+
     /**
      * Returns whether to include SnuggleTeX-related CSS as a <tt>style</tt> element within the
      * resulting page. If you choose not to do this, you probably want to put <tt>snuggletex.css</tt>
@@ -472,10 +673,6 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * generate is also in the correct namespace; it will later be converted to
      * no-namespace HTML if required by the serialisation process.
      * <p>
-     * <strong>WARNING:</strong> This feature is a convenience that doesn't fit well
-     * with the idea that these "options" Objects should be reusable and Thread-safe,
-     * which a {@link Transformer} is generally neither. Use this feature accordingly!
-     * <p>
      * <strong>NOTE:</strong> Source documents may contain Processing
      * Instructions (e.g. to invoke MathPlayer) so these must be handled as
      * appropriate.
@@ -494,10 +691,6 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * to write your stylesheet appropriately. Ensure that any further XHTML you
      * generate is also in the correct namespace; it will later be converted to
      * no-namespace HTML if required by the serialisation process.
-     * <p>
-     * <strong>WARNING:</strong> This feature is a convenience that doesn't fit well
-     * with the idea that these "options" Objects should be reusable and Thread-safe,
-     * which a {@link Transformer} is generally neither. Use this feature accordingly!
      * <p>
      * <strong>NOTE:</strong> Source documents may contain Processing
      * Instructions (e.g. to invoke MathPlayer) so these must be handled as
@@ -521,10 +714,6 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * generate is also in the correct namespace; it will later be converted to
      * no-namespace HTML if required by the serialisation process.
      * <p>
-     * <strong>WARNING:</strong> This feature is a convenience that doesn't fit well
-     * with the idea that these "options" Objects should be reusable and Thread-safe,
-     * which a {@link Transformer} is generally neither. Use this feature accordingly!
-     * <p>
      * <strong>NOTE:</strong> Source documents may contain Processing
      * Instructions (e.g. to invoke MathPlayer) so these must be handled as
      * appropriate.
@@ -534,5 +723,41 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      */
     public void addStylesheets(Transformer... stylesheets) {
         this.stylesheets = concat(this.stylesheets, stylesheets, Transformer.class);
+    }
+
+    public boolean isHtml5() {
+        return html5;
+    }
+    
+    public void setHtml5(boolean html5) {
+        this.html5 = html5;
+    }
+    
+    
+    
+    public boolean isNoCharsetInContentTypeHeader() {
+        return noCharsetInContentTypeHeader;
+    }
+    
+    public void setNoCharsetInContentTypeHeader(boolean noCharsetInContentTypeHeader) {
+        this.noCharsetInContentTypeHeader = noCharsetInContentTypeHeader;
+    }
+    
+    
+    public boolean isMathJax() {
+        return mathJax;
+    }
+    
+    public void setMathJax(boolean mathJax) {
+        this.mathJax = mathJax;
+    }
+
+
+    public String getCustomMathJaxUrl() {
+        return customMathJaxUrl;
+    }
+    
+    public void setCustomMathJaxUrl(String mathJaxPath) {
+        this.customMathJaxUrl = mathJaxPath;
     }
 }

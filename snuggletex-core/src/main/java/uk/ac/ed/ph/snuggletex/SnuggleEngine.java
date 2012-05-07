@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2010, The University of Edinburgh.
+ * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -162,11 +162,7 @@ public final class SnuggleEngine {
      * or a fresh {@link SessionConfiguration} if no default has been set.
      */
     public SnuggleSession createSession() {
-        SessionConfiguration sessionConfiguration = defaultSessionConfiguration;
-        if (sessionConfiguration!=null) {
-            sessionConfiguration = new SessionConfiguration();
-        }
-        return createSession(sessionConfiguration);
+        return createSession(defaultSessionConfiguration);
     }
     
     /**
@@ -179,6 +175,16 @@ public final class SnuggleEngine {
         return new SnuggleSession(this, sessionConfiguration);
     }
 
+    //-------------------------------------------------
+    
+    public SnuggleSimpleMathRunner createSimpleMathRunner() {
+        return new SnuggleSimpleMathRunner(createSession());
+    }
+    
+    public SnuggleSimpleMathRunner createSimpleMathRunner(SessionConfiguration sessionConfiguration) {
+        return new SnuggleSimpleMathRunner(createSession(sessionConfiguration));
+    }
+    
     //-------------------------------------------------
     
     /**
