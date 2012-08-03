@@ -13,8 +13,8 @@ import uk.ac.ed.ph.snuggletex.definitions.CorePackageDefinitions;
 import uk.ac.ed.ph.snuggletex.definitions.Globals;
 import uk.ac.ed.ph.snuggletex.definitions.LaTeXMode;
 import uk.ac.ed.ph.snuggletex.definitions.MathCharacter;
-import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.definitions.MathCharacter.MathCharacterType;
+import uk.ac.ed.ph.snuggletex.definitions.TextFlowContext;
 import uk.ac.ed.ph.snuggletex.dombuilding.CommandHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.EnvironmentHandler;
 import uk.ac.ed.ph.snuggletex.dombuilding.InterpretableSimpleMathHandler;
@@ -24,20 +24,20 @@ import uk.ac.ed.ph.snuggletex.semantics.Interpretation;
 import uk.ac.ed.ph.snuggletex.semantics.InterpretationType;
 import uk.ac.ed.ph.snuggletex.semantics.MathBigLimitOwnerInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation;
+import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 import uk.ac.ed.ph.snuggletex.semantics.MathFunctionInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathInterpretation;
 import uk.ac.ed.ph.snuggletex.semantics.MathNegatableInterpretation;
-import uk.ac.ed.ph.snuggletex.semantics.MathBracketInterpretation.BracketType;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,6 +81,7 @@ public final class SnugglePackage {
     /** Thread-safe Map of built-in environments, keyed on name */
     private final ConcurrentHashMap<String, BuiltinEnvironment> builtinEnvironmentMap;
     
+    /** Thread-safe Map of {@link MathCharacter}s defined in this package, keyed on Unicode code point */
     private final ConcurrentHashMap<Integer, MathCharacter> mathCharacterMap;
     
     /** Thread-safe List of all {@link ErrorGroup}s */
@@ -110,17 +111,22 @@ public final class SnugglePackage {
     }
 
     /**
-     * Returns all of the {@link ErrorGroup}s declared for this package.
+     * Returns an unmodifiable view of all of the {@link ErrorGroup}s declared for this package.
      */
     public List<ErrorGroup> getErrorGroups() {
-        return errorGroupList;
+        return Collections.unmodifiableList(errorGroupList);
     }
     
     /**
-     * Returns the {@link ErrorCode}s corresponding to the given {@link ErrorGroup}.
+     * Returns an unmodifiable view of the {@link ErrorCode}s corresponding to the given
+     * {@link ErrorGroup}.
      */
-    public Collection<ErrorCode> getErrorCodes(ErrorGroup errorGroup) {
-        return errorGroupMap.get(errorGroup);
+    public List<ErrorCode> getErrorCodes(ErrorGroup errorGroup) {
+        List<ErrorCode> errorCodes = errorGroupMap.get(errorGroup);
+        if (errorCodes==null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableList(errorCodes);
     }
 
     
@@ -137,10 +143,29 @@ public final class SnugglePackage {
     public void setErrorMessageBundle(ResourceBundle errorMessageBundle) {
         this.errorMessageBundle = errorMessageBundle;
     }
-
-
+    
+    /**
+     * Returns a read-only {@link Map} of all {@link MathCharacter}s defined in this package,
+     * keyed on input Unicode code point.
+     */
+    public Map<Integer, MathCharacter> getMathCharacterMap() {
+        return Collections.unmodifiableMap(mathCharacterMap);
+    }
+    
+    /**
+     * Returns the {@link MathCharacter} corresponding to the Unicode character at the given
+     * input codePoint, or null if no {@link MathCharacter} is defined for this codepoint.
+     */
     public MathCharacter getMathCharacter(int codePoint) {
         return mathCharacterMap.get(Integer.valueOf(codePoint));
+    }
+    
+    /**
+     * Returns a read-only {@link Map} of all {@link BuiltinCommand}s defined in this package,
+     * keyed on the name <tt>texName</tt> of the command (<tt>\texName</tt>).
+     */
+    public Map<String, BuiltinCommand> getBuiltinCommandMap() {
+        return Collections.unmodifiableMap(builtinCommandMap);
     }
     
     /**
@@ -149,6 +174,14 @@ public final class SnugglePackage {
      */
     public BuiltinCommand getBuiltinCommandByTeXName(String texName) {
         return builtinCommandMap.get(texName);
+    }
+    
+    /**
+     * Returns a read-only {@link Map} of all {@link BuiltinEnvironment}s defined in this package,
+     * keyed on the name of the environment.
+     */
+    public Map<String, BuiltinEnvironment> getBuiltinEnvironmentMap() {
+        return Collections.unmodifiableMap(builtinEnvironmentMap);
     }
     
     /**
