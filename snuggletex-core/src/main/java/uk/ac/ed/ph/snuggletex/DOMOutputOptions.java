@@ -484,10 +484,10 @@ public class DOMOutputOptions implements Cloneable {
     
     
     /**
-     * Returns the array of {@link DOMPostProcessor} that will be called in turn to "fix up" or
+     * Returns a copy of array of {@link DOMPostProcessor} that will be called in turn to "fix up" or
      * modify the raw DOM produced by SnuggleTeX immediately after it has been built.
      * <p>
-     * The default is null, which is treated the same as an empty array here.
+     * Returns null if no post-processors have been registered.
      * <p>
      * One use of this is by registering a {@link DownConvertingPostProcessor}, which will
      * attempt to "down-convert" simple MathML expressions into (X)HTML equivalents.
@@ -501,7 +501,7 @@ public class DOMOutputOptions implements Cloneable {
      * @see DownConvertingPostProcessor
      */
     public DOMPostProcessor[] getDOMPostProcessors() {
-        return domPostProcessors;
+        return ObjectUtilities.nullSafeCopy(domPostProcessors);
     }
     
     /**
@@ -519,10 +519,11 @@ public class DOMOutputOptions implements Cloneable {
      * 
      * @see DownConvertingPostProcessor
      * 
-     * @param domPostProcessors array of {@link DOMPostProcessor} to use, which may be empty.
+     * @param domPostProcessors array of {@link DOMPostProcessor} to use, which may be empty. This
+     *   will be copied, rather than stored as a reference.
      */
     public void setDOMPostProcessors(DOMPostProcessor... domPostProcessors) {
-        this.domPostProcessors = domPostProcessors;
+        this.domPostProcessors = ObjectUtilities.nullSafeCopy(domPostProcessors);
     }
     
     /**
@@ -557,7 +558,6 @@ public class DOMOutputOptions implements Cloneable {
     public void setLinkResolver(LinkResolver linkResolver) {
         this.linkResolver = linkResolver;
     }
-
 
     @Override
     public Object clone() {

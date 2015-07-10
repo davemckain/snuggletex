@@ -7,6 +7,7 @@ import static uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities.concat;
 
 import uk.ac.ed.ph.snuggletex.definitions.W3CConstants;
 import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
+import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
 
 import javax.xml.transform.Transformer;
 
@@ -563,8 +564,8 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
 
 
     /** 
-     * Returns specified array of relative URLs specifying client-side CSS stylesheets to be
-     * referenced in the resulting page.
+     * Returns a copy of the specified array of relative URLs specifying client-side CSS stylesheets
+     * to be referenced in the resulting page.
      * <p>
      * Default is null.
      * <p>
@@ -574,7 +575,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * as any other required stylesheets.
      */
     public String[] getCSSStylesheetURLs() {
-        return cssStylesheetURLs;
+        return ObjectUtilities.nullSafeCopy(cssStylesheetURLs);
     }
     
     /** 
@@ -589,7 +590,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * @param cssStylesheetURLs array of CSS stylesheet URLs, which may be empty
      */
     public void setCSSStylesheetURLs(String... cssStylesheetURLs) {
-        this.cssStylesheetURLs = cssStylesheetURLs;
+        this.cssStylesheetURLs = ObjectUtilities.nullSafeCopy(cssStylesheetURLs);
     }
     
     /** 
@@ -609,8 +610,8 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
     
     
     /** 
-     * Returns specified array of relative URLs specifying client-side XSLT stylesheets to be
-     * referenced in the resulting page.
+     * Returns a copy of the specified array of relative URLs specifying client-side XSLT stylesheets 
+     * to be referenced in the resulting page.
      * <p>
      * Default is null
      * <p>
@@ -621,7 +622,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * will be used as a template instead.
      */
     public String[] getClientSideXSLTStylesheetURLs() {
-        return clientSideXSLTStylesheetURLs;
+        return ObjectUtilities.nullSafeCopy(clientSideXSLTStylesheetURLs);
     }
     
     /** 
@@ -635,9 +636,10 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * will be used as a template instead.
      * 
      * @param clientSideXSLTStylesheetURLs array of URLs to use, which may be empty.
+     *   This will be copied, rather than stored as a reference.
      */
     public void setClientSideXSLTStylesheetURLs(String... clientSideXSLTStylesheetURLs) {
-        this.clientSideXSLTStylesheetURLs = clientSideXSLTStylesheetURLs;
+        this.clientSideXSLTStylesheetURLs = ObjectUtilities.nullSafeCopy(clientSideXSLTStylesheetURLs);
     }
     
     /** 
@@ -658,7 +660,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
 
 
     /**
-     * Returns an array of specified JAXP {@link Transformer}s representing XSLT stylesheet(s)
+     * Returns a copy of the array of specified JAXP {@link Transformer}s representing XSLT stylesheet(s)
      * that will be applied to the resulting web page once it has been built but
      * before it is serialised. This can be useful if you want to add in headers
      * and footers to the resulting XHTML web page.
@@ -675,7 +677,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      * appropriate.
      */
     public Transformer[] getStylesheets() {
-        return stylesheets;
+        return ObjectUtilities.nullSafeCopy(stylesheets);
     }
     
     /**
@@ -697,7 +699,7 @@ public class WebPageOutputOptions extends XMLStringOutputOptions {
      *   are applied in the order specified.
      */
     public void setStylesheets(Transformer... stylesheets) {
-        this.stylesheets = stylesheets;
+        this.stylesheets = ObjectUtilities.nullSafeCopy(stylesheets);
     }
     
     /**

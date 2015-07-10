@@ -46,6 +46,10 @@ public final class ObjectUtilities {
         return array==null || array.length==0;
     }
     
+    public static <E> E[] nullSafeCopy(E[] array) {
+        return array!=null ? array.clone() : null;
+    }
+    
     @SuppressWarnings("unchecked")
     public static <E> E[] concat(final E[] array1, final E[] array2, final Class<E> itemClass) {
         boolean array1Empty = isNullOrEmpty(array1);
