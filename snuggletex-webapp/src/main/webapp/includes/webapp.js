@@ -4,8 +4,6 @@
  *
  * jquery.js
  *
- * $Id$
- *
  * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */

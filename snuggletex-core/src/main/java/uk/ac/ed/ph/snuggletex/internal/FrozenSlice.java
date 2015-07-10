@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal;
@@ -22,7 +20,6 @@ import uk.ac.ed.ph.snuggletex.tokens.Token;
  * phenomenon is temporary.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class FrozenSlice {
     

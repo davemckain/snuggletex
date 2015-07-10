@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.tokens;
@@ -18,7 +16,6 @@ import java.util.List;
  * This token represents the root of a parsed {@link SnuggleInput}
  * 
  * @author  David McKain
- * @version $Revision$
  */
 @ObjectDumperOptions(DumpMode.DEEP)
 public final class RootToken extends Token implements Iterable<FlowToken> {

@@ -1,6 +1,4 @@
-/* $Id: SnuggleTeXTestDriver.java 702 2011-03-11 20:11:27Z davemckain $
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -29,7 +27,6 @@ import org.w3c.dom.Element;
  * carefully logging things if they go wrong.
  *
  * @author  David McKain
- * @version $Revision: 702 $
  */
 public final class SnuggleTeXUpConversionTestDriver {
     

@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -14,7 +12,6 @@ import org.w3c.dom.Element;
  * Handles instances of <tt>\\\\</tt>, which forces a line break at the given point.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class LineBreakHandler implements CommandHandler {
 

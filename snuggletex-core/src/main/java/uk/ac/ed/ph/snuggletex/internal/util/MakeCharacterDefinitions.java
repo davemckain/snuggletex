@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -21,7 +19,6 @@ import java.util.regex.Pattern;
  * from the <tt>unicode-math-table.tex</tt> from the <tt>unicode-math</tt> LaTeX package.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class MakeCharacterDefinitions {
     

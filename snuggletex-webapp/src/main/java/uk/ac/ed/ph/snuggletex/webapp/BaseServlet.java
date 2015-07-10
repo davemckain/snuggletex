@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
@@ -38,7 +36,6 @@ import org.w3c.dom.NodeList;
  * Trivial base class for servlets in the demo webapp
  *
  * @author  David McKain
- * @version $Revision$
  */
 abstract class BaseServlet extends HttpServlet {
     

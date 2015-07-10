@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.utilities;
@@ -16,7 +14,6 @@ import org.w3c.dom.NodeList;
  * {@link MathMLUtilities#unwrapParallelMathMLDOM(Element)}.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class UnwrappedParallelMathMLDOM {
     

@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -23,7 +21,6 @@ import java.nio.channels.FileChannel;
  * (This is a cut-down version of the Class of the same name in <tt>ph-commons-util</tt>.)
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class IOUtilities {
     

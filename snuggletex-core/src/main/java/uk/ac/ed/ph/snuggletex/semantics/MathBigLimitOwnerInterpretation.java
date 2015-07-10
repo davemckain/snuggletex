@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.semantics;
@@ -13,7 +11,6 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
  * rather than msub/msup/msubsup.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class MathBigLimitOwnerInterpretation implements MathInterpretation {
 

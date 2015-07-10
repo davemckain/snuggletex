@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -17,7 +15,6 @@ import uk.ac.ed.ph.snuggletex.internal.util.ConstraintUtilities;
  *   will be removed in SnuggleTeX 1.4.
  *
  * @author  David McKain
- * @version $Revision$
  */
 @Deprecated
 public final class WebPageOutputOptionsTemplates {

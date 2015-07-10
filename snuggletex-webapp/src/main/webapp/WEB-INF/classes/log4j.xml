@@ -6,8 +6,6 @@ Log4J Configuration for the SnuggleTeX Demo/Documentation webapp.
 NOTE: This only works on Tomcat as it uses the ${catalina.home}
 variable...
 
-$Id$
-
 -->
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">

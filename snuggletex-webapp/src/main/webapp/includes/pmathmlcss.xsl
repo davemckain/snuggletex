@@ -4,8 +4,6 @@ Presentation MathML Stylesheet
 -->
 
 <!--
-$Id$
-
 Copyright David Carlisle 2001, 2002.
 
 Use and distribution of this code are permitted under the terms of the <a

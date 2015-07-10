@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -20,7 +18,6 @@ import org.w3c.dom.Element;
  * This builds the content of a (fixed) {@link CorePackageDefinitions#CMD_PARAGRAPH} token.
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class ParagraphHandler implements CommandHandler {
     

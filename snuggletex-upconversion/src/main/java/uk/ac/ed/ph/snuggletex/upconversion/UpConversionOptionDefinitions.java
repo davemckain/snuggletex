@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion;
@@ -15,7 +13,6 @@ import java.util.Set;
  * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class UpConversionOptionDefinitions {
     
@@ -87,7 +84,7 @@ public final class UpConversionOptionDefinitions {
      * Defines the default and allowed values for a particular Option.
      *
      * @author  David McKain
-     * @version $Revision$
+     * @version $Revision: 742 $
      */
     public static class OptionValueDefinition {
         

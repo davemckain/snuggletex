@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.semantics;
@@ -12,7 +10,6 @@ import uk.ac.ed.ph.snuggletex.internal.util.ObjectUtilities;
  * Represents a mathematical character
  *
  * @author  David McKain
- * @version $Revision$
  */
 public class MathCharacterInterpretation implements MathInterpretation {
     

@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -17,7 +15,6 @@ import java.util.Locale;
  * @see DecimalFormatNumberMatcher
  *
  * @author  David McKain
- * @version $Revision$
  */
 public class SimpleNumberMatcher implements NumberMatcher {
     

@@ -1,6 +1,4 @@
-/* $Id:AccentMap.java 179 2008-08-01 13:41:24Z davemckain $
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -13,7 +11,6 @@ package uk.ac.ed.ph.snuggletex.definitions;
  * a lot of low level changes as the current implementation is not scalable.
  *
  * @author  David McKain
- * @version $Revision:179 $
  */
 public final class AccentMap {
     

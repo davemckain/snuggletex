@@ -1,6 +1,4 @@
-/* $Id:DefinitionMapTest.java 179 2008-08-01 13:41:24Z davemckain $
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -24,7 +22,6 @@ import org.junit.Test;
  * Tests the {@link SnugglePackage} class.
  *
  * @author  David McKain
- * @version $Revision:179 $
  */
 public class PackageTest {
     

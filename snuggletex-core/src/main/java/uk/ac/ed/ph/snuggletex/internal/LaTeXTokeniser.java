@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal;
@@ -55,7 +53,6 @@ import java.util.regex.Pattern;
  * This is probably the most complex class in SnuggleTeX!
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class LaTeXTokeniser {
     

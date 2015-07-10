@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -11,7 +9,6 @@ import uk.ac.ed.ph.snuggletex.internal.LaTeXTokeniser.Terminator;
  * Enumerates the various modes of LaTeX input.
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public enum LaTeXMode {
     

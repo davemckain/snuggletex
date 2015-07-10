@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -35,7 +33,6 @@ import org.w3c.dom.NodeList;
  * (This is based on similar utility methods in <tt>ph-commons</tt>.)
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class XMLUtilities {
     

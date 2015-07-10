@@ -4,8 +4,6 @@
 Trivial stylesheet to move XHTML elements into "no namespace",
 keeping other XML intact.
 
-$Id$
-
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:h="http://www.w3.org/1999/xhtml"

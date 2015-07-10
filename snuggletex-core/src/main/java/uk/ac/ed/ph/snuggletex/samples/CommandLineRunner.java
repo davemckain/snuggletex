@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.samples;
@@ -32,7 +30,6 @@ import java.util.List;
  * @since 1.2.2
  *
  * @author  David McKain
- * @version $Revision$
  */
 public class CommandLineRunner {
     

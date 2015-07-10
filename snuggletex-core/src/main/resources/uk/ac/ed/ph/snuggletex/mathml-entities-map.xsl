@@ -4,8 +4,6 @@
 This stylesheet defines a character map converting (most of) the MathML
 symbols we generate into named entities compatible with the MathML DTD.
 
-$Id$
-
 -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 

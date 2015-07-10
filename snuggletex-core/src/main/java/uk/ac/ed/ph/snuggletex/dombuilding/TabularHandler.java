@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
@@ -31,7 +29,6 @@ import org.w3c.dom.Element;
  * FIXME: No support for \vline and friends!!!
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class TabularHandler implements CommandHandler, EnvironmentHandler {
 

@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -24,7 +22,6 @@ import org.w3c.dom.Element;
  * This can only be used in MATH mode and generates a <tt>mtable</tt> as a result.
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class ArrayHandler implements EnvironmentHandler {
     

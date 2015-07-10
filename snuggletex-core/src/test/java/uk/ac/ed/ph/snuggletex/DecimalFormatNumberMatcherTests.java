@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex;
@@ -26,7 +24,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Tests the {@link DecimalFormatNumberMatcher} class
  *
  * @author  David McKain
- * @version $Revision$
  */
 @RunWith(Parameterized.class)
 public class DecimalFormatNumberMatcherTests {

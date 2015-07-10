@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
 <!--
 
-$Id$
-
-Some handy utility templates used by the various demos.
-
 Copyright (c) 2008-2011, The University of Edinburgh.
 All Rights Reserved
 

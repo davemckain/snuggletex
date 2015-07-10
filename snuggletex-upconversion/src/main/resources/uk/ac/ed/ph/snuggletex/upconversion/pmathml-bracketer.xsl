@@ -1,12 +1,5 @@
 <!--
 
-$Id$
-
-Adds brackets to the enhanced Presentation MathML to make certain
-things a bit clearer.
-
-This is still experimental.
-
 Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 

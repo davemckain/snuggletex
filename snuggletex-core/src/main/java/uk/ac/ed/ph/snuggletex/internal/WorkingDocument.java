@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal;
@@ -20,7 +18,6 @@ import java.util.List;
  * comes from so as to enable decent error reporting. hence the complexity within here.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class WorkingDocument implements InputContext {
     
@@ -112,7 +109,7 @@ public final class WorkingDocument implements InputContext {
      * in which it is contained.
      *
      * @author  David McKain
-     * @version $Revision$
+     * @version $Revision: 742 $
      */
     public static class IndexResolution {
         public final int scoreboardIndex;
