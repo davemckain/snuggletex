@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,10 +86,21 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
                 return new StringBuilder(input.getString());
 
             case FILE:
-                return readCharacterStream(createReader(new FileInputStream(input.getFile()), input.getEncoding()));
+                FileInputStream fileInputStream = null;
+                Reader inputStreamReader = null;
+                try {
+                    fileInputStream = new FileInputStream(input.getFile());
+                    inputStreamReader = createInputStreamReader(fileInputStream, input.getEncoding());
+                    return readCharacterStream(inputStreamReader);
+                }
+                finally {
+                    if (fileInputStream!=null) {
+                        fileInputStream.close();
+                    }
+                }
 
             case INPUT_STREAM:
-                return readCharacterStream(createReader(input.getInputStream(), input.getEncoding()));
+                return readCharacterStream(createInputStreamReader(input.getInputStream(), input.getEncoding()));
 
             case READER:
                 return readCharacterStream(input.getReader());
@@ -98,8 +110,8 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
         }
     }
     
-    private Reader createReader(InputStream inputStream, String encoding) throws UnsupportedEncodingException {
-        return encoding!=null ? new InputStreamReader(inputStream, encoding) : new InputStreamReader(inputStream);
+    private Reader createInputStreamReader(InputStream inputStream, String encoding) throws UnsupportedEncodingException {
+        return encoding!=null ? new InputStreamReader(inputStream, encoding) : new InputStreamReader(inputStream, Charset.defaultCharset());
     }
     
     private StringBuilder readCharacterStream(Reader reader) throws IOException {
@@ -109,7 +121,6 @@ public final class SnuggleInputReader implements WorkingDocument.SourceContext {
         while ((line = bufferedReader.readLine()) != null) {
             result.append(line).append("\n");
         }
-        bufferedReader.close();
         return result;
     }
 

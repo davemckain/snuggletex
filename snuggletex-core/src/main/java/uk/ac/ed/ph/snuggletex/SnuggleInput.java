@@ -26,10 +26,16 @@ public final class SnuggleInput {
         /** Input is read from a File using either a specified encoding or the platform default encoding */
         FILE,
         
-        /** Input is read from an {@link InputStream} using either a specified encoding or the platform default encoding */
+        /** 
+         * Input is read from an {@link InputStream} using either a specified encoding or the platform default encoding.
+         * The caller is responsible for closing the {@link InputStream} afterwards.
+         */
         INPUT_STREAM,
         
-        /** Input is read from a {@link Reader} */
+        /**
+         * Input is read from a {@link Reader}.
+         * The caller is responsible for closing the {@link Reader} afterwards.
+         */
         READER;
     }
     
@@ -84,7 +90,7 @@ public final class SnuggleInput {
     }
     
     public SnuggleInput(final InputStream inputStream) {
-        this(inputStream, "[Stream input @" + inputStream.hashCode() + "]");
+        this(inputStream, "[Stream input @" + Integer.toHexString(System.identityHashCode(inputStream.hashCode())) + "]");
     }
     
     public SnuggleInput(final InputStream inputStream, final String identifier) {
@@ -96,7 +102,7 @@ public final class SnuggleInput {
     }
     
     public SnuggleInput(final Reader reader) {
-        this(reader, "[Reader input @" + reader.hashCode() + "]");
+        this(reader, "[Reader input @" + Integer.toHexString(System.identityHashCode(reader.hashCode())) + "]");
     }
     
     public SnuggleInput(final Reader reader, final String identifier) {

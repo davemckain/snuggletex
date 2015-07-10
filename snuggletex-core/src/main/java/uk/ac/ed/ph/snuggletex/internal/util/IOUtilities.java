@@ -88,7 +88,9 @@ public final class IOUtilities {
                     stream.close();
                 }
                 catch (IOException e) {
-                    firstException = e;
+                    if (firstException==null) {
+                        firstException = e;
+                    }
                 }
             }
         }
