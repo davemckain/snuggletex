@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -15,7 +13,6 @@ import java.util.Arrays;
  * (This is copied from <tt>ph-commons-util</tt>, though now has a couple of extra things in it.)
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class ObjectUtilities {
     

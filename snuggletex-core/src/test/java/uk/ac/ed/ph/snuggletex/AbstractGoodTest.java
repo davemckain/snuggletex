@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
  * Base for tests which take LaTeX input, parse it assuming success.
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public abstract class AbstractGoodTest {
     

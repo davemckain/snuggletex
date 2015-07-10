@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -27,7 +25,6 @@ import org.w3c.dom.Element;
  * math and text modes - do note that some accents only apply in one of these modes.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class AccentHandler implements CommandHandler {
     

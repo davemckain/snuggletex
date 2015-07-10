@@ -1,9 +1,5 @@
 <!--
 
-$Id$
-
-This module contains templates for managing up-conversion options.
-
 Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 

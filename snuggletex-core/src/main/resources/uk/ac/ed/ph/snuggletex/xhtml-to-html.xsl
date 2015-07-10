@@ -5,8 +5,6 @@ Trivial stylesheet to convert XHTML to HTML - i.e. move all XHTML elements
 into no namespace. It is safer to do all in one go here as the original tree
 construction is complex enough as it is!
 
-$Id$
-
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:h="http://www.w3.org/1999/xhtml"

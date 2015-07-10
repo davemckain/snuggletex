@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.definitions;
@@ -18,7 +16,6 @@ import java.util.EnumSet;
  * @param <H> type of "handler" used to generate DOM subtrees.
  *
  * @author  David McKain
- * @version $Revision$
  */
 abstract class BuiltinCommandOrEnvironment<H> implements CommandOrEnvironment {
     

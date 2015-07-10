@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <!--
 
-$Id$
-
-Very trivial base stylesheet for the various types of pages/fragments
-generated within the SnuggleTeX webapp.
-
 Copyright (c) 2008-2011, The University of Edinburgh.
 All Rights Reserved
 

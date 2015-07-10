@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.internal.util;
@@ -14,7 +12,6 @@ import java.util.Iterator;
  * (This is a cut-down version of the same class in <tt>ph-commons-util</tt>.)
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class StringUtilities {
 	

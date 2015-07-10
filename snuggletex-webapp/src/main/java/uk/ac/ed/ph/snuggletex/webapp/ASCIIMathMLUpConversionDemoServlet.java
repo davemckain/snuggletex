@@ -1,6 +1,4 @@
-/* $Id:FullLaTeXInputDemoServlet.java 158 2008-07-31 10:48:14Z davemckain $
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
@@ -32,7 +30,6 @@ import org.w3c.dom.Element;
  * dynamically in the browser by ASCIIMathML.
  * 
  * @author  David McKain
- * @version $Revision:158 $
  */
 public final class ASCIIMathMLUpConversionDemoServlet extends BaseServlet {
     

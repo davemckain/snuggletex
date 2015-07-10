@@ -1,17 +1,6 @@
 <?xml version="1.0"?>
 <!--
 
-$Id$
-
-Stylesheet to soup up the raw output from the SnuggleTeX
-process to make a nice web page.
-
-This adds in the rest of the <head/> stuff, standard headers & footers
-and the navigation menu.
-
-Relative links are fixed up so they are relative to the supplied
-context-path.
-
 Copyright (c) 2008-2011, The University of Edinburgh.
 All Rights Reserved
 

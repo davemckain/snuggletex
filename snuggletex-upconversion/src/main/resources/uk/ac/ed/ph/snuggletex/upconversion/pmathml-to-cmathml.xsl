@@ -1,15 +1,5 @@
 <!--
 
-$Id$
-
-This stylesheet attempts to convert a Presentation MathML <math/>
-element to Content MathML, under the core assumption that the mathematics
-represented is simple (i.e. elementary functions and operators, plus a
-few other things).
-
-Some semantic inference is also performed basic on common conventions,
-which can be turned off if required.
-
 Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 

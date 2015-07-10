@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <!--
 
-$Id$
-
-Overrides format-output.xsl to add in functionality for
-demonstrating LaTeX -> Presentation MathML -> Content MathML -> Maxima
-up-conversion process.
-
 Copyright (c) 2008-2011, The University of Edinburgh.
 All Rights Reserved
 

@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.webapp;
@@ -13,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
  * (This is a cut down version of the class of the same name in the CST Project)
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class WebUtilities {
     

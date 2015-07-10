@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.dombuilding;
@@ -20,7 +18,6 @@ import uk.ac.ed.ph.snuggletex.tokens.CommandToken;
  * An instance of this interface must be stateless once created.
  *
  * @author  David McKain
- * @version $Revision$
  */
 public interface CommandHandler {
     

@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.upconversion.internal;
@@ -22,7 +20,6 @@ import org.w3c.dom.NodeList;
  * @since 1.2.0
  *
  * @author  David McKain
- * @version $Revision$
  */
 public final class UnassumeSymbolHandler extends UpConversionHandlerBase {
     

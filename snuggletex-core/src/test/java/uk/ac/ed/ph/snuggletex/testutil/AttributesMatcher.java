@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.testutil;
@@ -14,7 +12,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * EasyMock argument matcher that compares SAX {@link Attributes} Objects.
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class AttributesMatcher implements IArgumentMatcher {
     

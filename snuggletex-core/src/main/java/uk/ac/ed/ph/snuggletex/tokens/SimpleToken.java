@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Copyright (c) 2008-2011, The University of Edinburgh.
+/* Copyright (c) 2008-2011, The University of Edinburgh.
  * All Rights Reserved
  */
 package uk.ac.ed.ph.snuggletex.tokens;
@@ -20,7 +18,6 @@ import java.util.EnumMap;
  * @see TokenType
  * 
  * @author  David McKain
- * @version $Revision$
  */
 public final class SimpleToken extends FlowToken {
     

@@ -1,15 +1,5 @@
 <!--
 
-$Id$
-
-This stylesheet is intended to be pipelined after the P->C stylesheet
-and converts the subset of Content MathML produced by that stylesheet
-into Maxima input.
-
-IMPORTANT NOTE: This stylesheet is NOT intended to be applied to more general
-Content MathML elements as it assumes certain post-conditions of the earlier
-conversion to Content MathML, making life very easy here.
-
 Copyright (c) 2008-2011, The University of Edinburgh
 All Rights Reserved
 
