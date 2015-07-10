@@ -39,6 +39,8 @@ import java.util.List;
  * @see StyleRebuilder
  * @see SnuggleSession#parseInput(uk.ac.ed.ph.snuggletex.SnuggleInput)
  * 
+ * @since 1.3.0
+ * 
  * @author  David McKain
  */
 public final class StyleEvaluator {
