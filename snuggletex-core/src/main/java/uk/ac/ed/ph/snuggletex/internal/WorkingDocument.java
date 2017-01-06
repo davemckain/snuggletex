@@ -259,6 +259,7 @@ public final class WorkingDocument {
     }
     
     public int getSubstitutionDepth(final int index) {
+        /* FIXME: Potential NPE here! */
         IndexResolution resolvedIndex = resolveIndex(index, false);
         int depth = 0;
         CharacterSource source = resolvedIndex.slice.resolvedComponent;
