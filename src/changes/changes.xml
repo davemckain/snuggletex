@@ -339,17 +339,17 @@ All Rights Reserved
     </release>
     <release version="1.1.0-beta1" date="2009-06-08" description="Version 1.1.0-beta1 (SVN revision 390)">
       <action dev="davemckain" type="update">
-        See old release notes at http://www.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
+        See old release notes at https://www2.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
       </action>
     </release>
     <release version="1.0.1" date="2009-01-09" description="Version 1.0.1 (SVN revision 228)">
       <action dev="davemckain" type="update">
-        See old release notes at http://www.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
+        See old release notes at https://www2.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
       </action>
     </release>
     <release version="1.0.0" date="2008-08-18" description="Version 1.0.1 (SVN revision 216)">
       <action dev="davemckain" type="update">
-        See old release notes at http://www.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
+        See old release notes at https://www2.ph.ed.ac.uk/snuggletex/documentation/release-notes.html
       </action>
     </release>
   </body>

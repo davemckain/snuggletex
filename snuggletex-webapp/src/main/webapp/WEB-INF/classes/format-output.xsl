@@ -60,17 +60,12 @@ All Rights Reserved
       <div id="container">
         <div id="header">
           <div id="identities">
-            <div id="edlogo"><a href="http://www.ed.ac.uk"><img src="{$context-path}/includes/images/ed_logo.gif" alt="University of Edinburgh Logo"/></a></div>
-            <div id="edname"><a href="http://www.ed.ac.uk"><img src="{$context-path}/includes/images/uofe2.gif" alt="University of Edinburgh" /></a></div>
-            <div id="schoolname"><a href="/"><img src="{$context-path}/includes/images/panda.gif" alt="School of Physics &amp; Astronomy" /></a></div>
-          </div>
-          <div id="GlobalNav">
-            <ul>
-              <li class="active"><a href="http://www2.ph.ed.ac.uk/elearning/" class="active"><span>e-Learning</span></a></li>
-            </ul>
+            <div id="edlogo"><a href="https://www.ed.ac.uk"><img src="{$context-path}/includes/images/ed_logo.gif" alt="University of Edinburgh Logo"/></a></div>
+            <div id="edname"><a href="https://www.ed.ac.uk"><img src="{$context-path}/includes/images/uofe2.gif" alt="University of Edinburgh" /></a></div>
+            <div id="schoolname"><a href="https://www.ph.ed.ac.uk"><img src="{$context-path}/includes/images/panda.gif" alt="School of Physics &amp; Astronomy" /></a></div>
           </div>
           <div id="utility">
-            <a class="utilContact" href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">Contact us</a>
+            <a class="utilContact" href="https://www.ph.ed.ac.uk/people/david-mckain">Contact us</a>
           </div>
         </div>
         <div id="sectionHeader">
@@ -125,11 +120,11 @@ All Rights Reserved
               <a href="{$context-path}/documentation/release-notes.html">Release Notes</a>
               <br />
               Copyright &#xa9; 2008&#x2012;2011
-              <a href="http://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
-              <a href="http://www.ed.ac.uk">The University of Edinburgh</a>.
+              <a href="https://www.ph.ed.ac.uk">The School of Physics and Astronomy</a>,
+              <a href="https://www.ed.ac.uk">The University of Edinburgh</a>.
               <br />
               For more information, contact
-              <a href="http://www.ph.ed.ac.uk/elearning/contacts/#dmckain">David McKain</a>.
+              <a href="https://www.ph.ed.ac.uk/people/david-mckain">David McKain</a>.
             </p>
             <p>
               The University of Edinburgh is a charitable body, registered in Scotland,

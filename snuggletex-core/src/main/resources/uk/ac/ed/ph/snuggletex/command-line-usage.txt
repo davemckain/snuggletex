@@ -1,6 +1,6 @@
 
 This is a basic command line runner for SnuggleTeX.
-See http://www2.ph.ed.ac.uk/snuggletex/ for SnuggleTeX documentation.
+See https://www2.ph.ed.ac.uk/snuggletex/ for SnuggleTeX documentation.
 
 Usage:
 

@@ -11,13 +11,12 @@ All Rights Reserved
   </bannerLeft>
   <body>
     <links>
-      <item name="School of Physics and Astronomy" href="http://www.ph.ed.ac.uk"/>
+      <item name="School of Physics and Astronomy" href="https://www.ph.ed.ac.uk"/>
     </links>
     <menu name="SnuggleTeX Links">
-      <item name="User Guide" href="http://www.ph.ed.ac.uk/snuggletex/"/>
+      <item name="User Guide" href="https://www2.ph.ed.ac.uk/snuggletex/"/>
       <item name="SourceForge.net Developer Area" href="http://www.sourceforge.net/projects/snuggletex/"/>
     </menu>
     <menu ref="reports"/>
   </body>
 </project>
-

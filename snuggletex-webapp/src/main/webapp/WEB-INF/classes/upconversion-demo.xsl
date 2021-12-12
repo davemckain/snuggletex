@@ -52,7 +52,7 @@ All Rights Reserved
     <p>
       <strong>NOTE:</strong>
       There is currently a more advanced version of this demo brewing up in the
-      <a href="http://www2.ph.ed.ac.uk/mathplayground/snuggletex-semantic-input-demo">SnuggleTeX Math Playground</a>
+      <a href="https://www2.ph.ed.ac.uk/mathplayground/snuggletex-semantic-input-demo">SnuggleTeX Math Playground</a>
       that you might want to have a look at as well.
     </p>
     <form method="post" class="input" action="{$context-path}/UpConversionDemo">

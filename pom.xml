@@ -29,7 +29,7 @@ All Rights Reserved
   <repositories>
     <repository>
       <id>www2.ph.ed.ac.uk</id>
-      <url>http://www2.ph.ed.ac.uk/maven2</url>
+      <url>https://www2.ph.ed.ac.uk/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -47,7 +47,7 @@ All Rights Reserved
   <inceptionYear>2008</inceptionYear>
   <organization>
     <name>The University of Edinburgh</name>
-    <url>http://www.ed.ac.uk</url>
+    <url>https://www.ed.ac.uk</url>
   </organization>
   <licenses>
     <license>
@@ -61,9 +61,9 @@ All Rights Reserved
       <id>davemckain</id>
       <name>David McKain</name>
       <email>david.mckain&#xa0;[at]&#xa0;ed.ac.uk</email>
-      <url>http://www2.ph.ed.ac.uk/~dmckain/</url>
+      <url>https://www.ph.ed.ac.uk/people/david-mckain</url>
       <organization>School of Physics and Astronomy, University of Edinburgh</organization>
-      <organizationUrl>http://www.ph.ed.ac.uk</organizationUrl>
+      <organizationUrl>https://www.ph.ed.ac.uk</organizationUrl>
       <roles>
         <role>architect</role>
         <role>developer</role>
@@ -224,7 +224,7 @@ All Rights Reserved
           <windowtitle>SnuggleTeX API Documentation</windowtitle>
           <doctitle>SnuggleTeX API Documentation</doctitle>
           <bottom><![CDATA[
-            <p><a href="http://www2.ph.ed.ac.uk/snuggletex/" target="_top">SnuggleTeX Home Page</a></p>
+            <p><a href="https://www2.ph.ed.ac.uk/snuggletex/" target="_top">SnuggleTeX Home Page</a></p>
             <p>Copyright &#xa9; 2008-2011 The School of Physics and Astronomy, The University of Edinburgh.</p>
             <p style="font-style:italic">The University of Edinburgh is a charitable body, registered in Scotland, with registration number SC005336.</p>
           ]]></bottom>
