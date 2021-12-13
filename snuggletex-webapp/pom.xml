@@ -111,7 +111,7 @@ All Rights Reserved
       <!-- Pull in auto-generated content created above when building WAR structure -->
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.2.3</version>
         <configuration>
           <warName>snuggletex</warName>
           <webResources>
