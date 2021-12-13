@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+Logback Configuration for the SnuggleTeX Demo/Documentation webapp.
+
+NOTE: This only works on Tomcat as it uses the ${catalina.home}
+variable...
+
+-->
+<configuration>
+
+  <!-- Log most events to custom file -->
+  <appender name="FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${catalina.home}/logs/snuggletex.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>snuggletex.log.%i</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>500KB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+        <pattern>%level [%date{ISO8601}] [%logger{1}] - %message%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Root logger -->
+  <root level="INFO">
+    <appender-ref ref="FILE"/>
+  </root>
+
+</configuration>
