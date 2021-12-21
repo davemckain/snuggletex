@@ -33,7 +33,6 @@ All Rights Reserved
     <plugins>
       <!-- Runs the core test suite -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <includes>
@@ -68,7 +67,6 @@ All Rights Reserved
       </plugin>
       <!-- Build JAR with main class + one with test classes for use in other modules -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
