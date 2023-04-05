@@ -48,7 +48,7 @@ public final class InputError {
 
     /**
      * Returns the {@link FrozenSlice} indicating where the error occurred in the original
-     * {@link SnuggleInput}.
+     * {@link SnuggleInput}, if available. Otherwise, this returns null.
      */
     public FrozenSlice getSlice() {
         return slice;
@@ -72,7 +72,7 @@ public final class InputError {
     private String buildStringRepresentation() {
         return getClass().getSimpleName()
             + "(errorCode=" + errorCode.toString()
-            + ",slice=" + slice.toString()
+            + ",slice=" + (slice != null ? slice.toString() : null)
             + ",arguments=" + Arrays.toString(arguments)
             + ")";
     }
