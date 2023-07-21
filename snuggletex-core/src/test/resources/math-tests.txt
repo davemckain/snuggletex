@@ -128,6 +128,48 @@ x^2 + 1
 <mo>+</mo>
 <mn>1</mn>
 ====
+# See https://sourceforge.net/p/snuggletex/bugs/9/
+x^{23}
+<msup>
+  <mi>x</mi>
+  <mn>23</mn>
+</msup>
+====
+# See https://sourceforge.net/p/snuggletex/bugs/9/
+# This is consistent with LaTeX
+x^23
+<msup>
+  <mi>x</mi>
+  <mn>2</mn>
+</msup>
+<mn>3</mn>
+====
+# See https://sourceforge.net/p/snuggletex/bugs/9/
+# This feels a bit pathological but is consistent with LaTeX
+x^2.3
+<msup>
+  <mi>x</mi>
+  <mn>2</mn>
+</msup>
+<mn>.3</mn>
+====
+# See https://sourceforge.net/p/snuggletex/bugs/9/
+# This feels a bit pathological but is consistent with LaTeX
+x^.5
+<msup>
+  <mi>x</mi>
+  <mo>.</mo>
+</msup>
+<mn>5</mn>
+====
+# Fix for https://sourceforge.net/p/snuggletex/bugs/9/
+x^ab
+<msup>
+  <mi>x</mi>
+  <mi>a</mi>
+</msup>
+<mi>b</mi>
+====
 a_1
 <msub>
   <mi>a</mi>

@@ -253,6 +253,13 @@ public final class LaTeXTokeniser {
             this.tokens = new ArrayList<FlowToken>();
             this.foundTerminator = false;
         }
+
+        /**
+         * Gets the current last token recorded in this mode.
+         */
+        public FlowToken getLastToken() {
+            return !tokens.isEmpty() ? tokens.get(tokens.size()-1) : null;
+        }
         
         /**
          * Gets the end index of the {@link FrozenSlice} corresponding to the last {@link Token}
@@ -261,10 +268,8 @@ public final class LaTeXTokeniser {
          * "useful" content of a parse as it won't include the terminator.
          */
         public int computeLastTokenEndIndex() {
-            if (tokens.isEmpty()) {
-                return startPosition;
-            }
-            return tokens.get(tokens.size()-1).getSlice().endIndex;
+            FlowToken lastToken = getLastToken();
+            return lastToken != null ? lastToken.getSlice().endIndex : startPosition;
         }
     }
     
@@ -536,13 +541,24 @@ public final class LaTeXTokeniser {
                 
             default:
                 /* Mathematical symbol, operator, number etc... */
-                return readNextMathNumberOrSymbol();
+                /* We need to check whether we're following up a sub/superscript and, if so,
+                 * read only a single character.
+                 */
+                FlowToken lastToken = currentModeState.getLastToken();
+                if (lastToken != null && lastToken.hasInterpretationType(InterpretationType.MATH_OPERATOR)) {
+                    CharSequence extract = lastToken.getSlice().extract();
+                    if ("_".equals(extract) || "^".equals(extract)) {
+                        /* This is following sub/superscript so only read single character */
+                        return readNextMathNumberOrSymbol(true);
+                    }
+                }
+                return readNextMathNumberOrSymbol(false);
         }
     }
     
-    private FlowToken readNextMathNumberOrSymbol() {
+    private FlowToken readNextMathNumberOrSymbol(boolean singleCharacterMode) {
         /* Let's see if we can reasonably parse a number */
-        SimpleToken numberToken = tryReadMathNumber();
+        SimpleToken numberToken = tryReadMathNumber(singleCharacterMode);
         if (numberToken!=null) {
             return numberToken;
         }
@@ -574,7 +590,7 @@ public final class LaTeXTokeniser {
      * 
      * @return SimpleToken representing the number, or null if input wasn't a number.
      */
-    private SimpleToken tryReadMathNumber() {
+    private SimpleToken tryReadMathNumber(boolean singleDigitMode) {
         /* See if we can reasonably parse a number, returning null if we couldn't
          * or an appropriate token if we could.
          * 
@@ -586,6 +602,19 @@ public final class LaTeXTokeniser {
         boolean foundDigitsBeforeDecimalPoint = false;
         boolean foundDigitsAfterDecimalPoint  = false;
         boolean foundDecimalPoint = false;
+
+        if (singleDigitMode) {
+            c = workingDocument.charAt(index);
+            if (c >= '0' && c <= '9') {
+                FrozenSlice digitSlice = workingDocument.freezeSlice(position, position+1);
+                return new SimpleToken(digitSlice, TokenType.MATH_NUMBER, LaTeXMode.MATH,
+                        null,
+                        new MathNumberInterpretation(digitSlice.extract()));
+            }
+            else {
+                return null;
+            }
+        }
         
         /* Read zero or more digits */
         while(true) {
